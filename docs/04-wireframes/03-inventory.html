@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Hueniform wireframe — 3. Inventory browser</title>
+<style>
+  *{box-sizing:border-box;margin:0}
+  body{font:14px/1.5 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif;background:#fafaf9;color:#2d2d2d;padding:28px;max-width:1240px;margin:0 auto}
+  h1{font-size:20px;margin-bottom:4px}
+  .intro{color:#666;margin-bottom:8px}
+  .state{margin:40px 0 10px;border-bottom:2px solid #d8d6d2;padding-bottom:6px;display:flex;align-items:baseline;gap:10px}
+  .state h2{font-size:15px}
+  .state span{font-size:12px;color:#888}
+  .frame{display:flex;border:2px solid #9a9a96;border-radius:6px;overflow:hidden;background:#fff}
+  .side{width:190px;background:#efeeec;border-right:1px solid #d8d6d2;padding:16px 0;flex-shrink:0}
+  .brand{font-weight:700;letter-spacing:.6px;padding:0 18px 16px;font-size:15px}
+  .nav a{display:block;padding:9px 18px;color:#48484a;text-decoration:none;border-left:3px solid transparent}
+  .nav a.active{background:#fff;border-left-color:#48484a;font-weight:600}
+  .main{flex:1;padding:26px 32px}
+  .pagetitle{font-size:18px;font-weight:700;margin-bottom:18px}
+  .callout{display:inline-flex;width:18px;height:18px;border-radius:50%;background:#b58900;color:#fff;font-size:11px;font-weight:700;align-items:center;justify-content:center;vertical-align:2px;margin-left:6px;flex-shrink:0}
+  .btn{display:inline-block;padding:8px 18px;border:1px solid #76767a;border-radius:5px;background:#fff;font-weight:600;color:#2d2d2d;text-decoration:none}
+  .btn.primary{background:#3b3b3d;border-color:#3b3b3d;color:#fff}
+  .banner{border:1px solid;border-radius:6px;padding:12px 16px;margin-bottom:18px}
+  .banner.error{background:#fbeeec;border-color:#c4564a;color:#7c2d25}
+  .filters{display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+  .ctrl{border:1px solid #b6b4b0;border-radius:5px;background:#fff;padding:7px 12px;display:inline-flex;align-items:center;gap:8px;color:#444}
+  .ctrl .car{color:#999;font-size:11px}
+  .sw{display:inline-block;width:15px;height:15px;border-radius:3px;border:1px solid rgba(0,0,0,.25);vertical-align:-2px}
+  .count{margin-left:auto;color:#666;font-weight:600}
+  .clear{font-size:13px;text-decoration:underline;color:#3b3b6e}
+  .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+  .card{border:1px solid #d8d6d2;border-radius:6px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;display:block}
+  .thumb{height:110px;background:repeating-linear-gradient(45deg,#e5e3df,#e5e3df 7px,#dcdad6 7px,#dcdad6 14px);display:flex;align-items:center;justify-content:center;color:#9a9a96;font-size:11.5px}
+  .strip{display:flex;height:12px}
+  .meta{padding:7px 10px;font-size:12.5px;color:#555}
+  .skel .thumb{background:#eeedeb}
+  .skel .strip{background:#e4e2de}
+  .skel .meta b{display:inline-block;width:50px;height:10px;background:#e4e2de;border-radius:3px}
+  .emptybox{border:2px dashed #c9c7c3;border-radius:10px;padding:56px;text-align:center;color:#777;max-width:560px;margin:30px auto}
+  .emptybox .big{font-size:16px;font-weight:600;color:#2d2d2d;margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<h1>Wireframe 3 — Inventory browser</h1>
+<p class="intro">Route <code>/</code> (home) · FR-35, NFR-6 · <code>GET /api/garments</code>. Callouts ① – ⑤ explained in <code>03-inventory.md</code>.</p>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State A — Default grid</h2><span>no filters; grid continues below the fold (~500 garments fit one response)</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#" class="active">Wardrobe</a>
+      <a href="#">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Wardrobe</div>
+    <div class="filters">
+      <span class="ctrl">Type: <b>All types</b> <span class="car">▾</span></span> <span class="callout">1</span>
+      <span class="ctrl">Colour: <b>All colours</b> <span class="car">▾</span></span> <span class="callout">2</span>
+      <span class="count">137 garments <span class="callout">3</span></span>
+    </div>
+    <div class="grid">
+      <a class="card" href="#">
+        <div class="thumb">thumbnail</div>
+        <div class="strip"><div style="width:80%;background:#2CADA0"></div><div style="width:20%;background:#EE8225"></div></div>
+        <div class="meta"><b>Jersey</b> <span class="callout">4</span></div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">thumbnail</div>
+        <div class="strip"><div style="width:100%;background:#2B7FC4"></div></div>
+        <div class="meta"><b>Top</b></div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">thumbnail</div>
+        <div class="strip"><div style="width:100%;background:#27314f"></div></div>
+        <div class="meta"><b>Bottom</b></div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">thumbnail</div>
+        <div class="strip"><div style="width:70%;background:#8a8a86"></div><div style="width:30%;background:#c23b2e"></div></div>
+        <div class="meta"><b>Socks</b></div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">thumbnail</div>
+        <div class="strip"><div style="width:100%;background:#fff;outline:1px solid #ddd;outline-offset:-1px"></div></div>
+        <div class="meta"><b>Shoes</b></div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">thumbnail</div>
+        <div class="strip"><div style="width:60%;background:#3d6b35"></div><div style="width:25%;background:#c2a36b"></div><div style="width:15%;background:#1d1d1d"></div></div>
+        <div class="meta"><b>Jacket</b></div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">thumbnail</div>
+        <div class="strip"><div style="width:85%;background:#EE8225"></div><div style="width:15%;background:#fff;outline:1px solid #ddd;outline-offset:-1px"></div></div>
+        <div class="meta"><b>Hat</b> <span class="callout">5</span></div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">thumbnail</div>
+        <div class="strip"><div style="width:100%;background:#5a4632"></div></div>
+        <div class="meta"><b>Accessory</b></div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">thumbnail</div>
+        <div class="strip"><div style="width:50%;background:#6a3fb5"></div><div style="width:50%;background:#1d1d1d"></div></div>
+        <div class="meta"><b>Top</b></div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">thumbnail</div>
+        <div class="strip"><div style="width:100%;background:#b8b6b2"></div></div>
+        <div class="meta"><b>Bottom</b></div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State B — Filtered (type AND family)</h2><span><code>GET /api/garments?type=jersey&amp;family=Teal</code>; family dropdown shown open</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#" class="active">Wardrobe</a>
+      <a href="#">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Wardrobe</div>
+    <div class="filters">
+      <span class="ctrl">Type: <b>Jersey</b> <span class="car">▾</span></span>
+      <span style="position:relative">
+        <span class="ctrl">Colour: <span class="sw" style="background:#26d9d9"></span> <b>Teal</b> <span class="car">▾</span></span>
+        <span style="position:absolute;top:38px;left:0;z-index:2;background:#fff;border:1px solid #b6b4b0;border-radius:5px;width:200px;box-shadow:0 3px 8px rgba(0,0,0,.12);font-size:13px">
+          <span style="display:flex;gap:8px;align-items:center;padding:6px 12px;border-bottom:1px solid #eee">All colours</span>
+          <span style="display:flex;gap:8px;align-items:center;padding:6px 12px;border-bottom:1px solid #eee"><span class="sw" style="background:#1d1d1d"></span> Black</span>
+          <span style="display:flex;gap:8px;align-items:center;padding:6px 12px;border-bottom:1px solid #eee"><span class="sw" style="background:#27314f"></span> Navy</span>
+          <span style="display:flex;gap:8px;align-items:center;padding:6px 12px;border-bottom:1px solid #eee;background:#f1f0ee;font-weight:600"><span class="sw" style="background:#26d9d9"></span> Teal ✓</span>
+          <span style="display:flex;gap:8px;align-items:center;padding:6px 12px;color:#999">… 19 families in all</span>
+        </span>
+      </span>
+      <a class="clear" href="#">Clear filters</a>
+      <span class="count">3 garments</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="#">
+        <div class="thumb">thumbnail</div>
+        <div class="strip"><div style="width:80%;background:#2CADA0"></div><div style="width:20%;background:#EE8225"></div></div>
+        <div class="meta"><b>Jersey</b></div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">thumbnail</div>
+        <div class="strip"><div style="width:100%;background:#2CA193"></div></div>
+        <div class="meta"><b>Jersey</b></div>
+      </a>
+      <a class="card" href="#">
+        <div class="thumb">thumbnail</div>
+        <div class="strip"><div style="width:88%;background:#48484a"></div><div style="width:12%;background:#2CADA0"></div></div>
+        <div class="meta"><b>Jersey</b></div>
+      </a>
+    </div>
+    <p style="margin-top:14px;font-size:12.5px;color:#888">The third card matches through a 12&nbsp;% teal stripe — the family filter matches any colour of the garment, regardless of role (FR-35).</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State C — Empty wardrobe</h2><span><code>total: 0</code>, no filters</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#" class="active">Wardrobe</a>
+      <a href="#">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Wardrobe</div>
+    <div class="emptybox">
+      <div class="big">Your wardrobe is empty</div>
+      <p>Photograph a garment and Hueniform will detect its colours.</p>
+      <p style="margin-top:16px"><a class="btn primary" href="#">Add your first garment</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State D — Empty filter result</h2><span><code>total: 0</code> with filters active</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#" class="active">Wardrobe</a>
+      <a href="#">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Wardrobe</div>
+    <div class="filters">
+      <span class="ctrl">Type: <b>Hat</b> <span class="car">▾</span></span>
+      <span class="ctrl">Colour: <span class="sw" style="background:#d926ac"></span> <b>Magenta</b> <span class="car">▾</span></span>
+      <a class="clear" href="#">Clear filters</a>
+      <span class="count">0 garments</span>
+    </div>
+    <div class="emptybox">
+      <div class="big">No garments match</div>
+      <p>No hat contains magenta. <a class="clear" href="#">Clear the filters</a> to see everything.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State E — Loading</h2><span>skeleton grid while the query runs; filter changes reflect in &lt; 1 s at 500 garments (NFR-6)</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#" class="active">Wardrobe</a>
+      <a href="#">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Wardrobe</div>
+    <div class="filters">
+      <span class="ctrl">Type: <b>All types</b> <span class="car">▾</span></span>
+      <span class="ctrl">Colour: <b>All colours</b> <span class="car">▾</span></span>
+      <span class="count">…</span>
+    </div>
+    <div class="grid">
+      <span class="card skel"><span class="thumb"></span><span class="strip"></span><span class="meta"><b></b></span></span>
+      <span class="card skel"><span class="thumb"></span><span class="strip"></span><span class="meta"><b></b></span></span>
+      <span class="card skel"><span class="thumb"></span><span class="strip"></span><span class="meta"><b></b></span></span>
+      <span class="card skel"><span class="thumb"></span><span class="strip"></span><span class="meta"><b></b></span></span>
+      <span class="card skel"><span class="thumb"></span><span class="strip"></span><span class="meta"><b></b></span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State F — Load failure (error)</h2></div>
+<div class="frame" style="min-height:0">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#" class="active">Wardrobe</a>
+      <a href="#">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Wardrobe</div>
+    <div class="banner error"><b>Couldn't load your wardrobe.</b> Something went wrong on the server — please try again. &nbsp;<a href="#" style="color:inherit;font-weight:700">Retry</a></div>
+  </div>
+</div>
+
+</body>
+</html>

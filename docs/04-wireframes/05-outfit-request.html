@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Hueniform wireframe — 5. Outfit request</title>
+<style>
+  *{box-sizing:border-box;margin:0}
+  body{font:14px/1.5 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif;background:#fafaf9;color:#2d2d2d;padding:28px;max-width:1240px;margin:0 auto}
+  h1{font-size:20px;margin-bottom:4px}
+  .intro{color:#666;margin-bottom:8px}
+  .state{margin:40px 0 10px;border-bottom:2px solid #d8d6d2;padding-bottom:6px;display:flex;align-items:baseline;gap:10px}
+  .state h2{font-size:15px}
+  .state span{font-size:12px;color:#888}
+  .frame{display:flex;border:2px solid #9a9a96;border-radius:6px;overflow:hidden;background:#fff}
+  .side{width:190px;background:#efeeec;border-right:1px solid #d8d6d2;padding:16px 0;flex-shrink:0}
+  .brand{font-weight:700;letter-spacing:.6px;padding:0 18px 16px;font-size:15px}
+  .nav a{display:block;padding:9px 18px;color:#48484a;text-decoration:none;border-left:3px solid transparent}
+  .nav a.active{background:#fff;border-left-color:#48484a;font-weight:600}
+  .main{flex:1;padding:26px 32px}
+  .pagetitle{font-size:18px;font-weight:700;margin-bottom:18px}
+  .callout{display:inline-flex;width:18px;height:18px;border-radius:50%;background:#b58900;color:#fff;font-size:11px;font-weight:700;align-items:center;justify-content:center;vertical-align:2px;margin-left:6px;flex-shrink:0}
+  .btn{display:inline-block;padding:8px 18px;border:1px solid #76767a;border-radius:5px;background:#fff;font-weight:600;color:#2d2d2d;text-decoration:none}
+  .btn.primary{background:#3b3b3d;border-color:#3b3b3d;color:#fff}
+  .btn.busy{opacity:.55}
+  .banner{border:1px solid;border-radius:6px;padding:12px 16px;margin-top:18px}
+  .banner.error{background:#fbeeec;border-color:#c4564a;color:#7c2d25}
+  .panel{border:1px solid #d8d6d2;border-radius:8px;padding:18px 20px;background:#fcfcfb}
+  .lab{font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.4px;color:#666;margin-bottom:8px}
+  .chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .chip{padding:7px 16px;border-radius:18px;border:1px solid #b6b4b0;background:#fff;font-size:13.5px;color:#444}
+  .chip.locked{background:#efeeec;color:#777;border-style:dashed}
+  .chip.on{background:#3b3b3d;border-color:#3b3b3d;color:#fff;font-weight:600}
+  .chip.flagged{border-color:#c4564a;color:#a33527;font-weight:600}
+  .chip .flagnote{font-size:11px;font-weight:400;display:block;color:#c4564a}
+  .hint{font-size:12.5px;color:#999;margin-top:10px}
+  .searching{margin-top:22px;color:#555;font-weight:600}
+</style>
+</head>
+<body>
+
+<h1>Wireframe 5 — Outfit request</h1>
+<p class="intro">Route <code>/suggest</code> · FR-17, FR-36 · <code>POST /api/suggestions</code>. One page with results (wireframe 6) rendered beneath this panel. Callouts ① – ④ explained in <code>05-outfit-request.md</code>.</p>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State A — Default</h2><span>no optional slots; a valid request as-is</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#">Wardrobe</a>
+      <a href="#">Add garment</a>
+      <a href="#" class="active">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Suggest an outfit</div>
+    <div class="panel">
+      <div class="lab">Always included <span class="callout">1</span></div>
+      <div class="chips">
+        <span class="chip locked">🔒 Top</span>
+        <span class="chip locked">🔒 Bottom</span>
+        <span class="chip locked">🔒 Socks</span>
+        <span class="chip locked">🔒 Shoes</span>
+      </div>
+      <div class="lab">Include in this outfit <span class="callout">2</span></div>
+      <div class="chips">
+        <span class="chip">Jersey</span>
+        <span class="chip">Jacket</span>
+        <span class="chip">Hat</span>
+        <span class="chip">Accessory</span>
+      </div>
+      <a class="btn primary" href="#">Suggest outfits</a> <span class="callout">3</span>
+      <div class="hint">Top, bottom, socks and shoes are always included. Jersey and jacket can be combined.</div>
+    </div>
+    <p class="hint" style="margin-top:16px">Results appear below this panel (wireframe 6); the panel stays put so slots can be tweaked and the request repeated.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State B — Slots selected</h2><span>jersey + hat on → <code>{"include": {"jersey": true, "jacket": false, "hat": true, "accessory": false}}</code></span></div>
+<div class="frame" style="min-height:0">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#">Wardrobe</a>
+      <a href="#">Add garment</a>
+      <a href="#" class="active">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Suggest an outfit</div>
+    <div class="panel">
+      <div class="lab">Always included</div>
+      <div class="chips">
+        <span class="chip locked">🔒 Top</span>
+        <span class="chip locked">🔒 Bottom</span>
+        <span class="chip locked">🔒 Socks</span>
+        <span class="chip locked">🔒 Shoes</span>
+      </div>
+      <div class="lab">Include in this outfit</div>
+      <div class="chips">
+        <span class="chip on">✓ Jersey</span>
+        <span class="chip">Jacket</span>
+        <span class="chip on">✓ Hat</span>
+        <span class="chip">Accessory</span>
+      </div>
+      <a class="btn primary" href="#">Suggest outfits</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State C — Searching (loading)</h2><span>request in flight; &lt; 2 s at 500 garments (NFR-5)</span></div>
+<div class="frame" style="min-height:0">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#">Wardrobe</a>
+      <a href="#">Add garment</a>
+      <a href="#" class="active">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Suggest an outfit</div>
+    <div class="panel" style="opacity:.6">
+      <div class="lab">Include in this outfit</div>
+      <div class="chips">
+        <span class="chip on">✓ Jersey</span>
+        <span class="chip">Jacket</span>
+        <span class="chip on">✓ Hat</span>
+        <span class="chip">Accessory</span>
+      </div>
+      <a class="btn primary busy" href="#">Suggesting ···</a>
+    </div>
+    <div class="searching">Finding harmonious combinations ···</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State D — Empty slot (error)</h2><span><code>409 empty_slots</code> — fail fast (FR-36); envelope message verbatim, offending chip flagged</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#">Wardrobe</a>
+      <a href="#">Add garment</a>
+      <a href="#" class="active">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Suggest an outfit</div>
+    <div class="panel">
+      <div class="lab">Always included</div>
+      <div class="chips">
+        <span class="chip locked">🔒 Top</span>
+        <span class="chip locked">🔒 Bottom</span>
+        <span class="chip locked">🔒 Socks</span>
+        <span class="chip locked">🔒 Shoes</span>
+      </div>
+      <div class="lab">Include in this outfit</div>
+      <div class="chips">
+        <span class="chip flagged">✓ Jersey<span class="flagnote">none in wardrobe</span></span>
+        <span class="chip">Jacket</span>
+        <span class="chip on">✓ Hat</span>
+        <span class="chip">Accessory</span>
+      </div>
+      <a class="btn primary" href="#">Suggest outfits</a>
+    </div>
+    <div class="banner error"><b>Can't build that outfit.</b> You have no garments for the requested slot(s): jersey. <span class="callout">4</span><br>
+    <span style="font-size:13px">Untick jersey, or <a href="#" style="color:inherit;font-weight:700">add a jersey to your wardrobe</a>.</span></div>
+    <p class="hint">The flagged chip comes from <code>details.empty_slots</code>. If a <b>required</b> slot is empty (e.g. no shoes yet), the same banner appears but there is no chip to untick — the “add a garment” link is the way out.</p>
+  </div>
+</div>
+
+</body>
+</html>

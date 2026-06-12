@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Hueniform wireframe — 1. Upload &amp; detect</title>
+<style>
+  *{box-sizing:border-box;margin:0}
+  body{font:14px/1.5 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif;background:#fafaf9;color:#2d2d2d;padding:28px;max-width:1240px;margin:0 auto}
+  h1{font-size:20px;margin-bottom:4px}
+  .intro{color:#666;margin-bottom:8px}
+  .state{margin:40px 0 10px;border-bottom:2px solid #d8d6d2;padding-bottom:6px;display:flex;align-items:baseline;gap:10px}
+  .state h2{font-size:15px}
+  .state span{font-size:12px;color:#888}
+  .frame{display:flex;border:2px solid #9a9a96;border-radius:6px;overflow:hidden;background:#fff;min-height:430px}
+  .frame.short{min-height:0}
+  .side{width:190px;background:#efeeec;border-right:1px solid #d8d6d2;padding:16px 0;flex-shrink:0}
+  .brand{font-weight:700;letter-spacing:.6px;padding:0 18px 16px;font-size:15px}
+  .nav a{display:block;padding:9px 18px;color:#48484a;text-decoration:none;border-left:3px solid transparent}
+  .nav a.active{background:#fff;border-left-color:#48484a;font-weight:600}
+  .main{flex:1;padding:26px 32px;max-width:1100px}
+  .pagetitle{font-size:18px;font-weight:700;margin-bottom:18px}
+  .callout{display:inline-flex;width:18px;height:18px;border-radius:50%;background:#b58900;color:#fff;font-size:11px;font-weight:700;align-items:center;justify-content:center;vertical-align:2px;margin-left:6px;flex-shrink:0}
+  .btn{display:inline-block;padding:8px 18px;border:1px solid #76767a;border-radius:5px;background:#fff;font-weight:600;color:#2d2d2d}
+  .banner{border:1px solid;border-radius:6px;padding:12px 16px;margin-bottom:18px;display:flex;gap:10px;align-items:baseline}
+  .banner.error{background:#fbeeec;border-color:#c4564a;color:#7c2d25}
+  .banner.warn{background:#fdf6e3;border-color:#b58900;color:#6b5200}
+  .banner b{flex-shrink:0}
+  /* drop zone */
+  .drop{border:2px dashed #a9a7a3;border-radius:10px;padding:64px 40px;text-align:center;color:#55555a;max-width:640px;margin:0 auto}
+  .drop .big{font-size:17px;font-weight:600;margin-bottom:14px;color:#2d2d2d}
+  .drop .or{margin:14px 0;color:#999}
+  .drop .hint{margin-top:18px;font-size:12.5px;color:#777}
+  .drop .tip{margin-top:8px;font-size:12px;color:#999;font-style:italic}
+  .drop.over{border-color:#48484a;background:#f1f0ee}
+  .drop.busy{opacity:.65}
+  .progress{display:flex;align-items:center;justify-content:center;gap:12px;font-weight:600}
+  .dots{letter-spacing:3px;font-weight:700}
+</style>
+</head>
+<body>
+
+<h1>Wireframe 1 — Upload &amp; detect</h1>
+<p class="intro">Route <code>/add</code> · FR-23, FR-24, FR-26, FR-27 · <code>POST /api/detections</code>. Callouts ① – ⑤ are explained in <code>01-upload-detect.md</code>. Low-fidelity: structure and states only.</p>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State A — Default</h2><span>page open, nothing staged</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#">Wardrobe</a>
+      <a href="#" class="active">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Add a garment</div>
+    <div class="drop">
+      <div class="big">Drag a garment photograph here <span class="callout">1</span></div>
+      <div class="or">— or —</div>
+      <a class="btn" href="#">Choose a file…</a>
+      <div class="hint">JPEG, PNG or WebP, up to 20&nbsp;MB <span class="callout">2</span></div>
+      <div class="tip">Tip: lay the garment flat on a plain, contrasting surface for the best colour detection.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State B — Drag-over</h2><span>file held over the zone</span></div>
+<div class="frame short">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#">Wardrobe</a>
+      <a href="#" class="active">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Add a garment</div>
+    <div class="drop over">
+      <div class="big">Drop to upload</div>
+      <div class="hint">JPEG, PNG or WebP, up to 20&nbsp;MB</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State C — Detecting (loading)</h2><span>request in flight; completes in &lt; 5 s (NFR-4)</span></div>
+<div class="frame short">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#">Wardrobe</a>
+      <a href="#" class="active">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Add a garment</div>
+    <div class="drop busy">
+      <div class="progress">Detecting colours in <em>&nbsp;teal-jersey.jpg&nbsp;</em> <span class="dots">···</span> <span class="callout">4</span></div>
+      <div class="hint">Isolating the garment and reading its palette — a few seconds at most.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State D — Rejected (error)</h2><span>non-2xx from <code>POST /api/detections</code>; nothing was created (FR-24)</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#">Wardrobe</a>
+      <a href="#" class="active">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Add a garment</div>
+    <div class="banner error"><b>Upload rejected.</b> Only JPEG, PNG and WebP photographs are accepted. <span class="callout">3</span></div>
+    <div class="drop">
+      <div class="big">Drag a garment photograph here</div>
+      <div class="or">— or —</div>
+      <a class="btn" href="#">Choose a file…</a>
+      <div class="hint">JPEG, PNG or WebP, up to 20&nbsp;MB</div>
+    </div>
+    <p style="margin-top:18px;font-size:12.5px;color:#888">
+      Banner text is the error envelope's <code>message</code>, shown verbatim. The three possible rejections here:<br>
+      · <code>400 unsupported_format</code> — “Only JPEG, PNG and WebP photographs are accepted.”<br>
+      · <code>413 file_too_large</code> — “That photograph is larger than 20&nbsp;MB — please use a smaller image.”<br>
+      · <code>400 unreadable_image</code> — “That file could not be read as an image — it may be corrupted.”
+    </p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State E — Fallback handoff</h2><span>201 with <code>fallback_used: true</code> → confirm-and-correct opens with the FR-27 warning</span></div>
+<div class="frame short">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#">Wardrobe</a>
+      <a href="#" class="active">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Confirm colours</div>
+    <div class="banner warn"><b>Check this one closely.</b> The garment could not be isolated from its background, so these colours were read from the whole image and may include background colour. <span class="callout">5</span></div>
+    <p style="font-size:12.5px;color:#888">…the rest of the confirm-and-correct screen follows (wireframe 2). This state is shown here because the warning is triggered by this screen's detection response.</p>
+  </div>
+</div>
+
+</body>
+</html>

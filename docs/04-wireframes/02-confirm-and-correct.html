@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Hueniform wireframe — 2. Confirm-and-correct</title>
+<style>
+  *{box-sizing:border-box;margin:0}
+  body{font:14px/1.5 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif;background:#fafaf9;color:#2d2d2d;padding:28px;max-width:1240px;margin:0 auto}
+  h1{font-size:20px;margin-bottom:4px}
+  .intro{color:#666;margin-bottom:8px}
+  .state{margin:40px 0 10px;border-bottom:2px solid #d8d6d2;padding-bottom:6px;display:flex;align-items:baseline;gap:10px}
+  .state h2{font-size:15px}
+  .state span{font-size:12px;color:#888}
+  .frame{display:flex;border:2px solid #9a9a96;border-radius:6px;overflow:hidden;background:#fff}
+  .side{width:190px;background:#efeeec;border-right:1px solid #d8d6d2;padding:16px 0;flex-shrink:0}
+  .brand{font-weight:700;letter-spacing:.6px;padding:0 18px 16px;font-size:15px}
+  .nav a{display:block;padding:9px 18px;color:#48484a;text-decoration:none;border-left:3px solid transparent}
+  .nav a.active{background:#fff;border-left-color:#48484a;font-weight:600}
+  .main{flex:1;padding:26px 32px;max-width:1100px}
+  .pagetitle{font-size:18px;font-weight:700;margin-bottom:18px}
+  .callout{display:inline-flex;width:18px;height:18px;border-radius:50%;background:#b58900;color:#fff;font-size:11px;font-weight:700;align-items:center;justify-content:center;vertical-align:2px;margin-left:6px;flex-shrink:0}
+  .btn{display:inline-block;padding:8px 18px;border:1px solid #76767a;border-radius:5px;background:#fff;font-weight:600;color:#2d2d2d;text-decoration:none}
+  .btn.primary{background:#3b3b3d;border-color:#3b3b3d;color:#fff}
+  .btn.disabled{opacity:.4;pointer-events:none}
+  .banner{border:1px solid;border-radius:6px;padding:12px 16px;margin-bottom:18px}
+  .banner.error{background:#fbeeec;border-color:#c4564a;color:#7c2d25}
+  .banner.warn{background:#fdf6e3;border-color:#b58900;color:#6b5200}
+  .twocol{display:flex;gap:30px}
+  .preview{width:340px;flex-shrink:0}
+  .photo{background:repeating-linear-gradient(45deg,#e5e3df,#e5e3df 7px,#dcdad6 7px,#dcdad6 14px);border:1px solid #c9c7c3;border-radius:6px;height:300px;display:flex;align-items:center;justify-content:center;color:#8a8a86;font-size:12.5px}
+  .caption{font-size:12px;color:#999;margin-top:6px;text-align:center}
+  .editor{flex:1;min-width:0}
+  .crow{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #eceae6}
+  .sw{width:26px;height:26px;border-radius:4px;border:1px solid rgba(0,0,0,.25);flex-shrink:0}
+  .fam{font-weight:600;width:110px}
+  .stepper{display:flex;align-items:center;gap:0;border:1px solid #b6b4b0;border-radius:5px;overflow:hidden}
+  .stepper b{padding:4px 10px;background:#f1f0ee;font-weight:700;cursor:default}
+  .stepper input{width:46px;border:0;border-left:1px solid #b6b4b0;border-right:1px solid #b6b4b0;text-align:center;padding:4px 0;font:inherit}
+  .pct{color:#888}
+  .remove{margin-left:auto;color:#8c4a42;font-size:13px;text-decoration:underline}
+  .remove.disabled{color:#bbb;text-decoration:none}
+  .bar{display:flex;height:22px;border-radius:5px;overflow:hidden;border:1px solid #c9c7c3;margin:16px 0 6px}
+  .total{font-size:13px;color:#555;margin-bottom:14px}
+  .total.warn{color:#8a6d00;font-weight:600}
+  .addlink{font-size:13.5px;text-decoration:underline;color:#3b3b6e}
+  .addrow{border:1px dashed #b6b4b0;border-radius:6px;padding:12px;margin-top:12px}
+  .pick{border:1px solid #b6b4b0;border-radius:5px;background:#fff;max-width:260px;margin-top:6px}
+  .pick .opt{display:flex;align-items:center;gap:10px;padding:7px 12px;border-bottom:1px solid #eee}
+  .pick .opt:last-child{border-bottom:0}
+  .pick .opt.sel{background:#f1f0ee;font-weight:600}
+  .pick .more{padding:6px 12px;color:#999;font-size:12px}
+  .neutraltag{margin-left:auto;font-size:11px;color:#999;border:1px solid #ddd;border-radius:3px;padding:0 5px}
+  .types{display:flex;flex-wrap:wrap;gap:0;border:1px solid #76767a;border-radius:6px;overflow:hidden;width:fit-content;margin-top:6px}
+  .types a{padding:7px 14px;border-right:1px solid #76767a;color:#2d2d2d;text-decoration:none;font-size:13.5px}
+  .types a:last-child{border-right:0}
+  .types a.sel{background:#3b3b3d;color:#fff;font-weight:600}
+  .sect{margin-top:22px}
+  .sect .lab{font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.4px;color:#666}
+  .actions{margin-top:26px;display:flex;gap:12px;align-items:center}
+  .ghostnote{font-size:12.5px;color:#999}
+</style>
+</head>
+<body>
+
+<h1>Wireframe 2 — Confirm-and-correct</h1>
+<p class="intro">Route <code>/add/confirm</code> (also the FR-33 regeneration flow) · FR-5, FR-27–FR-31, FR-33 · saves via <code>POST /api/garments</code> or <code>PUT /api/garments/{id}</code>. Callouts ① – ⑧ explained in <code>02-confirm-and-correct.md</code>.</p>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State A — Default proposal</h2><span>arrival from a successful detection; sample data is the contract's own example (teal 80 / orange 20)</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#">Wardrobe</a>
+      <a href="#" class="active">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Confirm colours</div>
+    <div class="twocol">
+      <div class="preview">
+        <div class="photo">photograph preview <span class="callout">1</span></div>
+        <div class="caption">1600 × 1200</div>
+      </div>
+      <div class="editor">
+        <div class="sect" style="margin-top:0"><div class="lab">Detected palette</div></div>
+        <div class="crow">
+          <div class="sw" style="background:#2CADA0"></div>
+          <div class="fam">Teal <span class="callout">2</span></div>
+          <div class="stepper"><b>−</b><input value="80"><b>+</b></div><span class="pct">%</span>
+          <a class="remove" href="#">Remove</a> <span class="callout">3</span>
+        </div>
+        <div class="crow">
+          <div class="sw" style="background:#EE8225"></div>
+          <div class="fam">Orange</div>
+          <div class="stepper"><b>−</b><input value="20"><b>+</b></div><span class="pct">%</span>
+          <a class="remove" href="#">Remove</a>
+        </div>
+        <div class="bar">
+          <div style="width:80%;background:#2CADA0"></div>
+          <div style="width:20%;background:#EE8225"></div>
+        </div>
+        <div class="total">Total: 100&nbsp;% <span class="callout">4</span></div>
+        <a class="addlink" href="#">+ Add a colour</a>
+        <div class="sect">
+          <div class="lab">Garment type — required <span class="callout">6</span></div>
+          <div class="types">
+            <a href="#">Top</a><a href="#">Bottom</a><a href="#">Jersey</a><a href="#">Jacket</a><a href="#">Socks</a><a href="#">Shoes</a><a href="#">Hat</a><a href="#">Accessory</a>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="btn primary disabled" href="#">Save garment</a> <span class="callout">7</span>
+          <a class="btn" href="#">Cancel</a>
+          <span class="ghostnote">Save is disabled until a type is chosen (FR-30, FR-31)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State B — Fallback warning</h2><span><code>fallback_used: true</code> on the detection response (FR-27)</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#">Wardrobe</a>
+      <a href="#" class="active">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Confirm colours</div>
+    <div class="banner warn"><b>Check this one closely.</b> The garment could not be isolated from its background, so these colours were read from the whole image and may include background colour. <span class="callout">8</span></div>
+    <p class="ghostnote">…then the screen continues exactly as State A. The banner stays visible while editing; correcting or removing a stray background colour is precisely what this screen's tools are for.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State C — Editing, sum ≠ 100</h2><span>user lowered Teal to 70; live total announces normalise-on-save (FR-29)</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#">Wardrobe</a>
+      <a href="#" class="active">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Confirm colours</div>
+    <div class="editor" style="max-width:560px">
+      <div class="crow">
+        <div class="sw" style="background:#2CADA0"></div>
+        <div class="fam">Teal</div>
+        <div class="stepper"><b>−</b><input value="70"><b>+</b></div><span class="pct">%</span>
+        <a class="remove" href="#">Remove</a>
+      </div>
+      <div class="crow">
+        <div class="sw" style="background:#EE8225"></div>
+        <div class="fam">Orange</div>
+        <div class="stepper"><b>−</b><input value="20"><b>+</b></div><span class="pct">%</span>
+        <a class="remove" href="#">Remove</a>
+      </div>
+      <div class="bar">
+        <div style="width:70%;background:#2CADA0"></div>
+        <div style="width:20%;background:#EE8225"></div>
+        <div style="width:10%;background:repeating-linear-gradient(45deg,#eee,#eee 4px,#ddd 4px,#ddd 8px)"></div>
+      </div>
+      <div class="total warn">Total: 90&nbsp;% — proportions will be normalised to 100&nbsp;% on save (Teal 78&nbsp;%, Orange 22&nbsp;%) <span class="callout">4</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State D — Manual add open</h2><span>family picker fed by <code>GET /api/taxonomy</code> (FR-29)</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#">Wardrobe</a>
+      <a href="#" class="active">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Confirm colours</div>
+    <div class="editor" style="max-width:560px">
+      <div class="addrow">
+        <b>Add a colour</b> <span class="callout">5</span>
+        <div class="pick">
+          <div class="opt"><div class="sw" style="width:18px;height:18px;background:#1d1d1d"></div> Black <span class="neutraltag">neutral</span></div>
+          <div class="opt"><div class="sw" style="width:18px;height:18px;background:#27314f"></div> Navy <span class="neutraltag">neutral</span></div>
+          <div class="opt sel"><div class="sw" style="width:18px;height:18px;background:#26d9d9"></div> Teal</div>
+          <div class="opt"><div class="sw" style="width:18px;height:18px;background:#2693d9"></div> Azure</div>
+          <div class="opt"><div class="sw" style="width:18px;height:18px;background:#2626d9"></div> Blue</div>
+          <div class="more">… all 19 families, canonical swatch + name, neutrals tagged</div>
+        </div>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:10px">
+          Proportion:
+          <div class="stepper"><b>−</b><input value="10"><b>+</b></div><span class="pct">%</span>
+          <a class="btn" href="#">Add</a>
+        </div>
+        <p class="ghostnote" style="margin-top:8px">Adding submits the family's canonical HSL from the taxonomy. “+ Add a colour” is hidden once the palette has 4 colours (FR-6).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State E — Ready to save</h2><span>type chosen; Save enabled</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#">Wardrobe</a>
+      <a href="#" class="active">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Confirm colours</div>
+    <div class="editor" style="max-width:640px">
+      <div class="sect" style="margin-top:0">
+        <div class="lab">Garment type — required</div>
+        <div class="types">
+          <a href="#">Top</a><a href="#">Bottom</a><a href="#" class="sel">Jersey</a><a href="#">Jacket</a><a href="#">Socks</a><a href="#">Shoes</a><a href="#">Hat</a><a href="#">Accessory</a>
+        </div>
+      </div>
+      <div class="actions">
+        <a class="btn primary" href="#">Save garment</a>
+        <a class="btn" href="#">Cancel</a>
+        <span class="ghostnote">POST /api/garments — token, type, colours (h/s/l/proportion only; the server derives family)</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State F — Save failed (error)</h2><span>expired token; envelope <code>message</code> shown verbatim</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#">Wardrobe</a>
+      <a href="#" class="active">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Confirm colours</div>
+    <div class="banner error"><b>Couldn't save.</b> This detection has expired — please upload the photograph again. &nbsp;<a href="#" style="color:inherit;font-weight:700">Upload it again</a></div>
+    <p class="ghostnote">Other save failure: <code>422 invalid_palette</code> / <code>422 invalid_type</code> — should be unreachable with this UI, but the envelope message is shown in the same banner if it occurs. The edited palette stays on screen; nothing is lost.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State G — Regeneration variant (FR-33)</h2><span>entered from garment detail via <code>POST /api/garments/{id}/regenerate</code>; saves with <code>PUT /api/garments/{id}</code></span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav">
+      <a href="#" class="active">Wardrobe</a>
+      <a href="#">Add garment</a>
+      <a href="#">Suggest outfit</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Regenerate colours — re-confirm this garment</div>
+    <div class="twocol">
+      <div class="preview">
+        <div class="photo">stored photograph <span class="callout">1</span></div>
+        <div class="caption">same image, same garment id — record is replaced in place on save</div>
+      </div>
+      <div class="editor">
+        <div class="sect" style="margin-top:0"><div class="lab">Freshly detected palette</div></div>
+        <div class="crow">
+          <div class="sw" style="background:#2CA193"></div>
+          <div class="fam">Teal</div>
+          <div class="stepper"><b>−</b><input value="100"><b>+</b></div><span class="pct">%</span>
+          <a class="remove disabled" href="#">Remove</a>
+        </div>
+        <div class="bar"><div style="width:100%;background:#2CA193"></div></div>
+        <div class="total">Total: 100&nbsp;%</div>
+        <div class="sect">
+          <div class="lab">Garment type — required (re-selected each regeneration, FR-33)</div>
+          <div class="types">
+            <a href="#">Top</a><a href="#">Bottom</a><a href="#">Jersey</a><a href="#">Jacket</a><a href="#">Socks</a><a href="#">Shoes</a><a href="#">Hat</a><a href="#">Accessory</a>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="btn primary disabled" href="#">Save changes</a>
+          <a class="btn" href="#">Cancel — keep the garment as it is</a>
+          <span class="callout">7</span>
+        </div>
+        <p class="ghostnote" style="margin-top:10px">A <code>409 invalid_regeneration_token</code> on save (expired/consumed) shows an error banner with a “Start regeneration again” action. There is no other editing path: saved garments are not field-editable (FR-32).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
