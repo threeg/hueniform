@@ -122,19 +122,6 @@ A **single repository** containing:
 
 Tickets live beside the code they describe so they stay honest and can be updated in the same commits as the work itself. A second repository will only be introduced if a genuine need emerges (e.g. separate deployment).
 
-## 14. Milestone Plan and Tool Assignment
-
-| # | Milestone | Deliverable | Tool |
-|---|---|---|---|
-| 1 | Project brief | `docs/project-brief.md` | **Chat** ✅ (this document) |
-| 2 | Requirements document | `docs/requirements.md` — functional requirements incl. concrete harmony and role rules, palette taxonomy | **Chat** |
-| 3 | Architecture & API contract | `docs/architecture.md`, `docs/api-contract.md`, data model | **Chat** |
-| 4 | Wireframes | `docs/wireframes/` — key screens as Markdown + images/HTML | **Cowork** |
-| 5 | Test strategy | `docs/test-strategy.md` — frameworks, what is unit/integration/E2E tested, esp. the colour matcher | **Chat** |
-| 6 | Ticket generation | `tickets/*.md` + ticket-system conventions doc + `BOARD.md` index | **Cowork** |
-| 7 | Repository setup & scaffolding | Repo initialised, docs and tickets committed, backend/frontend skeletons | **Code** |
-| 8+ | Implementation, ticket by ticket | Working software; tickets updated in the same commits | **Code** (with Chat for design questions as they arise) |
-
 ---
 
 *Approval of this brief closes Milestone 1.*
