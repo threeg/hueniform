@@ -43,6 +43,27 @@
 </head>
 <body>
 
+<style>
+  .wfnav{display:flex;align-items:center;gap:4px;flex-wrap:wrap;background:#2f2f31;border-radius:6px;padding:8px 12px;margin-bottom:24px;font-size:13px}
+  .wfnav a{color:#d8d6d2;text-decoration:none;padding:4px 10px;border-radius:4px;white-space:nowrap}
+  .wfnav a:hover{background:#48484a;color:#fff}
+  .wfnav a.cur{background:#fff;color:#2d2d2d;font-weight:700}
+  .wfnav .spec{margin-left:auto;border:1px solid #6a6a6e}
+  .wfnav .lbl{color:#9a9a9e;margin-right:4px;font-weight:600}
+</style>
+<nav class="wfnav">
+  <span class="lbl">Wireframes:</span>
+  <a href="00-overview.md">0 · Overview (MD)</a>
+  <a href="01-upload-detect.html">1 · Upload &amp; detect</a>
+  <a href="02-confirm-and-correct.html">2 · Confirm-and-correct</a>
+  <a href="03-inventory.html">3 · Inventory</a>
+  <a href="04-garment-detail.html" class="cur">4 · Garment detail</a>
+  <a href="05-outfit-request.html">5 · Outfit request</a>
+  <a href="06-suggestion-results.html">6 · Suggestion results</a>
+  <a class="spec" href="04-garment-detail.md">This screen’s spec (MD) →</a>
+</nav>
+
+
 <h1>Wireframe 4 — Garment detail</h1>
 <p class="intro">Route <code>/garments/{id}</code> · FR-25, FR-32, FR-33, FR-34 · <code>GET /api/garments/{id}</code>, <code>POST /api/garments/{id}/regenerate</code>, <code>DELETE /api/garments/{id}</code>. Callouts ① – ⑥ explained in <code>04-garment-detail.md</code>.</p>
 

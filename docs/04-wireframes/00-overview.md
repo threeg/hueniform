@@ -89,6 +89,7 @@ Garment `type` values are the eight FR-16 identifiers. The UI capitalises them f
 4. Image placeholders are hatched grey blocks — photographs are content, not design.
 5. Chrome is greyscale; real colour appears only in swatches, palette strips, proportion bars and the echo line.
 6. Sample data in the mockups uses the API contract's own example values (Teal `#2CADA0`, Orange `#EE8225`, Azure `#2B7FC4`, …) so every shape shown is one the contract can actually return.
+7. Each HTML mockup opens with a dark **wireframe navigation bar** linking the whole set, this overview, and the screen's own Markdown specification. It is documentation chrome, not part of the screen design — the application's real navigation is the sidebar inside each frame (§2).
 
 ---
 
