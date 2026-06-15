@@ -2,7 +2,7 @@
 id: HUE-013
 title: Implement matcher.slots
 type: task
-status: todo
+status: done
 milestone: 8
 batch: matcher
 layer: matcher
@@ -36,3 +36,4 @@ Slots define which garments can occupy which roles in an outfit: type-to-slot el
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-15 — done. `app/matcher/slots.py`: GARMENT_TYPES/REQUIRED_SLOTS/OPTIONAL_SLOTS/ECHO_SLOTS constants (FR-16/FR-17); `dominant_layer`/`covered_upper_layers`/`get_anchor_types` (FR-18); `SchemeSet` + `build_scheme_set` with covered-layer-primary exclusion (FR-19/FR-20); `get_anchor_chromatic_families`; `check_covered_layer` (FR-20); `check_anchor_secondaries` (FR-9); `EchoQualification` + `qualify_echo_slot` (FR-21/FR-22). `tests/matcher/test_slots.py`: 69 tests covering all three layering permutations, scheme-set assembly, covered-layer branches, echo-slot qualification, minor-echo recording, and wardrobe-fixture integration. 466 backend tests, all green; app/matcher/ 100% line+branch.
