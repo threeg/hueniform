@@ -83,12 +83,34 @@ Test targets (all offline after setup):
 
 ## Definition of done (implementation tickets)
 
-A ticket is `done` only when: `make test` passes; new/changed numbered-requirement behaviour has
-tests **in the same commit** (§12.2); the matcher 100% line+branch gate holds for matcher-touching
-work; the relevant heavier gate passes where the ticket says so (`test-model` / `test-perf` /
-`test-e2e`); and the ticket's status + `## Notes` and its `BOARD.md` row are updated in that commit.
-Docs-only, pure-styling and build-plumbing tickets may set `tests_required: false` and must state
-the exemption in the body.
+A ticket is `done` only when: `make test` passes **with zero warnings**; new/changed
+numbered-requirement behaviour has tests **in the same commit** (§12.2); the matcher 100%
+line+branch gate holds for matcher-touching work; the relevant heavier gate passes where the ticket
+says so (`test-model` / `test-perf` / `test-e2e`); and the ticket's status + `## Notes` and its
+`BOARD.md` row are updated in that commit. Docs-only, pure-styling and build-plumbing tickets may
+set `tests_required: false` and must state the exemption in the body.
+
+End each ticket summary with a one-line sanity test the user can run, e.g.
+`cd backend && .venv/bin/pytest tests/<layer>/test_<module>.py -q`.
+
+## Storage testing patterns
+
+These apply to every ticket that touches `app/storage/` or writes tests that create a SQLite engine:
+
+- **Engine fixture teardown:** always `yield` the engine and call `engine.dispose()` afterwards —
+  not `return`. Without dispose, Python 3.13 raises `ResourceWarning: unclosed database` for every
+  connection in the pool, which fails the zero-warnings gate.
+  ```python
+  @pytest.fixture()
+  def engine(tmp_path):
+      e = make_engine(tmp_path / "test.db")
+      init_db(e)
+      yield e
+      e.dispose()
+  ```
+- **Parent/child insert ordering:** SQLModel has no ORM relationship between `GarmentRow` and
+  `GarmentColourRow`, so SQLAlchemy does not know insertion order. Call `session.flush()` after
+  adding the parent row before adding child rows, or the FK constraint fires on the child insert.
 
 ## When a milestone completes
 
