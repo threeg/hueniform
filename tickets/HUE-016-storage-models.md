@@ -2,7 +2,7 @@
 id: HUE-016
 title: Storage models and database engine
 type: task
-status: todo
+status: done
 milestone: 8
 batch: storage
 layer: storage
@@ -23,15 +23,16 @@ Persistence is two SQLModel tables (architecture §3.1): `garments` and `garment
 - Storage imports nothing from `app.matcher`/`detection`/`services`/`api` (contract 4)
 
 ## Definition of done (acceptance criteria)
-- [ ] Both tables created with the documented columns, CHECK constraints and indices
-- [ ] `PRAGMA foreign_keys = ON` and WAL active; `ON DELETE CASCADE` works
-- [ ] Storage layer imports nothing from matcher/detection/services/api (import-linter contract 4 holds)
-- [ ] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
-- [ ] Relevant extra gate green where applicable ((none — default gate only))
-- [ ] Ticket status + notes updated in the same commit
+- [x] Both tables created with the documented columns, CHECK constraints and indices
+- [x] `PRAGMA foreign_keys = ON` and WAL active; `ON DELETE CASCADE` works
+- [x] Storage layer imports nothing from matcher/detection/services/api (import-linter contract 4 holds)
+- [x] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
+- [x] Relevant extra gate green where applicable ((none — default gate only))
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `backend/tests/api/`/integration tests use a real SQLite file in a temporary `data/` (§7.1). Model-level tests assert the CHECK constraints reject bad types/proportions, the indices exist, and cascade delete removes colour rows. Exercised heavily by the lifecycle tests (§7.3).
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-15 — implemented. `app/storage/models.py` (new): `GarmentRow` and `GarmentColourRow` SQLModel tables with CHECK constraints (type allowlist, proportion 1–100), FK with `ondelete="CASCADE"`, and the three required indices. `app/storage/engine.py` (new): `make_engine` with `@event.listens_for(engine, "connect")` to set `PRAGMA foreign_keys = ON` and `PRAGMA journal_mode = WAL`, plus `init_db` (idempotent `create_all`) and `get_session` for FastAPI DI. Tests use `session.flush()` between garment and colour inserts to avoid undefined insertion order with no ORM relationship. 554 tests; import-linter contract 4 holds.
