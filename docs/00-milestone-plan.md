@@ -4,7 +4,7 @@
 |---|---|
 | **Document** | Milestone plan and progress tracker |
 | **Repository location** | `docs/00-milestone-plan.md` |
-| **Last updated** | 12 June 2026 |
+| **Last updated** | 15 June 2026 |
 
 This document is the single source of truth for **where the project is**. It was extracted from the project brief (§14) so the brief stays stable after approval while this tracker is updated as each milestone completes. Update the status column and the *Current position* line in the same commit as the milestone's deliverable.
 
@@ -12,7 +12,7 @@ This document is the single source of truth for **where the project is**. It was
 
 ## Current position
 
-> **Next milestone: 3 — Architecture & API contract (Chat)**
+> **Next milestone: 7 — Repository setup & scaffolding (Code)**
 
 ---
 
@@ -24,8 +24,8 @@ This document is the single source of truth for **where the project is**. It was
 | 2 | Requirements document | `docs/02-requirements.md` — functional requirements incl. concrete harmony and role rules, palette taxonomy | **Chat** | ✅ Complete |
 | 3 | Architecture & API contract | `docs/03-architecture.md`, `docs/03-api-contract.md`, data model | **Chat** | ✅ Complete |
 | 4 | Wireframes | `docs/04-wireframes/` — key screens as Markdown + images/HTML | **Cowork** | ✅ Complete |
-| 5 | Test strategy | `docs/05-test-strategy.md` — frameworks, what is unit/integration/E2E tested, esp. the colour matcher | **Chat** | ⬜ Not started |
-| 6 | Ticket generation | `tickets/*.md` + ticket-system conventions doc + `BOARD.md` index | **Cowork** | ⬜ Not started |
+| 5 | Test strategy | `docs/05-test-strategy.md` — frameworks, what is unit/integration/E2E tested, esp. the colour matcher | **Chat** | ✅ Complete |
+| 6 | Ticket generation | `tickets/*.md` + ticket-system conventions doc + `BOARD.md` index | **Cowork** | ✅ Complete |
 | 7 | Repository setup & scaffolding | Repo initialised, docs and tickets committed, backend/frontend skeletons | **Code** | ⬜ Not started |
 | 8+ | Implementation, ticket by ticket | Working software; tickets updated in the same commits | **Code** (with Chat for design questions as they arise) | ⬜ Not started |
 
