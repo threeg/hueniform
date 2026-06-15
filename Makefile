@@ -24,8 +24,9 @@ setup:
 	test -d $(VENV) || $(PYTHON_BIN) -m venv $(VENV)
 	$(PIP) install --upgrade pip
 	$(PIP) install -e "backend/[dev]"
+	cd frontend && npm ci
+	cd frontend && npm run build
 	@# HUE-020 adds: fetch the rembg model into data/models/
-	@# HUE-003 adds: npm ci && npm run build in frontend/
 	@# HUE-005 adds: playwright install chromium firefox
 	@echo "setup complete."
 
@@ -37,7 +38,8 @@ run:
 
 # ─── Development server (completed by HUE-038) ───────────────────────────────
 dev:
-	@echo "Dev target (Uvicorn reload + Vite proxy) arrives in HUE-038."
+	@echo "Full dev target (Uvicorn reload + Vite proxy together) arrives in HUE-038."
+	@echo "To run Vite alone: cd frontend && npm run dev"
 
 # ─── Default test gate: backend unit+integration + frontend components ────────
 test: test-backend test-frontend

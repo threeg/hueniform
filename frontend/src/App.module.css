@@ -1,0 +1,64 @@
+/* Fixed 190 px sidebar + main column. Desktop only — 1024 px minimum (NFR-7). */
+
+.frame {
+  display: flex;
+  min-height: 100vh;
+  min-width: 1024px;
+}
+
+.sidebar {
+  width: 190px;
+  flex-shrink: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  background: #f7f7f7;
+  border-right: 1px solid #e4e4e4;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.wordmark {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #111;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.link,
+.linkActive {
+  display: block;
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.875rem;
+  color: #444;
+  transition: background 0.1s;
+}
+
+.link:hover {
+  background: #ebebeb;
+  color: #111;
+}
+
+.linkActive {
+  background: #e2e2e2;
+  color: #111;
+  font-weight: 500;
+}
+
+.main {
+  margin-left: 190px;
+  flex: 1;
+  padding: 36px 40px;
+  max-width: 1290px; /* 190 sidebar + ~1100 content */
+}

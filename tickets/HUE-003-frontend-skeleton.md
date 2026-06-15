@@ -2,7 +2,7 @@
 id: HUE-003
 title: Frontend skeleton and navigation shell
 type: task
-status: todo
+status: done
 milestone: 7
 batch: scaffolding
 layer: frontend
@@ -24,12 +24,12 @@ The React SPA needs its toolchain, routing and the fixed-sidebar shell (wirefram
 - Placeholder route components so navigation renders; real screens arrive in HUE-033–037
 
 ## Definition of done (acceptance criteria)
-- [ ] Vite + TS + React app builds (`vite build`) and runs (`vite dev`)
-- [ ] Sidebar shell and all routes render placeholders; routing works
-- [ ] TanStack Query provider mounted; dev proxy to `/api` configured
-- [ ] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
-- [ ] Relevant extra gate green where applicable ((none — default gate only))
-- [ ] Ticket status + notes updated in the same commit
+- [x] Vite + TS + React app builds (`vite build`) and runs (`vite dev`)
+- [x] Sidebar shell and all routes render placeholders; routing works
+- [x] TanStack Query provider mounted; dev proxy to `/api` configured
+- [x] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
+- [x] Relevant extra gate green where applicable ((none — default gate only))
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 Pure scaffolding/styling. Verified by the app building and the sidebar routes resolving. Component and routing tests arrive with the screen tickets; the frontend test harness is HUE-005.
@@ -38,3 +38,4 @@ Pure scaffolding/styling. Verified by the app building and the sidebar routes re
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-15 — done: Vite 6 + TypeScript + React 18 SPA under `frontend/`. `createBrowserRouter` with layout route — App renders fixed 190 px sidebar + `<Outlet>`; routes `/`, `/add`, `/add/confirm`, `/garments/:id`, `/suggest` each render a placeholder heading. `TanStack Query v5` provider in `main.tsx`. Vite dev proxy `/api` → `http://127.0.0.1:8000` in `vite.config.ts`. `npm run build` passes (85 modules, 240 kB JS). `make setup` updated to run `npm ci && npm run build`. CSS Modules layout; 1024 px min-width (NFR-7). `vite-env.d.ts` needed for CSS Module type resolution.
