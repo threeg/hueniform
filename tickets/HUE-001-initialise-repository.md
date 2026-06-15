@@ -2,7 +2,7 @@
 id: HUE-001
 title: Initialise the repository
 type: task
-status: todo
+status: done
 milestone: 7
 batch: scaffolding
 layer: repo
@@ -23,12 +23,12 @@ There is no version-controlled project yet beyond the approved documents. This t
 - Add a licence file if the owner requires one (note in the body; default: omit for a private single-user tool)
 
 ## Definition of done (acceptance criteria)
-- [ ] Repository initialised with the brief §13 directory layout
-- [ ] `README.md` and `.gitignore` present; `/data` is gitignored
-- [ ] `docs/` and `tickets/` committed
-- [ ] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
-- [ ] Relevant extra gate green where applicable ((none — default gate only))
-- [ ] Ticket status + notes updated in the same commit
+- [x] Repository initialised with the brief §13 directory layout
+- [x] `README.md` and `.gitignore` present; `/data` is gitignored
+- [x] `docs/` and `tickets/` committed
+- [x] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
+- [x] Relevant extra gate green where applicable ((none — default gate only))
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 Build-plumbing ticket: verified by inspection that the repository initialises, the directory layout matches brief §13, and `git status` is clean after committing docs and tickets. No automated tests.
@@ -37,3 +37,4 @@ Build-plumbing ticket: verified by inspection that the repository initialises, t
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-15 — done: created `backend/`, `frontend/`, `scripts/` stubs (with `.gitkeep`); `data/` created but gitignored (NFR-3); `README.md` and `.gitignore` added. Licence omitted — private single-user tool.
