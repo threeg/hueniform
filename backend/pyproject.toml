@@ -19,8 +19,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Test dependencies added by HUE-004.
-dev = []
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=6.0",
+    "hypothesis>=6.100",
+    "import-linter>=2.1",
+    "httpx2>=0.28",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -32,4 +37,73 @@ addopts = "--strict-markers"
 markers = [
     "model: tests requiring the real rembg model — excluded from make test",
     "perf: performance timing assertions — excluded from make test",
+]
+
+# ── Hypothesis ────────────────────────────────────────────────────────────────
+# The "deterministic" profile is activated by setting HYPOTHESIS_PROFILE=deterministic
+# (done by make test-backend). Developers run with the default randomised profile.
+[tool.hypothesis]
+suppress_health_check = ["too_slow"]
+
+# ── import-linter: dependency-rule enforcement (test strategy §5.1) ───────────
+
+[tool.importlinter]
+root_packages = ["app"]
+
+[[tool.importlinter.contracts]]
+name = "1: lower layers must not import app.api"
+type = "forbidden"
+source_modules = [
+    "app.services",
+    "app.detection",
+    "app.matcher",
+    "app.storage",
+]
+forbidden_modules = ["app.api"]
+
+[[tool.importlinter.contracts]]
+name = "2: app.matcher is framework-free (NFR-9)"
+type = "forbidden"
+source_modules = ["app.matcher"]
+forbidden_modules = [
+    "app.api",
+    "app.services",
+    "app.detection",
+    "app.storage",
+]
+
+[[tool.importlinter.contracts]]
+name = "3: app.detection imports only allowed matcher submodules"
+type = "forbidden"
+source_modules = ["app.detection"]
+forbidden_modules = [
+    "app.api",
+    "app.services",
+    "app.storage",
+    "app.matcher.roles",
+    "app.matcher.harmony",
+    "app.matcher.slots",
+    "app.matcher.ranking",
+    "app.matcher.explain",
+]
+
+[[tool.importlinter.contracts]]
+name = "4: app.storage imports nothing from other layers"
+type = "forbidden"
+source_modules = ["app.storage"]
+forbidden_modules = [
+    "app.api",
+    "app.services",
+    "app.detection",
+    "app.matcher",
+]
+
+[[tool.importlinter.contracts]]
+name = "5: app.api must not bypass services to reach lower layers directly"
+type = "forbidden"
+source_modules = ["app.api"]
+forbidden_modules = [
+    "app.detection",
+    "app.matcher",
+    "app.storage",
 ]

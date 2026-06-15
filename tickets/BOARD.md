@@ -27,7 +27,7 @@ This board is the single topological view of the implementation order. Implement
 | 1 | HUE-001 | Initialise the repository | task | repo | 7 / scaffolding | HUE-E01 | done | — |
 | 2 | HUE-002 | Backend skeleton and application settings | task | tooling | 7 / scaffolding | HUE-E01 | done | HUE-001 |
 | 3 | HUE-003 | Frontend skeleton and navigation shell | task | frontend | 7 / scaffolding | HUE-E01 | done | HUE-001 |
-| 4 | HUE-004 | Backend test tooling and dependency-rule gate | task | tooling | 7 / tooling | HUE-E01 | todo | HUE-002 |
+| 4 | HUE-004 | Backend test tooling and dependency-rule gate | task | tooling | 7 / tooling | HUE-E01 | done | HUE-002 |
 | 5 | HUE-005 | Frontend test tooling and Playwright harness | task | tooling | 7 / tooling | HUE-E01 | todo | HUE-003 |
 | 6 | HUE-006 | Shared test fixtures and palette tables | task | tooling | 7 / tooling | HUE-E01 | todo | HUE-004, HUE-005 |
 | 7 | HUE-007 | Implement matcher.constants | task | matcher | 8 / matcher | HUE-E02 | todo | HUE-004 |

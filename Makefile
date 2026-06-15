@@ -11,9 +11,10 @@ PYTHON_BIN ?= $(shell python3.12 --version >/dev/null 2>&1 && echo python3.12 ||
 VENV       := backend/.venv
 PY         := $(VENV)/bin/python
 PIP        := $(VENV)/bin/pip
-UVICORN    := $(VENV)/bin/uvicorn
-PYTEST     := $(VENV)/bin/pytest
-COVERAGE   := $(VENV)/bin/coverage
+UVICORN      := $(VENV)/bin/uvicorn
+PYTEST       := $(VENV)/bin/pytest
+COVERAGE     := $(VENV)/bin/coverage
+LINT_IMPORTS := $(VENV)/bin/lint-imports
 
 .PHONY: setup run dev \
         test test-backend test-frontend \
@@ -45,17 +46,24 @@ dev:
 test: test-backend test-frontend
 
 test-backend:
-	@echo "Backend test tooling arrives in HUE-004; skipping."
+	cd backend && $(CURDIR)/$(LINT_IMPORTS)
+	cd backend && HYPOTHESIS_PROFILE=deterministic \
+	    $(CURDIR)/$(PYTEST) -m "not model and not perf" \
+	    --cov=app --cov-branch --cov-report=term-missing
+	cd backend && $(CURDIR)/$(COVERAGE) report \
+	    --include="app/matcher/*" --fail-under=100
 
 test-frontend:
 	@echo "Frontend test tooling arrives in HUE-005; skipping."
 
 # ─── Heavier optional gates (definition-of-done for specific ticket types) ───
 test-model:
-	@echo "Model test suite (make test-model) arrives in HUE-020; skipping."
+	cd backend && HYPOTHESIS_PROFILE=deterministic \
+	    $(CURDIR)/$(PYTEST) -m model \
+	    --cov=app --cov-branch --cov-report=term-missing
 
 test-perf:
-	@echo "Performance suite (make test-perf) arrives in HUE-039; skipping."
+	cd backend && $(CURDIR)/$(PYTEST) -m perf
 
 test-e2e:
 	@echo "E2E smoke suite (make test-e2e) arrives in HUE-040; skipping."
