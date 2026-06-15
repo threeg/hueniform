@@ -40,7 +40,7 @@ This board is the single topological view of the implementation order. Implement
 | 14 | HUE-014 | Implement matcher.ranking | task | matcher | 8 / matcher | HUE-E02 | done | HUE-013, HUE-011 |
 | 15 | HUE-015 | Implement matcher.explain | task | matcher | 8 / matcher | HUE-E02 | done | HUE-014 |
 | 16 | HUE-016 | Storage models and database engine | task | storage | 8 / storage | HUE-E03 | done | HUE-002 |
-| 17 | HUE-017 | Image store, thumbnails and staging store | task | storage | 8 / storage | HUE-E03 | todo | HUE-016 |
+| 17 | HUE-017 | Image store, thumbnails and staging store | task | storage | 8 / storage | HUE-E03 | done | HUE-016 |
 | 18 | HUE-018 | Detection pure helpers | task | detection | 8 / detection | HUE-E03 | todo | HUE-009 |
 | 19 | HUE-019 | Detection pipeline orchestration | task | detection | 8 / detection | HUE-E03 | todo | HUE-018, HUE-006 |
 | 20 | HUE-020 | Real-model detection integration and setup model fetch | task | detection | 8 / detection | HUE-E03 | todo | HUE-019 |

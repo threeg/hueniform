@@ -2,7 +2,7 @@
 id: HUE-017
 title: Image store, thumbnails and staging store
 type: task
-status: todo
+status: done
 milestone: 8
 batch: storage
 layer: storage
@@ -23,15 +23,16 @@ Garment photographs, derived thumbnails and unconfirmed detections live on disk 
 - Backing up is copying `data/` (NFR-3); storage layer only (no matcher import)
 
 ## Definition of done (acceptance criteria)
-- [ ] Originals stored preserving format; 320 px WebP thumbnails generated (FR-25)
-- [ ] Staging writes file + sidecar; tokens carry a 1-hour TTL; startup + lazy sweep remove expired entries
-- [ ] `move` promotes a staged image atomically; all state under `data/` (NFR-3)
-- [ ] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
-- [ ] Relevant extra gate green where applicable ((none — default gate only))
-- [ ] Ticket status + notes updated in the same commit
+- [x] Originals stored preserving format; 320 px WebP thumbnails generated (FR-25)
+- [x] Staging writes file + sidecar; tokens carry a 1-hour TTL; startup + lazy sweep remove expired entries
+- [x] `move` promotes a staged image atomically; all state under `data/` (NFR-3)
+- [x] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
+- [x] Relevant extra gate green where applicable ((none — default gate only))
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 Lifecycle tests (§7.3): staging write creates file+sidecar and nothing in the DB; the sweep removes expired entries (clock seam / sidecar edit); thumbnail dimensions asserted; `move` relocates the file. File-presence assertions on disk.
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-15 — implemented. `app/storage/image_store.py` (new): `save_original` writes bytes preserving format; `generate_thumbnail` converts via Pillow to WebP with longest-edge ≤ 320 px. `app/storage/staging.py` (new): `stage` writes file + JSON sidecar (token, ext, expires_at, content_type, fallback_used, proposal, garment_id); `load` does lazy sweep on expiry; `move` uses `Path.rename` for atomic promotion; `sweep` cleans all expired and malformed sidecars at startup. Clock seam via direct sidecar editing in tests. 583 tests; zero warnings.
