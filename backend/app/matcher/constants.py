@@ -82,6 +82,11 @@ ANALOGOUS_ARC: float = 60.0
 WEIGHT_SCHEME_STRENGTH: int = 100
 WEIGHT_ECHO_BONUS:      int = 10
 
+# ── §7 / FR-41 Variety penalty ────────────────────────────────────────────────
+# Greedy variety selection: each garment shared with an already-selected outfit
+# subtracts this value from the candidate's adjusted score (FR-41.3).
+WEIGHT_VARIETY: int = 5
+
 # ── Architecture §4.3 / FR-42 Candidate cap ──────────────────────────────────
 # Anchor enumeration is shuffled and capped at this value.  Keeps NFR-5's
 # 2-second bound at 500 garments while supplying FR-42's permitted

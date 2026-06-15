@@ -149,6 +149,14 @@ def test_weight_echo_bonus() -> None:
     )
 
 
+# ── §7 / FR-41 Variety penalty ────────────────────────────────────────────────
+
+def test_weight_variety() -> None:
+    assert C.WEIGHT_VARIETY == 5, (
+        "WEIGHT_VARIETY — requirements §7 / FR-41.3 (named constant)"
+    )
+
+
 # ── Architecture §4.3 / FR-42 Candidate cap ──────────────────────────────────
 
 def test_max_anchor_candidates() -> None:
