@@ -2,7 +2,7 @@
 id: HUE-005
 title: Frontend test tooling and Playwright harness
 type: task
-status: todo
+status: done
 milestone: 7
 batch: tooling
 layer: tooling
@@ -23,15 +23,16 @@ Frontend component tests and the E2E smoke suite need their toolchain in place b
 - `Makefile`: `test-frontend` (`vitest run --coverage`) folded into `make test`; `test-e2e` (Playwright)
 
 ## Definition of done (acceptance criteria)
-- [ ] Vitest + RTL + MSW configured and runnable; coverage reported
-- [ ] Playwright config with Chromium + Firefox projects; `make setup` installs the browsers
-- [ ] `make test-frontend` runs (part of `make test`); `make test-e2e` target exists (journeys in HUE-040)
-- [ ] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
-- [ ] Relevant extra gate green where applicable ((none — default gate only))
-- [ ] Ticket status + notes updated in the same commit
+- [x] Vitest + RTL + MSW configured and runnable; coverage reported
+- [x] Playwright config with Chromium + Firefox projects; `make setup` installs the browsers
+- [x] `make test-frontend` runs (part of `make test`); `make test-e2e` target exists (journeys in HUE-040)
+- [x] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
+- [x] Relevant extra gate green where applicable ((none — default gate only))
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 A trivial Vitest smoke test (renders the app shell) confirms the harness runs offline. MSW handlers and Playwright journeys are added in HUE-006 and HUE-040 respectively.
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-15 — done. Vitest 3 + RTL + MSW 2 wired; `src/App.test.tsx` smoke test passes. Playwright config at `e2e/playwright.config.ts` with Chromium + Firefox projects. `make test` gate passes (2 backend tests, 1 frontend test, 5 import-linter contracts, matcher 100% coverage). Used `httpx2` (not `httpx`) for starlette 1.3 TestClient compatibility; MSW handler stub in `src/test/handlers.ts` filled by HUE-006.

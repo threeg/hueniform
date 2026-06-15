@@ -27,8 +27,8 @@ setup:
 	$(PIP) install -e "backend/[dev]"
 	cd frontend && npm ci
 	cd frontend && npm run build
+	cd frontend && npx playwright install chromium firefox
 	@# HUE-020 adds: fetch the rembg model into data/models/
-	@# HUE-005 adds: playwright install chromium firefox
 	@echo "setup complete."
 
 # ─── Single offline run command (NFR-2) ──────────────────────────────────────
@@ -54,7 +54,7 @@ test-backend:
 	    --include="app/matcher/*" --fail-under=100
 
 test-frontend:
-	@echo "Frontend test tooling arrives in HUE-005; skipping."
+	cd frontend && npm run test
 
 # ─── Heavier optional gates (definition-of-done for specific ticket types) ───
 test-model:
@@ -66,6 +66,6 @@ test-perf:
 	cd backend && $(CURDIR)/$(PYTEST) -m perf
 
 test-e2e:
-	@echo "E2E smoke suite (make test-e2e) arrives in HUE-040; skipping."
+	cd frontend && npx playwright test --config ../e2e/playwright.config.ts
 
 test-all: test test-model test-perf test-e2e
