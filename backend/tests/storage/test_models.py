@@ -29,7 +29,8 @@ from app.storage.models import GarmentColourRow, GarmentRow
 def engine(tmp_path):
     e = make_engine(tmp_path / "test.db")
     init_db(e)
-    return e
+    yield e
+    e.dispose()
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
