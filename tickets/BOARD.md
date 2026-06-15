@@ -38,7 +38,7 @@ This board is the single topological view of the implementation order. Implement
 | 12 | HUE-012 | Wardrobe and scenario fixtures | task | tooling | 8 / tooling | HUE-E02 | done | HUE-009, HUE-010 |
 | 13 | HUE-013 | Implement matcher.slots | task | matcher | 8 / matcher | HUE-E02 | done | HUE-010, HUE-011, HUE-012 |
 | 14 | HUE-014 | Implement matcher.ranking | task | matcher | 8 / matcher | HUE-E02 | done | HUE-013, HUE-011 |
-| 15 | HUE-015 | Implement matcher.explain | task | matcher | 8 / matcher | HUE-E02 | todo | HUE-014 |
+| 15 | HUE-015 | Implement matcher.explain | task | matcher | 8 / matcher | HUE-E02 | done | HUE-014 |
 | 16 | HUE-016 | Storage models and database engine | task | storage | 8 / storage | HUE-E03 | todo | HUE-002 |
 | 17 | HUE-017 | Image store, thumbnails and staging store | task | storage | 8 / storage | HUE-E03 | todo | HUE-016 |
 | 18 | HUE-018 | Detection pure helpers | task | detection | 8 / detection | HUE-E03 | todo | HUE-009 |
