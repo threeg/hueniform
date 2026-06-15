@@ -34,7 +34,7 @@ This board is the single topological view of the implementation order. Implement
 | 8 | HUE-008 | Implement matcher.colour | task | matcher | 8 / matcher | HUE-E02 | done | HUE-007 |
 | 9 | HUE-009 | Implement matcher.taxonomy | task | matcher | 8 / matcher | HUE-E02 | done | HUE-008, HUE-006 |
 | 10 | HUE-010 | Implement matcher.roles | task | matcher | 8 / matcher | HUE-E02 | done | HUE-009 |
-| 11 | HUE-011 | Implement matcher.harmony | task | matcher | 8 / matcher | HUE-E02 | todo | HUE-009, HUE-008 |
+| 11 | HUE-011 | Implement matcher.harmony | task | matcher | 8 / matcher | HUE-E02 | done | HUE-009, HUE-008 |
 | 12 | HUE-012 | Wardrobe and scenario fixtures | task | tooling | 8 / tooling | HUE-E02 | todo | HUE-009, HUE-010 |
 | 13 | HUE-013 | Implement matcher.slots | task | matcher | 8 / matcher | HUE-E02 | todo | HUE-010, HUE-011, HUE-012 |
 | 14 | HUE-014 | Implement matcher.ranking | task | matcher | 8 / matcher | HUE-E02 | todo | HUE-013, HUE-011 |
