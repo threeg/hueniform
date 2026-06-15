@@ -2,7 +2,7 @@
 id: HUE-002
 title: Backend skeleton and application settings
 type: task
-status: todo
+status: done
 milestone: 7
 batch: scaffolding
 layer: tooling
@@ -24,13 +24,13 @@ The backend needs its package skeleton, dependency management and the app-factor
 - Ensure the `data/` directory and its `images/`, `thumbnails/`, `staging/`, `models/` subdirectories are created on startup if absent (NFR-3)
 
 ## Definition of done (acceptance criteria)
-- [ ] Package skeleton present per architecture §2.1; imports cleanly
-- [ ] App factory builds a FastAPI app; settings read the data-dir root from the environment
-- [ ] `Makefile` targets `setup`/`run`/`dev` exist (run/setup completed by later tickets)
-- [ ] `data/` layout created on startup
-- [ ] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
-- [ ] Relevant extra gate green where applicable ((none — default gate only))
-- [ ] Ticket status + notes updated in the same commit
+- [x] Package skeleton present per architecture §2.1; imports cleanly
+- [x] App factory builds a FastAPI app; settings read the data-dir root from the environment
+- [x] `Makefile` targets `setup`/`run`/`dev` exist (run/setup completed by later tickets)
+- [x] `data/` layout created on startup
+- [x] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
+- [x] Relevant extra gate green where applicable ((none — default gate only))
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 Build-plumbing ticket. Verified by `python -c 'from app.main import create_app; create_app()'` succeeding and the data-dir seam honouring a temporary path. The conftest fixtures that exercise this seam are added in HUE-004; no behaviour tests here.
@@ -39,3 +39,4 @@ Build-plumbing ticket. Verified by `python -c 'from app.main import create_app; 
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-15 — done: `backend/app/` package skeleton with `{api,services,detection,matcher,storage}/__init__.py` stubs. `Settings` reads `HUENIFORM_DATA_DIR` (env prefix `HUENIFORM_`), defaulting to `data/`. `create_app()` factory uses lifespan to initialise `data/{images,thumbnails,staging,models}/` on startup. Module-level `app = create_app()` for uvicorn. Root `Makefile` with `setup`/`run`/`dev`/`test*` targets — `test-backend` and `test-frontend` are stubs (completed in HUE-004 and HUE-005). `PYTHON_BIN` auto-detects `python3.12`→`python3.13`→`python3`; Python 3.13 used on this machine (3.12 not installed). `backend/pyproject.toml` with all application deps; empty `[dev]` extras group for HUE-004 to populate.
