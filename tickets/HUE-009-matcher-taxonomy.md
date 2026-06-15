@@ -2,7 +2,7 @@
 id: HUE-009
 title: Implement matcher.taxonomy
 type: task
-status: todo
+status: done
 milestone: 8
 batch: matcher
 layer: matcher
@@ -23,16 +23,17 @@ The taxonomy maps any HSL value to exactly one family, deterministically (FR-1):
 - Thresholds come from `constants.py`; standard library only (NFR-9)
 
 ## Definition of done (acceptance criteria)
-- [ ] Classification is total and deterministic over valid HSL; exactly one of the nineteen families returned (FR-1)
-- [ ] Neutral ordering (FR-2) and half-open arcs (FR-4) correct at every boundary; neutral/chromatic flag exposed (FR-3)
-- [ ] Each family's canonical value classifies into its own family
-- [ ] Standard library only; passes the §5.2 allowlist
-- [ ] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
-- [ ] Relevant extra gate green where applicable (`make test` matcher coverage gate: 100% line+branch on app/matcher/ (§12.3.3))
-- [ ] Ticket status + notes updated in the same commit
+- [x] Classification is total and deterministic over valid HSL; exactly one of the nineteen families returned (FR-1)
+- [x] Neutral ordering (FR-2) and half-open arcs (FR-4) correct at every boundary; neutral/chromatic flag exposed (FR-3)
+- [x] Each family's canonical value classifies into its own family
+- [x] Standard library only; passes the §5.2 allowlist
+- [x] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
+- [x] Relevant extra gate green where applicable (`make test` matcher coverage gate: 100% line+branch on app/matcher/ (§12.3.3))
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `matcher/test_taxonomy.py` (§4.3): the full boundary-value tables (every comparison at the edge ±0.1) from `palettes.py` — Black/White/Grey/Navy↔Denim ordering, Denim S edge, Brown/Beige gap, all twelve FR-4 arc boundaries; ordered-evaluation rows (FR-2); canonical-value self-classification; Hypothesis totality/determinism/neutral-xor-chromatic/arc-membership (FR-1).
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-15 — done. `FAMILIES` registry (7 neutrals + 12 chromatics); `classify()` evaluates the 7 FR-2 neutral rules first, then maps h to a chromatic arc via a single index expression `_CHROMATIC_NAMES[int((h-345)%360//30)%12]` — no fallback line, always covered. `is_neutral()` and `canonical_hsl()` expose the neutral/chromatic distinction and contract canonical values. 272 backend tests, all green; `app/matcher/` 100% line+branch.
