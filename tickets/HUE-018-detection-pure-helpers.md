@@ -2,7 +2,7 @@
 id: HUE-018
 title: Detection pure helpers
 type: task
-status: todo
+status: done
 milestone: 8
 batch: detection
 layer: detection
@@ -23,15 +23,16 @@ Detection's deterministic helpers — proportion integerisation, same-family clu
 - Imports limited to `matcher.taxonomy`/`colour`/`constants` plus maths libs (contract 3)
 
 ## Definition of done (acceptance criteria)
-- [ ] Integerisation sums to exactly 100 with ≥1 each and preserved ordering (FR-6)
-- [ ] Same-family merge and k-selection correct on synthetic inputs; fallback predicate correct at the boundary (FR-27)
-- [ ] Detection imports only the permitted matcher submodules (import-linter contract 3 holds)
-- [ ] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
-- [ ] Relevant extra gate green where applicable ((none — default gate only))
-- [ ] Ticket status + notes updated in the same commit
+- [x] Integerisation sums to exactly 100 with ≥1 each and preserved ordering (FR-6)
+- [x] Same-family merge and k-selection correct on synthetic inputs; fallback predicate correct at the boundary (FR-27)
+- [x] Detection imports only the permitted matcher submodules (import-linter contract 3 holds)
+- [x] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
+- [x] Relevant extra gate green where applicable ((none — default gate only))
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `backend/tests/detection/test_*.py` (§6.1): integerisation Hypothesis property over weight vectors; same-family merge; k-selection on synthetic inertia curves with known elbows; fallback-predicate boundary rows (§4.3 method).
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-15 — done: `app/detection/helpers.py` with `to_proportions`, `merge_clusters`, `select_k`, `is_foreground_sufficient`; `MINIMUM_FOREGROUND` and `K_ELBOW_FACTOR` added to `matcher.constants`; 29 tests (including Hypothesis property) in `tests/detection/test_helpers.py`; 614 passed, zero warnings, 100% matcher gate, import-linter contract 3 held.

@@ -87,6 +87,17 @@ WEIGHT_ECHO_BONUS:      int = 10
 # subtracts this value from the candidate's adjusted score (FR-41.3).
 WEIGHT_VARIETY: int = 5
 
+# ── §6.1 / FR-27 Detection fallback threshold ────────────────────────────────
+# If the fraction of non-transparent pixels in the rembg mask falls below this
+# value the pipeline treats segmentation as failed and falls back to whole-image
+# clustering, setting fallback_used = True (FR-27).
+MINIMUM_FOREGROUND: float = 0.15
+
+# ── §6.1 Detection k-selection elbow factor ───────────────────────────────────
+# select_k stops adding clusters when the marginal inertia improvement falls
+# below K_ELBOW_FACTOR × the first improvement (k=1→k=2).
+K_ELBOW_FACTOR: float = 0.05
+
 # ── Architecture §4.3 / FR-42 Candidate cap ──────────────────────────────────
 # Anchor enumeration is shuffled and capped at this value.  Keeps NFR-5's
 # 2-second bound at 500 garments while supplying FR-42's permitted

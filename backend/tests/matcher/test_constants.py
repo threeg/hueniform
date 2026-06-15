@@ -157,6 +157,19 @@ def test_weight_variety() -> None:
     )
 
 
+# ── §6.1 / FR-27 Detection thresholds ────────────────────────────────────────
+
+def test_minimum_foreground() -> None:
+    assert C.MINIMUM_FOREGROUND == 0.15, (
+        "MINIMUM_FOREGROUND — requirements §6.1 / FR-27 (named constant)"
+    )
+
+def test_k_elbow_factor() -> None:
+    assert C.K_ELBOW_FACTOR == 0.05, (
+        "K_ELBOW_FACTOR — detection k-selection elbow threshold (named constant)"
+    )
+
+
 # ── Architecture §4.3 / FR-42 Candidate cap ──────────────────────────────────
 
 def test_max_anchor_candidates() -> None:
