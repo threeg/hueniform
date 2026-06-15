@@ -29,7 +29,7 @@ This board is the single topological view of the implementation order. Implement
 | 3 | HUE-003 | Frontend skeleton and navigation shell | task | frontend | 7 / scaffolding | HUE-E01 | done | HUE-001 |
 | 4 | HUE-004 | Backend test tooling and dependency-rule gate | task | tooling | 7 / tooling | HUE-E01 | done | HUE-002 |
 | 5 | HUE-005 | Frontend test tooling and Playwright harness | task | tooling | 7 / tooling | HUE-E01 | done | HUE-003 |
-| 6 | HUE-006 | Shared test fixtures and palette tables | task | tooling | 7 / tooling | HUE-E01 | todo | HUE-004, HUE-005 |
+| 6 | HUE-006 | Shared test fixtures and palette tables | task | tooling | 7 / tooling | HUE-E01 | done | HUE-004, HUE-005 |
 | 7 | HUE-007 | Implement matcher.constants | task | matcher | 8 / matcher | HUE-E02 | todo | HUE-004 |
 | 8 | HUE-008 | Implement matcher.colour | task | matcher | 8 / matcher | HUE-E02 | todo | HUE-007 |
 | 9 | HUE-009 | Implement matcher.taxonomy | task | matcher | 8 / matcher | HUE-E02 | todo | HUE-008, HUE-006 |

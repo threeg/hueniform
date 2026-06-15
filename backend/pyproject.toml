@@ -33,6 +33,7 @@ include = ["app*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 addopts = "--strict-markers"
 markers = [
     "model: tests requiring the real rembg model — excluded from make test",
