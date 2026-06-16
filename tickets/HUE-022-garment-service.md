@@ -2,7 +2,7 @@
 id: HUE-022
 title: Garment service: confirm-save and delete
 type: task
-status: todo
+status: done
 milestone: 8
 batch: services
 layer: services
@@ -23,15 +23,17 @@ Confirming a detection saves a garment in one transaction (architecture §4.1): 
 - Imports `storage`, `matcher.taxonomy`, the detection service; not `api`
 
 ## Definition of done (acceptance criteria)
-- [ ] Save re-derives families server-side, validates the palette, and creates the garment + colours in one transaction (FR-1, FR-29, FR-30)
-- [ ] Staged image moved and thumbnail generated (FR-25); a forced mid-save failure rolls back fully (atomicity)
-- [ ] Delete removes record, colour rows (cascade) and both files (FR-34)
-- [ ] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
-- [ ] Relevant extra gate green where applicable ((none — default gate only))
-- [ ] Ticket status + notes updated in the same commit
+- [x] Save re-derives families server-side, validates the palette, and creates the garment + colours in one transaction (FR-1, FR-29, FR-30)
+- [x] Staged image moved and thumbnail generated (FR-25); a forced mid-save failure rolls back fully (atomicity)
+- [x] Delete removes record, colour rows (cascade) and both files (FR-34)
+- [x] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
+- [x] Relevant extra gate green where applicable ((none — default gate only))
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 Lifecycle tests (§7.3): confirm consumes the token, moves the image, inserts both tables; second confirm with the same token → consumed; server-side family derivation cross-checked against `matcher.taxonomy`; forced-failure atomicity; delete cascade + file removal.
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-16 — done: `app/services/garment_service.py` with `confirm` and `delete`; `ColourIn`, `SavedColour`, `GarmentResult` dataclasses; `TokenNotFoundError`, `InvalidPaletteError`, `InvalidTypeError`, `GarmentNotFoundError`; session.flush() before colour FK rows; atomicity via try/except file cleanup on thumbnail or DB failure; `tests/services/test_garment_service.py` (30 tests — happy path, FR-1 family re-derivation, token lifecycle, validation, atomicity, delete cascade + missing-file tolerance). `make test` → 701 passed, 1 skipped, 0 warnings.
+- Sanity: `cd backend && .venv/bin/pytest tests/services/test_garment_service.py -q`
