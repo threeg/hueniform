@@ -161,6 +161,44 @@ class DetectionResponse(BaseModel):
     colours: list[ColourOut]
 
 
+class SuggestionRequest(BaseModel):
+    """Request body for POST /api/suggestions (contract §2.12)."""
+
+    include: dict[str, bool] = {}
+
+
+class EchoOut(BaseModel):
+    """One minor-colour echo credited in ranking (FR-22, contract §2.12)."""
+
+    family: str
+    from_slot: str
+    to_slot: str
+
+
+class CombinationOut(BaseModel):
+    """One ranked outfit combination in the suggestions response (contract §2.12)."""
+
+    rank: int
+    scheme: str | None
+    fallback: bool
+    slots: dict[str, GarmentSummary]
+    echoes: list[EchoOut]
+    explanation: str
+
+
+class SuggestionResponse(BaseModel):
+    """
+    Response body for POST /api/suggestions (contract §2.12).
+
+    On success: ``combinations`` is non-empty, ``explanation`` and ``hint`` absent.
+    Zero-result: ``combinations`` is empty, ``explanation`` and ``hint`` are set.
+    """
+
+    combinations: list[CombinationOut]
+    explanation: str | None = None
+    hint: str | None = None
+
+
 def validate_palette(colours: list[ColourIn]) -> None:
     """
     Validate FR-6 palette constraints.

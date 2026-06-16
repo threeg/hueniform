@@ -28,6 +28,7 @@ from app.matcher.ranking import EvaluationResult, rank
 from app.matcher.roles import Garment, derive_roles
 from app.matcher.slots import (
     ECHO_SLOTS,
+    OPTIONAL_SLOTS,
     REQUIRED_SLOTS,
     get_anchor_chromatic_families,
     get_anchor_types,
@@ -39,6 +40,14 @@ from app.storage.models import GarmentColourRow, GarmentRow
 
 
 # ── Errors ────────────────────────────────────────────────────────────────────
+
+class InvalidSlotError(Exception):
+    """One or more keys in ``include_optional`` are not valid optional slot names."""
+
+    def __init__(self, unknown: list[str]) -> None:
+        self.unknown = sorted(unknown)
+        super().__init__(f"Unknown slot key(s): {', '.join(self.unknown)}.")
+
 
 class EmptySlotsError(Exception):
     """FR-36: one or more requested slots have no garments in the wardrobe."""
@@ -199,10 +208,16 @@ def suggest(
 
     Raises
     ------
+    InvalidSlotError
+        Any key in *include_optional* is not a valid optional slot name.
     EmptySlotsError
         Any requested slot — required or chosen optional — has no garments
         in the wardrobe (FR-36).
     """
+    unknown = [k for k in include_optional if k not in OPTIONAL_SLOTS]
+    if unknown:
+        raise InvalidSlotError(unknown)
+
     requested_slots = REQUIRED_SLOTS | frozenset(include_optional)
 
     wardrobe, garment_index = _load_wardrobe(engine)

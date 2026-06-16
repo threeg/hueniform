@@ -240,6 +240,38 @@ def get_garment(garment_id: str, engine: Engine) -> GarmentResult:
     return _row_to_result(row, colour_rows)
 
 
+def get_garments_by_ids(
+    garment_ids: list[str],
+    engine: Engine,
+) -> dict[str, GarmentResult]:
+    """
+    Batch-load ``GarmentResult`` objects for the given IDs in two queries.
+
+    Returns a dict keyed by garment id.  IDs not found in the database are
+    silently omitted (the caller must handle missing entries if needed).
+    """
+    if not garment_ids:
+        return {}
+    with Session(engine) as session:
+        rows = session.exec(
+            select(GarmentRow).where(GarmentRow.id.in_(garment_ids))
+        ).all()
+        colour_rows = session.exec(
+            select(GarmentColourRow)
+            .where(GarmentColourRow.garment_id.in_(garment_ids))
+            .order_by(GarmentColourRow.garment_id, GarmentColourRow.position)
+        ).all()
+
+    colours_by_garment: dict[str, list[GarmentColourRow]] = {}
+    for c in colour_rows:
+        colours_by_garment.setdefault(c.garment_id, []).append(c)
+
+    return {
+        row.id: _row_to_result(row, colours_by_garment.get(row.id, []))
+        for row in rows
+    }
+
+
 def confirm(
     token: str,
     garment_type: str,
