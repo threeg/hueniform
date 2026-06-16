@@ -71,6 +71,9 @@ Reactive tickets from `/verify` post-batch reviews (CONVENTIONS.md §6). Worked 
 
 | # | id | title | type | layer | source batch | status | depends_on |
 |---|---|---|---|---|---|---|---|
+| 41 | HUE-041 | Fix N+1 query in suggestion_service _load_wardrobe | task | services | services | todo | HUE-024 |
+| 42 | HUE-042 | DRY garment_service internal helpers | task | services | services | todo | HUE-022, HUE-023 |
+| 43 | HUE-043 | Shared conftest for service tests | task | tooling | services | todo | HUE-021, HUE-022, HUE-023, HUE-024 |
 
 ## By milestone and batch
 
