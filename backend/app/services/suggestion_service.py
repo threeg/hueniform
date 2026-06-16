@@ -92,7 +92,7 @@ class SuggestionResult:
 
 def _load_wardrobe(engine: Engine) -> tuple[list[Garment], dict[int, GarmentRow]]:
     """
-    Load all garments from the database.
+    Load all garments from the database in exactly two queries.
 
     Returns the ``Garment`` list for the matcher and an identity mapping
     ``id(garment) → GarmentRow`` used to reconstruct DB rows from matcher output.
@@ -102,19 +102,27 @@ def _load_wardrobe(engine: Engine) -> tuple[list[Garment], dict[int, GarmentRow]
 
     with Session(engine) as s:
         rows = s.exec(select(GarmentRow)).all()
-        for row in rows:
-            colour_rows = s.exec(
-                select(GarmentColourRow)
-                .where(GarmentColourRow.garment_id == row.id)
-                .order_by(GarmentColourRow.position)
-            ).all()
-            colours = tuple(
-                Colour(h=c.h, s=c.s, l=c.l, proportion=c.proportion)
-                for c in colour_rows
+
+        # One bulk query for all colour rows; group by garment_id in Python.
+        all_colour_rows = s.exec(
+            select(GarmentColourRow).order_by(
+                GarmentColourRow.garment_id,
+                GarmentColourRow.position,
             )
-            g = Garment(garment_type=row.type, colours=colours)
-            index[id(g)] = row
-            garments.append(g)
+        ).all()
+
+    colours_by_garment: dict[str, list[GarmentColourRow]] = {}
+    for c in all_colour_rows:
+        colours_by_garment.setdefault(c.garment_id, []).append(c)
+
+    for row in rows:
+        colours = tuple(
+            Colour(h=c.h, s=c.s, l=c.l, proportion=c.proportion)
+            for c in colours_by_garment.get(row.id, [])
+        )
+        g = Garment(garment_type=row.type, colours=colours)
+        index[id(g)] = row
+        garments.append(g)
 
     return garments, index
 

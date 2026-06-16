@@ -2,7 +2,7 @@
 id: HUE-041
 title: Fix N+1 query in suggestion_service _load_wardrobe
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: services
@@ -33,10 +33,10 @@ will likely fail `make test-perf`.
 
 ## Definition of done (acceptance criteria)
 
-- [ ] `_load_wardrobe` issues at most 2 queries (garments + colours), not N+1
-- [ ] All existing `test_suggestion_service.py` tests still pass
-- [ ] `make test` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] `_load_wardrobe` issues at most 2 queries (garments + colours), not N+1
+- [x] All existing `test_suggestion_service.py` tests still pass
+- [x] `make test` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -51,3 +51,8 @@ once HUE-039 lands).
 - 2026-06-16 — created by `/verify` review of services batch (HUE-021–024).
   Critical: should be promoted into the main sequence before HUE-039
   (performance suite) to avoid a gate failure.
+- 2026-06-16 — done: replaced N+1 loop in `_load_wardrobe` with two bulk queries
+  (one for `GarmentRow`, one for all `GarmentColourRow`); colours grouped in Python
+  by `garment_id`. Identity index contract unchanged. `make test` → 739 passed,
+  1 skipped, 0 warnings.
+- Sanity: `cd backend && .venv/bin/pytest tests/services/test_suggestion_service.py -q`
