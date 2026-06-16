@@ -5,6 +5,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.api.detections import router as detections_router
 from app.api.errors import register_error_handlers
 from app.api.health import router as health_router
 from app.api.taxonomy import router as taxonomy_router
@@ -40,9 +41,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         lifespan=_lifespan,
     )
 
+    # Make settings accessible to endpoint handlers via request.app.state.settings.
+    app.state.settings = settings
+
     register_error_handlers(app)
     app.include_router(health_router, prefix="/api")
     app.include_router(taxonomy_router, prefix="/api")
+    app.include_router(detections_router, prefix="/api")
 
     # SPA static serving with history-API fallback (architecture §5).
     # Skipped when the SPA has not been built (e.g. in dev mode or tests that

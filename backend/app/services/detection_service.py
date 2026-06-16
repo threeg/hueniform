@@ -27,6 +27,11 @@ from app.matcher.colour import hsl_to_hex
 from app.matcher.taxonomy import is_neutral
 from app.storage import staging
 
+# ── Service-level exceptions ──────────────────────────────────────────────────
+
+class UnreadableImageError(Exception):
+    """Raised when the detection pipeline cannot process the supplied image bytes."""
+
 _EXT_TO_CONTENT_TYPE: dict[str, str] = {
     "jpg": "image/jpeg",
     "jpeg": "image/jpeg",
@@ -109,9 +114,12 @@ def run_detection(
     sidecar), colours, and image dimensions.  Nothing is written to the DB
     (FR-24).
     """
-    raw: DetectionProposal = detect(
-        image_data, segmenter=segmenter, clusterer=clusterer
-    )
+    try:
+        raw: DetectionProposal = detect(
+            image_data, segmenter=segmenter, clusterer=clusterer
+        )
+    except Exception as exc:
+        raise UnreadableImageError(str(exc)) from exc
     colours = tuple(_build_colour_proposal(c) for c in raw.colours)
 
     token = staging.stage(
@@ -136,6 +144,22 @@ def run_detection(
         colours=colours,
         garment_id=garment_id,
     )
+
+
+def get_staged_image_path(token: str, staging_dir: Path) -> tuple[Path, str] | None:
+    """
+    Return (image_path, content_type) for a live staged image, or None if absent/expired.
+
+    Returns None when the sidecar does not exist, is expired, or the image file
+    itself is missing (e.g. partially deleted staging directory).
+    """
+    entry = staging.load(token, staging_dir)
+    if entry is None:
+        return None
+    image_path = staging_dir / f"{token}.{entry.ext}"
+    if not image_path.exists():
+        return None
+    return image_path, entry.content_type
 
 
 def run_regeneration(

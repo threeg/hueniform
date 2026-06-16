@@ -106,6 +106,24 @@ class TaxonomyResponse(BaseModel):
     families: list[FamilyOut]
 
 
+class DetectionImageInfo(BaseModel):
+    """Image metadata returned in the detection proposal (contract §2.3)."""
+
+    url: str
+    width: int
+    height: int
+
+
+class DetectionResponse(BaseModel):
+    """Response body for POST /api/detections (contract §2.3)."""
+
+    token: str
+    expires_at: str
+    fallback_used: bool
+    image: DetectionImageInfo
+    colours: list[ColourOut]
+
+
 def validate_palette(colours: list[ColourIn]) -> None:
     """
     Validate FR-6 palette constraints.
