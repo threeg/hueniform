@@ -2,7 +2,7 @@
 id: HUE-019
 title: Detection pipeline orchestration
 type: task
-status: todo
+status: done
 milestone: 8
 batch: detection
 layer: detection
@@ -23,15 +23,16 @@ The pipeline turns a photograph into a proposed palette (architecture §2.3): de
 - Runs synchronously; imports only the permitted matcher submodules (contract 3)
 
 ## Definition of done (acceptance criteria)
-- [ ] Pipeline produces 1–4 classified colours with proportions summing to 100 from a masked image (FR-26)
-- [ ] Injected-mask path is deterministic with seeded KMeans; expected palettes within ±5 pp (§6.2)
-- [ ] Failure/low-foreground paths fall back to whole-image clustering with `fallback_used = true` (FR-27)
-- [ ] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
-- [ ] Relevant extra gate green where applicable ((none — default gate only))
-- [ ] Ticket status + notes updated in the same commit
+- [x] Pipeline produces 1–4 classified colours with proportions summing to 100 from a masked image (FR-26)
+- [x] Injected-mask path is deterministic with seeded KMeans; expected palettes within ±5 pp (§6.2)
+- [x] Failure/low-foreground paths fall back to whole-image clustering with `fallback_used = true` (FR-27)
+- [x] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
+- [x] Relevant extra gate green where applicable ((none — default gate only))
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `detection/test_pipeline*.py` (§6.2): real orchestration with committed masks (HUE-006) replacing rembg and seeded KMeans; expected synthetic palettes within ±5 pp; a raising segmenter stub and a below-threshold mask both trigger the fallback. In the default gate (no real model).
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-16 — done: `app/detection/pipeline.py` with `ColourEntry`, `DetectionProposal`, `detect()`; injectable segmenter+clusterer seams; fallback path for raising segmenter and below-threshold coverage; distinct-colour cap on max_k prevents sklearn ConvergenceWarnings on flat synthetic images; 33 tests in `tests/detection/test_pipeline.py`; 647 passed, zero warnings.
