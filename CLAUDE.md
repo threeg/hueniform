@@ -1,13 +1,14 @@
 # CLAUDE.md — Hueniform
 
 Standing instructions for working in this repository. Read this first, every session.
+Layer-specific guidance lives in `backend/app/<layer>/CLAUDE.md`, `frontend/src/CLAUDE.md`
+and `tickets/CLAUDE.md` — those load automatically when you touch files in those directories.
 
 ## What this project is
 
 Hueniform is a local-first, single-user web app that builds a digital wardrobe from garment
 photos, detects each garment's colours, and suggests harmonious outfits using colour theory.
-It has a deliberate **meta-goal**: the *process* — documented in Markdown, tracked as
-Markdown tickets, built milestone by milestone — is as much a deliverable as the software.
+The *process* is as much a deliverable as the software (meta-goal).
 
 ## Non-negotiables
 
@@ -27,29 +28,7 @@ Markdown tickets, built milestone by milestone — is as much a deliverable as t
 - `docs/04-wireframes/` — the screens, states and navigation.
 - `docs/05-test-strategy.md` — frameworks, test conventions, the definition of done (§12.3).
 - `docs/00-milestone-plan.md` — the single source of truth for project status.
-- `tickets/` — the work queue (see below).
-
-## How we work: tickets
-
-The build runs ticket by ticket. The system is defined in `tickets/CONVENTIONS.md`; the per-ticket
-format in `tickets/TICKET-TEMPLATE.md`; the execution order in `tickets/BOARD.md`.
-
-- **Work tickets, not epics.** Epics (`HUE-E0n`) are a capability view only — no code ships against
-  them; they close when their children are `done`. The unit of work is the leaf ticket (`HUE-NNN`).
-- **Go in order.** Pick the lowest-numbered `todo` ticket whose every `depends_on` id is `done`.
-  `BOARD.md` top-to-bottom is a legal sequence. **Never start a ticket whose dependencies aren't done.**
-- **One ticket per commit.** A commit moves exactly one ticket: its code, its tests, its
-  `status`/`## Notes`, and its `BOARD.md` row — together. This is the §12.3.7 rule and what keeps the
-  history honest and reviewable.
-- **Status lifecycle:** `todo → in-progress → in-review → done` (`blocked` when stuck). Set
-  `in-progress` when you start; `done` only when the ticket's Definition of done holds in full.
-- **Commit message:** `HUE-NNN: <short imperative>` (e.g. `HUE-007: matcher.constants`).
-- **Close epics when their last child closes.** Check the epic's children list in its ticket file
-  (`HUE-E0n`); if every child is `done`, mark the epic `done` in both its ticket file and the
-  BOARD.md epic table in that same commit.
-- **Run `/verify` after each batch.** This reviews the batch for reuse, quality and efficiency
-  issues and proposes cleanup tickets. Accepted tickets go to the cleanup backlog in `BOARD.md`
-  (CONVENTIONS.md §6); critical ones are promoted into the main sequence before the gate they affect.
+- `tickets/` — the work queue; ticket workflow rules in `tickets/CLAUDE.md`.
 
 ## Architecture dependency rule (enforced, not aspirational)
 
@@ -98,42 +77,6 @@ set `tests_required: false` and must state the exemption in the body.
 
 End each ticket summary with a one-line sanity test the user can run, e.g.
 `cd backend && .venv/bin/pytest tests/<layer>/test_<module>.py -q`.
-
-## Storage and service testing patterns
-
-These apply to every ticket that touches `app/storage/` or writes tests that create a SQLite engine — including tests in `tests/services/`:
-
-- **Engine fixture teardown:** always `yield` the engine and call `engine.dispose()` afterwards —
-  not `return`. Without dispose, Python 3.13 raises `ResourceWarning: unclosed database` for every
-  connection in the pool, which fails the zero-warnings gate.
-  ```python
-  @pytest.fixture()
-  def engine(tmp_path):
-      e = make_engine(tmp_path / "test.db")
-      init_db(e)
-      yield e
-      e.dispose()
-  ```
-- **Parent/child insert ordering:** SQLModel has no ORM relationship between `GarmentRow` and
-  `GarmentColourRow`, so SQLAlchemy does not know insertion order. Call `session.flush()` after
-  adding the parent row before adding child rows, or the FK constraint fires on the child insert.
-
-## Detection testing patterns
-
-These apply to every ticket that writes tests with an injected segmenter seam (§6.2):
-
-- **Injected segmenter must return RGBA.** Returning a plain RGB image causes the pipeline to
-  convert it to grayscale and treat the channel values as an alpha mask. For a dark-coloured
-  image (e.g. a red JPEG, which has low luminance ≈ 80/255) this produces near-zero alpha
-  coverage, triggering the FR-27 fallback and setting `fallback_used = True`. Always return
-  an RGBA image with a fully-opaque (255) alpha channel from a passthrough segmenter:
-  ```python
-  def _passthrough_segmenter(img: Image.Image) -> Image.Image:
-      rgba = img.convert("RGBA")
-      r, g, b, _a = rgba.split()
-      opaque = Image.new("L", img.size, 255)
-      return Image.merge("RGBA", (r, g, b, opaque))
-  ```
 
 ## When a milestone completes
 
