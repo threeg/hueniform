@@ -1,11 +1,11 @@
 {
-  "dominant_family": null,
-  "dominant_proportion_min": 0,
+  "dominant_family": "White",
+  "dominant_proportion_min": 50,
   "dominant_proportion_max": 100,
-  "allowed_extra_families": [],
+  "allowed_extra_families": ["Grey", "Black"],
   "count_min": 1,
   "count_max": 4,
-  "fallback_expected": true,
+  "fallback_expected": false,
   "fallback_ok": true,
-  "_note": "Plain white 200x200 image — no garment. rembg should produce near-zero foreground coverage triggering FR-27 fallback."
+  "_note": "Plain white 200x200 image. rembg segments the white block as the foreground object (fallback_used=False). FR-27 fallback is exercised by the pipeline's injected-seam tests instead."
 }

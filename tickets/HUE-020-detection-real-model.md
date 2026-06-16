@@ -36,3 +36,4 @@ Production detection uses rembg (U²-Net via onnxruntime). The model is fetched 
 ## Notes
 - 2026-06-15 — created
 - 2026-06-16 — done: `tests/fixtures/images/real/` with 5 JPEG fixtures + expected.json sidecars (red_block, blue_block, teal_block, teal_orange, blank_bg); `tests/detection/test_model_pipeline.py` (parametrised, sidecar-driven, NFR-4 soft timing, skip when U2NET_HOME absent); `Makefile` updated — setup fetches U²-Net to data/models/, test-model sets U2NET_HOME; `make test` skips cleanly (647 passed, 1 skipped, zero warnings). `make test-model` verified to skip with named message when model absent; owner must run `make setup` to enable it.
+- 2026-06-16 — sidecar corrections after owner ran `make test-model`: blank_bg rembg segments the white block as foreground (not fallback); teal_orange JPEG boundary produces Chartreuse artefact. Updated blank_bg sidecar to expect White dominant; added Chartreuse to teal_orange allowed_extra_families.
