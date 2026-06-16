@@ -6,7 +6,7 @@ status: todo
 milestone: 8
 batch: tooling
 layer: tooling
-depends_on: [HUE-031, HUE-029, HUE-024]
+depends_on: [HUE-031, HUE-029, HUE-024, HUE-041]
 implements: [NFR-5, NFR-6]
 tests_required: true
 estimate: 3

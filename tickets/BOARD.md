@@ -48,6 +48,7 @@ This board is the single topological view of the implementation order. Implement
 | 22 | HUE-022 | Garment service: confirm-save and delete | task | services | 8 / services | HUE-E03 | done | HUE-021, HUE-016, HUE-017, HUE-009 |
 | 23 | HUE-023 | Regeneration service | task | services | 8 / services | HUE-E03 | done | HUE-022, HUE-021 |
 | 24 | HUE-024 | Suggestion service: enumeration, ranking and the fallback ladder | task | services | 8 / services | HUE-E05 | done | HUE-015, HUE-014, HUE-013, HUE-016 |
+| 41 | HUE-041 | Fix N+1 query in suggestion_service _load_wardrobe | task | services | 8 / cleanup | — | todo | HUE-024 |
 | 25 | HUE-025 | API foundation: schemas, error envelope, health, static serving | task | api | 8 / api | HUE-E01 | todo | HUE-002, HUE-016 |
 | 26 | HUE-026 | Taxonomy endpoint | task | api | 8 / api | HUE-E03 | todo | HUE-025, HUE-009 |
 | 27 | HUE-027 | Detections endpoints | task | api | 8 / api | HUE-E03 | todo | HUE-025, HUE-021 |
@@ -62,7 +63,7 @@ This board is the single topological view of the implementation order. Implement
 | 36 | HUE-036 | Garment detail screen | story | frontend | 8 / frontend | HUE-E03 | todo | HUE-032, HUE-034, HUE-035 |
 | 37 | HUE-037 | Outfit request and suggestion results screen | story | frontend | 8 / frontend | HUE-E05 | todo | HUE-032 |
 | 38 | HUE-038 | Single-command run and production serving | task | tooling | 8 / tooling | HUE-E01 | todo | HUE-025, HUE-032, HUE-020 |
-| 39 | HUE-039 | Performance suite and 500-garment fixture | task | tooling | 8 / tooling | HUE-E01 | todo | HUE-031, HUE-029, HUE-024 |
+| 39 | HUE-039 | Performance suite and 500-garment fixture | task | tooling | 8 / tooling | HUE-E01 | todo | HUE-031, HUE-029, HUE-024, HUE-041 |
 | 40 | HUE-040 | End-to-end smoke suite | task | tooling | 8 / tooling | HUE-E01 | todo | HUE-033, HUE-034, HUE-035, HUE-036, HUE-037, HUE-027, HUE-028, HUE-029, HUE-030, HUE-031, HUE-020, HUE-038 |
 
 ## Cleanup backlog
@@ -71,7 +72,6 @@ Reactive tickets from `/verify` post-batch reviews (CONVENTIONS.md §6). Worked 
 
 | # | id | title | type | layer | source batch | status | depends_on |
 |---|---|---|---|---|---|---|---|
-| 41 | HUE-041 | Fix N+1 query in suggestion_service _load_wardrobe | task | services | services | todo | HUE-024 |
 | 42 | HUE-042 | DRY garment_service internal helpers | task | services | services | todo | HUE-022, HUE-023 |
 | 43 | HUE-043 | Shared conftest for service tests | task | tooling | services | todo | HUE-021, HUE-022, HUE-023, HUE-024 |
 
