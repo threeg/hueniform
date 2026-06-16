@@ -44,6 +44,9 @@ format in `tickets/TICKET-TEMPLATE.md`; the execution order in `tickets/BOARD.md
 - **Status lifecycle:** `todo → in-progress → in-review → done` (`blocked` when stuck). Set
   `in-progress` when you start; `done` only when the ticket's Definition of done holds in full.
 - **Commit message:** `HUE-NNN: <short imperative>` (e.g. `HUE-007: matcher.constants`).
+- **Close epics when their last child closes.** Check the epic's children list in its ticket file
+  (`HUE-E0n`); if every child is `done`, mark the epic `done` in both its ticket file and the
+  BOARD.md epic table in that same commit.
 
 ## Architecture dependency rule (enforced, not aspirational)
 
@@ -93,9 +96,9 @@ set `tests_required: false` and must state the exemption in the body.
 End each ticket summary with a one-line sanity test the user can run, e.g.
 `cd backend && .venv/bin/pytest tests/<layer>/test_<module>.py -q`.
 
-## Storage testing patterns
+## Storage and service testing patterns
 
-These apply to every ticket that touches `app/storage/` or writes tests that create a SQLite engine:
+These apply to every ticket that touches `app/storage/` or writes tests that create a SQLite engine — including tests in `tests/services/`:
 
 - **Engine fixture teardown:** always `yield` the engine and call `engine.dispose()` afterwards —
   not `return`. Without dispose, Python 3.13 raises `ResourceWarning: unclosed database` for every
@@ -111,6 +114,23 @@ These apply to every ticket that touches `app/storage/` or writes tests that cre
 - **Parent/child insert ordering:** SQLModel has no ORM relationship between `GarmentRow` and
   `GarmentColourRow`, so SQLAlchemy does not know insertion order. Call `session.flush()` after
   adding the parent row before adding child rows, or the FK constraint fires on the child insert.
+
+## Detection testing patterns
+
+These apply to every ticket that writes tests with an injected segmenter seam (§6.2):
+
+- **Injected segmenter must return RGBA.** Returning a plain RGB image causes the pipeline to
+  convert it to grayscale and treat the channel values as an alpha mask. For a dark-coloured
+  image (e.g. a red JPEG, which has low luminance ≈ 80/255) this produces near-zero alpha
+  coverage, triggering the FR-27 fallback and setting `fallback_used = True`. Always return
+  an RGBA image with a fully-opaque (255) alpha channel from a passthrough segmenter:
+  ```python
+  def _passthrough_segmenter(img: Image.Image) -> Image.Image:
+      rgba = img.convert("RGBA")
+      r, g, b, _a = rgba.split()
+      opaque = Image.new("L", img.size, 255)
+      return Image.merge("RGBA", (r, g, b, opaque))
+  ```
 
 ## When a milestone completes
 

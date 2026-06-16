@@ -15,7 +15,7 @@ This board is the single topological view of the implementation order. Implement
 | id | title | milestone | status |
 |---|---|---|---|
 | HUE-E01 | Local-first foundation and meta-goal | 8 | todo |
-| HUE-E02 | Pure colour matcher | 8 | todo |
+| HUE-E02 | Pure colour matcher | 8 | done |
 | HUE-E03 | Add a garment | 8 | todo |
 | HUE-E04 | Browse the wardrobe | 8 | todo |
 | HUE-E05 | Suggest an outfit | 8 | todo |

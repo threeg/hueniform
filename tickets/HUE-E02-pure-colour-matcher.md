@@ -2,7 +2,7 @@
 id: HUE-E02
 title: Pure colour matcher
 type: epic
-status: todo
+status: done
 milestone: 8
 batch: matcher
 layer: matcher
@@ -51,3 +51,4 @@ All child tickets done; the matcher is standard-library-only (enforced by §5 al
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-16 — done: all nine children complete (HUE-007–015 including HUE-012); 100% line+branch coverage on `app/matcher/` confirmed; std-library-only constraint verified by import-linter.
