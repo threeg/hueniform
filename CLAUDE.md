@@ -75,7 +75,8 @@ says so (`test-model` / `test-perf` / `test-e2e`); and the ticket's status + `##
 `BOARD.md` row are updated in that commit. Docs-only, pure-styling and build-plumbing tickets may
 set `tests_required: false` and must state the exemption in the body.
 
-End each ticket summary with a one-line sanity test the user can run, e.g.
+End each ticket completion — both in the ticket's `## Notes` section and in the chat response
+— with a one-line sanity test the user can run, e.g.
 `cd backend && .venv/bin/pytest tests/<layer>/test_<module>.py -q`.
 
 ## When a milestone completes
