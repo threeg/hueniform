@@ -2,7 +2,7 @@
 id: HUE-024
 title: Suggestion service: enumeration, ranking and the fallback ladder
 type: task
-status: todo
+status: done
 milestone: 8
 batch: services
 layer: services
@@ -23,15 +23,17 @@ The suggestion service drives the outfit flow (architecture §4.3): load the inv
 - Render `explanation` from each `EvaluationResult` via `matcher.explain` (FR-37, FR-38); imports `matcher`, `storage`; not `api`
 
 ## Definition of done (acceptance criteria)
-- [ ] Empty requested slot → fail fast naming the slots (FR-36)
-- [ ] Up to 3 distinct ranked combinations returned, each harmonious per FR-15; explanations rendered from the EvaluationResult (FR-37/FR-38)
-- [ ] Fallback ladder produces flagged neutral-based results or a named-constraint zero result (FR-43); enumeration capped + shuffled (NFR-5, FR-42)
-- [ ] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
-- [ ] Relevant extra gate green where applicable (`make test-perf` for evaluation/enumeration (§12.3.5))
-- [ ] Ticket status + notes updated in the same commit
+- [x] Empty requested slot → fail fast naming the slots (FR-36)
+- [x] Up to 3 distinct ranked combinations returned, each harmonious per FR-15; explanations rendered from the EvaluationResult (FR-37/FR-38)
+- [x] Fallback ladder produces flagged neutral-based results or a named-constraint zero result (FR-43); enumeration capped + shuffled (NFR-5, FR-42)
+- [x] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
+- [ ] Relevant extra gate green where applicable (`make test-perf` for evaluation/enumeration (§12.3.5)) — deferred to HUE-039 (perf suite does not yet exist)
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 Service-level tests over engineered wardrobes (HUE-012) with a seeded RNG, plus the §8.1 invariant pattern and the §4.9.4 oracle (re-evaluate each returned combination; assert scheme/echoes/explanation match). Exact-outcome wardrobes pin the fallback rungs and the zero-result shape. Perf at 500 garments is HUE-039.
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-16 — done: `app/services/suggestion_service.py`; `EmptySlotsError`, `EchoRecord`, `SuggestionCombination`, `SuggestionResult` types; `suggest(include_optional, engine, rng)` loads wardrobe via `id(garment)` identity index (matcher↔DB bridge), calls `matcher.ranking.rank`, handles zero-result sentinel (constraining_slot → hint), builds combinations with `matcher.explain.render` explanations; `tests/services/test_suggestion_service.py` (23 tests — FR-36 fail-fast, normal combinations, §4.9.4 oracle re-evaluation, neutral-based scheme, zero-result with hint). `make test` → 739 passed, 1 skipped, 0 warnings. `make test-perf` deferred to HUE-039 (perf suite not yet built).
+- Sanity: `cd backend && .venv/bin/pytest tests/services/test_suggestion_service.py -q`
