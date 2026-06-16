@@ -1,0 +1,25 @@
+.swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.square {
+  display: inline-block;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: #444;
+}
+
+.proportion {
+  font-size: 0.7rem;
+  color: #888;
+}
