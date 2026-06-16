@@ -44,7 +44,7 @@ This board is the single topological view of the implementation order. Implement
 | 18 | HUE-018 | Detection pure helpers | task | detection | 8 / detection | HUE-E03 | done | HUE-009 |
 | 19 | HUE-019 | Detection pipeline orchestration | task | detection | 8 / detection | HUE-E03 | done | HUE-018, HUE-006 |
 | 20 | HUE-020 | Real-model detection integration and setup model fetch | task | detection | 8 / detection | HUE-E03 | done | HUE-019 |
-| 21 | HUE-021 | Detection service and staging orchestration | task | services | 8 / services | HUE-E03 | todo | HUE-019, HUE-017 |
+| 21 | HUE-021 | Detection service and staging orchestration | task | services | 8 / services | HUE-E03 | done | HUE-019, HUE-017 |
 | 22 | HUE-022 | Garment service: confirm-save and delete | task | services | 8 / services | HUE-E03 | todo | HUE-021, HUE-016, HUE-017, HUE-009 |
 | 23 | HUE-023 | Regeneration service | task | services | 8 / services | HUE-E03 | todo | HUE-022, HUE-021 |
 | 24 | HUE-024 | Suggestion service: enumeration, ranking and the fallback ladder | task | services | 8 / services | HUE-E05 | todo | HUE-015, HUE-014, HUE-013, HUE-016 |

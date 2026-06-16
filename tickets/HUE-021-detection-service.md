@@ -2,7 +2,7 @@
 id: HUE-021
 title: Detection service and staging orchestration
 type: task
-status: todo
+status: done
 milestone: 8
 batch: services
 layer: services
@@ -22,15 +22,17 @@ The detection service orchestrates the upload→detect step (architecture §2.4,
 - May import `detection`, `storage` and `matcher` (dependency rule); not `api`
 
 ## Definition of done (acceptance criteria)
-- [ ] Staging the upload + running the pipeline returns a contract-shaped proposal; nothing written to the DB (FR-24)
-- [ ] `fallback_used` surfaced for the FR-27 warning; proposal classified per the taxonomy (FR-26, FR-28)
-- [ ] Regeneration produces a garment-bound token; TTL/sweep honoured
-- [ ] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
-- [ ] Relevant extra gate green where applicable ((none — default gate only))
-- [ ] Ticket status + notes updated in the same commit
+- [x] Staging the upload + running the pipeline returns a contract-shaped proposal; nothing written to the DB (FR-24)
+- [x] `fallback_used` surfaced for the FR-27 warning; proposal classified per the taxonomy (FR-26, FR-28)
+- [x] Regeneration produces a garment-bound token; TTL/sweep honoured
+- [x] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
+- [x] Relevant extra gate green where applicable ((none — default gate only))
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 Service/integration tests (§7.3) with injected detection seams: staging creates file+sidecar and nothing in the DB; the proposal shape matches §2.3; regeneration binds the token to the garment; expiry handling. Default gate; the real model is exercised via `make test-model` where composed.
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-16 — done: `app/services/detection_service.py` with `run_detection` and `run_regeneration`; `ColourProposal` and `DetectionResult` dataclasses; hex via `hsl_to_hex`, neutral via `taxonomy.is_neutral`; expires_at read from sidecar; `tests/services/test_detection_service.py` (24 tests across 5 classes — staging I/O, result shape, sidecar fields, fallback surface, regeneration + TTL sweep). `make test` → 671 passed, 1 skipped, 0 warnings.
+- Sanity: `cd backend && .venv/bin/pytest tests/services/test_detection_service.py -q`
