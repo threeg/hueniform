@@ -106,6 +106,28 @@ class TaxonomyResponse(BaseModel):
     families: list[FamilyOut]
 
 
+class GarmentUpdateRequest(BaseModel):
+    """Request body for PUT /api/garments/{id} (contract §2.10)."""
+
+    regeneration_token: str
+    type: str
+    colours: list[ColourIn]
+
+
+class RegenerationProposalResponse(BaseModel):
+    """Response body for POST /api/garments/{id}/regenerate (contract §2.9).
+
+    Same shape as DetectionResponse (§2.3) plus garment_id.
+    """
+
+    garment_id: str
+    token: str
+    expires_at: str
+    fallback_used: bool
+    image: DetectionImageInfo
+    colours: list[ColourOut]
+
+
 class InventoryResponse(BaseModel):
     """Response body for GET /api/garments (contract §2.6)."""
 

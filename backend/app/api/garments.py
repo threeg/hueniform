@@ -1,13 +1,14 @@
 """
-Garments endpoints (contract §2.5–§2.11, FR-6, FR-25, FR-29–FR-31, FR-34, FR-35).
+Garments endpoints (contract §2.5–§2.11, FR-6, FR-25, FR-29–FR-35).
 
-POST  /api/garments          — confirm a detection and save the garment.
-GET   /api/garments          — list with optional type/family/limit/offset filters.
-GET   /api/garments/{id}     — full Garment detail.
+POST  /api/garments                    — confirm a detection and save the garment.
+GET   /api/garments                    — list with optional type/family/limit/offset filters.
+GET   /api/garments/{id}               — full Garment detail.
 GET   /api/garments/{id}/image
 GET   /api/garments/{id}/thumbnail
-
-Further endpoints (regenerate, delete) are added by HUE-030.
+POST  /api/garments/{id}/regenerate    — re-detect; returns a garment-bound proposal.
+PUT   /api/garments/{id}               — confirm regeneration token; replace in place.
+DELETE /api/garments/{id}              — remove record and files.
 """
 
 from __future__ import annotations
@@ -18,11 +19,15 @@ from fastapi.responses import FileResponse
 from app.api.errors import AppError
 from app.api.schemas import (
     ColourOut,
+    DetectionImageInfo,
     GarmentCreateRequest,
     GarmentDetail,
     GarmentSummary,
+    GarmentUpdateRequest,
     InventoryResponse,
+    RegenerationProposalResponse,
 )
+from app.services.detection_service import run_regeneration
 from app.services.garment_service import (
     ColourIn as ServiceColourIn,
     GarmentNotFoundError,
@@ -30,8 +35,11 @@ from app.services.garment_service import (
     InvalidFilterError,
     InvalidPaletteError,
     InvalidTypeError,
+    RegenerationTokenError,
     TokenNotFoundError,
     confirm,
+    confirm_regeneration,
+    delete as garment_delete,
     get_garment,
     list_garments,
 )
@@ -187,3 +195,112 @@ def get_garment_thumbnail(garment_id: str, request: Request) -> FileResponse:
         raise AppError(404, "garment_not_found", "Garment not found.")
 
     return FileResponse(settings.data_dir / "thumbnails" / result.thumbnail_file)
+
+
+@router.post("/garments/{garment_id}/regenerate", response_model=RegenerationProposalResponse)
+def regenerate_garment(garment_id: str, request: Request) -> RegenerationProposalResponse:
+    """
+    Re-run detection on the stored photograph and return a garment-bound proposal
+    (contract §2.9, FR-26, FR-33).
+
+    The stored record and image are not modified until the client confirms with
+    PUT /api/garments/{id}.
+    """
+    settings = request.app.state.settings
+    engine = request.app.state.engine
+
+    try:
+        garment = get_garment(garment_id, engine)
+    except GarmentNotFoundError:
+        raise AppError(404, "garment_not_found", "Garment not found.")
+
+    result = run_regeneration(
+        garment_id=garment_id,
+        image_file=garment.image_file,
+        images_dir=settings.data_dir / "images",
+        staging_dir=settings.data_dir / "staging",
+    )
+
+    return RegenerationProposalResponse(
+        garment_id=garment_id,
+        token=result.token,
+        expires_at=result.expires_at,
+        fallback_used=result.fallback_used,
+        image=DetectionImageInfo(
+            url=f"/api/detections/{result.token}/image",
+            width=result.image_width,
+            height=result.image_height,
+        ),
+        colours=[
+            ColourOut(
+                h=c.h, s=c.s, l=c.l,
+                family=c.family, neutral=c.neutral,
+                hex=c.hex, proportion=c.proportion,
+            )
+            for c in result.colours
+        ],
+    )
+
+
+@router.put("/garments/{garment_id}", response_model=GarmentDetail)
+def update_garment(
+    garment_id: str,
+    body: GarmentUpdateRequest,
+    request: Request,
+) -> GarmentDetail:
+    """
+    Confirm a regeneration token and replace palette + type in place
+    (contract §2.10, FR-32, FR-33).
+
+    This is the only mutation path — there is no field-edit endpoint (FR-32).
+    The garment keeps the same id and photograph; only palette and type change.
+    """
+    settings = request.app.state.settings
+    engine = request.app.state.engine
+
+    service_colours = [
+        ServiceColourIn(h=c.h, s=c.s, l=c.l, proportion=c.proportion)
+        for c in body.colours
+    ]
+
+    try:
+        result = confirm_regeneration(
+            garment_id=garment_id,
+            token=body.regeneration_token,
+            garment_type=body.type,
+            colours=service_colours,
+            staging_dir=settings.data_dir / "staging",
+            images_dir=settings.data_dir / "images",
+            engine=engine,
+        )
+    except RegenerationTokenError:
+        raise AppError(
+            409,
+            "invalid_regeneration_token",
+            "Regeneration token is absent, expired, consumed, or bound to a different garment.",
+        )
+    except GarmentNotFoundError:
+        raise AppError(404, "garment_not_found", "Garment not found.")
+    except InvalidTypeError as e:
+        raise AppError(422, "invalid_type", str(e))
+    except InvalidPaletteError as e:
+        raise AppError(422, "invalid_palette", str(e))
+
+    return _to_detail(result)
+
+
+@router.delete("/garments/{garment_id}", status_code=204)
+def delete_garment(garment_id: str, request: Request) -> None:
+    """Remove the garment record, photograph and thumbnail (contract §2.11, FR-34)."""
+    settings = request.app.state.settings
+    engine = request.app.state.engine
+
+    try:
+        garment_delete(
+            garment_id=garment_id,
+            images_dir=settings.data_dir / "images",
+            thumbnails_dir=settings.data_dir / "thumbnails",
+            engine=engine,
+        )
+    except GarmentNotFoundError:
+        raise AppError(404, "garment_not_found", "Garment not found.")

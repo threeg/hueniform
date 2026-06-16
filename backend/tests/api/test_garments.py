@@ -1,10 +1,13 @@
 """
-Tests for HUE-028/HUE-029: garment create and read endpoints
-(contract §2.5–§2.8, FR-6, FR-25, FR-29–FR-31, FR-35).
+Tests for HUE-028/HUE-029/HUE-030: garment CRUD and regeneration endpoints
+(contract §2.5–§2.11, FR-6, FR-25, FR-29–FR-35).
 
 Strategy (§7.2 contract tests): TestClient with lifespan (context-manager form)
 so the engine and data directories are initialised.  Successful saves exercise
 the real garment service; error paths need only a valid staged entry.
+POST /api/garments/{id}/regenerate mocks ``run_regeneration`` to avoid loading
+the rembg model.  PUT tests create staging tokens directly via ``staging.stage``
+with a ``garment_id`` binding, bypassing the detection pipeline.
 """
 
 from __future__ import annotations
@@ -15,8 +18,11 @@ import pytest
 from fastapi.testclient import TestClient
 from PIL import Image
 
+from unittest.mock import patch
+
 from app.main import Settings, create_app
 from app.matcher.taxonomy import classify
+from app.services.detection_service import ColourProposal, DetectionResult
 from app.storage import staging
 
 
@@ -357,3 +363,231 @@ class TestGarmentFiles:
         r = client.get("/api/garments/no-such-id/thumbnail")
         assert r.status_code == 404
         assert r.json()["error"]["code"] == "garment_not_found"
+
+
+# ── Helpers for HUE-030 ───────────────────────────────────────────────────────
+
+_FAKE_REGEN_COLOUR = ColourProposal(
+    h=0.0, s=80.0, l=50.0, family="Red", neutral=False, hex="#f02600", proportion=100
+)
+
+
+def _fake_regen_result(token: str, garment_id: str) -> DetectionResult:
+    return DetectionResult(
+        token=token,
+        expires_at="2099-01-01T00:00:00Z",
+        fallback_used=False,
+        image_width=8,
+        image_height=8,
+        colours=(_FAKE_REGEN_COLOUR,),
+        garment_id=garment_id,
+    )
+
+
+def _stage_regen_token(settings: Settings, garment_id: str) -> str:
+    """Create a staging token bound to *garment_id* — simulates what run_regeneration does."""
+    return staging.stage(
+        data=_tiny_jpeg(),
+        ext="jpg",
+        content_type="image/jpeg",
+        fallback_used=False,
+        proposal={"colours": [{"h": 0, "s": 80, "l": 50, "proportion": 100}]},
+        staging_dir=settings.data_dir / "staging",
+        garment_id=garment_id,
+    )
+
+
+def _put_body(token: str, garment_type: str = "bottom") -> dict:
+    return {
+        "regeneration_token": token,
+        "type": garment_type,
+        "colours": [{"h": 120.0, "s": 60.0, "l": 40.0, "proportion": 100}],
+    }
+
+
+# ── POST /api/garments/{id}/regenerate ────────────────────────────────────────
+
+class TestRegenerateGarment:
+    def test_returns_200_with_proposal_shape(self, client, settings, seeded):
+        garment_id = seeded["top"]["id"]
+        token = _stage_regen_token(settings, garment_id)
+        with patch(
+            "app.api.garments.run_regeneration",
+            return_value=_fake_regen_result(token, garment_id),
+        ):
+            r = client.post(f"/api/garments/{garment_id}/regenerate")
+        assert r.status_code == 200
+        body = r.json()
+        assert body["garment_id"] == garment_id
+        assert "token" in body
+        assert "expires_at" in body
+        assert "fallback_used" in body
+        assert "image" in body
+        assert "colours" in body
+
+    def test_image_url_points_to_detections(self, client, settings, seeded):
+        garment_id = seeded["top"]["id"]
+        token = _stage_regen_token(settings, garment_id)
+        with patch(
+            "app.api.garments.run_regeneration",
+            return_value=_fake_regen_result(token, garment_id),
+        ):
+            body = client.post(f"/api/garments/{garment_id}/regenerate").json()
+        assert body["image"]["url"].startswith("/api/detections/")
+
+    def test_colour_shape_returned(self, client, settings, seeded):
+        garment_id = seeded["top"]["id"]
+        token = _stage_regen_token(settings, garment_id)
+        with patch(
+            "app.api.garments.run_regeneration",
+            return_value=_fake_regen_result(token, garment_id),
+        ):
+            body = client.post(f"/api/garments/{garment_id}/regenerate").json()
+        colour = body["colours"][0]
+        assert "h" in colour and "family" in colour and "hex" in colour
+
+    def test_unknown_garment_404(self, client):
+        r = client.post("/api/garments/no-such-id/regenerate")
+        assert r.status_code == 404
+        assert r.json()["error"]["code"] == "garment_not_found"
+
+    def test_record_unchanged_after_regenerate(self, client, settings, seeded):
+        """The original garment record must not be mutated by the regenerate call (FR-33)."""
+        garment_id = seeded["top"]["id"]
+        original = client.get(f"/api/garments/{garment_id}").json()
+        token = _stage_regen_token(settings, garment_id)
+        with patch(
+            "app.api.garments.run_regeneration",
+            return_value=_fake_regen_result(token, garment_id),
+        ):
+            client.post(f"/api/garments/{garment_id}/regenerate")
+        after = client.get(f"/api/garments/{garment_id}").json()
+        assert after["type"] == original["type"]
+        assert after["colours"] == original["colours"]
+        assert after["regenerated_at"] == original["regenerated_at"]
+
+
+# ── PUT /api/garments/{id} — update ──────────────────────────────────────────
+
+class TestUpdateGarment:
+    def test_put_replaces_type_and_palette(self, client, settings, seeded):
+        garment_id = seeded["top"]["id"]
+        token = _stage_regen_token(settings, garment_id)
+        r = client.put(f"/api/garments/{garment_id}", json=_put_body(token, "bottom"))
+        assert r.status_code == 200
+        body = r.json()
+        assert body["id"] == garment_id  # id unchanged
+        assert body["type"] == "bottom"
+        assert body["colours"][0]["family"] == "Green"  # h=120 → Green
+
+    def test_put_sets_regenerated_at(self, client, settings, seeded):
+        garment_id = seeded["top"]["id"]
+        token = _stage_regen_token(settings, garment_id)
+        body = client.put(f"/api/garments/{garment_id}", json=_put_body(token)).json()
+        assert body["regenerated_at"] is not None
+
+    def test_put_keeps_same_image(self, client, settings, seeded):
+        garment_id = seeded["top"]["id"]
+        before_image = client.get(f"/api/garments/{garment_id}/image").content
+        token = _stage_regen_token(settings, garment_id)
+        client.put(f"/api/garments/{garment_id}", json=_put_body(token))
+        after_image = client.get(f"/api/garments/{garment_id}/image").content
+        assert before_image == after_image
+
+    def test_put_token_consumed(self, client, settings, seeded):
+        garment_id = seeded["top"]["id"]
+        token = _stage_regen_token(settings, garment_id)
+        client.put(f"/api/garments/{garment_id}", json=_put_body(token))
+        r2 = client.put(f"/api/garments/{garment_id}", json=_put_body(token))
+        assert r2.status_code == 409
+        assert r2.json()["error"]["code"] == "invalid_regeneration_token"
+
+    def test_put_missing_token_409(self, client, seeded):
+        """FR-32: no valid regen token → always fails."""
+        garment_id = seeded["top"]["id"]
+        r = client.put(f"/api/garments/{garment_id}", json=_put_body("no-such-token"))
+        assert r.status_code == 409
+        assert r.json()["error"]["code"] == "invalid_regeneration_token"
+
+    def test_put_foreign_garment_token_409(self, client, settings, seeded):
+        """Token bound to a different garment must be rejected (FR-32)."""
+        other_garment_id = seeded["bottom"]["id"]
+        foreign_token = _stage_regen_token(settings, other_garment_id)
+        garment_id = seeded["top"]["id"]
+        r = client.put(f"/api/garments/{garment_id}", json=_put_body(foreign_token))
+        assert r.status_code == 409
+        assert r.json()["error"]["code"] == "invalid_regeneration_token"
+
+    def test_put_unknown_garment_404(self, client, settings, seeded):
+        # Token must be bound to the *same* id to pass the token check; only then
+        # does confirm_regeneration discover the garment doesn't exist in the DB.
+        fake_id = "00000000-0000-0000-0000-000000000000"
+        token = _stage_regen_token(settings, fake_id)
+        r = client.put(f"/api/garments/{fake_id}", json=_put_body(token))
+        assert r.status_code == 404
+        assert r.json()["error"]["code"] == "garment_not_found"
+
+    def test_put_invalid_type_422(self, client, settings, seeded):
+        garment_id = seeded["top"]["id"]
+        token = _stage_regen_token(settings, garment_id)
+        body = {**_put_body(token), "type": "onesie"}
+        r = client.put(f"/api/garments/{garment_id}", json=body)
+        assert r.status_code == 422
+        assert r.json()["error"]["code"] == "invalid_type"
+
+    def test_put_invalid_palette_422(self, client, settings, seeded):
+        garment_id = seeded["top"]["id"]
+        token = _stage_regen_token(settings, garment_id)
+        body = {
+            "regeneration_token": token,
+            "type": "top",
+            "colours": [
+                {"h": 0.0, "s": 80.0, "l": 50.0, "proportion": 60},
+                {"h": 120.0, "s": 60.0, "l": 40.0, "proportion": 30},
+            ],
+        }
+        r = client.put(f"/api/garments/{garment_id}", json=body)
+        assert r.status_code == 422
+        assert r.json()["error"]["code"] == "invalid_palette"
+
+
+# ── DELETE /api/garments/{id} ─────────────────────────────────────────────────
+
+class TestDeleteGarment:
+    def test_delete_returns_204(self, client, seeded):
+        garment_id = seeded["top"]["id"]
+        r = client.delete(f"/api/garments/{garment_id}")
+        assert r.status_code == 204
+        assert r.content == b""
+
+    def test_deleted_garment_absent_from_inventory(self, client, seeded):
+        garment_id = seeded["top"]["id"]
+        client.delete(f"/api/garments/{garment_id}")
+        body = client.get("/api/garments").json()
+        assert body["total"] == 2
+        ids = {g["id"] for g in body["garments"]}
+        assert garment_id not in ids
+
+    def test_deleted_garment_returns_404_on_detail(self, client, seeded):
+        garment_id = seeded["top"]["id"]
+        client.delete(f"/api/garments/{garment_id}")
+        r = client.get(f"/api/garments/{garment_id}")
+        assert r.status_code == 404
+        assert r.json()["error"]["code"] == "garment_not_found"
+
+    def test_deleted_image_returns_404(self, client, settings, seeded):
+        garment_id = seeded["top"]["id"]
+        client.delete(f"/api/garments/{garment_id}")
+        r = client.get(f"/api/garments/{garment_id}/image")
+        assert r.status_code == 404
+
+    def test_delete_unknown_garment_404(self, client):
+        r = client.delete("/api/garments/no-such-id")
+        assert r.status_code == 404
+        assert r.json()["error"]["code"] == "garment_not_found"
+
+    def test_double_delete_returns_404(self, client, seeded):
+        garment_id = seeded["top"]["id"]
+        client.delete(f"/api/garments/{garment_id}")
+        r2 = client.delete(f"/api/garments/{garment_id}")
+        assert r2.status_code == 404

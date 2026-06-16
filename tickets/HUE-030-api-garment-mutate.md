@@ -2,7 +2,7 @@
 id: HUE-030
 title: Garment regenerate, replace and delete endpoints
 type: task
-status: todo
+status: done
 milestone: 8
 batch: api
 layer: api
@@ -22,15 +22,24 @@ Regenerate/replace/delete (contract §2.9–§2.11): `POST …/regenerate` retur
 - FR-32: `PUT` without a valid regeneration token always fails — proving no field-edit path
 
 ## Definition of done (acceptance criteria)
-- [ ] Regenerate returns a garment-bound proposal leaving the record/image untouched (FR-33)
-- [ ] `PUT` replaces in place (same id/image, `regenerated_at` set); all `409` token cases handled (FR-32/FR-33)
-- [ ] `DELETE` returns 204 and removes record + files (FR-34)
-- [ ] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
-- [ ] Relevant extra gate green where applicable ((none — default gate only))
-- [ ] Ticket status + notes updated in the same commit
+- [x] Regenerate returns a garment-bound proposal leaving the record/image untouched (FR-33)
+- [x] `PUT` replaces in place (same id/image, `regenerated_at` set); all `409` token cases handled (FR-32/FR-33)
+- [x] `DELETE` returns 204 and removes record + files (FR-34)
+- [x] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
+- [x] Relevant extra gate green where applicable ((none — default gate only))
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `api/test_garments.py` regeneration/delete cases (§7.3): the full regeneration flow; `409` token cases; the FR-32 'no valid token → always fails' assertion; delete 204 + cascade + file removal.
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-16 — done: `garments.py` extended with `POST /api/garments/{id}/regenerate`,
+  `PUT /api/garments/{id}`, `DELETE /api/garments/{id}`; `schemas.py` — `GarmentUpdateRequest`,
+  `RegenerationProposalResponse`; `test_garments.py` extended with 22 new HUE-030 tests
+  (regenerate shape + record-unchanged assertion, FR-32 no-field-edit, all PUT token cases,
+  delete 204 + cascade + double-delete). `run_regeneration` mocked in regenerate tests to
+  avoid loading the rembg model; PUT tests use `staging.stage(garment_id=...)` directly.
+  `make test` → 862 passed, 1 skipped, 0 warnings; all 5 import contracts kept;
+  `app/api/garments.py` 100% line+branch coverage.
+- Sanity: `cd backend && .venv/bin/pytest tests/api/test_garments.py -q`
