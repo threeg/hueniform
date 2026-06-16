@@ -47,6 +47,9 @@ format in `tickets/TICKET-TEMPLATE.md`; the execution order in `tickets/BOARD.md
 - **Close epics when their last child closes.** Check the epic's children list in its ticket file
   (`HUE-E0n`); if every child is `done`, mark the epic `done` in both its ticket file and the
   BOARD.md epic table in that same commit.
+- **Run `/verify` after each batch.** This reviews the batch for reuse, quality and efficiency
+  issues and proposes cleanup tickets. Accepted tickets go to the cleanup backlog in `BOARD.md`
+  (CONVENTIONS.md §6); critical ones are promoted into the main sequence before the gate they affect.
 
 ## Architecture dependency rule (enforced, not aspirational)
 

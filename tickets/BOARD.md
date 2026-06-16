@@ -65,6 +65,13 @@ This board is the single topological view of the implementation order. Implement
 | 39 | HUE-039 | Performance suite and 500-garment fixture | task | tooling | 8 / tooling | HUE-E01 | todo | HUE-031, HUE-029, HUE-024 |
 | 40 | HUE-040 | End-to-end smoke suite | task | tooling | 8 / tooling | HUE-E01 | todo | HUE-033, HUE-034, HUE-035, HUE-036, HUE-037, HUE-027, HUE-028, HUE-029, HUE-030, HUE-031, HUE-020, HUE-038 |
 
+## Cleanup backlog
+
+Reactive tickets from `/verify` post-batch reviews (CONVENTIONS.md §6). Worked between batches or at milestone end; critical tickets are promoted to the main sequence.
+
+| # | id | title | type | layer | source batch | status | depends_on |
+|---|---|---|---|---|---|---|---|
+
 ## By milestone and batch
 
 | milestone | batch | tickets |

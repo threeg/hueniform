@@ -85,7 +85,20 @@ The meta-goal (brief §11.6) is that tickets are updated *as work completes*, no
 
 ---
 
-## 6. Relationship to the other index files
+## 6. Cleanup backlog
+
+Reactive tickets discovered by post-batch review (`/verify`) rather than planned up front.
+
+1. **Creation.** After each batch of tickets completes, `/verify` reviews the committed code for reuse, quality and efficiency issues. Accepted findings become cleanup tickets — ordinary `task` tickets with `batch: cleanup`. They use the standard `HUE-NNN` numbering scheme, allocated after the current highest number, so the no-forward-dependency invariant (§4.3) holds automatically.
+2. **Board placement.** Cleanup tickets live in a dedicated **Cleanup backlog** table in `BOARD.md`, separate from the main execution-order table. This keeps them visible without cluttering the critical path.
+3. **Dependencies.** Each cleanup ticket's `depends_on` lists the tickets whose code it cleans up. Nothing in the main sequence depends on a cleanup ticket unless explicitly promoted (see below).
+4. **When to work them.** Cleanup tickets are picked up between batches or at the end of a milestone, at the developer's discretion. They follow the same status lifecycle (§2) and definition-of-done rules (§5) as any other ticket.
+5. **Promotion.** If a cleanup ticket is **critical** — it would cause a gate failure (e.g. an N+1 query that blows `make test-perf`, a warning that breaks the zero-warnings gate) — it is promoted into the main execution sequence. Promotion means moving the ticket's row from the cleanup backlog table to the main execution-order table in `BOARD.md`, slotting it before the gate ticket it would affect. The developer decides promotion at triage time; `/verify` flags candidates but does not promote automatically.
+6. **Scope.** Cleanup tickets do not implement new requirements (`implements: []`). They improve internal quality of already-shipped code. If a finding reveals a genuine spec gap or missing requirement, that is a specification change (§5.5), not a cleanup ticket.
+
+---
+
+## 7. Relationship to the other index files
 
 - `TICKET-TEMPLATE.md` — the canonical per-ticket format (frontmatter + body per type). Authoritative for shape.
 - `CONVENTIONS.md` (this file) — how the ticket *system* works. Authoritative for process.
