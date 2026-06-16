@@ -2,7 +2,7 @@
 id: HUE-028
 title: Garment create endpoint
 type: task
-status: todo
+status: done
 milestone: 8
 batch: api
 layer: api
@@ -22,15 +22,21 @@ estimate: 3
 - `201` returns the full `Garment` (FR-25, FR-30)
 
 ## Definition of done (acceptance criteria)
-- [ ] Valid confirm returns the saved `Garment` (201); token consumed; both tables written via the service
-- [ ] `422 invalid_palette`/`invalid_type` and `404 detection_not_found` returned per contract §2.5
-- [ ] A garment cannot be saved without a confirmed palette and a type (FR-30/FR-31)
-- [ ] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
-- [ ] Relevant extra gate green where applicable ((none — default gate only))
-- [ ] Ticket status + notes updated in the same commit
+- [x] Valid confirm returns the saved `Garment` (201); token consumed; both tables written via the service
+- [x] `422 invalid_palette`/`invalid_type` and `404 detection_not_found` returned per contract §2.5
+- [x] A garment cannot be saved without a confirmed palette and a type (FR-30/FR-31)
+- [x] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
+- [x] Relevant extra gate green where applicable ((none — default gate only))
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `api/test_garments.py` create cases (§7.2, §7.3): success body matches `Garment`; palette boundary rejections; wrong-implied-family input stored as the server's derivation (cross-checked vs `matcher.taxonomy`); consumed-token 404.
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-16 — done: `app/api/garments.py` (POST /api/garments); `GarmentCreateRequest` added to
+  `schemas.py`; engine lifecycle (make_engine, init_db, dispose) added to `main.py` lifespan — engine
+  stored on `app.state.engine`; `garments_router` wired in `main.py`. 17 contract tests exercise success,
+  palette/type/token error paths and the server-side family derivation invariant (FR-1). `make test` →
+  822 passed, 1 skipped, 0 warnings; all 5 import contracts kept.
+- Sanity: `cd backend && .venv/bin/pytest tests/api/test_garments.py -q`

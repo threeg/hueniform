@@ -106,6 +106,14 @@ class TaxonomyResponse(BaseModel):
     families: list[FamilyOut]
 
 
+class GarmentCreateRequest(BaseModel):
+    """Request body for POST /api/garments (contract §2.5)."""
+
+    detection_token: str
+    type: str
+    colours: list[ColourIn]
+
+
 class DetectionImageInfo(BaseModel):
     """Image metadata returned in the detection proposal (contract §2.3)."""
 

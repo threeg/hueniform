@@ -7,8 +7,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.api.detections import router as detections_router
 from app.api.errors import register_error_handlers
+from app.api.garments import router as garments_router
 from app.api.health import router as health_router
 from app.api.taxonomy import router as taxonomy_router
+from app.storage.engine import init_db, make_engine
 
 
 class Settings(BaseSettings):
@@ -33,7 +35,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def _lifespan(_app: FastAPI):
         _init_data_dirs(settings.data_dir)
+        engine = make_engine(settings.data_dir / "hueniform.db")
+        init_db(engine)
+        _app.state.engine = engine
         yield
+        engine.dispose()
 
     app = FastAPI(
         title="Hueniform",
@@ -48,6 +54,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(health_router, prefix="/api")
     app.include_router(taxonomy_router, prefix="/api")
     app.include_router(detections_router, prefix="/api")
+    app.include_router(garments_router, prefix="/api")
 
     # SPA static serving with history-API fallback (architecture §5).
     # Skipped when the SPA has not been built (e.g. in dev mode or tests that
