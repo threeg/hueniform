@@ -25,10 +25,12 @@ from sqlalchemy.engine import Engine
 from sqlmodel import Session, select
 
 from app.matcher.colour import hsl_to_hex
-from app.matcher.taxonomy import classify, is_neutral
+from app.matcher.taxonomy import FAMILIES, classify, is_neutral
 from app.storage import staging
 from app.storage.image_store import generate_thumbnail
 from app.storage.models import GARMENT_TYPES, GarmentColourRow, GarmentRow
+
+_VALID_FAMILIES: frozenset[str] = frozenset(f.name for f in FAMILIES)
 
 
 # ── Errors ────────────────────────────────────────────────────────────────────
@@ -47,6 +49,10 @@ class InvalidTypeError(Exception):
 
 class GarmentNotFoundError(Exception):
     """No garment with this id exists in the database."""
+
+
+class InvalidFilterError(Exception):
+    """Unknown type or family value used as a list filter."""
 
 
 class RegenerationTokenError(Exception):
@@ -88,6 +94,13 @@ class GarmentResult:
     colours: tuple[SavedColour, ...]
 
 
+@dataclass(frozen=True)
+class GarmentPage:
+    """Paginated result from ``list_garments``."""
+    garments: tuple[GarmentResult, ...]
+    total: int
+
+
 # ── Validation ────────────────────────────────────────────────────────────────
 
 _GARMENT_TYPES = frozenset(GARMENT_TYPES)
@@ -116,7 +129,116 @@ def _validate_palette(colours: list[ColourIn]) -> None:
         )
 
 
+# ── Internal helpers ──────────────────────────────────────────────────────────
+
+def _row_to_result(row: GarmentRow, colour_rows: list[GarmentColourRow]) -> GarmentResult:
+    """Convert DB rows to a ``GarmentResult``, computing hex and neutral flag."""
+    saved_colours = tuple(
+        SavedColour(
+            h=c.h,
+            s=c.s,
+            l=c.l,
+            family=c.family,
+            neutral=is_neutral(c.family),
+            hex=hsl_to_hex(c.h, c.s, c.l),
+            proportion=c.proportion,
+        )
+        for c in colour_rows
+    )
+    return GarmentResult(
+        id=row.id,
+        type=row.type,
+        created_at=row.created_at,
+        regenerated_at=row.regenerated_at,
+        image_file=row.image_file,
+        thumbnail_file=row.thumbnail_file,
+        colours=saved_colours,
+    )
+
+
 # ── Public API ────────────────────────────────────────────────────────────────
+
+def list_garments(
+    engine: Engine,
+    *,
+    type_filter: str | None = None,
+    family_filter: str | None = None,
+    limit: int = 500,
+    offset: int = 0,
+) -> GarmentPage:
+    """
+    Return a paginated list of garments matching the optional filters.
+
+    Raises ``InvalidFilterError`` for unknown type or family values.
+    ``total`` reflects the full match count before pagination.
+    """
+    if type_filter is not None and type_filter not in _GARMENT_TYPES:
+        raise InvalidFilterError(f"Unknown garment type: '{type_filter}'.")
+    if family_filter is not None and family_filter not in _VALID_FAMILIES:
+        raise InvalidFilterError(f"Unknown colour family: '{family_filter}'.")
+
+    with Session(engine) as session:
+        # Build the family subquery: IDs of garments that have at least one
+        # colour row with the requested family (matches any role — FR-35).
+        family_subq = None
+        if family_filter is not None:
+            family_subq = (
+                select(GarmentColourRow.garment_id)
+                .where(GarmentColourRow.family == family_filter)
+                .distinct()
+            )
+
+        # Fetch all matching garment rows ordered by creation time.
+        all_stmt = select(GarmentRow).order_by(GarmentRow.created_at)
+        if type_filter is not None:
+            all_stmt = all_stmt.where(GarmentRow.type == type_filter)
+        if family_subq is not None:
+            all_stmt = all_stmt.where(GarmentRow.id.in_(family_subq))
+
+        all_rows = session.exec(all_stmt).all()
+        total = len(all_rows)
+
+        # Apply pagination in Python — avoids a second round-trip for count.
+        paged = all_rows[offset : offset + limit]
+        if not paged:
+            return GarmentPage(garments=(), total=total)
+
+        # Bulk-load colours for the page only (not the full match set).
+        page_ids = [r.id for r in paged]
+        colour_rows = session.exec(
+            select(GarmentColourRow)
+            .where(GarmentColourRow.garment_id.in_(page_ids))
+            .order_by(GarmentColourRow.garment_id, GarmentColourRow.position)
+        ).all()
+
+    colours_by_id: dict[str, list[GarmentColourRow]] = {}
+    for c in colour_rows:
+        colours_by_id.setdefault(c.garment_id, []).append(c)
+
+    garments = tuple(
+        _row_to_result(row, colours_by_id.get(row.id, []))
+        for row in paged
+    )
+    return GarmentPage(garments=garments, total=total)
+
+
+def get_garment(garment_id: str, engine: Engine) -> GarmentResult:
+    """
+    Return the full ``GarmentResult`` for *garment_id*.
+
+    Raises ``GarmentNotFoundError`` if no such garment exists.
+    """
+    with Session(engine) as session:
+        row = session.get(GarmentRow, garment_id)
+        if row is None:
+            raise GarmentNotFoundError(f"Garment '{garment_id}' not found.")
+        colour_rows = session.exec(
+            select(GarmentColourRow)
+            .where(GarmentColourRow.garment_id == garment_id)
+            .order_by(GarmentColourRow.position)
+        ).all()
+    return _row_to_result(row, colour_rows)
+
 
 def confirm(
     token: str,

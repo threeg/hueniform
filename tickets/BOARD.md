@@ -53,7 +53,7 @@ This board is the single topological view of the implementation order. Implement
 | 26 | HUE-026 | Taxonomy endpoint | task | api | 8 / api | HUE-E03 | done | HUE-025, HUE-009 |
 | 27 | HUE-027 | Detections endpoints | task | api | 8 / api | HUE-E03 | done | HUE-025, HUE-021 |
 | 28 | HUE-028 | Garment create endpoint | task | api | 8 / api | HUE-E03 | done | HUE-027, HUE-022, HUE-026 |
-| 29 | HUE-029 | Garment read endpoints and inventory filters | task | api | 8 / api | HUE-E04 | todo | HUE-025, HUE-022 |
+| 29 | HUE-029 | Garment read endpoints and inventory filters | task | api | 8 / api | HUE-E04 | done | HUE-025, HUE-022 |
 | 30 | HUE-030 | Garment regenerate, replace and delete endpoints | task | api | 8 / api | HUE-E03 | todo | HUE-029, HUE-023, HUE-027 |
 | 31 | HUE-031 | Suggestions endpoint | task | api | 8 / api | HUE-E05 | todo | HUE-025, HUE-024 |
 | 32 | HUE-032 | Frontend API client, query layer and shared components | task | frontend | 8 / frontend | HUE-E01 | todo | HUE-003, HUE-005, HUE-006 |

@@ -106,6 +106,13 @@ class TaxonomyResponse(BaseModel):
     families: list[FamilyOut]
 
 
+class InventoryResponse(BaseModel):
+    """Response body for GET /api/garments (contract §2.6)."""
+
+    garments: list[GarmentSummary]
+    total: int
+
+
 class GarmentCreateRequest(BaseModel):
     """Request body for POST /api/garments (contract §2.5)."""
 

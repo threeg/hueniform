@@ -1,52 +1,79 @@
 """
-Garments endpoints (contract §2.5–§2.11, FR-6, FR-25, FR-29, FR-30, FR-31).
+Garments endpoints (contract §2.5–§2.11, FR-6, FR-25, FR-29–FR-31, FR-34, FR-35).
 
-POST /api/garments — confirm a detection and save the garment.
+POST  /api/garments          — confirm a detection and save the garment.
+GET   /api/garments          — list with optional type/family/limit/offset filters.
+GET   /api/garments/{id}     — full Garment detail.
+GET   /api/garments/{id}/image
+GET   /api/garments/{id}/thumbnail
 
-Further endpoints (read, regenerate, delete) are added by later tickets.
+Further endpoints (regenerate, delete) are added by HUE-030.
 """
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Query, Request
+from fastapi.responses import FileResponse
 
 from app.api.errors import AppError
-from app.api.schemas import ColourOut, GarmentCreateRequest, GarmentDetail
+from app.api.schemas import (
+    ColourOut,
+    GarmentCreateRequest,
+    GarmentDetail,
+    GarmentSummary,
+    InventoryResponse,
+)
 from app.services.garment_service import (
     ColourIn as ServiceColourIn,
+    GarmentNotFoundError,
     GarmentResult,
+    InvalidFilterError,
     InvalidPaletteError,
     InvalidTypeError,
     TokenNotFoundError,
     confirm,
+    get_garment,
+    list_garments,
 )
 
 router = APIRouter()
 
 
+# ── Response conversion helpers ───────────────────────────────────────────────
+
+def _colours_out(result: GarmentResult) -> list[ColourOut]:
+    return [
+        ColourOut(
+            h=c.h, s=c.s, l=c.l,
+            family=c.family, neutral=c.neutral,
+            hex=c.hex, proportion=c.proportion,
+        )
+        for c in result.colours
+    ]
+
+
+def _to_summary(result: GarmentResult) -> GarmentSummary:
+    return GarmentSummary(
+        id=result.id,
+        type=result.type,
+        colours=_colours_out(result),
+        thumbnail_url=f"/api/garments/{result.id}/thumbnail",
+    )
+
+
 def _to_detail(result: GarmentResult) -> GarmentDetail:
-    """Convert a service GarmentResult to the API GarmentDetail response shape."""
     return GarmentDetail(
         id=result.id,
         type=result.type,
-        colours=[
-            ColourOut(
-                h=c.h,
-                s=c.s,
-                l=c.l,
-                family=c.family,
-                neutral=c.neutral,
-                hex=c.hex,
-                proportion=c.proportion,
-            )
-            for c in result.colours
-        ],
+        colours=_colours_out(result),
         thumbnail_url=f"/api/garments/{result.id}/thumbnail",
         image_url=f"/api/garments/{result.id}/image",
         created_at=result.created_at,
         regenerated_at=result.regenerated_at,
     )
 
+
+# ── Endpoints ─────────────────────────────────────────────────────────────────
 
 @router.post("/garments", status_code=201, response_model=GarmentDetail)
 def create_garment(body: GarmentCreateRequest, request: Request) -> GarmentDetail:
@@ -86,3 +113,77 @@ def create_garment(body: GarmentCreateRequest, request: Request) -> GarmentDetai
         raise AppError(422, "invalid_palette", str(e))
 
     return _to_detail(result)
+
+
+@router.get("/garments", response_model=InventoryResponse)
+def list_garments_endpoint(
+    request: Request,
+    type: str | None = Query(default=None),
+    family: str | None = Query(default=None),
+    limit: int = Query(default=500, ge=0),
+    offset: int = Query(default=0, ge=0),
+) -> InventoryResponse:
+    """
+    Return a paginated inventory list with optional AND filters (contract §2.6, FR-35).
+
+    ``family`` matches a garment if **any** of its colours belongs to that family.
+    Unknown ``type`` or ``family`` values → ``422 invalid_filter``.
+    """
+    engine = request.app.state.engine
+
+    try:
+        page = list_garments(
+            engine,
+            type_filter=type,
+            family_filter=family,
+            limit=limit,
+            offset=offset,
+        )
+    except InvalidFilterError as e:
+        raise AppError(422, "invalid_filter", str(e))
+
+    return InventoryResponse(
+        garments=[_to_summary(g) for g in page.garments],
+        total=page.total,
+    )
+
+
+@router.get("/garments/{garment_id}", response_model=GarmentDetail)
+def get_garment_endpoint(garment_id: str, request: Request) -> GarmentDetail:
+    """Return the full Garment detail (contract §2.7)."""
+    engine = request.app.state.engine
+
+    try:
+        result = get_garment(garment_id, engine)
+    except GarmentNotFoundError:
+        raise AppError(404, "garment_not_found", "Garment not found.")
+
+    return _to_detail(result)
+
+
+@router.get("/garments/{garment_id}/image", include_in_schema=False)
+def get_garment_image(garment_id: str, request: Request) -> FileResponse:
+    """Serve the stored garment photograph (contract §2.8)."""
+    engine = request.app.state.engine
+    settings = request.app.state.settings
+
+    try:
+        result = get_garment(garment_id, engine)
+    except GarmentNotFoundError:
+        raise AppError(404, "garment_not_found", "Garment not found.")
+
+    return FileResponse(settings.data_dir / "images" / result.image_file)
+
+
+@router.get("/garments/{garment_id}/thumbnail", include_in_schema=False)
+def get_garment_thumbnail(garment_id: str, request: Request) -> FileResponse:
+    """Serve the garment thumbnail (contract §2.8)."""
+    engine = request.app.state.engine
+    settings = request.app.state.settings
+
+    try:
+        result = get_garment(garment_id, engine)
+    except GarmentNotFoundError:
+        raise AppError(404, "garment_not_found", "Garment not found.")
+
+    return FileResponse(settings.data_dir / "thumbnails" / result.thumbnail_file)
