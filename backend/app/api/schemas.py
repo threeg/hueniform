@@ -80,6 +80,32 @@ class GarmentDetail(BaseModel):
     regenerated_at: str | None
 
 
+class CanonicalHSL(BaseModel):
+    """Canonical HSL stored when the user adds a colour by family alone (FR-29)."""
+
+    h: float
+    s: float
+    l: float
+
+
+class FamilyOut(BaseModel):
+    """One colour family entry in the taxonomy response (contract §2.2)."""
+
+    name: str
+    neutral: bool
+    canonical: CanonicalHSL
+    # Present only on chromatic families; absent (not null) for neutrals via
+    # response_model_exclude_none=True on the endpoint.
+    representative_hue: float | None = None
+    hue_arc: tuple[float, float] | None = None
+
+
+class TaxonomyResponse(BaseModel):
+    """Response body for GET /api/taxonomy (contract §2.2)."""
+
+    families: list[FamilyOut]
+
+
 def validate_palette(colours: list[ColourIn]) -> None:
     """
     Validate FR-6 palette constraints.

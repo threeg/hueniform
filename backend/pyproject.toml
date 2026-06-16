@@ -108,3 +108,26 @@ forbidden_modules = [
     "app.matcher",
     "app.storage",
 ]
+# The "forbidden" contract checks transitive imports, so every legitimate
+# services → lower-layer edge must be listed here to prevent the api →
+# services → lower chain from tripping the rule.  Update this list whenever
+# a service module gains a new lower-layer import.
+ignore_imports = [
+    "app.services.detection_service -> app.detection.pipeline",
+    "app.services.detection_service -> app.matcher.colour",
+    "app.services.detection_service -> app.matcher.taxonomy",
+    "app.services.detection_service -> app.storage.staging",
+    "app.services.garment_service -> app.matcher.colour",
+    "app.services.garment_service -> app.matcher.taxonomy",
+    "app.services.garment_service -> app.storage.image_store",
+    "app.services.garment_service -> app.storage.models",
+    "app.services.garment_service -> app.storage.staging",
+    "app.services.suggestion_service -> app.matcher.colour",
+    "app.services.suggestion_service -> app.matcher.explain",
+    "app.services.suggestion_service -> app.matcher.ranking",
+    "app.services.suggestion_service -> app.matcher.roles",
+    "app.services.suggestion_service -> app.matcher.slots",
+    "app.services.suggestion_service -> app.matcher.taxonomy",
+    "app.services.suggestion_service -> app.storage.models",
+    "app.services.taxonomy_service -> app.matcher.taxonomy",
+]
