@@ -49,7 +49,7 @@ This board is the single topological view of the implementation order. Implement
 | 23 | HUE-023 | Regeneration service | task | services | 8 / services | HUE-E03 | done | HUE-022, HUE-021 |
 | 24 | HUE-024 | Suggestion service: enumeration, ranking and the fallback ladder | task | services | 8 / services | HUE-E05 | done | HUE-015, HUE-014, HUE-013, HUE-016 |
 | 41 | HUE-041 | Fix N+1 query in suggestion_service _load_wardrobe | task | services | 8 / cleanup | — | done | HUE-024 |
-| 25 | HUE-025 | API foundation: schemas, error envelope, health, static serving | task | api | 8 / api | HUE-E01 | todo | HUE-002, HUE-016 |
+| 25 | HUE-025 | API foundation: schemas, error envelope, health, static serving | task | api | 8 / api | HUE-E01 | done | HUE-002, HUE-016 |
 | 26 | HUE-026 | Taxonomy endpoint | task | api | 8 / api | HUE-E03 | todo | HUE-025, HUE-009 |
 | 27 | HUE-027 | Detections endpoints | task | api | 8 / api | HUE-E03 | todo | HUE-025, HUE-021 |
 | 28 | HUE-028 | Garment create endpoint | task | api | 8 / api | HUE-E03 | todo | HUE-027, HUE-022, HUE-026 |
