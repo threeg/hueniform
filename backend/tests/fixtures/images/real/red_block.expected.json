@@ -1,0 +1,11 @@
+{
+  "dominant_family": "Red",
+  "dominant_proportion_min": 20,
+  "dominant_proportion_max": 100,
+  "allowed_extra_families": ["White", "Grey", "Black", "Pink", "Orange", "Brown", "Beige/Tan"],
+  "count_min": 1,
+  "count_max": 4,
+  "fallback_expected": false,
+  "fallback_ok": true,
+  "_note": "Red rectangle 160x160 on white 200x200 bg; fallback_ok because rembg may not segment synthetic blocks"
+}

@@ -1,0 +1,11 @@
+{
+  "dominant_family": "Blue",
+  "dominant_proportion_min": 20,
+  "dominant_proportion_max": 100,
+  "allowed_extra_families": ["White", "Grey", "Black", "Azure", "Violet", "Navy", "Denim"],
+  "count_min": 1,
+  "count_max": 4,
+  "fallback_expected": false,
+  "fallback_ok": true,
+  "_note": "Blue rectangle (38,68,198) on white bg; Azure/Navy/Denim allowed as extras due to JPEG artefacts"
+}

@@ -28,7 +28,9 @@ setup:
 	cd frontend && npm ci
 	cd frontend && npm run build
 	cd frontend && npx playwright install chromium firefox
-	@# HUE-020 adds: fetch the rembg model into data/models/
+	mkdir -p data/models
+	U2NET_HOME=$(CURDIR)/data/models $(PY) -c \
+	    "import rembg; rembg.new_session('u2net'); print('rembg model ready.')"
 	@echo "setup complete."
 
 # ─── Single offline run command (NFR-2) ──────────────────────────────────────
@@ -58,7 +60,7 @@ test-frontend:
 
 # ─── Heavier optional gates (definition-of-done for specific ticket types) ───
 test-model:
-	cd backend && HYPOTHESIS_PROFILE=deterministic \
+	cd backend && U2NET_HOME=$(CURDIR)/data/models HYPOTHESIS_PROFILE=deterministic \
 	    $(CURDIR)/$(PYTEST) -m model \
 	    --cov=app --cov-branch --cov-report=term-missing
 

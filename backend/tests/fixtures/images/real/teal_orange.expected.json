@@ -1,0 +1,11 @@
+{
+  "dominant_family": "Teal",
+  "dominant_proportion_min": 15,
+  "dominant_proportion_max": 100,
+  "allowed_extra_families": ["Orange", "White", "Grey", "Black", "Azure", "Mint", "Yellow", "Brown"],
+  "count_min": 1,
+  "count_max": 4,
+  "fallback_expected": false,
+  "fallback_ok": true,
+  "_note": "Split garment: teal top half / orange bottom half on white bg; Orange is expected but listed as extra to handle merge-cluster edge cases"
+}
