@@ -1,10 +1,15 @@
 """
-Garment service: confirm-save (FR-1, FR-25, FR-29, FR-30) and delete (FR-34).
+Garment service: confirm-save (FR-1, FR-25, FR-29, FR-30), delete (FR-34) and
+regeneration confirmation (FR-32, FR-33).
 
 ``confirm`` consumes the detection token, re-derives every family server-side
 from submitted HSL (FR-1 — never trust a client family), validates the palette,
 atomically moves the staged image, generates the thumbnail and inserts both
 database tables.  A mid-save failure leaves no rows and no files (FR-30).
+
+``confirm_regeneration`` accepts a garment-bound regeneration token, validates
+it, and replaces the palette and type in place — same id, same image (FR-33).
+The token requirement is the FR-32 enforcement: there is no field-edit path.
 
 ``delete`` removes the garment record (cascade to colour rows) and both files.
 """
@@ -17,7 +22,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from sqlalchemy.engine import Engine
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.matcher.colour import hsl_to_hex
 from app.matcher.taxonomy import classify, is_neutral
@@ -42,6 +47,10 @@ class InvalidTypeError(Exception):
 
 class GarmentNotFoundError(Exception):
     """No garment with this id exists in the database."""
+
+
+class RegenerationTokenError(Exception):
+    """Token absent, expired, consumed, or bound to a different garment (§2.10 → 409)."""
 
 
 # ── Value types ───────────────────────────────────────────────────────────────
@@ -192,6 +201,57 @@ def confirm(
     )
 
 
+def confirm_regeneration(
+    garment_id: str,
+    token: str,
+    garment_type: str,
+    colours: list[ColourIn],
+    staging_dir: Path,
+    images_dir: Path,
+    engine: Engine,
+) -> GarmentResult:
+    """
+    Confirm a regeneration: validate the token, replace palette + type in place (FR-33).
+
+    The token must be bound to *garment_id*; absent / expired / consumed / foreign
+    tokens all raise ``RegenerationTokenError`` (FR-32 — no field-edit path).
+
+    Raises
+    ------
+    RegenerationTokenError
+        Token absent, expired, consumed, or bound to a different garment (→ 409).
+    GarmentNotFoundError
+        No garment with *garment_id* exists (→ 404).
+    InvalidTypeError
+        *garment_type* not in the FR-16 allowlist.
+    InvalidPaletteError
+        Colour count, ranges or sum failed validation.
+    """
+    entry = staging.load(token, staging_dir)
+    if entry is None or entry.garment_id != garment_id:
+        raise RegenerationTokenError(
+            "Regeneration token is absent, expired, consumed, or bound to a different garment."
+        )
+
+    if garment_type not in _GARMENT_TYPES:
+        raise InvalidTypeError(
+            f"'{garment_type}' is not a valid garment type. "
+            f"Allowed: {', '.join(sorted(_GARMENT_TYPES))}."
+        )
+
+    _validate_palette(colours)
+
+    families = [classify(c.h, c.s, c.l) for c in colours]
+    regenerated_at = datetime.now(timezone.utc).isoformat()
+
+    # Consume the token: move the staged copy over the stored image (same content).
+    staging.move(token, entry.ext, garment_id, staging_dir, images_dir)
+
+    return _update_garment_in_place(
+        engine, garment_id, garment_type, colours, families, regenerated_at
+    )
+
+
 def delete(
     garment_id: str,
     images_dir: Path,
@@ -255,3 +315,73 @@ def _insert_garment(
             )
 
         session.commit()
+
+
+def _update_garment_in_place(
+    engine: Engine,
+    garment_id: str,
+    garment_type: str,
+    colours: list[ColourIn],
+    families: list[str],
+    regenerated_at: str,
+) -> GarmentResult:
+    with Session(engine) as session:
+        row = session.get(GarmentRow, garment_id)
+        if row is None:
+            raise GarmentNotFoundError(f"Garment '{garment_id}' not found.")
+
+        # Capture immutable fields before any modifications.
+        created_at = row.created_at
+        image_file = row.image_file
+        thumbnail_file = row.thumbnail_file
+
+        # Update in place — same id, same image (FR-33).
+        row.type = garment_type
+        row.regenerated_at = regenerated_at
+        session.add(row)
+
+        # Replace colour rows: delete old, flush, insert new.
+        old = session.exec(
+            select(GarmentColourRow).where(GarmentColourRow.garment_id == garment_id)
+        ).all()
+        for oc in old:
+            session.delete(oc)
+        session.flush()
+
+        for i, (c, f) in enumerate(zip(colours, families)):
+            session.add(
+                GarmentColourRow(
+                    garment_id=garment_id,
+                    position=i,
+                    h=c.h,
+                    s=c.s,
+                    l=c.l,
+                    family=f,
+                    proportion=c.proportion,
+                )
+            )
+
+        session.commit()
+
+    saved_colours = tuple(
+        SavedColour(
+            h=c.h,
+            s=c.s,
+            l=c.l,
+            family=f,
+            neutral=is_neutral(f),
+            hex=hsl_to_hex(c.h, c.s, c.l),
+            proportion=c.proportion,
+        )
+        for c, f in zip(colours, families)
+    )
+
+    return GarmentResult(
+        id=garment_id,
+        type=garment_type,
+        created_at=created_at,
+        regenerated_at=regenerated_at,
+        image_file=image_file,
+        thumbnail_file=thumbnail_file,
+        colours=saved_colours,
+    )
