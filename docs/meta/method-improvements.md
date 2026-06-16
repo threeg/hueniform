@@ -47,7 +47,14 @@ manually. There is no mechanical check that a requirement listed in a ticket's
 
 This runs as part of `make test` and fails if a tracked requirement has no test.
 
-**Status:** Proposed.
+**Status:** Rejected.
+
+**Reason:** This reduces to grepping for FR/NFR identifier strings in test files — a
+shallow annotation check that duplicates what `/verify` already does with real semantic
+analysis. It would gate `make test` on busywork (sprinkling ID comments into tests)
+without verifying that the tests actually *cover* the requirement's behaviour. Mechanical
+gates should target structural invariants (import contracts, frontmatter validation) that
+AI review cannot reliably catch, not semantic coverage questions that it handles better.
 
 **Effort:** Small (1-2 hours). Could be a cleanup ticket.
 
