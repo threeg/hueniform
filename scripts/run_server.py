@@ -6,6 +6,7 @@ Usage: python scripts/run_server.py <uvicorn-path>
 """
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 import time
@@ -22,12 +23,19 @@ def main() -> None:
         print("usage: run_server.py <uvicorn-bin>", file=sys.stderr)
         sys.exit(1)
 
+    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    spa_dir   = os.path.join(repo_root, "frontend", "dist")
+
     uvicorn = sys.argv[1]
+    env = os.environ.copy()
+    env["HUENIFORM_SPA_DIR"] = spa_dir
+
     proc = subprocess.Popen(
         [uvicorn, "app.main:app",
          "--host", "127.0.0.1", "--port", "8000",
          "--log-level", "warning"],
-        cwd="backend",
+        cwd=os.path.join(repo_root, "backend"),
+        env=env,
     )
 
     deadline = time.monotonic() + TIMEOUT_S
