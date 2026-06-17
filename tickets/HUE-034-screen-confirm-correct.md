@@ -2,7 +2,7 @@
 id: HUE-034
 title: Confirm-and-correct screen
 type: story
-status: todo
+status: done
 milestone: 8
 batch: frontend
 layer: frontend
@@ -52,13 +52,27 @@ so that the garment is saved with colours I trust and a type.
 - FR-5/FR-28/FR-33 via MSW; covered end-to-end by E2E journey 1 (HUE-040, §9)
 
 ## Definition of done
-- [ ] Acceptance criteria met
-- [ ] Tests added/updated per test strategy §12.2 and passing in `make test`
-- [ ] Matcher-touching work: 100% line+branch on app/matcher/ holds (§12.3.3)
-- [ ] Detection-touching work: `make test-model` passes (§12.3.4)
-- [ ] Evaluation/inventory-perf-touching work: `make test-perf` passes (§12.3.5)
-- [ ] User-flow-touching work: `make test-e2e` passes (§12.3.6)
-- [ ] Ticket status + notes updated in the same commit (§12.3.7)
+- [x] Acceptance criteria met
+- [x] Tests added/updated per test strategy §12.2 and passing in `make test`
+- [ ] Matcher-touching work: 100% line+branch on app/matcher/ holds (§12.3.3) — not applicable
+- [ ] Detection-touching work: `make test-model` passes (§12.3.4) — not applicable
+- [ ] Evaluation/inventory-perf-touching work: `make test-perf` passes (§12.3.5) — not applicable
+- [ ] User-flow-touching work: `make test-e2e` passes (§12.3.6) — deferred to HUE-040
+- [x] Ticket status + notes updated in the same commit (§12.3.7)
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-17 — done: `utils/colour.ts` — `hslToHex` (HSL→hex for manually added colours) and
+  `normaliseProportions` (scale array to sum 100, largest-bucket rounding fix);
+  `routes/AddConfirm.tsx` — two-column layout; detection photograph preview; colour rows with
+  ±-stepper numeric inputs (FR-29); live stacked preview bar; live total + normalisation notice
+  (FR-29); remove control (disabled on last colour, FR-6); add-a-colour panel with taxonomy
+  family picker + canonical HSL submission (FR-29); eight-button type picker, none pre-selected
+  (FR-31); save disabled until type chosen (FR-30); POST /api/garments (new garment) or PUT
+  /api/garments/{id} (regeneration, FR-33) with normalised ColourIn bodies; ErrorBanner on save
+  failure; WarningBanner for fallback_used (FR-27); redirect to /add when no navigation state.
+  `routes/AddConfirm.module.css` — two-column grid, stepper group, palette bar, type picker pills.
+  `routes/ConfirmCorrect.test.tsx` — 26 tests: redirect (1), default state (5), fallback banner
+  (2), type picker (3), proportion editor (4), colour removal (2), add-colour (2), save POST (4),
+  regeneration PUT (3). All 76 tests pass; 0 warnings. `make test-e2e` deferred to HUE-040.
+- Sanity: `cd frontend && npm run test`

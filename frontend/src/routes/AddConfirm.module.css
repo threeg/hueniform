@@ -1,0 +1,256 @@
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* ── Left: image preview ─────────────────────────────────────────────────── */
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.previewImage {
+  width: 100%;
+  max-height: 520px;
+  object-fit: contain;
+  background: #f0f0f0;
+  border-radius: 6px;
+  display: block;
+}
+
+.dimensions {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #999;
+  text-align: center;
+}
+
+/* ── Right: editor ───────────────────────────────────────────────────────── */
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Colour rows */
+
+.colourRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.stepper button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.stepper button:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+.proportionInput {
+  width: 52px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px;
+  font-size: 0.875rem;
+}
+
+.removeButton {
+  font-size: 0.75rem;
+  color: #999;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 3px;
+}
+
+.removeButton:hover:not(:disabled) {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.removeButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Stacked preview bar */
+
+.bar {
+  display: flex;
+  height: 14px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.barSegment {
+  display: block;
+  height: 100%;
+}
+
+/* Live total */
+
+.totalLine {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* Add a colour */
+
+.addSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.addButton {
+  align-self: flex-start;
+  background: none;
+  border: 1px dashed #aaa;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  color: #555;
+  cursor: pointer;
+}
+
+.addButton:hover:not(:disabled) {
+  border-color: #6366f1;
+  color: #6366f1;
+}
+
+.addPanel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.addPanel select,
+.addPanel input[type='number'] {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.875rem;
+}
+
+.addPanel button {
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.addPanel input[type='number'] {
+  width: 64px;
+}
+
+/* Type picker */
+
+.typePicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.typeButton {
+  padding: 6px 14px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  background: #fff;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.typeButton:hover:not(:disabled) {
+  border-color: #6366f1;
+  color: #6366f1;
+}
+
+.typeSelected {
+  background: #6366f1;
+  border-color: #6366f1;
+  color: #fff;
+}
+
+/* Actions */
+
+.actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.saveButton {
+  padding: 10px 24px;
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.1s;
+}
+
+.saveButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  padding: 10px 20px;
+  background: #fff;
+  color: #555;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
