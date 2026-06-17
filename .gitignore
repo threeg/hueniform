@@ -1,5 +1,6 @@
 # Runtime state — not tracked (NFR-3)
 /data/
+backend/data/
 
 # Python
 .venv/
