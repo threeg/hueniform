@@ -1,0 +1,95 @@
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.notice {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 32px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  background: #fafafa;
+  min-height: 240px;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s;
+  cursor: default;
+}
+
+.zone.dragOver {
+  border-color: #6366f1;
+  background: #eef2ff;
+}
+
+.zone.inert {
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.headline {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.or {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #999;
+}
+
+.pickButton {
+  padding: 8px 20px;
+  border: 1px solid #6366f1;
+  border-radius: 4px;
+  background: #fff;
+  color: #6366f1;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.pickButton:hover {
+  background: #eef2ff;
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.tip {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #aaa;
+  max-width: 360px;
+}
+
+.hiddenInput {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
