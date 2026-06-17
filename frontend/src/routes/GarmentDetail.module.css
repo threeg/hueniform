@@ -1,0 +1,222 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  max-width: 900px;
+}
+
+.backLink {
+  color: #555;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: #111;
+  text-decoration: underline;
+}
+
+/* ── Two-column layout ──────────────────────────────────────────────────────── */
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 640px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.imageCol {
+  /* photograph column */
+}
+
+.photo {
+  width: 100%;
+  border-radius: 6px;
+  display: block;
+}
+
+/* ── Right detail column ────────────────────────────────────────────────────── */
+
+.detailCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.typeHeading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ── Palette list ───────────────────────────────────────────────────────────── */
+
+.paletteList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.paletteRow {
+  display: flex;
+  align-items: center;
+}
+
+/* ── Dates ──────────────────────────────────────────────────────────────────── */
+
+.dates {
+  font-size: 0.875rem;
+  color: #666;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.dates p {
+  margin: 0;
+}
+
+/* ── Actions ────────────────────────────────────────────────────────────────── */
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.actionHint {
+  font-size: 0.8rem;
+  color: #777;
+  margin: 0;
+}
+
+.regenBtn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  align-self: flex-start;
+}
+
+.regenBtn:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+.regenBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.deleteBtn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #c00;
+  border-radius: 4px;
+  background: #fff;
+  color: #c00;
+  cursor: pointer;
+  font-size: 0.9rem;
+  align-self: flex-start;
+}
+
+.deleteBtn:hover:not(:disabled) {
+  background: #fff5f5;
+}
+
+.deleteBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ── Delete confirmation dialogue ───────────────────────────────────────────── */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.dialog {
+  background: #fff;
+  border-radius: 8px;
+  padding: 2rem;
+  max-width: 360px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+}
+
+.dialogQuestion {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.dialogThumb {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  align-self: center;
+}
+
+.dialogWarning {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+}
+
+.dialogActions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.cancelBtn {
+  padding: 0.45rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.cancelBtn:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+.confirmDeleteBtn {
+  padding: 0.45rem 1rem;
+  border: 1px solid #c00;
+  border-radius: 4px;
+  background: #c00;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.confirmDeleteBtn:hover:not(:disabled) {
+  background: #a00;
+}
+
+.confirmDeleteBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

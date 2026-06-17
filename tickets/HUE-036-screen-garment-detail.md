@@ -2,7 +2,7 @@
 id: HUE-036
 title: Garment detail screen
 type: story
-status: todo
+status: done
 milestone: 8
 batch: frontend
 layer: frontend
@@ -50,13 +50,20 @@ so that I can fix a bad detection or remove a garment I no longer own.
 - `GarmentDetail.test.tsx` (§10.1): regenerate enters confirm-and-correct with the token; delete confirmation step precedes `DELETE` (FR-34); no edit control present (FR-32/FR-33)
 
 ## Definition of done
-- [ ] Acceptance criteria met
-- [ ] Tests added/updated per test strategy §12.2 and passing in `make test`
-- [ ] Matcher-touching work: 100% line+branch on app/matcher/ holds (§12.3.3)
-- [ ] Detection-touching work: `make test-model` passes (§12.3.4)
-- [ ] Evaluation/inventory-perf-touching work: `make test-perf` passes (§12.3.5)
-- [ ] User-flow-touching work: `make test-e2e` passes (§12.3.6)
-- [ ] Ticket status + notes updated in the same commit (§12.3.7)
+- [x] Acceptance criteria met
+- [x] Tests added/updated per test strategy §12.2 and passing in `make test`
+- [ ] Matcher-touching work: 100% line+branch on app/matcher/ holds (§12.3.3) — not applicable
+- [ ] Detection-touching work: `make test-model` passes (§12.3.4) — not applicable
+- [ ] Evaluation/inventory-perf-touching work: `make test-perf` passes (§12.3.5) — not applicable
+- [ ] User-flow-touching work: `make test-e2e` passes (§12.3.6) — deferred to HUE-040
+- [x] Ticket status + notes updated in the same commit (§12.3.7)
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-17 — implemented. `GarmentDetail.tsx` replaces placeholder: two-column layout
+  (photograph left, type heading + palette list + dates + actions right), ← Wardrobe link
+  restoring inventory filter state via router state, Regenerate → confirm-and-correct (FR-33),
+  Delete with explicit confirmation dialogue (FR-34, Cancel auto-focused, Delete styled
+  destructively), 404 not-found state, no field-edit controls (FR-32). Wardrobe.tsx updated
+  to pass search params in link state. 19 new tests; 111/111 pass, zero warnings.
+  Sanity: `cd frontend && npm run test -- src/routes/GarmentDetail.test.tsx`

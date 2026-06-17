@@ -49,10 +49,10 @@ so that I can find garments quickly.
 ## Definition of done
 - [x] Acceptance criteria met
 - [x] Tests added/updated per test strategy §12.2 and passing in `make test`
-- [ ] Matcher-touching work: 100% line+branch on app/matcher/ holds (§12.3.3)
-- [ ] Detection-touching work: `make test-model` passes (§12.3.4)
-- [ ] Evaluation/inventory-perf-touching work: `make test-perf` passes (§12.3.5)
-- [ ] User-flow-touching work: `make test-e2e` passes (§12.3.6)
+- [ ] Matcher-touching work: 100% line+branch on app/matcher/ holds (§12.3.3) — not applicable
+- [ ] Detection-touching work: `make test-model` passes (§12.3.4) — not applicable
+- [ ] Evaluation/inventory-perf-touching work: `make test-perf` passes (§12.3.5) — not applicable
+- [ ] User-flow-touching work: `make test-e2e` passes (§12.3.6) — deferred to HUE-040
 - [x] Ticket status + notes updated in the same commit (§12.3.7)
 
 ## Notes

@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams, useLocation } from 'react-router-dom'
 import { useGarments, useTaxonomy } from '../api/queries'
 import GarmentCard from '../components/GarmentCard'
 import ErrorBanner from '../components/ErrorBanner'
@@ -17,6 +17,7 @@ const TYPE_LABELS: Record<string, string> = {
 
 export default function Wardrobe() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const location = useLocation()
 
   const typeFilter   = searchParams.get('type')   ?? undefined
   const familyFilter = searchParams.get('family') ?? undefined
@@ -141,6 +142,7 @@ export default function Wardrobe() {
             <li key={g.id} className={styles.gridItem}>
               <Link
                 to={`/garments/${g.id}`}
+                state={{ from: location.search.replace(/^\?/, '') }}
                 className={styles.cardLink}
                 aria-label={`${TYPE_LABELS[g.type] ?? g.type} garment detail`}
               >
