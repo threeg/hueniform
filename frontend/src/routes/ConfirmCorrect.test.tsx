@@ -51,9 +51,14 @@ function renderScreen(
       { path: '/', element: <div data-testid="wardrobe-screen" /> },
       { path: '/garments/:id', element: <div data-testid="detail-screen" /> },
     ],
-    { initialEntries: [{ pathname: '/add/confirm', state }] },
+    {
+      initialEntries: [{ pathname: '/add/confirm', state }],
+      future: { v7_startTransition: true, v7_relativeSplatPath: true },
+    },
   )
-  return render(<RouterProvider router={router} />)
+  return render(
+    <RouterProvider router={router} future={{ v7_startTransition: true }} />,
+  )
 }
 
 const user = userEvent.setup

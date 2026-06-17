@@ -39,9 +39,14 @@ function renderScreen() {
         element: <div data-testid="confirm-screen" />,
       },
     ],
-    { initialEntries: ['/add'] },
+    {
+      initialEntries: ['/add'],
+      future: { v7_startTransition: true, v7_relativeSplatPath: true },
+    },
   )
-  return render(<RouterProvider router={router} />)
+  return render(
+    <RouterProvider router={router} future={{ v7_startTransition: true }} />,
+  )
 }
 
 function garmentFile(name = 'garment.jpg', type = 'image/jpeg') {
@@ -194,9 +199,14 @@ describe('AddGarment — fallback_used handoff (FR-27)', () => {
           ),
         },
       ],
-      { initialEntries: ['/add'] },
+      {
+        initialEntries: ['/add'],
+        future: { v7_startTransition: true, v7_relativeSplatPath: true },
+      },
     )
-    render(<RouterProvider router={router} />)
+    render(
+      <RouterProvider router={router} future={{ v7_startTransition: true }} />,
+    )
 
     const user = userEvent.setup()
     await user.upload(screen.getByTestId('file-input'), garmentFile())
