@@ -61,7 +61,7 @@ This board is the single topological view of the implementation order. Implement
 | 34 | HUE-034 | Confirm-and-correct screen | story | frontend | 8 / frontend | HUE-E03 | done | HUE-032, HUE-033 |
 | 35 | HUE-035 | Inventory browser screen | story | frontend | 8 / frontend | HUE-E04 | done | HUE-032 |
 | 36 | HUE-036 | Garment detail screen | story | frontend | 8 / frontend | HUE-E03 | done | HUE-032, HUE-034, HUE-035 |
-| 37 | HUE-037 | Outfit request and suggestion results screen | story | frontend | 8 / frontend | HUE-E05 | todo | HUE-032 |
+| 37 | HUE-037 | Outfit request and suggestion results screen | story | frontend | 8 / frontend | HUE-E05 | done | HUE-032 |
 | 38 | HUE-038 | Single-command run and production serving | task | tooling | 8 / tooling | HUE-E01 | todo | HUE-025, HUE-032, HUE-020 |
 | 39 | HUE-039 | Performance suite and 500-garment fixture | task | tooling | 8 / tooling | HUE-E01 | todo | HUE-031, HUE-029, HUE-024, HUE-041 |
 | 40 | HUE-040 | End-to-end smoke suite | task | tooling | 8 / tooling | HUE-E01 | todo | HUE-033, HUE-034, HUE-035, HUE-036, HUE-037, HUE-027, HUE-028, HUE-029, HUE-030, HUE-031, HUE-020, HUE-038 |
