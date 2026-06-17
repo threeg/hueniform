@@ -4,7 +4,7 @@
 |---|---|
 | **Document** | Milestone plan and progress tracker |
 | **Repository location** | `docs/00-milestone-plan.md` |
-| **Last updated** | 15 June 2026 (Milestone 7 complete) |
+| **Last updated** | 17 June 2026 (Milestone 8 complete) |
 
 This document is the single source of truth for **where the project is**. It was extracted from the project brief (§14) so the brief stays stable after approval while this tracker is updated as each milestone completes. Update the status column and the *Current position* line in the same commit as the milestone's deliverable.
 
@@ -12,7 +12,7 @@ This document is the single source of truth for **where the project is**. It was
 
 ## Current position
 
-> **Milestone 7 complete. Next: Milestone 8 — Implementation, ticket by ticket (HUE-007 onwards)**
+> **Milestone 8 complete. All implementation tickets HUE-007 to HUE-041 done; all five capability epics closed; `make test-all` green.**
 
 ---
 
@@ -27,7 +27,7 @@ This document is the single source of truth for **where the project is**. It was
 | 5 | Test strategy | `docs/05-test-strategy.md` — frameworks, what is unit/integration/E2E tested, esp. the colour matcher | **Chat** | ✅ Complete |
 | 6 | Ticket generation | `tickets/*.md` + ticket-system conventions doc + `BOARD.md` index | **Cowork** | ✅ Complete |
 | 7 | Repository setup & scaffolding | Repo initialised, docs and tickets committed, backend/frontend skeletons | **Code** | ✅ Complete |
-| 8+ | Implementation, ticket by ticket | Working software; tickets updated in the same commits | **Code** (with Chat for design questions as they arise) | 🔶 In progress |
+| 8+ | Implementation, ticket by ticket | Working software; tickets updated in the same commits | **Code** (with Chat for design questions as they arise) | ✅ Complete |
 
 ---
 

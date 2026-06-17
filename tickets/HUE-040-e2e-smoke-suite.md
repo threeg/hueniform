@@ -2,7 +2,7 @@
 id: HUE-040
 title: End-to-end smoke suite
 type: task
-status: todo
+status: done
 milestone: 8
 batch: tooling
 layer: tooling
@@ -23,15 +23,16 @@ A thin Playwright smoke suite proves the assembled system works against the genu
 - Chromium + Firefox projects (NFR-7); skip with an explicit message if the model or browsers are missing
 
 ## Definition of done (acceptance criteria)
-- [ ] All three journeys pass on Chromium and Firefox against the built app with the real model (NFR-7)
-- [ ] `webServer` boots the production-style process; suite skips clearly if model/browsers absent
-- [ ] `make test-e2e` runs the suite
-- [ ] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
-- [ ] Relevant extra gate green where applicable (`make test-e2e` (§12.3.6))
-- [ ] Ticket status + notes updated in the same commit
+- [x] All three journeys pass on Chromium and Firefox against the built app with the real model (NFR-7)
+- [x] `webServer` boots the production-style process; suite skips clearly if model/browsers absent
+- [x] `make test-e2e` runs the suite
+- [x] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
+- [x] Relevant extra gate green where applicable (`make test-e2e` (§12.3.6))
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `e2e/*.spec.ts` (§9): the three journeys, asserting user-visible behaviour only (contract details are §7's job). Mandatory in DoD for user-flow-touching tickets (§12.3.6); part of `make test-all` at milestone completion.
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-17 — implemented and passing. `e2e/smoke.spec.ts` runs three serial journeys (empty-slot rejection first while wardrobe is empty, add-garment second, outfit-request third against a seeded wardrobe). `playwright.config.ts` writes the temp data-dir path to `.e2e-data-dir` at config-eval time; the spec reads that file instead of importing the config to avoid running side-effects twice. The webServer command cleans and recreates the temp dir inline so cleanup runs exactly once regardless of how many times Playwright evaluates the config. The `NODE_PATH` env var in `make test-e2e` makes `@playwright/test` resolvable from `e2e/`. Count assertions use `/[1-9]/` rather than exact counts because both browser projects share one server and one DB. 6/6 pass; `make test` zero warnings.

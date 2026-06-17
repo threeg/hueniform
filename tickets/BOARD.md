@@ -14,11 +14,11 @@ This board is the single topological view of the implementation order. Implement
 
 | id | title | milestone | status |
 |---|---|---|---|
-| HUE-E01 | Local-first foundation and meta-goal | 8 | todo |
+| HUE-E01 | Local-first foundation and meta-goal | 8 | done |
 | HUE-E02 | Pure colour matcher | 8 | done |
-| HUE-E03 | Add a garment | 8 | todo |
-| HUE-E04 | Browse the wardrobe | 8 | todo |
-| HUE-E05 | Suggest an outfit | 8 | todo |
+| HUE-E03 | Add a garment | 8 | done |
+| HUE-E04 | Browse the wardrobe | 8 | done |
+| HUE-E05 | Suggest an outfit | 8 | done |
 
 ## Implementation tickets — execution order
 
@@ -64,7 +64,7 @@ This board is the single topological view of the implementation order. Implement
 | 37 | HUE-037 | Outfit request and suggestion results screen | story | frontend | 8 / frontend | HUE-E05 | done | HUE-032 |
 | 38 | HUE-038 | Single-command run and production serving | task | tooling | 8 / tooling | HUE-E01 | done | HUE-025, HUE-032, HUE-020 |
 | 39 | HUE-039 | Performance suite and 500-garment fixture | task | tooling | 8 / tooling | HUE-E01 | done | HUE-031, HUE-029, HUE-024, HUE-041 |
-| 40 | HUE-040 | End-to-end smoke suite | task | tooling | 8 / tooling | HUE-E01 | todo | HUE-033, HUE-034, HUE-035, HUE-036, HUE-037, HUE-027, HUE-028, HUE-029, HUE-030, HUE-031, HUE-020, HUE-038 |
+| 40 | HUE-040 | End-to-end smoke suite | task | tooling | 8 / tooling | HUE-E01 | done | HUE-033, HUE-034, HUE-035, HUE-036, HUE-037, HUE-027, HUE-028, HUE-029, HUE-030, HUE-031, HUE-020, HUE-038 |
 
 ## Cleanup backlog
 

@@ -23,6 +23,11 @@ backend/tests/fixtures/synthetic/
 /frontend/dist/
 /frontend/coverage/
 
+# E2E test artefacts
+e2e/.e2e-data-dir
+e2e/test-results/
+e2e/playwright-report/
+
 # IDE
 .idea/
 

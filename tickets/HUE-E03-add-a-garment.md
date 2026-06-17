@@ -2,7 +2,7 @@
 id: HUE-E03
 title: Add a garment
 type: epic
-status: todo
+status: done
 milestone: 8
 batch: services
 layer: services

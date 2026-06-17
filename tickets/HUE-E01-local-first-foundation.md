@@ -2,7 +2,7 @@
 id: HUE-E01
 title: Local-first foundation and meta-goal
 type: epic
-status: todo
+status: done
 milestone: 8
 batch: scaffolding
 layer: repo

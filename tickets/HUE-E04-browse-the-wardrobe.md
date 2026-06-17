@@ -2,7 +2,7 @@
 id: HUE-E04
 title: Browse the wardrobe
 type: epic
-status: todo
+status: done
 milestone: 8
 batch: frontend
 layer: frontend

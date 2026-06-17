@@ -2,7 +2,7 @@
 id: HUE-E05
 title: Suggest an outfit
 type: epic
-status: todo
+status: done
 milestone: 8
 batch: services
 layer: services
