@@ -59,7 +59,7 @@ This board is the single topological view of the implementation order. Implement
 | 32 | HUE-032 | Frontend API client, query layer and shared components | task | frontend | 8 / frontend | HUE-E01 | done | HUE-003, HUE-005, HUE-006 |
 | 33 | HUE-033 | Upload and detect screen | story | frontend | 8 / frontend | HUE-E03 | done | HUE-032 |
 | 34 | HUE-034 | Confirm-and-correct screen | story | frontend | 8 / frontend | HUE-E03 | done | HUE-032, HUE-033 |
-| 35 | HUE-035 | Inventory browser screen | story | frontend | 8 / frontend | HUE-E04 | todo | HUE-032 |
+| 35 | HUE-035 | Inventory browser screen | story | frontend | 8 / frontend | HUE-E04 | done | HUE-032 |
 | 36 | HUE-036 | Garment detail screen | story | frontend | 8 / frontend | HUE-E03 | todo | HUE-032, HUE-034, HUE-035 |
 | 37 | HUE-037 | Outfit request and suggestion results screen | story | frontend | 8 / frontend | HUE-E05 | todo | HUE-032 |
 | 38 | HUE-038 | Single-command run and production serving | task | tooling | 8 / tooling | HUE-E01 | todo | HUE-025, HUE-032, HUE-020 |

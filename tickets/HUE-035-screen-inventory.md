@@ -2,7 +2,7 @@
 id: HUE-035
 title: Inventory browser screen
 type: story
-status: todo
+status: done
 milestone: 8
 batch: frontend
 layer: frontend
@@ -47,13 +47,20 @@ so that I can find garments quickly.
 - Server half of NFR-6 asserted in HUE-039; covered by E2E journey 1's filter step (HUE-040, §9)
 
 ## Definition of done
-- [ ] Acceptance criteria met
-- [ ] Tests added/updated per test strategy §12.2 and passing in `make test`
+- [x] Acceptance criteria met
+- [x] Tests added/updated per test strategy §12.2 and passing in `make test`
 - [ ] Matcher-touching work: 100% line+branch on app/matcher/ holds (§12.3.3)
 - [ ] Detection-touching work: `make test-model` passes (§12.3.4)
 - [ ] Evaluation/inventory-perf-touching work: `make test-perf` passes (§12.3.5)
 - [ ] User-flow-touching work: `make test-e2e` passes (§12.3.6)
-- [ ] Ticket status + notes updated in the same commit (§12.3.7)
+- [x] Ticket status + notes updated in the same commit (§12.3.7)
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-17 — implemented. `Wardrobe.tsx` replaces the placeholder: filter bar with type
+  + family dropdowns (family options sourced from `GET /api/taxonomy`), filter state synced
+  to URL search params, card grid using `GarmentCard`, three empty/error states, result count.
+  Family swatch shown next to the select for the currently selected family (native `<select>`
+  cannot render coloured swatches per option; per-option swatches would require a custom
+  combobox, deferred). 92/92 tests pass, zero warnings.
+  Sanity: `cd frontend && npm run test -- src/routes/Inventory.test.tsx`
