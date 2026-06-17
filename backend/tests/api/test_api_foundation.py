@@ -13,9 +13,13 @@ from fastapi import APIRouter
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
+import json
+from datetime import datetime, timedelta, timezone
+
 from app.api.errors import AppError
 from app.api.schemas import ColourIn, GarmentSummary, validate_palette
 from app.main import Settings, create_app
+from app.storage import staging as staging_store
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
@@ -238,3 +242,52 @@ class TestStaticSpaMount:
         c = TestClient(_app, raise_server_exceptions=False)
         # Without the SPA mount the root returns 404.
         assert c.get("/").status_code == 404
+
+
+# ── Startup — staging sweep (HUE-038, NFR-3) ─────────────────────────────────
+
+class TestStartupStagingSweep:
+    """Expired staging entries are removed when the app starts (NFR-3)."""
+
+    def _write_expired_entry(self, staging_dir, token: str, ext: str = "jpg") -> None:
+        """Write a sidecar with a TTL already in the past."""
+        sidecar = staging_dir / f"{token}.json"
+        image   = staging_dir / f"{token}.{ext}"
+        image.write_bytes(b"\xff\xd8")
+        expired = (datetime.now(timezone.utc) - timedelta(seconds=1)).isoformat()
+        sidecar.write_text(json.dumps({
+            "token": token,
+            "ext": ext,
+            "expires_at": expired,
+        }))
+
+    def test_expired_entries_removed_on_startup(self, tmp_path):
+        staging_dir = tmp_path / "data" / "staging"
+        staging_dir.mkdir(parents=True)
+        self._write_expired_entry(staging_dir, "dead-token-001")
+
+        settings = Settings(data_dir=tmp_path / "data", spa_dir=tmp_path / "no-spa")
+        with TestClient(create_app(settings)):
+            # After the lifespan startup the expired entry must be gone.
+            assert not (staging_dir / "dead-token-001.json").exists()
+            assert not (staging_dir / "dead-token-001.jpg").exists()
+
+    def test_live_entries_preserved_on_startup(self, tmp_path):
+        staging_dir = tmp_path / "data" / "staging"
+        staging_dir.mkdir(parents=True)
+        # Write a live entry (TTL in the future).
+        token = "live-token-001"
+        sidecar = staging_dir / f"{token}.json"
+        image   = staging_dir / f"{token}.jpg"
+        image.write_bytes(b"\xff\xd8")
+        future = (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
+        sidecar.write_text(json.dumps({
+            "token": token,
+            "ext": "jpg",
+            "expires_at": future,
+        }))
+
+        settings = Settings(data_dir=tmp_path / "data", spa_dir=tmp_path / "no-spa")
+        with TestClient(create_app(settings)):
+            assert sidecar.exists()
+            assert image.exists()

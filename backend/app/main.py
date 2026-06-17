@@ -12,6 +12,7 @@ from app.api.garments import router as garments_router
 from app.api.health import router as health_router
 from app.api.suggestions import router as suggestions_router
 from app.api.taxonomy import router as taxonomy_router
+from app.storage import staging as staging_store
 from app.storage.engine import init_db, make_engine
 
 
@@ -37,6 +38,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def _lifespan(_app: FastAPI):
         _init_data_dirs(settings.data_dir)
+        staging_store.sweep(settings.data_dir / "staging")
         engine = make_engine(settings.data_dir / "hueniform.db")
         init_db(engine)
         _app.state.engine = engine

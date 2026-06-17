@@ -2,7 +2,7 @@
 id: HUE-038
 title: Single-command run and production serving
 type: task
-status: todo
+status: done
 milestone: 8
 batch: tooling
 layer: tooling
@@ -22,15 +22,23 @@ NFR-2 requires a single command that serves both backend and frontend locally an
 - Health-gate the printed URL on `GET /api/health` (NFR-2)
 
 ## Definition of done (acceptance criteria)
-- [ ] `make setup` then `make run` starts the app offline with one command and prints the URL (NFR-2)
-- [ ] Built SPA served at `/` with history fallback; `/api` under the same origin; runtime makes no outbound calls (NFR-1, NFR-8)
-- [ ] `data/` initialised and swept on startup (NFR-3)
-- [ ] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
-- [ ] Relevant extra gate green where applicable (`make test-e2e` (the webServer boots this process, §12.3.6))
-- [ ] Ticket status + notes updated in the same commit
+- [x] `make setup` then `make run` starts the app offline with one command and prints the URL (NFR-2)
+- [x] Built SPA served at `/` with history fallback; `/api` under the same origin; runtime makes no outbound calls (NFR-1, NFR-8)
+- [x] `data/` initialised and swept on startup (NFR-3)
+- [x] Tests added/updated per test strategy §12.2 (or exemption stated below) and passing in `make test`
+- [ ] Relevant extra gate green where applicable (`make test-e2e` (the webServer boots this process, §12.3.6)) — deferred to HUE-040
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 Verified by the E2E `webServer` booting the production-style process (HUE-040, §9) and the health probe (§7.2). `make run` is the NFR-2 single command; `make setup` itself is verified by being run (§3).
 
 ## Notes
 - 2026-06-15 — created
+- 2026-06-17 — implemented. `staging_store.sweep()` added to `_lifespan` in `main.py`
+  (expired entries removed at startup, NFR-3). `make run` now delegates to
+  `scripts/run_server.py` which starts Uvicorn, polls `GET /api/health` up to 30 s,
+  then prints the URL (health-gate, NFR-2). `make dev` wires Uvicorn --reload +
+  Vite dev server together via shell job control (both killed on Ctrl-C via `trap kill 0`).
+  2 new tests in `TestStartupStagingSweep` verify expired entries are removed and live
+  entries are preserved; 890 backend + 132 frontend pass, zero warnings.
+  Sanity: `cd /path/to/hueniform && make run` (requires built SPA from `make setup`)

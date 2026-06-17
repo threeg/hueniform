@@ -34,15 +34,19 @@ setup:
 	@echo "setup complete."
 
 # ─── Single offline run command (NFR-2) ──────────────────────────────────────
-# Completed by HUE-038: adds staging sweep and full SPA serving.
+# Starts Uvicorn (serving /api + built SPA), sweeps staging on boot, then
+# prints the URL once the health probe returns 200.
 run:
-	@echo "Hueniform → http://127.0.0.1:8000"
-	$(UVICORN) app.main:app --host 127.0.0.1 --port 8000
+	$(PY) scripts/run_server.py $(CURDIR)/$(UVICORN)
 
-# ─── Development server (completed by HUE-038) ───────────────────────────────
+# ─── Development server ───────────────────────────────────────────────────────
+# Starts Uvicorn with --reload in the background and the Vite dev server in
+# the foreground.  Both processes are killed on Ctrl-C via kill 0.
 dev:
-	@echo "Full dev target (Uvicorn reload + Vite proxy together) arrives in HUE-038."
-	@echo "To run Vite alone: cd frontend && npm run dev"
+	@trap 'kill 0' EXIT; \
+	 (cd backend && $(CURDIR)/$(UVICORN) app.main:app \
+	     --host 127.0.0.1 --port 8000 --reload --log-level info) & \
+	 cd frontend && npm run dev
 
 # ─── Default test gate: backend unit+integration + frontend components ────────
 test: test-backend test-frontend
