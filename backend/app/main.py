@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -50,6 +51,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     # Make settings accessible to endpoint handlers via request.app.state.settings.
     app.state.settings = settings
+
+    # Allow the Vite dev server (port 5173) to reach the API when running the
+    # two-terminal dev workflow.  localhost is safe for a local-first app.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     register_error_handlers(app)
     app.include_router(health_router, prefix="/api")
