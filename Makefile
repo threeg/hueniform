@@ -18,7 +18,8 @@ LINT_IMPORTS := $(VENV)/bin/lint-imports
 
 .PHONY: setup run dev \
         test test-backend test-frontend \
-        test-model test-perf test-e2e test-all
+        test-model test-perf test-e2e test-all \
+        seed-wardrobe
 
 # ─── One-time setup (requires internet) ──────────────────────────────────────
 setup:
@@ -75,3 +76,7 @@ test-e2e:
 	cd frontend && npx playwright test --config ../e2e/playwright.config.ts
 
 test-all: test test-model test-perf test-e2e
+
+# ─── Seed a running instance for E2E / manual NFR-6 checks ───────────────────
+seed-wardrobe:
+	$(PY) scripts/seed_test_wardrobe.py

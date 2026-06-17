@@ -103,3 +103,9 @@ K_ELBOW_FACTOR: float = 0.05
 # 2-second bound at 500 garments while supplying FR-42's permitted
 # non-determinism via the shuffle.
 MAX_ANCHOR_CANDIDATES: int = 200
+
+# Echo-slot combinations are shuffled and capped per anchor to prevent
+# combinatorial explosion when echo slots (socks, shoes, hat, accessory) are
+# numerous (NFR-5).  The shuffle is seeded from the same injected RNG that
+# shuffles anchors, preserving FR-42 non-determinism.
+MAX_ECHO_COMBOS: int = 50

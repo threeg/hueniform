@@ -215,34 +215,39 @@ def _enumerate_outfits(
     garments_by_slot: dict[str, list[Garment]],
     requested_slots: frozenset[str],
     rng: random.Random | None,
-    *,
-    cap: bool = True,
 ) -> list[dict[str, Garment]]:
     """
-    Enumerate all outfit combinations for *requested_slots*.
+    Enumerate outfit combinations for *requested_slots*, always bounded.
 
-    Anchor combos (upper-body + bottom) are shuffled when *rng* is given and
-    capped at ``MAX_ANCHOR_CANDIDATES`` when *cap* is True.  Echo slot combos
-    are fully enumerated within each anchor combo.
+    Both anchor and echo combos are capped (``MAX_ANCHOR_CANDIDATES`` /
+    ``MAX_ECHO_COMBOS``) using per-slot shuffle + ``islice`` so the full
+    Cartesian product is never materialised (NFR-5).  Shuffling is skipped
+    when *rng* is ``None`` (fallback paths); the islice cap still applies so
+    large neutral sub-wardrobes cannot cause a combinatorial explosion.
     """
     anchor_types = [t for t in _ANCHOR_ORDER if t in requested_slots]
     echo_types   = sorted(ECHO_SLOTS & requested_slots)
 
-    anchor_combos: list[tuple[Garment, ...]] = list(
-        itertools.product(*[garments_by_slot[t] for t in anchor_types])
-    )
+    anchor_lists = [list(garments_by_slot[t]) for t in anchor_types]
     if rng is not None:
-        rng.shuffle(anchor_combos)
-    if cap:
-        anchor_combos = anchor_combos[: C.MAX_ANCHOR_CANDIDATES]
+        for lst in anchor_lists:
+            rng.shuffle(lst)
+    anchor_combos: list[tuple[Garment, ...]] = list(
+        itertools.islice(itertools.product(*anchor_lists), C.MAX_ANCHOR_CANDIDATES)
+    )
 
-    echo_slots_lists = [garments_by_slot[t] for t in echo_types]
+    echo_slots_lists = [list(garments_by_slot[t]) for t in echo_types]
+    if rng is not None:
+        for lst in echo_slots_lists:
+            rng.shuffle(lst)
 
     outfits: list[dict[str, Garment]] = []
     for ac in anchor_combos:
         base: dict[str, Garment] = dict(zip(anchor_types, ac))
         if echo_slots_lists:
-            for ec in itertools.product(*echo_slots_lists):
+            for ec in itertools.islice(
+                itertools.product(*echo_slots_lists), C.MAX_ECHO_COMBOS
+            ):
                 outfits.append({**base, **dict(zip(echo_types, ec))})
         else:
             outfits.append(base)
@@ -277,7 +282,7 @@ def _neutral_fallback(
         return []
 
     valid: list[EvaluationResult] = []
-    for outfit in _enumerate_outfits(neutral_by_slot, requested_slots, rng=None, cap=False):
+    for outfit in _enumerate_outfits(neutral_by_slot, requested_slots, rng=None):
         result = evaluate_outfit(outfit, is_fallback=True)
         if result is not None:  # pragma: no branch
             valid.append(result)
@@ -297,7 +302,7 @@ def _constraining_slot(
     highest failure count.
     """
     counts: dict[str, int] = {}
-    for outfit in _enumerate_outfits(garments_by_slot, requested_slots, rng=None, cap=False):
+    for outfit in _enumerate_outfits(garments_by_slot, requested_slots, rng=None):
         slot = _failure_slot(outfit)
         if slot is not None:
             counts[slot] = counts.get(slot, 0) + 1
