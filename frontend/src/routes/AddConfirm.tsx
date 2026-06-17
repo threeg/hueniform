@@ -95,11 +95,11 @@ export default function AddConfirm() {
     if (isRegeneration && garmentId) {
       updateGarment({
         id: garmentId,
-        body: { regeneration_token: detection.token, type: selectedType, colours: normColours },
+        body: { regeneration_token: detection!.token, type: selectedType, colours: normColours },
       }, { onSuccess })
     } else {
       createGarment({
-        detection_token: detection.token, type: selectedType, colours: normColours,
+        detection_token: detection!.token, type: selectedType, colours: normColours,
       }, { onSuccess })
     }
   }
