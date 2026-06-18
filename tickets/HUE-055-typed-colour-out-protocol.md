@@ -2,7 +2,7 @@
 id: HUE-055
 title: Type-safe colour_out converter with Protocol
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: api
@@ -36,12 +36,12 @@ or `ColourProposal` changes.
 
 ## Definition of done (acceptance criteria)
 
-- [ ] `ColourLike` Protocol defined with all 7 attributes
-- [ ] `colour_out()` parameter typed as `ColourLike`
-- [ ] No `type: ignore` comments in `converters.py`
-- [ ] All existing API tests still pass unchanged
-- [ ] `make test` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] `ColourLike` Protocol defined with all 7 attributes
+- [x] `colour_out()` parameter typed as `ColourLike`
+- [x] No `type: ignore` comments in `converters.py`
+- [x] All existing API tests still pass unchanged
+- [x] `make test` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -52,3 +52,4 @@ No new tests required — pure type-safety refactor. Existing tests cover all pa
 ## Notes
 
 - 2026-06-18 — created by `/verify` complete MVP review.
+- 2026-06-18 — implemented: `ColourLike` Protocol defined in `converters.py` with all 7 attributes; `colour_out()` parameter typed as `ColourLike`; all three `# type: ignore[attr-defined]` comments removed. 146 API tests passed.

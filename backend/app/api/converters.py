@@ -7,6 +7,8 @@ schema objects so that each transformation lives in exactly one place.
 
 from __future__ import annotations
 
+from typing import Protocol
+
 from sqlalchemy.engine import Engine
 
 from app.api.errors import GARMENT_NOT_FOUND, AppError
@@ -20,12 +22,24 @@ from app.services.garment_service import (
 )
 
 
-def colour_out(c: object) -> ColourOut:
+class ColourLike(Protocol):
+    """Structural protocol satisfied by SavedColour and ColourProposal."""
+
+    h: float
+    s: float
+    l: float
+    family: str
+    neutral: bool
+    hex: str
+    proportion: int
+
+
+def colour_out(c: ColourLike) -> ColourOut:
     """Convert any colour-like object (SavedColour, ColourProposal) to ColourOut."""
     return ColourOut(
-        h=c.h, s=c.s, l=c.l,  # type: ignore[attr-defined]
-        family=c.family, neutral=c.neutral,  # type: ignore[attr-defined]
-        hex=c.hex, proportion=c.proportion,  # type: ignore[attr-defined]
+        h=c.h, s=c.s, l=c.l,
+        family=c.family, neutral=c.neutral,
+        hex=c.hex, proportion=c.proportion,
     )
 
 

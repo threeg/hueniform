@@ -85,6 +85,7 @@ Reactive tickets from `/verify` post-batch reviews (CONVENTIONS.md §6). Worked 
 | 52 | HUE-052 | Configure staleTime for taxonomy and garments queries | task | frontend | frontend | done | HUE-032 |
 | 53 | HUE-053 | Consolidate ErrorBanner and WarningBanner into Banner component | task | frontend | frontend | done | HUE-032 |
 | 54 | HUE-054 | Deduplicate GARMENT_TYPES constant in backend | task | services | cleanup | done | HUE-013, HUE-016, HUE-025 |
+| 55 | HUE-055 | Type-safe colour_out converter with Protocol | task | api | cleanup | done | HUE-044 |
 | 54 | HUE-054 | Deduplicate GARMENT_TYPES constant in backend | task | services | mvp | todo | HUE-013, HUE-016, HUE-025 |
 | 55 | HUE-055 | Type-safe colour_out converter with Protocol | task | api | mvp | todo | HUE-044 |
 | 56 | HUE-056 | Extract colour-row grouping helper | task | services | mvp | todo | HUE-042, HUE-047 |
