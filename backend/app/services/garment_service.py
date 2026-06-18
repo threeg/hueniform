@@ -29,6 +29,7 @@ from app.matcher.colour import hsl_to_hex
 from app.matcher.taxonomy import FAMILIES, classify, is_neutral
 from app.storage import staging
 from app.storage.image_store import generate_thumbnail
+from app.storage.helpers import group_colours_by_garment
 from app.storage.models import GARMENT_TYPES, GarmentColourRow, GarmentRow
 
 _VALID_FAMILIES: frozenset[str] = frozenset(f.name for f in FAMILIES)
@@ -276,9 +277,7 @@ def list_garments(
             .order_by(GarmentColourRow.garment_id, GarmentColourRow.position)
         ).all()
 
-    colours_by_id: dict[str, list[GarmentColourRow]] = {}
-    for c in colour_rows:
-        colours_by_id.setdefault(c.garment_id, []).append(c)
+    colours_by_id = group_colours_by_garment(list(colour_rows))
 
     garments = tuple(
         _row_to_result(row, colours_by_id.get(row.id, []))
@@ -344,9 +343,7 @@ def get_garments_by_ids(
             .order_by(GarmentColourRow.garment_id, GarmentColourRow.position)
         ).all()
 
-    colours_by_garment: dict[str, list[GarmentColourRow]] = {}
-    for c in colour_rows:
-        colours_by_garment.setdefault(c.garment_id, []).append(c)
+    colours_by_garment = group_colours_by_garment(list(colour_rows))
 
     return {
         row.id: _row_to_result(row, colours_by_garment.get(row.id, []))

@@ -121,6 +121,7 @@ ignore_imports = [
     "app.services.garment_service -> app.matcher.colour",
     "app.services.garment_service -> app.matcher.taxonomy",
     "app.services.garment_service -> app.storage.image_store",
+    "app.services.garment_service -> app.storage.helpers",
     "app.services.garment_service -> app.storage.models",
     "app.services.garment_service -> app.storage.staging",
     "app.services.suggestion_service -> app.matcher.colour",
@@ -129,6 +130,7 @@ ignore_imports = [
     "app.services.suggestion_service -> app.matcher.roles",
     "app.services.suggestion_service -> app.matcher.slots",
     "app.services.suggestion_service -> app.matcher.taxonomy",
+    "app.services.suggestion_service -> app.storage.helpers",
     "app.services.suggestion_service -> app.storage.models",
     "app.services.taxonomy_service -> app.matcher.taxonomy",
     # Narrow exception: compile-time constant only, no business logic crossing.

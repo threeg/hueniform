@@ -2,7 +2,7 @@
 id: HUE-056
 title: Extract colour-row grouping helper
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: services
@@ -40,11 +40,11 @@ for c in all_colour_rows:
 
 ## Definition of done (acceptance criteria)
 
-- [ ] Single `group_colours_by_garment()` function defined in one place
-- [ ] All four occurrences replaced with the shared function call
-- [ ] All existing service and API tests still pass unchanged
-- [ ] `make test` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] Single `group_colours_by_garment()` function defined in one place
+- [x] All four occurrences replaced with the shared function call
+- [x] All existing service and API tests still pass unchanged
+- [x] `make test` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -55,3 +55,4 @@ No new tests required — pure refactor. Existing tests cover all paths.
 ## Notes
 
 - 2026-06-18 — created by `/verify` complete MVP review.
+- 2026-06-18 — implemented: `group_colours_by_garment()` created in `app/storage/helpers.py`; 3 occurrences replaced (2 in `garment_service.py`, 1 in `suggestion_service.py`; one ticket-listed site no longer exists after HUE-047). Import-linter contract #5 updated with two new `services → storage.helpers` ignore entries. 238 service+API tests passed, all 5 contracts kept.

@@ -36,6 +36,7 @@ from app.matcher.slots import (
 )
 from app.matcher.taxonomy import classify as _classify
 from app.matcher.taxonomy import is_neutral as _is_neutral
+from app.storage.helpers import group_colours_by_garment
 from app.storage.models import GarmentColourRow, GarmentRow
 
 
@@ -120,9 +121,7 @@ def _load_wardrobe(engine: Engine) -> tuple[list[Garment], dict[int, GarmentRow]
             )
         ).all()
 
-    colours_by_garment: dict[str, list[GarmentColourRow]] = {}
-    for c in all_colour_rows:
-        colours_by_garment.setdefault(c.garment_id, []).append(c)
+    colours_by_garment = group_colours_by_garment(list(all_colour_rows))
 
     for row in rows:
         colours = tuple(
