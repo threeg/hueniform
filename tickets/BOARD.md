@@ -80,7 +80,7 @@ Reactive tickets from `/verify` post-batch reviews (CONVENTIONS.md §6). Worked 
 | 47 | HUE-047 | SQL-level pagination and lightweight garment lookup | task | services | api | done | HUE-029, HUE-030 |
 | 48 | HUE-048 | Fix SCHEME_LABELS map and add neutral-based test coverage | task | frontend | frontend | done | HUE-037 |
 | 49 | HUE-049 | Extract shared GARMENT_TYPES constant and remove TYPE_LABELS duplication | task | frontend | frontend | done | HUE-032, HUE-034, HUE-035 |
-| 50 | HUE-050 | Shared frontend test utilities (renderRoute, createTestQueryClient) | task | tooling | frontend | todo | HUE-032, HUE-033, HUE-034, HUE-035, HUE-036, HUE-037 |
+| 50 | HUE-050 | Shared frontend test utilities (renderRoute, createTestQueryClient) | task | tooling | frontend | done | HUE-032, HUE-033, HUE-034, HUE-035, HUE-036, HUE-037 |
 | 51 | HUE-051 | Memoise taxonomy lookups in Suggest, Wardrobe and AddConfirm | task | frontend | frontend | todo | HUE-034, HUE-035, HUE-037 |
 | 52 | HUE-052 | Configure staleTime for taxonomy and garments queries | task | frontend | frontend | todo | HUE-032 |
 | 53 | HUE-053 | Consolidate ErrorBanner and WarningBanner into Banner component | task | frontend | frontend | todo | HUE-032 |

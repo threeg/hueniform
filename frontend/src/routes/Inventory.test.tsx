@@ -1,10 +1,9 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { describe, it, expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from '../test/server'
+import { renderRoute } from '../test/test-utils'
 
 import Wardrobe from './Wardrobe'
 import {
@@ -22,29 +21,13 @@ interface RenderOptions {
 }
 
 function renderScreen({ initialSearch = '' }: RenderOptions = {}) {
-  const qc = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
-  })
-  const router = createMemoryRouter(
+  return renderRoute(
     [
-      {
-        path: '/',
-        element: (
-          <QueryClientProvider client={qc}>
-            <Wardrobe />
-          </QueryClientProvider>
-        ),
-      },
+      { path: '/', element: <Wardrobe /> },
       { path: '/add', element: <div data-testid="add-screen" /> },
       { path: '/garments/:id', element: <div data-testid="detail-screen" /> },
     ],
-    {
-      initialEntries: [initialSearch ? `/?${initialSearch}` : '/'],
-      future: { v7_startTransition: true, v7_relativeSplatPath: true },
-    },
-  )
-  return render(
-    <RouterProvider router={router} future={{ v7_startTransition: true }} />,
+    [initialSearch ? `/?${initialSearch}` : '/'],
   )
 }
 

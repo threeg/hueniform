@@ -1,10 +1,9 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { describe, it, expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from '../test/server'
+import { renderRoute } from '../test/test-utils'
 
 import GarmentDetail from './GarmentDetail'
 import {
@@ -20,31 +19,13 @@ const REGEN_RESPONSE = { ...DETECTION_RESPONSE, garment_id: GARMENT_ID }
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function renderScreen(state?: Record<string, unknown>) {
-  const qc = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
-  })
-  const router = createMemoryRouter(
+  return renderRoute(
     [
-      {
-        path: '/garments/:id',
-        element: (
-          <QueryClientProvider client={qc}>
-            <GarmentDetail />
-          </QueryClientProvider>
-        ),
-      },
+      { path: '/garments/:id', element: <GarmentDetail /> },
       { path: '/', element: <div data-testid="wardrobe-screen" /> },
       { path: '/add/confirm', element: <div data-testid="confirm-screen" /> },
     ],
-    {
-      initialEntries: [
-        { pathname: `/garments/${GARMENT_ID}`, state: state ?? null },
-      ],
-      future: { v7_startTransition: true, v7_relativeSplatPath: true },
-    },
-  )
-  return render(
-    <RouterProvider router={router} future={{ v7_startTransition: true }} />,
+    [{ pathname: `/garments/${GARMENT_ID}`, state: state ?? null }],
   )
 }
 

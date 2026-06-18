@@ -1,10 +1,11 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClientProvider } from '@tanstack/react-query'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { describe, it, expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from '../test/server'
+import { renderRoute, createTestQueryClient } from '../test/test-utils'
 
 import AddGarment from './AddGarment'
 import {
@@ -18,34 +19,12 @@ import {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function renderScreen() {
-  const qc = new QueryClient({
-    defaultOptions: {
-      mutations: { retry: false },
-      queries: { retry: false },
-    },
-  })
-  const router = createMemoryRouter(
+  return renderRoute(
     [
-      {
-        path: '/add',
-        element: (
-          <QueryClientProvider client={qc}>
-            <AddGarment />
-          </QueryClientProvider>
-        ),
-      },
-      {
-        path: '/add/confirm',
-        element: <div data-testid="confirm-screen" />,
-      },
+      { path: '/add', element: <AddGarment /> },
+      { path: '/add/confirm', element: <div data-testid="confirm-screen" /> },
     ],
-    {
-      initialEntries: ['/add'],
-      future: { v7_startTransition: true, v7_relativeSplatPath: true },
-    },
-  )
-  return render(
-    <RouterProvider router={router} future={{ v7_startTransition: true }} />,
+    ['/add'],
   )
 }
 
@@ -174,9 +153,7 @@ describe('AddGarment — fallback_used handoff (FR-27)', () => {
 
     // Capture the navigation state by rendering an instrumented confirm stub
     let capturedState: unknown
-    const qc = new QueryClient({
-      defaultOptions: { mutations: { retry: false } },
-    })
+    const qc = createTestQueryClient()
     const { default: AddGarmentComp } = await import('./AddGarment')
     const router = createMemoryRouter(
       [

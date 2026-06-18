@@ -1,11 +1,9 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { describe, it, expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
-import type { ReactNode } from 'react'
 import { server } from '../test/server'
+import { renderRoute } from '../test/test-utils'
 
 import AddConfirm from './AddConfirm'
 import {
@@ -22,42 +20,17 @@ const REGEN_DETECTION = { ...DETECTION_RESPONSE, garment_id: GARMENT_ID }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function makeWrapper() {
-  return ({ children }: { children: ReactNode }) => (
-    <QueryClientProvider
-      client={new QueryClient({ defaultOptions: { mutations: { retry: false }, queries: { retry: false } } })}
-    >
-      {children}
-    </QueryClientProvider>
-  )
-}
-
 function renderScreen(
   state: Record<string, unknown> = { detection: DETECTION_RESPONSE },
 ) {
-  const qc = new QueryClient({
-    defaultOptions: { mutations: { retry: false }, queries: { retry: false } },
-  })
-  const Wrapper = ({ children }: { children: ReactNode }) => (
-    <QueryClientProvider client={qc}>{children}</QueryClientProvider>
-  )
-  const router = createMemoryRouter(
+  return renderRoute(
     [
-      {
-        path: '/add/confirm',
-        element: <Wrapper><AddConfirm /></Wrapper>,
-      },
+      { path: '/add/confirm', element: <AddConfirm /> },
       { path: '/add', element: <div data-testid="add-screen" /> },
       { path: '/', element: <div data-testid="wardrobe-screen" /> },
       { path: '/garments/:id', element: <div data-testid="detail-screen" /> },
     ],
-    {
-      initialEntries: [{ pathname: '/add/confirm', state }],
-      future: { v7_startTransition: true, v7_relativeSplatPath: true },
-    },
-  )
-  return render(
-    <RouterProvider router={router} future={{ v7_startTransition: true }} />,
+    [{ pathname: '/add/confirm', state }],
   )
 }
 

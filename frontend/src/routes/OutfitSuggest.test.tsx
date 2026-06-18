@@ -1,11 +1,9 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { describe, it, expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
-import type { ReactNode } from 'react'
 import { server } from '../test/server'
+import { renderRoute } from '../test/test-utils'
 
 import Suggest from './Suggest'
 import {
@@ -27,28 +25,13 @@ const NEUTRAL_BASED_RESPONSE = {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function renderScreen() {
-  const qc = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
-  })
-  const Wrapper = ({ children }: { children: ReactNode }) => (
-    <QueryClientProvider client={qc}>{children}</QueryClientProvider>
-  )
-  const router = createMemoryRouter(
+  return renderRoute(
     [
-      {
-        path: '/suggest',
-        element: <Wrapper><Suggest /></Wrapper>,
-      },
+      { path: '/suggest', element: <Suggest /> },
       { path: '/add', element: <div data-testid="add-screen" /> },
       { path: '/garments/:id', element: <div data-testid="detail-screen" /> },
     ],
-    {
-      initialEntries: ['/suggest'],
-      future: { v7_startTransition: true, v7_relativeSplatPath: true },
-    },
-  )
-  return render(
-    <RouterProvider router={router} future={{ v7_startTransition: true }} />,
+    ['/suggest'],
   )
 }
 

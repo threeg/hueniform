@@ -2,7 +2,7 @@
 id: HUE-050
 title: Shared frontend test utilities (renderRoute, createTestQueryClient)
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: tooling
@@ -42,12 +42,12 @@ helper function.
 
 ## Definition of done (acceptance criteria)
 
-- [ ] `createTestQueryClient` and `renderRoute` exported from `test-utils.ts`
-- [ ] All five route test files import and use the shared utilities
-- [ ] No duplicate `new QueryClient(...)` or future-flag objects in test files
-- [ ] All 132 frontend tests still pass unchanged
-- [ ] `make test-frontend` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] `createTestQueryClient` and `renderRoute` exported from `test-utils.ts`
+- [x] All five route test files import and use the shared utilities
+- [x] No duplicate `new QueryClient(...)` or future-flag objects in test files
+- [x] All 132 frontend tests still pass unchanged
+- [x] `make test-frontend` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -58,3 +58,4 @@ No new tests required — pure refactor. Existing tests cover all paths.
 ## Notes
 
 - 2026-06-17 — created by `/verify` review of frontend batch (HUE-032–037).
+- 2026-06-17 — implemented: created `test-utils.tsx` with `createTestQueryClient` and `renderRoute`; refactored all five route test files; removed ~90 lines of boilerplate; dead `makeWrapper` in ConfirmCorrect removed. One test in UploadDetect builds its own router (StateCapture pattern) — kept `createMemoryRouter`/`RouterProvider` there, replaced `new QueryClient()` with `createTestQueryClient()`. 133 tests passed, zero warnings.
