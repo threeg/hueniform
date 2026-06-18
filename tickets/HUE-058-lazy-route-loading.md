@@ -2,7 +2,7 @@
 id: HUE-058
 title: Lazy route loading with React.lazy and Suspense
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: frontend
@@ -34,11 +34,11 @@ loads on initial page visit regardless of which screen the user navigates to.
 
 ## Definition of done (acceptance criteria)
 
-- [ ] All 5 route components loaded via `React.lazy()`
-- [ ] `Suspense` fallback renders `LoadingState`
-- [ ] All existing frontend tests still pass
-- [ ] `make test-frontend` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] All 5 route components loaded via `React.lazy()`
+- [x] `Suspense` fallback renders `LoadingState`
+- [x] All existing frontend tests still pass
+- [x] `make test-frontend` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -50,3 +50,4 @@ synchronously in test — no special handling needed.
 ## Notes
 
 - 2026-06-18 — created by `/verify` complete MVP review.
+- 2026-06-18 — implemented: all 5 route imports in `router.tsx` converted to `React.lazy()`; each route element wrapped in `<Suspense fallback={<LoadingState label="Loading…" />}>`; shared `fallback` constant avoids repeating the JSX. App shell and shared components remain in the main bundle. 134 tests passed, zero warnings.
