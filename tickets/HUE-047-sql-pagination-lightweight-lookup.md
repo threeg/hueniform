@@ -2,7 +2,7 @@
 id: HUE-047
 title: SQL-level pagination and lightweight garment lookup
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: services
@@ -41,12 +41,12 @@ estimate: 2
 
 ## Definition of done (acceptance criteria)
 
-- [ ] `list_garments` uses SQL-level offset/limit; Python-side slicing removed
-- [ ] `total` count derived from a SQL query, not `len(all_rows)`
-- [ ] Image, thumbnail, and regenerate endpoints no longer load colour rows
-- [ ] All existing tests still pass unchanged
-- [ ] `make test` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] `list_garments` uses SQL-level offset/limit; Python-side slicing removed
+- [x] `total` count derived from a SQL query, not `len(all_rows)`
+- [x] Image, thumbnail, and regenerate endpoints no longer load colour rows
+- [x] All existing tests still pass unchanged
+- [x] `make test` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -59,3 +59,4 @@ at 500 garments.
 ## Notes
 
 - 2026-06-16 — created by `/verify` review of API batch (HUE-025–031).
+- 2026-06-17 — implemented: `list_garments` now uses `func.count()` + SQL offset/limit via a `_apply_filters` closure; added `GarmentMetadata` dataclass and `get_garment_metadata()`; added `require_garment_metadata()` to converters; image, thumbnail, and regenerate endpoints use the lightweight lookup. 885 passed, zero warnings.

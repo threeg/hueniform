@@ -77,7 +77,7 @@ Reactive tickets from `/verify` post-batch reviews (CONVENTIONS.md §6). Worked 
 | 44 | HUE-044 | DRY API response conversion helpers | task | api | api | done | HUE-031 |
 | 45 | HUE-045 | API error code constants and dead validate_palette removal | task | api | api | done | HUE-031 |
 | 46 | HUE-046 | Shared API test conftest | task | tooling | api | done | HUE-031 |
-| 47 | HUE-047 | SQL-level pagination and lightweight garment lookup | task | services | api | todo | HUE-029, HUE-030 |
+| 47 | HUE-047 | SQL-level pagination and lightweight garment lookup | task | services | api | done | HUE-029, HUE-030 |
 | 48 | HUE-048 | Fix SCHEME_LABELS map and add neutral-based test coverage | task | frontend | frontend | todo | HUE-037 |
 | 49 | HUE-049 | Extract shared GARMENT_TYPES constant and remove TYPE_LABELS duplication | task | frontend | frontend | todo | HUE-032, HUE-034, HUE-035 |
 | 50 | HUE-050 | Shared frontend test utilities (renderRoute, createTestQueryClient) | task | tooling | frontend | todo | HUE-032, HUE-033, HUE-034, HUE-035, HUE-036, HUE-037 |

@@ -16,7 +16,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import FileResponse
 
-from app.api.converters import colour_out, garment_to_summary, require_garment
+from app.api.converters import colour_out, garment_to_summary, require_garment, require_garment_metadata
 from app.api.errors import (
     DETECTION_NOT_FOUND,
     GARMENT_NOT_FOUND,
@@ -159,7 +159,7 @@ def get_garment_image(garment_id: str, request: Request) -> FileResponse:
     engine = request.app.state.engine
     settings = request.app.state.settings
 
-    result = require_garment(garment_id, engine)
+    result = require_garment_metadata(garment_id, engine)
     path = settings.data_dir / "images" / result.image_file
     if not path.exists():
         raise AppError(404, IMAGE_NOT_FOUND, "Image file not found.")
@@ -172,7 +172,7 @@ def get_garment_thumbnail(garment_id: str, request: Request) -> FileResponse:
     engine = request.app.state.engine
     settings = request.app.state.settings
 
-    result = require_garment(garment_id, engine)
+    result = require_garment_metadata(garment_id, engine)
     path = settings.data_dir / "thumbnails" / result.thumbnail_file
     if not path.exists():
         raise AppError(404, THUMBNAIL_NOT_FOUND, "Thumbnail file not found.")
@@ -191,7 +191,7 @@ def regenerate_garment(garment_id: str, request: Request) -> RegenerationProposa
     settings = request.app.state.settings
     engine = request.app.state.engine
 
-    garment = require_garment(garment_id, engine)
+    garment = require_garment_metadata(garment_id, engine)
     result = run_regeneration(
         garment_id=garment_id,
         image_file=garment.image_file,

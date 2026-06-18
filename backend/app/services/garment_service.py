@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
+from sqlalchemy import func
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, select
 
@@ -92,6 +93,14 @@ class GarmentResult:
     image_file: str
     thumbnail_file: str
     colours: tuple[SavedColour, ...]
+
+
+@dataclass(frozen=True)
+class GarmentMetadata:
+    """Lightweight garment record — file paths only, no colour rows."""
+    id: str
+    image_file: str
+    thumbnail_file: str
 
 
 @dataclass(frozen=True)
@@ -234,18 +243,28 @@ def list_garments(
                 .distinct()
             )
 
-        # Fetch all matching garment rows ordered by creation time.
-        all_stmt = select(GarmentRow).order_by(GarmentRow.created_at)
-        if type_filter is not None:
-            all_stmt = all_stmt.where(GarmentRow.type == type_filter)
-        if family_subq is not None:
-            all_stmt = all_stmt.where(GarmentRow.id.in_(family_subq))
+        def _apply_filters(stmt):
+            if type_filter is not None:
+                stmt = stmt.where(GarmentRow.type == type_filter)
+            if family_subq is not None:
+                stmt = stmt.where(GarmentRow.id.in_(family_subq))
+            return stmt
 
-        all_rows = session.exec(all_stmt).all()
-        total = len(all_rows)
+        # SQL-level count — no Python len() over all rows.
+        count_stmt = _apply_filters(
+            select(func.count()).select_from(GarmentRow)
+        )
+        total: int = session.exec(count_stmt).one()
 
-        # Apply pagination in Python — avoids a second round-trip for count.
-        paged = all_rows[offset : offset + limit]
+        if total == 0:
+            return GarmentPage(garments=(), total=total)
+
+        # SQL-level pagination — offset/limit in the query itself.
+        data_stmt = _apply_filters(
+            select(GarmentRow).order_by(GarmentRow.created_at)
+        ).offset(offset).limit(limit)
+        paged = session.exec(data_stmt).all()
+
         if not paged:
             return GarmentPage(garments=(), total=total)
 
@@ -284,6 +303,23 @@ def get_garment(garment_id: str, engine: Engine) -> GarmentResult:
             .order_by(GarmentColourRow.position)
         ).all()
     return _row_to_result(row, colour_rows)
+
+
+def get_garment_metadata(garment_id: str, engine: Engine) -> GarmentMetadata:
+    """
+    Return only the file-path metadata for *garment_id* — no colour rows.
+
+    Raises ``GarmentNotFoundError`` if no such garment exists.
+    """
+    with Session(engine) as session:
+        row = session.get(GarmentRow, garment_id)
+        if row is None:
+            raise GarmentNotFoundError(f"Garment '{garment_id}' not found.")
+    return GarmentMetadata(
+        id=row.id,
+        image_file=row.image_file,
+        thumbnail_file=row.thumbnail_file,
+    )
 
 
 def get_garments_by_ids(
