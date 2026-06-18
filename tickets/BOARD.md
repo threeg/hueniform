@@ -89,11 +89,6 @@ Reactive tickets from `/verify` post-batch reviews (CONVENTIONS.md §6). Worked 
 | 56 | HUE-056 | Extract colour-row grouping helper | task | services | cleanup | done | HUE-042, HUE-047 |
 | 57 | HUE-057 | React.memo for GarmentCard and PaletteStrip | task | frontend | cleanup | done | HUE-032 |
 | 58 | HUE-058 | Lazy route loading with React.lazy and Suspense | task | frontend | cleanup | done | HUE-032 |
-| 54 | HUE-054 | Deduplicate GARMENT_TYPES constant in backend | task | services | mvp | todo | HUE-013, HUE-016, HUE-025 |
-| 55 | HUE-055 | Type-safe colour_out converter with Protocol | task | api | mvp | todo | HUE-044 |
-| 56 | HUE-056 | Extract colour-row grouping helper | task | services | mvp | todo | HUE-042, HUE-047 |
-| 57 | HUE-057 | React.memo for GarmentCard and PaletteStrip | task | frontend | mvp | todo | HUE-032 |
-| 58 | HUE-058 | Lazy route loading with React.lazy and Suspense | task | frontend | mvp | todo | HUE-032 |
 
 ## By milestone and batch
 
