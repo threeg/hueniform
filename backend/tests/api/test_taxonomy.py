@@ -8,24 +8,13 @@ canonical self-classification verified directly against matcher.taxonomy.
 from __future__ import annotations
 
 import pytest
-from fastapi.testclient import TestClient
 
-from app.main import Settings, create_app
 from app.matcher.taxonomy import classify
 
 
 @pytest.fixture()
-def client(tmp_path):
-    settings = Settings(
-        data_dir=tmp_path / "data",
-        spa_dir=tmp_path / "no-spa",
-    )
-    return TestClient(create_app(settings))
-
-
-@pytest.fixture()
-def families(client):
-    r = client.get("/api/taxonomy")
+def families(api_client):
+    r = api_client.get("/api/taxonomy")
     assert r.status_code == 200
     return r.json()["families"]
 
@@ -33,11 +22,11 @@ def families(client):
 # ── Response shape ────────────────────────────────────────────────────────────
 
 class TestResponseShape:
-    def test_status_200(self, client):
-        assert client.get("/api/taxonomy").status_code == 200
+    def test_status_200(self, api_client):
+        assert api_client.get("/api/taxonomy").status_code == 200
 
-    def test_top_level_key(self, client):
-        assert "families" in client.get("/api/taxonomy").json()
+    def test_top_level_key(self, api_client):
+        assert "families" in api_client.get("/api/taxonomy").json()
 
     def test_nineteen_families(self, families):
         assert len(families) == 19

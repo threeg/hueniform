@@ -25,16 +25,12 @@ from app.storage import staging as staging_store
 # ── Fixtures ──────────────────────────────────────────────────────────────────
 
 @pytest.fixture()
-def client(tmp_path):
+def client(api_settings):
     """
     App client for health + error-envelope tests.  No SPA directory so the
     catch-all route is absent and test routes are not shadowed by it.
     """
-    settings = Settings(
-        data_dir=tmp_path / "data",
-        spa_dir=tmp_path / "no-spa",  # does not exist → catch-all not registered
-    )
-    _app = create_app(settings)
+    _app = create_app(api_settings)
 
     # Test-only routes: exercise each error-handler code path.
     test_router = APIRouter()

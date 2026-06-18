@@ -2,7 +2,7 @@
 id: HUE-046
 title: Shared API test conftest
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: tooling
@@ -37,11 +37,11 @@ across `test_detections.py`, `test_garments.py`, `test_suggestions.py`, and
 
 ## Definition of done (acceptance criteria)
 
-- [ ] `backend/tests/api/conftest.py` exists with shared fixtures
-- [ ] No duplicate settings/client fixtures in individual API test files
-- [ ] All existing API tests still pass unchanged
-- [ ] `make test` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] `backend/tests/api/conftest.py` exists with shared fixtures
+- [x] No duplicate settings/client fixtures in individual API test files
+- [x] All existing API tests still pass unchanged
+- [x] `make test` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -54,3 +54,4 @@ work correctly.
 
 - 2026-06-16 — created by `/verify` review of API batch (HUE-025–031).
   Complements HUE-043 (shared conftest for service tests).
+- 2026-06-17 — implemented: `conftest.py` created with `api_settings` and `api_client` fixtures; duplicate fixtures removed from `test_detections.py`, `test_garments.py`, `test_suggestions.py`, `test_taxonomy.py`; `test_api_foundation.py` `client()` reuses `api_settings`. 885 passed, zero warnings.
