@@ -3,9 +3,9 @@
 | | |
 |---|---|
 | **Document** | API contract (living document) |
-| **Status** | Approved (Milestone 3); amended for v0.2.0 (Milestone 11) |
+| **Status** | Approved (Milestone 3); amended for v0.2.0 (Milestone 11; category-granularity addendum during Milestone 12) |
 | **Originally approved** | 12 June 2026 (Milestone 3, v0.1.0) |
-| **Last amended** | 18 June 2026 — v0.2.0 API deltas (Milestone 11) |
+| **Last amended** | 18 June 2026 — category-granularity addendum (Milestone 12 session): expanded category set, renamed layer slot keys `jersey`/`jacket` → `mid`/`outer`, per-category slot constraints in `POST /api/suggestions` |
 | **Source** | `docs/02-requirements.md` (FR/NFR identifiers cited throughout) and `docs/03-architecture.md`; v0.2.0 brief (`docs/09-v0.2.0-brief.md`); F4 spike (`docs/spikes/2026-06-18-f4-category-slot-model.md`) |
 | **Repository location** | `docs/03-api-contract.md` |
 
@@ -21,6 +21,15 @@ This document is the authoritative contract between frontend and backend; each m
 > (traceability). Requirements §1.4 numeric thresholds are referenced, not restated.
 > Superseded shapes are marked *(superseded — v0.2.0)* in place. Where this contract and
 > the code disagree, the contract wins (and the code is wrong).
+>
+> **Category-granularity addendum (Milestone 12 session, 18 June 2026).** Wireframing the
+> outfit request exposed that the single multi-category slots were too coarse to request.
+> Three changes follow, applied in place: the **category value set expands** (finer
+> garment vocabulary, §1.3); the **upper-body layer slot keys are renamed** `jersey` →
+> `mid`, `jacket` → `outer` (§1.3a, §2.2, §2.12 — `jacket` survives as a *category* in the
+> `outer` slot; `jersey` is dropped as a category); and `POST /api/suggestions` gains a
+> **per-category slot constraint** carried inside the `slots` map (§2.12, FR-52). Driven by
+> `docs/02-requirements.md` FR-16/FR-36/FR-49/FR-52 and the F4 spike §7.
 
 ---
 
@@ -28,27 +37,35 @@ This document is the authoritative contract between frontend and backend; each m
 
 1. Base URL `http://127.0.0.1:8000`; all endpoints are prefixed `/api`. Image endpoints return binary bodies; everything else is `application/json` (UTF-8).
 2. Identifiers are UUID4 strings. Timestamps are ISO 8601 UTC (e.g. `"2026-06-12T14:03:00Z"`).
-3. Garment **categories** (FR-16) — *(amended — v0.2.0; the field is renamed `type` → `category` and the value set is replaced; supersedes the v0.1.0 eight `type` values `top`/`bottom`/`jersey`/`jacket`/`socks`/`shoes`/`hat`/`accessory`)*. A garment carries exactly one `category` from:
+3. Garment **categories** (FR-16) — *(amended — v0.2.0; the field is renamed `type` → `category` and the value set is replaced; supersedes the v0.1.0 eight `type` values `top`/`bottom`/`jersey`/`jacket`/`socks`/`shoes`/`hat`/`accessory`. Value set **expanded** in the Milestone 12 session — finer vocabulary; `jersey` removed as a category.)* A garment carries exactly one `category` from:
 
-   `base`, `shirt`, `jersey`, `jacket` (upper-body layers); `trousers`, `jeans`, `shorts`, `skirt`, `dress`, `jumpsuit` (lower body; `dress`/`jumpsuit` are **one-piece**); `hat`, `glasses`, `earrings`, `tie`, `scarf`, `necklace`, `watch`, `ring`, `bracelet`, `belt` (head/neck/hand/waist adornments); `socks`, `shoes` (feet).
+   - **Upper-body layers** — `base` slot: `t_shirt`, `vest`, `long_sleeve`; `shirt` slot: `shirt`, `blouse`, `polo`; `mid` slot: `jumper`, `hoodie`, `cardigan`, `sweatshirt`, `track_top`, `waistcoat`; `outer` slot: `jacket`, `blazer`, `coat`.
+   - **Lower body** — `trousers`, `jeans`, `chinos`, `shorts`, `skirt`, and the **one-piece** `dress`, `jumpsuit`.
+   - **Head / neck / hand / waist adornments** — `hat`, `cap`, `beanie`, `glasses`, `sunglasses`, `earrings`, `tie`, `scarf`, `necklace`, `watch`, `ring`, `bracelet`, `belt`.
+   - **Feet** — `socks`, `shoes`, `boots`, `trainers`, `sandals`.
 
-   The JSON field is **`category`** everywhere a garment is represented or filtered (the underlying DB column keeps the name `type` — architecture §3.1 — but it is never exposed under that name).
+   Categories are **finer than slots**: several share one slot and are matcher-equivalent (FR-49.5). The JSON field is **`category`** everywhere a garment is represented or filtered (the underlying DB column keeps the name `type` — architecture §3.1 — but it is never exposed under that name).
 
-3a. **Slot keys** are a *separate namespace* from categories, used as the keys of the `slots` selection map and `pins` map in a suggestion request (§2.12) and of a combination's `slots` object. Each category occupies exactly one slot; several categories may share one slot. The slot keys and their FR-49 roles are:
+3a. **Slot keys** are a *separate namespace* from categories, used as the keys of the `slots` selection map and `pins` map in a suggestion request (§2.12) and of a combination's `slots` object. Each category occupies exactly one slot; several categories may share one slot. *(Amended — Milestone 12 session: the upper-body layer slot keys `jersey`/`jacket` are renamed `mid`/`outer`; each layer slot now holds several categories.)* The slot keys and their FR-49 roles are:
 
-   | Slot key | Region | Categories | Role |
-   |---|---|---|---|
-   | `base`, `shirt`, `jersey`, `jacket` | upper body | same-named category each | anchor (layer; order base→jacket, outermost dominant) |
-   | `lower_body` | lower body | `trousers`, `jeans`, `shorts`, `skirt`, `dress`, `jumpsuit` | anchor (**mandatory**; one-piece also occupies `base`) |
-   | `hat` | head | `hat` | statement |
-   | `glasses`, `earrings` | head | same-named category each | minor |
-   | `tie`, `scarf` | neck | same-named category each | statement |
-   | `necklace` | neck | `necklace` | minor |
-   | `watch`, `ring`, `bracelet` | hands | same-named category each | minor |
-   | `belt` | waist | `belt` | statement |
-   | `socks`, `shoes` | feet | same-named category each | statement |
+   | Slot key | Display label | Region | Categories | Role |
+   |---|---|---|---|---|
+   | `base` | Base | upper body | `t_shirt`, `vest`, `long_sleeve` | anchor (layer 0) |
+   | `shirt` | Shirt | upper body | `shirt`, `blouse`, `polo` | anchor (layer 1) |
+   | `mid` | Mid-layer | upper body | `jumper`, `hoodie`, `cardigan`, `sweatshirt`, `track_top`, `waistcoat` | anchor (layer 2) |
+   | `outer` | Outer layer | upper body | `jacket`, `blazer`, `coat` | anchor (layer 3; outermost dominant) |
+   | `lower_body` | Lower body | lower body | `trousers`, `jeans`, `chinos`, `shorts`, `skirt`, `dress`, `jumpsuit` | anchor (**mandatory**; one-piece also occupies `base`) |
+   | `hat` | Hat | head | `hat`, `cap`, `beanie` | statement |
+   | `glasses` | Glasses | head | `glasses`, `sunglasses` | minor |
+   | `earrings` | Earrings | head | `earrings` | minor |
+   | `tie`, `scarf` | Tie / Scarf | neck | same-named category each | statement |
+   | `necklace` | Necklace | neck | `necklace` | minor |
+   | `watch`, `ring`, `bracelet` | Watch / Ring / Bracelet | hands | same-named category each | minor |
+   | `belt` | Belt | waist | `belt` | statement |
+   | `socks` | Socks | feet | `socks` | statement |
+   | `shoes` | Shoes | feet | `shoes`, `boots`, `trainers`, `sandals` | statement |
 
-   **Default-selected** slots (FR-51) are `base`, `lower_body`, `socks`, `shoes`; `lower_body` is mandatory and cannot be deselected; every other slot is optional. Category→slot is deterministic, so a pinned garment's slot key is derivable from its category (a one-piece pins to `lower_body`). The authoritative machine-readable form of this table is `GET /api/taxonomy` (§2.2).
+   **Default-selected** slots (FR-51) are `base`, `lower_body`, `socks`, `shoes`; `lower_body` is mandatory and cannot be deselected; every other slot is optional. Category→slot is deterministic, so a pinned garment's slot key is derivable from its category (a one-piece pins to `lower_body`). A request may additionally **constrain a selected slot to a subset of its categories** (FR-52, §2.12). The authoritative machine-readable form of this table is `GET /api/taxonomy` (§2.2).
 4. **Scheme** names (FR-13): `neutral-based`, `monochromatic`, `analogous`, `complementary`, `triadic`. *(v0.2.0: `neutral-based` is now a first-class result, FR-41 — see §2.12.)*
 5. Colour `family` values are exactly the names in requirements §2: `Black`, `White`, `Grey`, `Navy`, `Denim`, `Brown`, `Beige/Tan`, **`Cream`** *(new — v0.2.0, FR-2)*, `Red`, `Orange`, `Yellow`, `Chartreuse`, `Green`, `Mint`, `Teal`, `Azure`, `Blue`, `Violet`, `Magenta`, `Pink`.
 6. The server **always derives `family` from submitted HSL** (FR-1); a client-supplied family is never trusted and never sent on input.
@@ -76,7 +93,7 @@ Validation: `0 ≤ h < 360`, `0 ≤ s ≤ 100`, `0 ≤ l ≤ 100`; `proportion` 
 ```json
 {
   "id": "0b6c4d1e-7a2f-4f7e-9d2a-1c3e5f7a9b0c",
-  "category": "jersey",
+  "category": "jumper",
   "colours": [ { "h": 174.0, "s": 58.0, "l": 41.0, "family": "Teal", "neutral": false, "hex": "#2CADA0", "proportion": 80 },
                { "h": 28.0, "s": 85.0, "l": 55.0, "family": "Orange", "neutral": false, "hex": "#EE8225", "proportion": 20 } ],
   "thumbnail_url": "/api/garments/0b6c4d1e-7a2f-4f7e-9d2a-1c3e5f7a9b0c/thumbnail"
@@ -131,31 +148,31 @@ The response is a **backward-compatible superset** of the v0.1.0 shape: the `fam
   ],
   "regions": [
     { "region": "head", "slots": [
-        { "slot": "hat",      "categories": ["hat"],      "role": "statement", "default_selected": false },
-        { "slot": "glasses",  "categories": ["glasses"],  "role": "minor",     "default_selected": false },
-        { "slot": "earrings", "categories": ["earrings"], "role": "minor",     "default_selected": false }
+        { "slot": "hat",      "label": "Hat",      "categories": ["hat", "cap", "beanie"], "role": "statement", "default_selected": false },
+        { "slot": "glasses",  "label": "Glasses",  "categories": ["glasses", "sunglasses"], "role": "minor",     "default_selected": false },
+        { "slot": "earrings", "label": "Earrings", "categories": ["earrings"], "role": "minor",     "default_selected": false }
     ] },
     { "region": "upper_body", "slots": [
-        { "slot": "base",     "categories": ["base"],     "role": "anchor", "layer_order": 0, "default_selected": true  },
-        { "slot": "shirt",    "categories": ["shirt"],    "role": "anchor", "layer_order": 1, "default_selected": false },
-        { "slot": "jersey",   "categories": ["jersey"],   "role": "anchor", "layer_order": 2, "default_selected": false },
-        { "slot": "jacket",   "categories": ["jacket"],   "role": "anchor", "layer_order": 3, "default_selected": false },
-        { "slot": "tie",      "categories": ["tie"],      "role": "statement", "default_selected": false },
-        { "slot": "scarf",    "categories": ["scarf"],    "role": "statement", "default_selected": false },
-        { "slot": "necklace", "categories": ["necklace"], "role": "minor",     "default_selected": false },
-        { "slot": "watch",    "categories": ["watch"],    "role": "minor",     "default_selected": false },
-        { "slot": "ring",     "categories": ["ring"],     "role": "minor",     "default_selected": false },
-        { "slot": "bracelet", "categories": ["bracelet"], "role": "minor",     "default_selected": false }
+        { "slot": "base",     "label": "Base",        "categories": ["t_shirt", "vest", "long_sleeve"], "role": "anchor", "layer_order": 0, "default_selected": true  },
+        { "slot": "shirt",    "label": "Shirt",       "categories": ["shirt", "blouse", "polo"], "role": "anchor", "layer_order": 1, "default_selected": false },
+        { "slot": "mid",      "label": "Mid-layer",   "categories": ["jumper", "hoodie", "cardigan", "sweatshirt", "track_top", "waistcoat"], "role": "anchor", "layer_order": 2, "default_selected": false },
+        { "slot": "outer",    "label": "Outer layer", "categories": ["jacket", "blazer", "coat"], "role": "anchor", "layer_order": 3, "default_selected": false },
+        { "slot": "tie",      "label": "Tie",      "categories": ["tie"],      "role": "statement", "default_selected": false },
+        { "slot": "scarf",    "label": "Scarf",    "categories": ["scarf"],    "role": "statement", "default_selected": false },
+        { "slot": "necklace", "label": "Necklace", "categories": ["necklace"], "role": "minor",     "default_selected": false },
+        { "slot": "watch",    "label": "Watch",    "categories": ["watch"],    "role": "minor",     "default_selected": false },
+        { "slot": "ring",     "label": "Ring",     "categories": ["ring"],     "role": "minor",     "default_selected": false },
+        { "slot": "bracelet", "label": "Bracelet", "categories": ["bracelet"], "role": "minor",     "default_selected": false }
     ] },
     { "region": "lower_body", "slots": [
-        { "slot": "lower_body", "role": "anchor", "mandatory": true, "default_selected": true,
-          "categories": ["trousers", "jeans", "shorts", "skirt", "dress", "jumpsuit"],
+        { "slot": "lower_body", "label": "Lower body", "role": "anchor", "mandatory": true, "default_selected": true,
+          "categories": ["trousers", "jeans", "chinos", "shorts", "skirt", "dress", "jumpsuit"],
           "one_piece_categories": ["dress", "jumpsuit"], "one_piece_also_occupies": ["base"] },
-        { "slot": "belt", "categories": ["belt"], "role": "statement", "default_selected": false }
+        { "slot": "belt", "label": "Belt", "categories": ["belt"], "role": "statement", "default_selected": false }
     ] },
     { "region": "feet", "slots": [
-        { "slot": "socks", "categories": ["socks"], "role": "statement", "default_selected": true },
-        { "slot": "shoes", "categories": ["shoes"], "role": "statement", "default_selected": true }
+        { "slot": "socks", "label": "Socks", "categories": ["socks"], "role": "statement", "default_selected": true },
+        { "slot": "shoes", "label": "Shoes", "categories": ["shoes", "boots", "trainers", "sandals"], "role": "statement", "default_selected": true }
     ] }
   ]
 }
@@ -163,8 +180,9 @@ The response is a **backward-compatible superset** of the v0.1.0 shape: the `fam
 
 Notes on `regions`:
 
-- `region` ∈ `head`, `upper_body`, `lower_body`, `feet`. `role` ∈ `anchor`, `statement`, `minor` (FR-49.3). `categories` lists the FR-16 categories that occupy the slot.
-- `layer_order` is present only on the four upper-body anchor layers; it is the innermost-to-outermost order `base(0) → shirt(1) → jersey(2) → jacket(3)`, and the **outermost present layer is dominant** (FR-18). It is absent on all other slots.
+- `region` ∈ `head`, `upper_body`, `lower_body`, `feet`. `role` ∈ `anchor`, `statement`, `minor` (FR-49.3). `categories` lists the FR-16 categories that occupy the slot — **several per slot** (the finer vocabulary; matcher-equivalent within a slot, FR-49.5). They are the allowed values for a per-category slot constraint (§2.12, FR-52).
+- `label` *(new — Milestone 12 session)* is the user-facing slot name; `slot` is the stable machine key. The keys `mid`/`outer` *(renamed from `jersey`/`jacket`)* are the upper-body layers 2 and 3.
+- `layer_order` is present only on the four upper-body anchor layers; it is the innermost-to-outermost order `base(0) → shirt(1) → mid(2) → outer(3)`, and the **outermost present layer is dominant** (FR-18). It is absent on all other slots.
 - `mandatory: true` appears only on `lower_body` (FR-51); absent (falsey) elsewhere. `default_selected` reflects the FR-51 default selection.
 - `one_piece_categories` / `one_piece_also_occupies` appear only on `lower_body`: `dress` and `jumpsuit` are one-piece and additionally occupy the `base` slot (FR-49.2, FR-50.2).
 - `representative_hue` and `hue_arc` remain present only on chromatic families; `Cream` is a neutral family, so it carries `canonical` only.
@@ -201,7 +219,7 @@ The staged image, for the confirmation screen preview. **200** image bytes (orig
 ```json
 {
   "detection_token": "3f9d2c8e-1b4a-4c6d-8e2f-7a9b0c1d2e3f",
-  "category": "jersey",
+  "category": "jumper",
   "colours": [ { "h": 174.0, "s": 58.0, "l": 41.0, "proportion": 80 },
                { "h": 28.0,  "s": 85.0, "l": 55.0, "proportion": 20 } ]
 }
@@ -253,7 +271,7 @@ No body. Re-runs detection on the stored photograph and returns a proposal in ex
 ```json
 {
   "regeneration_token": "9c1e7a3b-5d2f-4e8a-b6c0-2f4d6e8a0b1c",
-  "category": "jersey",
+  "category": "jumper",
   "colours": [ { "h": 176.0, "s": 60.0, "l": 40.0, "proportion": 100 } ]
 }
 ```
@@ -303,27 +321,40 @@ Removes the record, photograph and thumbnail. The confirmation step is a UI resp
 > slot selection over the new slot model (FR-51), pins (FR-44), a colour/scheme anchor
 > (FR-45) and a count (FR-48). All four fields are **optional**; an empty body `{}` means
 > the FR-51 default slots, no pins, no anchor and `count = 3`.
+>
+> **Amended — Milestone 12 session.** The upper-body layer slot keys are `mid`/`outer`
+> (was `jersey`/`jacket`). A `slots` value may now be a **bool or a category-constraint
+> object** `{ "categories": [...] }` (FR-52), constraining the slot to a subset of its
+> categories (§1.3a, §2.2).
 
 ```json
 {
-  "slots":  { "jacket": true, "socks": false },
-  "pins":   { "jacket": "0b6c4d1e-7a2f-4f7e-9d2a-1c3e5f7a9b0c" },
+  "slots":  { "outer": true, "socks": false, "lower_body": { "categories": ["shorts", "skirt"] } },
+  "pins":   { "outer": "0b6c4d1e-7a2f-4f7e-9d2a-1c3e5f7a9b0c" },
   "anchor": { "family": "Teal", "scheme": "analogous" },
   "count":  5
 }
 ```
 
-- **`slots`** *(optional, FR-51)* — a **partial override map**, slot key (§1.3a) → bool,
-  layered over the FR-51 **default selection** (`base`, `lower_body`, `socks`, `shoes`
-  selected; every other slot deselected). Omitted keys keep their default; `true` selects,
-  `false` deselects. A **selected** slot must be filled in every returned combination (so
-  an empty selected slot fails fast — `409`, below). `lower_body` is **mandatory**: it may
-  be omitted or set `true`, but `false` is rejected (`422`). *Beach example:* `{ "base":
-  false, "socks": false }` yields `lower_body` + `shoes`.
+- **`slots`** *(optional, FR-51, FR-52)* — a **partial override map**, slot key (§1.3a) →
+  **`true` / `false` / a category-constraint object**, layered over the FR-51 **default
+  selection** (`base`, `lower_body`, `socks`, `shoes` selected; every other slot
+  deselected). Omitted keys keep their default.
+  - `true` selects the slot with **any** of its categories eligible; `false` deselects it.
+  - `{ "categories": [ … ] }` *(new — Milestone 12 session, FR-52)* selects the slot **and
+    constrains it** to that non-empty subset of the slot's own categories (§2.2); every
+    returned combination fills the slot from that subset. Listing a category that does not
+    belong to the slot, or an empty list, is `422` (below).
+  - A **selected** slot must be filled in every returned combination (so an empty selected
+    slot fails fast — `409`, below). `lower_body` is **mandatory**: it may be omitted, set
+    `true`, or constrained, but `false` is rejected (`422`). *Beach example:* `{ "base":
+    false, "socks": false }` yields `lower_body` + `shoes`.
 - **`pins`** *(optional, FR-44)* — a map slot key → garment `id`. Every returned
   combination contains the pinned garment in that slot. The garment's **category must map
   to the slot key** (§1.3a; a one-piece pins to `lower_body`); a pin **selects** its slot.
-  More than one slot may be pinned; all pins hold simultaneously.
+  A pin and a category constraint on the **same** slot must agree — the pinned garment's
+  category must be in the constraint list, else `422`. More than one slot may be pinned;
+  all pins hold simultaneously.
 - **`anchor`** *(optional, FR-45)* — `{ "family"?, "scheme"? }`; either or both. `family`
   is one §1 family name — every combination's scheme set (§4 of requirements) must include
   that family on an anchor garment. `scheme` is one FR-13 name — every combination must
@@ -345,12 +376,12 @@ Removes the record, photograph and thumbnail. The confirmation step is a UI resp
       "slots": {
         "base":       GarmentSummary,
         "lower_body": GarmentSummary,
-        "jacket":     GarmentSummary,
+        "outer":      GarmentSummary,
         "socks":      GarmentSummary,
         "shoes":      GarmentSummary
       },
       "echoes": [ { "family": "Orange", "from_slot": "socks", "to_slot": "lower_body" } ],
-      "explanation": "Analogous scheme: the teal jacket and azure trousers sit side by side on the wheel; the navy shoes are neutral; the orange flecks in the socks echo the trousers."
+      "explanation": "Analogous scheme: the teal blazer and azure trousers sit side by side on the wheel; the navy shoes are neutral; the orange flecks in the socks echo the trousers."
     }
   ]
 }
@@ -369,8 +400,8 @@ Removes the record, photograph and thumbnail. The confirmation step is a UI resp
 {
   "requested_count": 5,
   "combinations": [],
-  "explanation": "No harmonious outfit was found: no jacket in the wardrobe is compatible with any lower-body garment under any scheme.",
-  "hint": "The jacket slot most constrained the search — try the request without it, or add a neutral jacket."
+  "explanation": "No harmonious outfit was found: no outer-layer garment in the wardrobe is compatible with any lower-body garment under any scheme.",
+  "hint": "The outer-layer slot most constrained the search — try the request without it, or add a neutral coat."
 }
 ```
 
@@ -378,8 +409,8 @@ Removes the record, photograph and thumbnail. The confirmation step is a UI resp
 
 ```json
 { "error": { "code": "empty_slots",
-             "message": "You have no garments for the requested slot(s): jacket.",
-             "details": { "empty_slots": ["jacket"] } } }
+             "message": "You have no garments for the requested slot(s): outer layer.",
+             "details": { "empty_slots": ["outer"] } } }
 ```
 
 **Other errors — `422 invalid_request`** (FR-36, FR-44, FR-45, FR-48, FR-51), with the offending value in `details`:
@@ -387,8 +418,9 @@ Removes the record, photograph and thumbnail. The confirmation step is a UI resp
 - an unknown slot key in `slots` or `pins`, or an unknown `anchor.family` / `anchor.scheme`;
 - `count` outside 1–25 (`details: { "count": 26 }`);
 - `lower_body` set `false` (it is mandatory, FR-51);
-- a pin whose garment `id` does not exist, or whose **category does not map to the pinned slot key**;
-- a contradictory selection — e.g. pinning a one-piece (`dress`/`jumpsuit`) to `lower_body` while `base` is selected (FR-50.2), or two pins for one slot.
+- a **category constraint** (FR-52) that is empty, or names a category **not in the slot's own category set** (§2.2) — `details: { "slot": "lower_body", "invalid_categories": ["jacket"] }`;
+- a pin whose garment `id` does not exist, or whose **category does not map to the pinned slot key**; or a pin whose category is **not in a category constraint set on the same slot**;
+- a contradictory selection — e.g. pinning a one-piece (`dress`/`jumpsuit`) to `lower_body`, **or constraining `lower_body` to one-piece categories only**, while `base` is selected (FR-50.2); or two pins for one slot.
 
 Repeated identical requests may legitimately return different results (FR-42); the variety randomness is seedable (NFR-10), unseeded at runtime. Responses return within NFR-5's 2-second bound at 500 garments **including at `count = 25`** (the enumeration cap is count-independent; re-baselined in `test-perf`).
 
@@ -401,7 +433,7 @@ Repeated identical requests may legitimately return different results (FR-42); t
 | FR-1–FR-5 (taxonomy) | Server-side family derivation everywhere; `GET /api/taxonomy` (§2.2) |
 | FR-2 (**Cream** family — v0.2.0) | §1.5 (`Cream`); §2.2 (`families` includes `Cream`) |
 | FR-6 (1–4 colours, sum 100) | §2.3 response; §2.5/§2.10 validation |
-| FR-16 (**categories** — v0.2.0) | §1.3 (category set); §1.2 garment objects (`category`); §2.2 (`regions`/`slots`) |
+| FR-16 (**categories** — v0.2.0; **expanded** M12 session) | §1.3 (expanded category set); §1.2 garment objects (`category`); §1.3a / §2.2 (`regions`/`slots`, `mid`/`outer` keys, several categories per slot) |
 | FR-23, FR-24 (upload, rejection) | §2.3 |
 | FR-25 (stored photograph) | §2.5, §2.8, §2.9 |
 | FR-26, FR-27 (detection, fallback) | §2.3, §2.9 (`fallback_used`) |
@@ -420,6 +452,7 @@ Repeated identical requests may legitimately return different results (FR-42); t
 | FR-41 (refined — all-neutral first-class) | §2.12 (`scheme: "neutral-based"` with `fallback: false`) |
 | FR-43 (refined — slimmed fallback ladder) | §2.12 (`fallback: true` neutral fallback; empty-result shape with `hint`) |
 | FR-49–FR-51 (**slot model** — v0.2.0) | §1.3a (slot keys, roles, defaults, mandatory `lower_body`); §2.2 (`regions`); §2.12 (`slots`, `pins`, exclusion `422`s) |
+| FR-52 (**per-category slot constraint** — M12 session) | §1.3a (constraint pointer); §2.2 (`categories` per slot = allowed values); §2.12 (`slots` category-constraint object; FR-52 `422`s) |
 | NFR-2 (single command) | §2.1 |
 | NFR-5 (amended — bound holds at count 25), NFR-6 (response bounds) | §2.12, §2.6 |
 | NFR-10 (**seedable variety** — v0.2.0) | §2.12 (non-determinism note; seed is server-internal, not contract surface) |

@@ -5,7 +5,7 @@
 | **Document** | F4 spike output (design note) |
 | **Date** | 18 June 2026 |
 | **Milestone** | 10 — category-model design + requirement deltas |
-| **Status** | Settled; drives the FR-16–22 rewrite and FR-49–51 in `docs/02-requirements.md` |
+| **Status** | Settled; drives the FR-16–22 rewrite and FR-49–51 in `docs/02-requirements.md`. **Addended during the Milestone 12 session** — finer categories, layer-slot rename (`jersey`/`jacket` → `mid`/`outer`) and per-category slot constraints (FR-52); see §7. Layer-name references below are superseded by §7. |
 | **Repository location** | `docs/spikes/2026-06-18-f4-category-slot-model.md` |
 | **Source** | v0.2.0 brief (`docs/09-v0.2.0-brief.md`) §F4, §7; scoping interview, 18 June 2026 |
 
@@ -197,3 +197,44 @@ captured *before* the M14 refactor**, so every behavioural change shows up as an
 explicit, reviewable diff rather than a silent regression. M10 is spec-only; this
 is a standing instruction for the implementation milestone and should become an
 early E08 ticket (ahead of the slot-model code).
+
+---
+
+## 7. Addendum — category granularity (Milestone 12 session, 18 June 2026)
+
+Wireframing the outfit request (Milestone 12) exposed that the single multi-category
+slots were too coarse to *request*: "Generate" over one mandatory `lower_body` slot could
+return a ballgown when the user pictured trousers, and the terse slot labels hid the
+already-existing t-shirt-vs-collared-shirt distinction. Rather than diverge in the
+wireframe, FR-16/FR-36/FR-49 were re-amended and FR-52 added first. The model's *shape* is
+unchanged — same four regions, same four-layer upper stack, same one-piece and adornment
+rules; only the **vocabulary** and one **naming** choice changed, plus a new request-time
+filter.
+
+1. **Finer categories (supersedes §2.1's ≈ sketch).** Each slot now owns a small set of
+   matcher-equivalent categories (FR-16): `base` → `t_shirt`/`vest`/`long_sleeve`; `shirt`
+   → `shirt`/`blouse`/`polo`; the mid layer → `jumper`/`hoodie`/`cardigan`/`sweatshirt`/
+   `track_top`/`waistcoat`; the outer layer → `jacket`/`blazer`/`coat`; `lower_body` adds
+   `chinos`; feet → `socks` and `shoes`/`boots`/`trainers`/`sandals`; head adds
+   `cap`/`beanie`/`sunglasses`. As with `jeans` vs `trousers` (§5), these are **identical
+   to the matcher** — the granularity is for inventory grouping, labelling and FR-52, not
+   harmony. **No new harmony mathematics**, so §6's snapshot concern is unchanged.
+
+2. **Waistcoat → mid layer.** A waistcoat occupies the mid-layer slot (one garment per
+   layer ⇒ mutually exclusive with a jumper; stacks under an outer blazer/coat). This keeps
+   the three-piece-suit case honest: shirt + waistcoat (mid) + blazer (outer).
+
+3. **Layer-slot rename `jersey`→`mid`, `jacket`→`outer`** (supersedes the layer names in
+   §2.1, §2.3 and the dominance string `jacket > jersey > shirt > base`, now
+   `outer > mid > shirt > base`). The slot **keys** and UI **labels** both change so a key
+   is not a misnomer once it holds many categories. No implementation existed yet, so this
+   is documentation-only churn. `jacket` survives as a **category** in the `outer` slot;
+   `jersey` is dropped as a category.
+
+4. **Per-category slot constraint (new FR-52).** A request may constrain a selected slot to
+   a subset of its categories (e.g. `lower_body` = `shorts`/`skirt` only). A pin (§ FR-44)
+   is the single-garment limit of the same idea. It is a request-time candidate filter and
+   adds no new matcher maths. Expressed inside the `slots` map (API contract §2.12).
+
+Everything else in this note — regions, anchors, the scheme set, the two adornment tiers,
+the mandatory lower-body floor, the deliberate out-of-scope list — stands unchanged.

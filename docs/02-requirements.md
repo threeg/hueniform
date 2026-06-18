@@ -3,9 +3,9 @@
 | | |
 |---|---|
 | **Document** | Requirements (living specification) |
-| **Status** | Approved; amended for v0.2.0 (Milestone 10) |
+| **Status** | Approved; amended for v0.2.0 (Milestone 10; category-granularity addendum during Milestone 12) |
 | **Originally approved** | 12 June 2026 (Milestone 2, v0.1.0 MVP) |
-| **Last amended** | 18 June 2026 — v0.2.0 requirement deltas (Milestone 10) |
+| **Last amended** | 18 June 2026 — category-granularity addendum (Milestone 12 session): expanded FR-16 taxonomy, renamed upper-body layer slots, added FR-52 |
 | **Source** | Approved project brief (`docs/01-project-brief.md`); v0.2.0 brief (`docs/09-v0.2.0-brief.md`); interview decisions |
 | **Repository location** | `docs/02-requirements.md` |
 
@@ -13,7 +13,10 @@
 > evolves in place rather than being forked per version (v0.2.0 brief §1). The
 > v0.2.0 delta pass (Milestone 10) **rewrites FR-16–FR-22** (the category & slot
 > model), **adds FR-44–FR-51 and NFR-10**, **refines FR-41–FR-43**, and **amends
-> FR-2, FR-32, FR-35, FR-36 and FR-39**. Superseded text is marked *(superseded —
+> FR-2, FR-32, FR-35, FR-36 and FR-39**. A later **category-granularity addendum
+> (Milestone 12 session)** expanded the FR-16 taxonomy, renamed the upper-body layer
+> slots (`jersey`/`jacket` → `mid`/`outer`) and **added FR-52** (per-category slot
+> constraints), re-amending FR-16/FR-36/FR-49. Superseded text is marked *(superseded —
 > v0.2.0)* in place; numeric thresholds remain contractual (§1.4). The reasoning
 > behind the FR-16–22 rewrite is recorded in
 > `docs/spikes/2026-06-18-f4-category-slot-model.md`.
@@ -146,22 +149,39 @@ Harmony is evaluated over the **scheme set**: the multiset of chromatic primary 
 
 ### 5.1 Categories and regions
 
-**FR-16.** *(Rewritten — v0.2.0; supersedes the v0.1.0 eight-type list.)* A garment
-carries exactly **one category**. The categories, grouped by the body region and
-slot they occupy, are exactly:
+**FR-16.** *(Rewritten — v0.2.0; expanded during the Milestone 12 session — supersedes
+both the v0.1.0 eight-type list and the first v0.2.0 list.)* A garment carries exactly
+**one category**. Categories are a **finer-grained vocabulary than slots**: several
+categories share one slot and are treated **identically by the matcher** (as `jeans` and
+`trousers` already are, FR-49.5) — the extra granularity serves inventory grouping
+(FR-47), labelling, and per-category request constraints (FR-52), not the colour engine.
+The categories, grouped by the region and slot they occupy, are exactly:
 
-| Region | Slot(s) | Categories | Slot role |
+| Region | Slot (key) | Categories | Slot role |
 |---|---|---|---|
-| **Head** | head garment | `hat` | statement adornment |
-| | head adornment | `glasses`, `earrings` | minor adornment |
-| **Upper body** | layer stack (ordered base→outer) | `base`, `shirt`, `jersey`, `jacket` | anchor (layer) |
-| | neck adornment | `tie`, `scarf` | statement adornment |
-| | neck jewellery | `necklace` | minor adornment |
-| | hand jewellery | `watch`, `ring`, `bracelet` | minor adornment |
-| **Lower body** | lower-body garment | `trousers`, `jeans`, `shorts`, `skirt` | anchor |
-| | one-piece (spans lower + upper-base) | `dress`, `jumpsuit` | anchor (one-piece) |
-| | waist adornment | `belt` | statement adornment |
-| **Feet** | feet | `socks`, `shoes` | statement adornment |
+| **Head** | head garment (`hat`) | `hat`, `cap`, `beanie` | statement adornment |
+| | head adornment (`glasses`) | `glasses`, `sunglasses` | minor adornment |
+| | head adornment (`earrings`) | `earrings` | minor adornment |
+| **Upper body** | base — innermost (`base`) | `t_shirt`, `vest`, `long_sleeve` | anchor (layer 0) |
+| | shirt (`shirt`) | `shirt`, `blouse`, `polo` | anchor (layer 1) |
+| | mid-layer (`mid`) | `jumper`, `hoodie`, `cardigan`, `sweatshirt`, `track_top`, `waistcoat` | anchor (layer 2) |
+| | outer layer — outermost (`outer`) | `jacket`, `blazer`, `coat` | anchor (layer 3) |
+| | neck adornment (`tie`, `scarf`) | `tie`, `scarf` | statement adornment |
+| | neck jewellery (`necklace`) | `necklace` | minor adornment |
+| | hand jewellery (`watch`, `ring`, `bracelet`) | `watch`, `ring`, `bracelet` | minor adornment |
+| **Lower body** | lower-body garment (`lower_body`) | `trousers`, `jeans`, `chinos`, `shorts`, `skirt` | anchor |
+| | one-piece (spans `lower_body` + `base`) | `dress`, `jumpsuit` | anchor (one-piece) |
+| | waist adornment (`belt`) | `belt` | statement adornment |
+| **Feet** | feet (`socks`) | `socks` | statement adornment |
+| | feet (`shoes`) | `shoes`, `boots`, `trainers`, `sandals` | statement adornment |
+
+The **slot keys** are a separate namespace from categories (API contract §1.3a). The four
+upper-body layer slots are keyed `base`, `shirt`, `mid`, `outer` (innermost→outermost);
+the keys `mid` and `outer` *(renamed during the Milestone 12 session from the first
+v0.2.0 `jersey` / `jacket` slot keys, so the key is not a misnomer now that each slot
+holds many categories)*. Slot **display labels** are "Base", "Shirt", "Mid-layer",
+"Outer layer". `jacket` remains a **category** (in the `outer` slot); `jersey` is **no
+longer a category** (superseded by `jumper` et al. in the `mid` slot).
 
 There is no automatic category recognition (out of scope, §1.5); the category is
 assigned by the user (FR-31) and may later be edited directly (FR-46).
@@ -169,10 +189,11 @@ assigned by the user (FR-31) and may later be edited directly (FR-46).
 **FR-49.** *(New — v0.2.0.)* The taxonomy above is structured as **regions
 containing slots**, with these structural rules:
 
-1. **Upper-body layer stack.** The four upper-body layers are **ordered**
-   base → shirt → jersey → jacket (innermost to outermost) and are each
-   **independently optional**. A garment's category fixes its layer position. At
-   most one garment occupies each layer.
+1. **Upper-body layer stack.** The four upper-body layer **slots** are **ordered**
+   `base → shirt → mid → outer` (innermost to outermost) and are each
+   **independently optional**. A garment's category fixes its layer slot (FR-16). At
+   most one garment occupies each layer. *(Slot keys `mid`/`outer` renamed from the
+   first v0.2.0 `jersey`/`jacket` during the Milestone 12 session — FR-16.)*
 2. **One-piece garments.** `dress` and `jumpsuit` are **one-piece**: a one-piece
    occupies the **lower-body slot and the upper-body `base` slot simultaneously**
    (see FR-50 for the exclusions this implies and FR-18 for its anchor behaviour).
@@ -209,8 +230,8 @@ combination violating any of them is not a valid outfit:
    exclusive — no two may co-occur.
 2. **One-piece spanning.** Because a one-piece (`dress`/`jumpsuit`) occupies the
    `base` slot as well as the lower-body slot, it **excludes a separate `base`
-   garment and any separate lower-body garment**. Outer layers (`shirt`, `jersey`,
-   `jacket`) may still be worn over a one-piece (FR-18).
+   garment and any separate lower-body garment**. Layers above the base (`shirt`,
+   `mid`, `outer`) may still be worn over a one-piece (FR-18).
 
 **FR-51.** *(New — v0.2.0.)* Required slots are **configurable and removable per
 request**, with one fixed floor:
@@ -232,11 +253,11 @@ request**, with one fixed floor:
 **FR-18.** *(Rewritten — v0.2.0.)* The **anchor garments** of an outfit are the
 **lower-body garment** plus every present **upper-body layer**, with the
 **outermost present upper-body layer dominant**. The dominant layer is the
-outermost present of `jacket` → `jersey` → `shirt` → `base`. A **one-piece** is
+outermost present of `outer` → `mid` → `shirt` → `base`. A **one-piece** is
 always an anchor and is treated as the **lower-body anchor**; it additionally
 occupies the `base` layer position, so when no separate layer is worn over it the
-one-piece is also the dominant upper layer (counted once). When a `shirt`, `jersey`
-or `jacket` is worn over a one-piece, that outer layer is dominant, but the
+one-piece is also the dominant upper layer (counted once). When a `shirt`, `mid`
+or `outer` layer is worn over a one-piece, that outer layer is dominant, but the
 one-piece is **never** demoted to a covered layer (FR-20) — its lower portion
 remains visible and always contributes (FR-19). Because the lower body is mandatory
 (FR-51), at least one anchor always exists; when no upper-body layer is present the
@@ -351,9 +372,11 @@ Search, multi-sort and multi-photo are out of scope for v0.2.0. NFR-6 (responsiv
 
 1. **Choose the slot selection** per FR-51 — select or deselect any slot, subject to
    the mandatory lower-body floor;
-2. **Pin a garment** to its slot (FR-44);
-3. **Anchor to a colour** — a colour family and/or a named scheme (FR-45);
-4. **Choose how many** combinations to generate (FR-48).
+2. **Constrain a selected slot to specific categories** per FR-52 (e.g. lower body =
+   shorts only; mid-layer = waistcoat only);
+3. **Pin a garment** to its slot (FR-44);
+4. **Anchor to a colour** — a colour family and/or a named scheme (FR-45);
+5. **Choose how many** combinations to generate (FR-48).
 
 The request **fails fast** with a clear message when it cannot be satisfied: an
 empty selection or no lower-body slot (FR-51); an included slot with no eligible
@@ -384,9 +407,37 @@ selection (FR-51) and pinning (FR-44). If no harmonious combination satisfies th
 anchor, the request returns zero combinations with a plain-language explanation
 (FR-43).
 
+**FR-52.** *(New — Milestone 12 session, F4 follow-up.)* A request may **constrain a
+selected slot to a chosen subset of its categories** (FR-16), so the user can ask for,
+say, *lower body = shorts or skirt only* (no trousers, no dress), or *mid-layer =
+waistcoat only*. The rules:
+
+1. The constraint applies **per slot** and lists one or more of **that slot's own
+   categories** (FR-16). An empty list, or a category that does not belong to the slot,
+   is rejected with a plain-language validation message.
+2. A constrained slot is **selected** by virtue of being constrained (it composes with
+   FR-51 selection exactly as a pin does — FR-44). An **unconstrained** selected slot
+   continues to accept **any** of its categories (the default).
+3. Every returned combination shall fill the slot with a garment whose category is in
+   the constraint list, and shall otherwise satisfy FR-15. If no harmonious combination
+   can honour the constraint, the request returns zero combinations with a
+   plain-language explanation (the FR-43 zero-result behaviour).
+4. The constraint **composes** with pinning (FR-44 — a pin is the single-garment limit
+   of the same idea), colour/scheme anchoring (FR-45) and the count (FR-48). A pin and a
+   category constraint on the **same** slot must agree (the pinned garment's category
+   must be in the list), else the request fails fast (FR-36).
+5. Constraining `lower_body` to **one-piece categories only** (`dress`/`jumpsuit`)
+   implies the base layer is covered, so it excludes a separately selected `base`
+   (FR-50.2) — handled exactly as a one-piece pin (the UI deselects `base`; a residual
+   contradiction fails fast, FR-36).
+
+The constraint is a **request-time filter over candidate garments**; it adds **no new
+harmony mathematics** (categories within a slot are matcher-equivalent, FR-49.5), so
+NFR-9 and the matcher purity/coverage gate are unaffected.
+
 ### 6.8 Suggestion output
 
-**FR-37.** Each returned combination shall include, per slot, the garment's thumbnail and palette, plus a plain-language explanation that names the matched scheme and the role each garment plays, e.g. *“Analogous scheme: teal jersey and azure trousers sit side by side on the wheel; navy shoes and grey socks are neutrals; the orange cap echoes the stripe in the socks.”*
+**FR-37.** Each returned combination shall include, per slot, the garment's thumbnail and palette, plus a plain-language explanation that names the matched scheme and the role each garment plays, e.g. *“Analogous scheme: teal jumper and azure trousers sit side by side on the wheel; navy shoes and grey socks are neutrals; the orange cap echoes the stripe in the socks.”*
 
 **FR-38.** Explanations shall be generated from the actual evaluation (scheme matched per FR-13, roles per §5, echoes per FR-11) — never canned text disconnected from the result.
 
@@ -454,7 +505,7 @@ Weights are named constants per §1.4: `WEIGHT_SCHEME_STRENGTH = 100`, `WEIGHT_E
 | Decision | Outcome |
 |---|---|
 | Category model | Top-down regions (head / upper body / lower body / feet) with a 4-level ordered upper-layer stack and weighted adornments (FR-16, FR-49). See `docs/spikes/2026-06-18-f4-category-slot-model.md`. |
-| Lower-body categories | `trousers`, `jeans`, `shorts`, `skirt` (mutually exclusive) plus one-piece `dress`, `jumpsuit` (FR-16, FR-50) |
+| Lower-body categories | `trousers`, `jeans`, `chinos`, `shorts`, `skirt` (mutually exclusive) plus one-piece `dress`, `jumpsuit` (FR-16, FR-50). *(`chinos` and the expanded upper/feet vocabulary added in the M12-session addendum — see §9.2.)* |
 | One-piece behaviour | Always the lower anchor; occupies the `base` slot too; outer layers stack over it; never a covered layer (FR-18, FR-50) |
 | Minimum viable outfit | **Lower body (waist) mandatory; everything else optional/removable** (FR-51) |
 | Adornment weight | Two tiers — statement (echo-constrained: hat, tie, scarf, belt, socks, shoes) vs minor (never disqualifies: glasses, earrings, necklace, watch, ring, bracelet) (FR-21, FR-49). Belt is statement, encoding belt↔shoes coordination; the neck necklace is minor jewellery. Adornment slots are independent and combine freely (FR-49.4). |
@@ -468,8 +519,26 @@ Weights are named constants per §1.4: `WEIGHT_SCHEME_STRENGTH = 100`, `WEIGHT_E
 | Seedable variety | Variety randomness injected/seedable for testable, deterministic matcher output (NFR-10, FR-42) |
 | Inventory grouping | Grouped by category; ordered by hue (default spectrum) or date added, newest first (FR-47) |
 
+### 9.2 Category-granularity addendum (Milestone 12 session, 18 June 2026)
+
+These decisions arose while wireframing the outfit request (Milestone 12): the screen
+revealed that the single multi-category slots were too coarse to request. Per the
+"raise-it-and-amend-first" rule, FR-16/FR-36/FR-49 were re-amended and FR-52 added
+**before** the wireframes were drawn.
+
+| Decision | Outcome |
+|---|---|
+| Finer categories | The slot **vocabulary expands** (e.g. `base` → `t_shirt`/`vest`/`long_sleeve`; `shirt`/`blouse`/`polo`; mid-layer `jumper`/`hoodie`/`cardigan`/`sweatshirt`/`track_top`/`waistcoat`; outer `jacket`/`blazer`/`coat`; lower-body adds `chinos`; feet adds `boots`/`trainers`/`sandals`; head adds `cap`/`beanie`/`sunglasses`). Categories in one slot stay matcher-equivalent (FR-49.5) — no new harmony maths (FR-16). |
+| Waistcoat placement | `waistcoat` sits in the **mid-layer** slot (mutually exclusive with a jumper at that layer; stacks under an outer blazer/coat), not the outer layer (FR-16). |
+| Layer-slot rename | The mid/outer layer **slot keys** are renamed `jersey`→`mid`, `jacket`→`outer` (keys **and** UI labels "Mid-layer"/"Outer layer"), so a slot key is not a misnomer now it holds many categories. Implementation had not started, so this is documentation-only churn. `jacket` stays a category; `jersey` is dropped as a category (FR-16). |
+| Track top vs shell | The football zip-up is a **mid-layer** `track_top` category, kept distinct from `cardigan` (granularity); "shell" rejected as a name to avoid the outer-windbreaker reading (FR-16). |
+| Per-category slot constraint | A request may **constrain a selected slot to a subset of its categories** (e.g. shorts only), expressed inside the `slots` map (API contract §2.12). New **FR-52**; composes with pins, anchor and count. |
+| Pin behaviour | A pin opens a **wardrobe picker modal**; selecting also offers a one-click **"Suggest outfits around this"** (pin + generate). Otherwise pinning composes the request and Generate stays explicit (FR-44). |
+
 ---
 
 *Approval of the original document closed Milestone 2 (v0.1.0). Approval of the
-v0.2.0 deltas above closes Milestone 10. This is a living specification; see
+v0.2.0 deltas above closes Milestone 10; the §9.2 addendum was settled during the
+Milestone 12 session (and re-closes the reopened FR-16/FR-36/FR-49 and new FR-52
+with the same sign-off). This is a living specification; see
 `docs/00-milestone-plan.md` for current status.*

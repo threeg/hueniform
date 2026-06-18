@@ -19,21 +19,62 @@
   .main{flex:1;padding:26px 32px}
   .pagetitle{font-size:18px;font-weight:700;margin-bottom:18px}
   .callout{display:inline-flex;width:18px;height:18px;border-radius:50%;background:#b58900;color:#fff;font-size:11px;font-weight:700;align-items:center;justify-content:center;vertical-align:2px;margin-left:6px;flex-shrink:0}
-  .btn{display:inline-block;padding:8px 18px;border:1px solid #76767a;border-radius:5px;background:#fff;font-weight:600;color:#2d2d2d;text-decoration:none}
+  .btn{display:inline-block;padding:8px 18px;border:1px solid #76767a;border-radius:5px;background:#fff;font-weight:600;color:#2d2d2d;text-decoration:none;cursor:default}
   .btn.primary{background:#3b3b3d;border-color:#3b3b3d;color:#fff}
   .btn.busy{opacity:.55}
   .banner{border:1px solid;border-radius:6px;padding:12px 16px;margin-top:18px}
   .banner.error{background:#fbeeec;border-color:#c4564a;color:#7c2d25}
   .panel{border:1px solid #d8d6d2;border-radius:8px;padding:18px 20px;background:#fcfcfb}
-  .lab{font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.4px;color:#666;margin-bottom:8px}
-  .chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
-  .chip{padding:7px 16px;border-radius:18px;border:1px solid #b6b4b0;background:#fff;font-size:13.5px;color:#444}
-  .chip.locked{background:#efeeec;color:#777;border-style:dashed}
+  .lab{font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.4px;color:#666;margin:18px 0 8px}
+  .lab:first-child{margin-top:0}
+  .sublab{font-size:11px;text-transform:uppercase;letter-spacing:.3px;color:#a0a0a0;margin:2px 0 6px}
+  .regions{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start}
+  .region{border:1px solid #e4e2de;border-radius:7px;padding:12px;background:#fff}
+  .region h3{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#48484a;margin-bottom:9px;border-bottom:1px solid #ecebe8;padding-bottom:5px}
+  .chips{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{padding:6px 12px;border-radius:16px;border:1px solid #b6b4b0;background:#fff;font-size:12.5px;color:#555;white-space:nowrap}
   .chip.on{background:#3b3b3d;border-color:#3b3b3d;color:#fff;font-weight:600}
-  .chip.flagged{border-color:#c4564a;color:#a33527;font-weight:600}
-  .chip .flagnote{font-size:11px;font-weight:400;display:block;color:#c4564a}
-  .hint{font-size:12.5px;color:#999;margin-top:10px}
+  .chip.locked{background:#2d4a3e;border-color:#2d4a3e;color:#fff;font-weight:600}
+  .chip.flagged{border-color:#c4564a;color:#a33527;font-weight:600;background:#fbeeec}
+  .chip .flagnote{font-size:10.5px;font-weight:400;display:block;color:#c4564a}
+  .chip .pinact{margin-left:6px;opacity:.7;font-size:11px}
+  .accrow{margin-top:9px}
+  /* per-category constraint control (FR-52) */
+  .catctl{display:block;margin-top:6px;font-size:11px;color:#7a7a7a}
+  .catctl .cur{color:#3b3b3d;font-weight:600}
+  .catpop{margin-top:6px;border:1px solid #c9c7c3;border-radius:6px;background:#fff;padding:8px 10px;font-size:12px}
+  .catpop .ph{font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;color:#999;margin-bottom:5px}
+  .catpop label{display:block;padding:2px 0;color:#444}
+  .catpop input{margin-right:6px;vertical-align:-1px}
+  .swchip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px 5px 6px;border-radius:16px;border:1px solid #b6b4b0;background:#fff;font-size:12.5px;color:#555}
+  .swchip.on{border-color:#3b3b3d;box-shadow:0 0 0 1.5px #3b3b3d;font-weight:600;color:#2d2d2d}
+  .sw{width:15px;height:15px;border-radius:3px;border:1px solid rgba(0,0,0,.25);flex-shrink:0}
+  .seg{display:inline-flex;border:1px solid #b6b4b0;border-radius:6px;overflow:hidden}
+  .seg span{padding:6px 12px;font-size:12.5px;color:#555;border-right:1px solid #d8d6d2}
+  .seg span:last-child{border-right:0}
+  .seg span.on{background:#3b3b3d;color:#fff;font-weight:600}
+  .pinchip{display:inline-flex;align-items:center;gap:8px;padding:5px 10px 5px 5px;border:1px solid #b6b4b0;border-radius:8px;background:#fff;font-size:12.5px}
+  .pinthumb{width:26px;height:26px;border-radius:4px;background:repeating-linear-gradient(45deg,#e7e5e1,#e7e5e1 5px,#f3f1ee 5px,#f3f1ee 10px);border:1px solid #d8d6d2;flex-shrink:0}
+  .pinchip .x{color:#999;font-weight:700;margin-left:2px}
+  .note{font-size:12px;color:#7a6a35;background:#fbf6e6;border:1px solid #e6d9a8;border-radius:6px;padding:7px 11px;margin-top:8px}
+  .stepper{display:inline-flex;align-items:center;border:1px solid #b6b4b0;border-radius:6px;overflow:hidden}
+  .stepper b{padding:6px 10px;background:#f3f1ee;font-size:16px;color:#48484a}
+  .stepper .val{padding:6px 16px;font-weight:700;font-size:15px;min-width:48px;text-align:center}
+  .row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .clearlink{font-size:12px;color:#7a7a7a;text-decoration:underline}
+  .hint{font-size:12.5px;color:#999;margin-top:12px}
+  .hint code{background:#f1efec;padding:1px 4px;border-radius:3px}
   .searching{margin-top:22px;color:#555;font-weight:600}
+  .addlink{color:#2d2d2d;text-decoration:underline;font-weight:600}
+  /* pin picker modal sketch */
+  .modal{border:2px solid #9a9a96;border-radius:8px;background:#fff;max-width:540px;margin-top:14px;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+  .modal .mh{padding:12px 16px;border-bottom:1px solid #e4e2de;font-weight:700}
+  .modal .mb{padding:14px 16px}
+  .pickgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .pickcard{border:1px solid #e4e2de;border-radius:6px;padding:8px;text-align:center;font-size:11px;color:#555}
+  .pickcard.sel{border-color:#3b3b3d;box-shadow:0 0 0 1.5px #3b3b3d}
+  .pickthumb{height:46px;border-radius:4px;background:repeating-linear-gradient(45deg,#e7e5e1,#e7e5e1 6px,#f3f1ee 6px,#f3f1ee 12px);border:1px solid #d8d6d2;margin-bottom:5px}
+  .modal .mf{padding:12px 16px;border-top:1px solid #e4e2de;display:flex;gap:10px;align-items:center}
 </style>
 </head>
 <body>
@@ -58,138 +99,225 @@
   <a class="spec" href="05-outfit-request.md">This screen’s spec (MD) →</a>
 </nav>
 
-
-<h1>Wireframe 5 — Outfit request</h1>
-<p class="intro">Route <code>/suggest</code> · FR-17, FR-36 · <code>POST /api/suggestions</code>. One page with results (wireframe 6) rendered beneath this panel. Callouts ① – ④ explained in <code>05-outfit-request.md</code>.</p>
+<h1>Wireframe 5 — Outfit request <span style="font-size:12px;font-weight:400;color:#b58900">(rewritten — v0.2.0; reworked M12)</span></h1>
+<p class="intro">Route <code>/suggest</code> · FR-36, FR-44, FR-45, FR-48, FR-49–FR-52 · <code>POST /api/suggestions</code> (<code>slots</code>/<code>pins</code>/<code>anchor</code>/<code>count</code>). Layer slots labelled Base / Shirt / Mid-layer / Outer layer (keys <code>base</code>/<code>shirt</code>/<code>mid</code>/<code>outer</code>); a slot may be constrained to specific categories (FR-52). Callouts ① – ⑪ in <code>05-outfit-request.md</code>.</p>
 
 <!-- ============================================================ -->
-<div class="state"><h2>State A — Default</h2><span>no optional slots; a valid request as-is</span></div>
+<div class="state"><h2>State A — Default</h2><span>FR-51 defaults selected · no pins/anchor/constraints · count 3 · a valid request as-is</span></div>
 <div class="frame">
   <div class="side">
     <div class="brand">HUENIFORM</div>
-    <nav class="nav">
-      <a href="#">Wardrobe</a>
-      <a href="#">Add garment</a>
-      <a href="#" class="active">Suggest outfit</a>
-    </nav>
+    <nav class="nav"><a href="#">Wardrobe</a><a href="#">Add garment</a><a href="#" class="active">Suggest outfit</a></nav>
   </div>
   <div class="main">
     <div class="pagetitle">Suggest an outfit</div>
     <div class="panel">
-      <div class="lab">Always included <span class="callout">1</span></div>
-      <div class="chips">
-        <span class="chip locked">🔒 Top</span>
-        <span class="chip locked">🔒 Bottom</span>
-        <span class="chip locked">🔒 Socks</span>
-        <span class="chip locked">🔒 Shoes</span>
+      <div class="lab">Slots <span class="callout">1</span></div>
+      <div class="regions">
+        <div class="region">
+          <h3>Head</h3>
+          <div class="chips"><span class="chip">Hat</span></div>
+          <div class="accrow"><div class="sublab">Accessories</div>
+            <div class="chips"><span class="chip">Glasses</span><span class="chip">Earrings</span></div></div>
+        </div>
+        <div class="region">
+          <h3>Upper body <span class="callout">4</span></h3>
+          <div class="chips"><span class="chip on">Base</span><span class="chip">Shirt</span><span class="chip">Mid-layer</span><span class="chip">Outer layer</span></div>
+          <span class="catctl">Base: <span class="cur">any ▾</span> <span class="callout">5</span></span>
+          <div class="accrow"><div class="sublab">Accessories</div>
+            <div class="chips"><span class="chip">Tie</span><span class="chip">Scarf</span><span class="chip">Necklace</span><span class="chip">Watch</span><span class="chip">Ring</span><span class="chip">Bracelet</span></div></div>
+        </div>
+        <div class="region">
+          <h3>Lower body</h3>
+          <div class="chips"><span class="chip locked">🔒 Lower body <span class="callout">3</span></span></div>
+          <span class="catctl">Type: <span class="cur">any ▾</span></span>
+          <div class="accrow"><div class="sublab">Accessories</div>
+            <div class="chips"><span class="chip">Belt</span></div></div>
+        </div>
+        <div class="region">
+          <h3>Feet</h3>
+          <div class="chips"><span class="chip on">Socks</span><span class="chip on">Shoes</span></div>
+          <span class="catctl">Shoes: <span class="cur">any ▾</span></span>
+        </div>
       </div>
-      <div class="lab">Include in this outfit <span class="callout">2</span></div>
-      <div class="chips">
-        <span class="chip">Jersey</span>
-        <span class="chip">Jacket</span>
-        <span class="chip">Hat</span>
-        <span class="chip">Accessory</span>
+      <div style="margin-top:6px"><span class="sublab" style="color:#888">② Default-selected: Base, Lower body, Socks, Shoes</span></div>
+
+      <div class="lab">Build around a garment <span class="callout">6</span></div>
+      <span class="btn">📌 Pin a garment…</span>
+
+      <div class="lab">Build around a colour <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#999">(optional)</span> <span class="callout">8</span></div>
+      <div class="sublab">Colour family</div>
+      <div class="chips" style="margin-bottom:12px">
+        <span class="swchip"><span class="sw" style="background:#2CADA0"></span>Teal</span>
+        <span class="swchip"><span class="sw" style="background:#2B7FC4"></span>Azure</span>
+        <span class="swchip"><span class="sw" style="background:#EE8225"></span>Orange</span>
+        <span class="swchip"><span class="sw" style="background:#9a4f8e"></span>Violet</span>
+        <span style="font-size:12px;color:#999;align-self:center">…all 20 families</span>
       </div>
-      <a class="btn primary" href="#">Suggest outfits</a> <span class="callout">3</span>
-      <div class="hint">Top, bottom, socks and shoes are always included. Jersey and jacket can be combined.</div>
+      <div class="sublab">Scheme</div>
+      <div class="seg"><span class="on">Any</span><span>Neutral-based</span><span>Monochromatic</span><span>Analogous</span><span>Complementary</span><span>Triadic</span></div>
+
+      <div class="lab">How many outfits? <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#999">(1–25)</span> <span class="callout">9</span></div>
+      <div class="stepper"><b>−</b><span class="val">3</span><b>+</b></div>
+
+      <div style="margin-top:20px"><span class="btn primary">Generate <span class="callout">10</span></span></div>
+      <div class="hint">The lower-body slot is always included; everything else is up to you.</div>
     </div>
-    <p class="hint" style="margin-top:16px">Results appear below this panel (wireframe 6); the panel stays put so slots can be tweaked and the request repeated.</p>
   </div>
 </div>
 
 <!-- ============================================================ -->
-<div class="state"><h2>State B — Slots selected</h2><span>jersey + hat on → <code>{"include": {"jersey": true, "jacket": false, "hat": true, "accessory": false}}</code></span></div>
-<div class="frame" style="min-height:0">
-  <div class="side">
-    <div class="brand">HUENIFORM</div>
-    <nav class="nav">
-      <a href="#">Wardrobe</a>
-      <a href="#">Add garment</a>
-      <a href="#" class="active">Suggest outfit</a>
-    </nav>
-  </div>
-  <div class="main">
-    <div class="pagetitle">Suggest an outfit</div>
-    <div class="panel">
-      <div class="lab">Always included</div>
-      <div class="chips">
-        <span class="chip locked">🔒 Top</span>
-        <span class="chip locked">🔒 Bottom</span>
-        <span class="chip locked">🔒 Socks</span>
-        <span class="chip locked">🔒 Shoes</span>
-      </div>
-      <div class="lab">Include in this outfit</div>
-      <div class="chips">
-        <span class="chip on">✓ Jersey</span>
-        <span class="chip">Jacket</span>
-        <span class="chip on">✓ Hat</span>
-        <span class="chip">Accessory</span>
-      </div>
-      <a class="btn primary" href="#">Suggest outfits</a>
-    </div>
-  </div>
-</div>
-
-<!-- ============================================================ -->
-<div class="state"><h2>State C — Searching (loading)</h2><span>request in flight; &lt; 2 s at 500 garments (NFR-5)</span></div>
-<div class="frame" style="min-height:0">
-  <div class="side">
-    <div class="brand">HUENIFORM</div>
-    <nav class="nav">
-      <a href="#">Wardrobe</a>
-      <a href="#">Add garment</a>
-      <a href="#" class="active">Suggest outfit</a>
-    </nav>
-  </div>
-  <div class="main">
-    <div class="pagetitle">Suggest an outfit</div>
-    <div class="panel" style="opacity:.6">
-      <div class="lab">Include in this outfit</div>
-      <div class="chips">
-        <span class="chip on">✓ Jersey</span>
-        <span class="chip">Jacket</span>
-        <span class="chip on">✓ Hat</span>
-        <span class="chip">Accessory</span>
-      </div>
-      <a class="btn primary busy" href="#">Suggesting ···</a>
-    </div>
-    <div class="searching">Finding harmonious combinations ···</div>
-  </div>
-</div>
-
-<!-- ============================================================ -->
-<div class="state"><h2>State D — Empty slot (error)</h2><span><code>409 empty_slots</code> — fail fast (FR-36); envelope message verbatim, offending chip flagged</span></div>
+<div class="state"><h2>State B — Category-constrained + colour anchor</h2><span>Lower body = shorts/skirt only (FR-52); beach: Base &amp; Socks off; anchor Teal · Analogous</span></div>
 <div class="frame">
   <div class="side">
     <div class="brand">HUENIFORM</div>
-    <nav class="nav">
-      <a href="#">Wardrobe</a>
-      <a href="#">Add garment</a>
-      <a href="#" class="active">Suggest outfit</a>
-    </nav>
+    <nav class="nav"><a href="#">Wardrobe</a><a href="#">Add garment</a><a href="#" class="active">Suggest outfit</a></nav>
   </div>
   <div class="main">
     <div class="pagetitle">Suggest an outfit</div>
     <div class="panel">
-      <div class="lab">Always included</div>
-      <div class="chips">
-        <span class="chip locked">🔒 Top</span>
-        <span class="chip locked">🔒 Bottom</span>
-        <span class="chip locked">🔒 Socks</span>
-        <span class="chip locked">🔒 Shoes</span>
+      <div class="lab">Slots</div>
+      <div class="regions">
+        <div class="region"><h3>Head</h3><div class="chips"><span class="chip">Hat</span></div>
+          <div class="accrow"><div class="sublab">Accessories</div><div class="chips"><span class="chip">Glasses</span><span class="chip">Earrings</span></div></div></div>
+        <div class="region"><h3>Upper body</h3>
+          <div class="chips"><span class="chip">Base</span><span class="chip">Shirt</span><span class="chip">Mid-layer</span><span class="chip">Outer layer</span></div>
+          <div class="accrow"><div class="sublab">Accessories</div><div class="chips"><span class="chip">Tie</span><span class="chip">Scarf</span><span class="chip">Necklace</span><span class="chip">Watch</span><span class="chip">Ring</span><span class="chip">Bracelet</span></div></div></div>
+        <div class="region"><h3>Lower body</h3><div class="chips"><span class="chip locked">🔒 Lower body</span></div>
+          <span class="catctl">Type: <span class="cur">shorts, skirt ▾</span> <span class="callout">5</span></span>
+          <div class="catpop">
+            <div class="ph">Lower-body type</div>
+            <label><input type="checkbox"> Trousers</label>
+            <label><input type="checkbox"> Jeans</label>
+            <label><input type="checkbox"> Chinos</label>
+            <label><input type="checkbox" checked> Shorts</label>
+            <label><input type="checkbox" checked> Skirt</label>
+            <label><input type="checkbox"> Dress</label>
+            <label><input type="checkbox"> Jumpsuit</label>
+          </div>
+          <div class="accrow"><div class="sublab">Accessories</div><div class="chips"><span class="chip">Belt</span></div></div></div>
+        <div class="region"><h3>Feet</h3><div class="chips"><span class="chip">Socks</span><span class="chip on">Shoes</span></div>
+          <span class="catctl">Shoes: <span class="cur">any ▾</span></span></div>
       </div>
-      <div class="lab">Include in this outfit</div>
-      <div class="chips">
-        <span class="chip flagged">✓ Jersey<span class="flagnote">none in wardrobe</span></span>
-        <span class="chip">Jacket</span>
-        <span class="chip on">✓ Hat</span>
-        <span class="chip">Accessory</span>
+
+      <div class="lab">Build around a garment</div>
+      <span class="btn">📌 Pin a garment…</span>
+
+      <div class="lab">Build around a colour <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#999">(optional)</span></div>
+      <div class="sublab">Colour family <a href="#" class="clearlink">clear</a></div>
+      <div class="chips" style="margin-bottom:12px">
+        <span class="swchip on"><span class="sw" style="background:#2CADA0"></span>Teal</span>
+        <span class="swchip"><span class="sw" style="background:#2B7FC4"></span>Azure</span>
+        <span class="swchip"><span class="sw" style="background:#EE8225"></span>Orange</span>
       </div>
-      <a class="btn primary" href="#">Suggest outfits</a>
+      <div class="sublab">Scheme</div>
+      <div class="seg"><span>Any</span><span>Neutral-based</span><span>Monochromatic</span><span class="on">Analogous</span><span>Complementary</span><span>Triadic</span></div>
+
+      <div class="lab">How many outfits? <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#999">(1–25)</span></div>
+      <div class="stepper"><b>−</b><span class="val">6</span><b>+</b></div>
+
+      <div style="margin-top:20px"><span class="btn primary">Generate</span></div>
+      <div class="hint">Sends <code>{ slots:{ base:false, socks:false, lower_body:{ categories:["shorts","skirt"] } }, anchor:{ family:"Teal", scheme:"analogous" }, count:6 }</code>.</div>
     </div>
-    <div class="banner error"><b>Can't build that outfit.</b> You have no garments for the requested slot(s): jersey. <span class="callout">4</span><br>
-    <span style="font-size:13px">Untick jersey, or <a href="#" style="color:inherit;font-weight:700">add a jersey to your wardrobe</a>.</span></div>
-    <p class="hint">The flagged chip comes from <code>details.empty_slots</code>. If a <b>required</b> slot is empty (e.g. no shoes yet), the same banner appears but there is no chip to untick — the “add a garment” link is the way out.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State C — Pinned (build around a garment)</h2><span>pin picker modal · select-to-generate · one-piece pin auto-deselects Base (FR-50.2)</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav"><a href="#">Wardrobe</a><a href="#">Add garment</a><a href="#" class="active">Suggest outfit</a></nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Suggest an outfit</div>
+    <div class="panel">
+      <div class="lab">Slots</div>
+      <div class="regions">
+        <div class="region"><h3>Head</h3><div class="chips"><span class="chip">Hat</span></div></div>
+        <div class="region"><h3>Upper body</h3>
+          <div class="chips"><span class="chip">Base</span><span class="chip">Shirt</span><span class="chip on">Mid-layer <span class="pinact">📌</span></span><span class="chip">Outer layer</span></div></div>
+        <div class="region"><h3>Lower body</h3><div class="chips"><span class="chip locked">🔒 Lower body <span class="pinact">📌</span></span></div></div>
+        <div class="region"><h3>Feet</h3><div class="chips"><span class="chip on">Socks</span><span class="chip on">Shoes</span></div></div>
+      </div>
+
+      <div class="lab">Pinned garments <span class="callout">6</span></div>
+      <div class="row">
+        <span class="pinchip"><span class="pinthumb"></span><b>Dress</b><span class="sw" style="background:#c79ec0;width:13px;height:13px"></span> → Lower body <span class="x">✕</span></span>
+        <span class="pinchip"><span class="pinthumb"></span><b>Cardigan</b><span class="sw" style="background:#2CADA0;width:13px;height:13px"></span> → Mid-layer <span class="x">✕</span></span>
+        <span class="btn">📌 Pin a garment…</span>
+      </div>
+      <div class="sublab" style="margin-top:6px">Identity = photo + palette + category. There is no name field (F3 defers metadata).</div>
+      <div class="note"><span class="callout">7</span> A dress covers the base layer, so <b>Base</b> has been switched off for this request.</div>
+
+      <!-- pin picker modal sketch -->
+      <div class="lab">Pin a garment — wardrobe picker</div>
+      <div class="modal">
+        <div class="mh">Pick a garment to build around</div>
+        <div class="mb">
+          <div class="sublab">Filter: all categories · all colours — cards show photo + palette + category, as inventory does (no names)</div>
+          <div class="pickgrid">
+            <div class="pickcard sel"><div class="pickthumb"></div>Dress <span class="sw" style="background:#c79ec0;width:11px;height:11px;display:inline-block;vertical-align:-1px"></span></div>
+            <div class="pickcard"><div class="pickthumb"></div>Trousers <span class="sw" style="background:#243b6b;width:11px;height:11px;display:inline-block;vertical-align:-1px"></span></div>
+            <div class="pickcard"><div class="pickthumb"></div>Cardigan <span class="sw" style="background:#2CADA0;width:11px;height:11px;display:inline-block;vertical-align:-1px"></span></div>
+            <div class="pickcard"><div class="pickthumb"></div>Shirt <span class="sw" style="background:#eee;width:11px;height:11px;display:inline-block;vertical-align:-1px"></span></div>
+          </div>
+        </div>
+        <div class="mf"><span class="btn primary">📌 Pin to request</span><span class="btn">⚡ Suggest outfits around this</span><span style="font-size:12px;color:#999">selecting auto-targets the garment’s slot</span></div>
+      </div>
+
+      <div class="lab">How many outfits? <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#999">(1–25)</span></div>
+      <div class="stepper"><b>−</b><span class="val">3</span><b>+</b></div>
+      <div style="margin-top:20px"><span class="btn primary">Generate</span></div>
+      <div class="hint">“Suggest outfits around this” pins + generates in one click; “Pin to request” just composes it. Reached here via the dress’s detail page, pin pre-applied.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State D — Searching</h2><span>request in flight · panel inert · &lt; 2 s at 500 garments, incl. count 25 (NFR-5)</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav"><a href="#">Wardrobe</a><a href="#">Add garment</a><a href="#" class="active">Suggest outfit</a></nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Suggest an outfit</div>
+    <div class="panel" style="opacity:.55">
+      <div class="lab">Slots</div>
+      <div class="regions">
+        <div class="region"><h3>Head</h3><div class="chips"><span class="chip">Hat</span></div></div>
+        <div class="region"><h3>Upper body</h3><div class="chips"><span class="chip on">Base</span><span class="chip">Shirt</span><span class="chip on">Mid-layer</span><span class="chip">Outer layer</span></div></div>
+        <div class="region"><h3>Lower body</h3><div class="chips"><span class="chip locked">🔒 Lower body</span></div></div>
+        <div class="region"><h3>Feet</h3><div class="chips"><span class="chip on">Socks</span><span class="chip on">Shoes</span></div></div>
+      </div>
+      <div style="margin-top:20px"><span class="btn primary busy">Generating…</span></div>
+    </div>
+    <div class="searching">Searching your wardrobe for harmonious outfits…</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State E — Empty slot (error)</h2><span><code>409 empty_slots</code> · message verbatim · named chips flagged (FR-36)</span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav"><a href="#">Wardrobe</a><a href="#">Add garment</a><a href="#" class="active">Suggest outfit</a></nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Suggest an outfit</div>
+    <div class="panel">
+      <div class="lab">Slots</div>
+      <div class="regions">
+        <div class="region"><h3>Head</h3><div class="chips"><span class="chip">Hat</span></div></div>
+        <div class="region"><h3>Upper body</h3><div class="chips"><span class="chip on">Base</span><span class="chip">Shirt</span><span class="chip">Mid-layer</span><span class="chip on flagged">Outer layer<span class="flagnote">none in wardrobe</span></span></div></div>
+        <div class="region"><h3>Lower body</h3><div class="chips"><span class="chip locked">🔒 Lower body</span></div></div>
+        <div class="region"><h3>Feet</h3><div class="chips"><span class="chip on">Socks</span><span class="chip on">Shoes</span></div></div>
+      </div>
+      <div style="margin-top:20px"><span class="btn primary">Generate</span></div>
+    </div>
+    <div class="banner error"><span class="callout">11</span> You have no garments for the requested slot(s): outer layer. &nbsp; <a href="#" class="addlink">Add a garment →</a></div>
+    <div class="hint">Deselect the flagged slot to search without it, or add a garment for it. A flagged <em>mandatory</em> slot (e.g. no lower-body garment yet) has no untick — only the Add-garment link.</div>
   </div>
 </div>
 

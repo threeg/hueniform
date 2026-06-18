@@ -12,7 +12,7 @@ This document is the single source of truth for **where the project is**. It was
 
 ## Current position
 
-> **v0.1.0 shipped and tagged `v0.1.0`. Milestone 11 complete (signed off) — the v0.2.0 architecture & API deltas are written into `docs/03-architecture.md` (matcher region/slot model, data-model value-set + migration note, rewritten outfit-request flow, snapshot-baseline note) and `docs/03-api-contract.md` (categories & slot keys, taxonomy regions + Cream, `PATCH` category edit, inventory grouping/ordering, the slots/pins/anchor/count suggestion request, traceability). Next: Milestone 12 — wireframe deltas (`docs/04-wireframes/`) — not started.**
+> **v0.1.0 shipped and tagged `v0.1.0`. Milestone 11 complete (signed off) — the v0.2.0 architecture & API deltas are written into `docs/03-architecture.md` (matcher region/slot model, data-model value-set + migration note, rewritten outfit-request flow, snapshot-baseline note) and `docs/03-api-contract.md` (categories & slot keys, taxonomy regions + Cream, `PATCH` category edit, inventory grouping/ordering, the slots/pins/anchor/count suggestion request, traceability). In progress: Milestone 12 — wireframe deltas (`docs/04-wireframes/`) — rewriting the outfit-request + results, inventory grouping, garment-detail category edit, and the confirm-and-correct category picker to the API contract. During M12 the outfit-request screen revealed a genuine gap (slots too coarse to request), so M10/M11 were reopened and re-amended first: expanded FR-16 taxonomy, upper-body layer-slot rename (`jersey`/`jacket` → `mid`/`outer`), and a new per-category slot constraint (FR-52) carried inside the suggestion request. Those upstream amendments are committed with the wireframes; wireframes resume against them.**
 
 ---
 
@@ -36,9 +36,9 @@ This document is the single source of truth for **where the project is**. It was
 | # | Milestone | Deliverable | Tool | Status |
 |---|---|---|---|---|
 | 9 | v0.2.0 brief | `docs/09-v0.2.0-brief.md` — seven features (F1–F7), epics E06–E10, requirement deltas | **Cowork** | ✅ Complete |
-| 10 | Category-model design + requirement deltas | F4 spike output; updated `docs/02-requirements.md` (FR-16–22 rewrite, FR-44–51, NFR-10, FR-2 tuning) | **Cowork** | ✅ Complete |
-| 11 | Architecture & API deltas | `docs/03-architecture.md`, `docs/03-api-contract.md` — category edit, pin/scheme + count suggestion API, taxonomy | **Cowork** | ✅ Complete |
-| 12 | Wireframe deltas | `docs/04-wireframes/` — new/changed screens (category edit, build-around request, suggestion count, inventory grouping) | **Cowork** | ⬜ Not started |
+| 10 | Category-model design + requirement deltas | F4 spike output; updated `docs/02-requirements.md` (FR-16–22 rewrite, FR-44–51, NFR-10, FR-2 tuning) | **Cowork** | ✅ Complete (addended in M12 session — expanded FR-16 taxonomy, layer-slot rename, new FR-52; spike §7, requirements §9.2) |
+| 11 | Architecture & API deltas | `docs/03-architecture.md`, `docs/03-api-contract.md` — category edit, pin/scheme + count suggestion API, taxonomy | **Cowork** | ✅ Complete (addended in M12 session — expanded category set, `jersey`/`jacket` → `mid`/`outer` slot keys, per-category slot constraints) |
+| 12 | Wireframe deltas | `docs/04-wireframes/` — new/changed screens (category edit, build-around request, suggestion count, inventory grouping) | **Cowork** | 🔶 In progress |
 | 13 | Test-strategy delta + ticket generation | `docs/05-test-strategy.md` (test-first policy, seedable variety, snapshot baseline); `tickets/*` (HUE-059+), epics E06–E10 | **Cowork** | ⬜ Not started |
 | 14+ | Implementation, ticket by ticket | Working software; tickets updated in the same commits | **Code** | ⬜ Not started |
 

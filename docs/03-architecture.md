@@ -99,7 +99,7 @@ the module (see §4.3). No layer gains a dependency; in particular nothing new i
 | `taxonomy.py` | Family classification: ordered neutral rules, then chromatic arcs; half-open boundaries; canonical HSL per family. **v0.2.0** — adds the **Cream** neutral family (order 8) for pale warm near-neutrals | FR-1–FR-5 (FR-2) |
 | `roles.py` | Primary / dual-primary / secondary / minor derivation from proportions | FR-6–FR-11 |
 | `harmony.py` | Clustering of hues, ordered scheme test (neutral-based → monochromatic → analogous → complementary → triadic) | FR-12–FR-15 |
-| `slots.py` | **v0.2.0 — region/slot/role model.** Category→slot mapping; the four-level upper-body layer stack (`base → shirt → jersey → jacket`) with outermost-dominant; one-piece garments (lower-body anchor that also occupies `base`, never a covered layer); covered-layer constraint generalised across four layers; the two adornment tiers (statement = echo-constrained; minor = never disqualifies), each reusing the existing echo-slot/minor-colour primitives; mutual-exclusion groups and the mandatory lower-body floor | FR-16–FR-22, FR-49–FR-51 |
+| `slots.py` | **v0.2.0 — region/slot/role model.** Category→slot mapping (several categories per slot, matcher-equivalent within a slot — FR-49.5); the four-level upper-body layer stack (`base → shirt → mid → outer`, keys renamed from `jersey`/`jacket` in the M12 session) with outermost-dominant; one-piece garments (lower-body anchor that also occupies `base`, never a covered layer); covered-layer constraint generalised across four layers; the two adornment tiers (statement = echo-constrained; minor = never disqualifies), each reusing the existing echo-slot/minor-colour primitives; mutual-exclusion groups and the mandatory lower-body floor. **Per-category slot constraint (FR-52)** is a request-time candidate filter, not new harmony maths | FR-16–FR-22, FR-49–FR-52 |
 | `ranking.py` | Score composition (scheme strength, echo bonus, variety factor) and the fallback ladder. **v0.2.0** — all-neutral outfits scored first-class at `NEUTRAL_BASED_STRENGTH`; minor-adornment echoes credited in the echo bonus; raised variety penalty with **anchor-interleaved enumeration** so diverse outfits are reached before the cap; selection of the top *N* (FR-48) from the capped pool; variety/enumeration randomness from an **injected** RNG | FR-39–FR-43, FR-48, NFR-5, NFR-10 |
 | `explain.py` | Plain-language explanation rendered from the evaluation result object | FR-37, FR-38 |
 
@@ -177,23 +177,30 @@ Indices: `idx_garments_type (garments.type)`, `idx_colours_family (garment_colou
 > **v0.2.0 (F3/F4/F6) — no schema change.** The category model and its new features
 > require **no change to the table shapes**:
 >
-> - **Category value set (FR-16, F4).** The `garments.type` CHECK constraint's
->   *allowed values* become the FR-16 categories — `base`, `shirt`, `jersey`, `jacket`
->   (upper-body layers); `trousers`, `jeans`, `shorts`, `skirt`, `dress`, `jumpsuit`
->   (lower body, the last two one-piece); `hat`, `glasses`, `earrings`, `tie`, `scarf`,
->   `necklace`, `watch`, `ring`, `bracelet`, `belt` (head/neck/hand/waist adornments);
->   `socks`, `shoes` (feet) — superseding the v0.1.0 eight-type list. This is a constant
->   change (the allowlist), not a column or index change. The slot a category occupies,
->   its region and its harmony role are **derived in the matcher** (`matcher.slots`),
->   not stored — so no new column is needed.
+> - **Category value set (FR-16, F4; expanded M12 session).** The `garments.type` CHECK
+>   constraint's *allowed values* become the (expanded) FR-16 categories — upper-body
+>   layers `t_shirt`/`vest`/`long_sleeve` (`base` slot), `shirt`/`blouse`/`polo` (`shirt`
+>   slot), `jumper`/`hoodie`/`cardigan`/`sweatshirt`/`track_top`/`waistcoat` (`mid` slot),
+>   `jacket`/`blazer`/`coat` (`outer` slot); lower body `trousers`/`jeans`/`chinos`/
+>   `shorts`/`skirt` plus one-piece `dress`/`jumpsuit`; adornments `hat`/`cap`/`beanie`/
+>   `glasses`/`sunglasses`/`earrings`/`tie`/`scarf`/`necklace`/`watch`/`ring`/`bracelet`/
+>   `belt`; feet `socks`/`shoes`/`boots`/`trainers`/`sandals` — superseding the v0.1.0
+>   eight-type list. This is a constant change (the allowlist), not a column or index
+>   change. The slot a category occupies (the four upper layers keyed `base`/`shirt`/
+>   `mid`/`outer`), its region and its harmony role are **derived in the matcher**
+>   (`matcher.slots`), not stored — so no new column is needed, and the expanded
+>   vocabulary adds no harmony maths (categories within a slot are matcher-equivalent).
 >
 >   **Data migration (no schema change, M14).** The `type` → `category` rename is
 >   **API-only** — the DB column keeps the name `type` (contract §1.3), so the rename
 >   moves and drops nothing. The **value** change, however, needs a one-off migration of
 >   existing rows *before* the new CHECK allowlist is applied (the old values would
 >   otherwise fail the constraint):
->     - **Carry over unchanged:** `jersey`, `jacket`, `socks`, `shoes`, `hat`.
->     - `top` → `base` (sensible default; a collared shirt stored as `top` would ideally
+>     - **Carry over unchanged:** `jacket`, `socks`, `shoes`, `hat` (all still valid
+>       categories).
+>     - `jersey` → `jumper` (the `jersey` category was dropped in the M12 session; its
+>       garments become `jumper` in the `mid` slot).
+>     - `top` → `t_shirt` (sensible default; a collared shirt stored as `top` would ideally
 >       be re-tagged `shirt`).
 >     - `bottom` → **ambiguous**: one of `trousers` / `jeans` / `shorts` / `skirt` —
 >       needs a default plus a manual re-categorisation pass (FR-46).
@@ -276,16 +283,20 @@ Backing up the application is copying `data/` — a single directory.
    fast** (FR-36) when: no lower-body slot is selected or the selection is empty; a
    *selected* slot has no eligible garment (`409 empty_slots`, naming the slots); or a
    pin/anchor cannot be honoured (handled at step 6 as a zero result). A pin marks its
-   slot selected (FR-44); a pin to the lower-body slot of a **one-piece** is
-   incompatible with a separately selected `base` (FR-50.2) and is rejected up front.
+   slot selected (FR-44); a **per-category slot constraint** (FR-52) likewise selects and
+   narrows its slot. A pin to the lower-body slot of a **one-piece**, or a `lower_body`
+   constraint to one-piece categories only, is incompatible with a separately selected
+   `base` (FR-50.2) and is rejected up front.
 2. **Anchor enumeration** (seedable, capped). Candidates are built anchors-first over
-   the selected slots: the **lower-body garment** (one of `trousers`/`jeans`/`shorts`/
-   `skirt`, or a one-piece `dress`/`jumpsuit`) × the present **upper-body layers**
-   (`base`, `shirt`, `jersey`, `jacket`), with the **outermost present layer dominant**
-   (`jacket > jersey > shirt > base`, FR-18). A one-piece fills the lower-body slot
-   **and** the `base` slot, excludes a separate `base` and a separate lower-body
-   garment (FR-50), and is never demoted to a covered layer (FR-18/FR-20). Any **pins**
-   fix their slot to one garment, shrinking the space. Enumeration is **interleaved
+   the selected slots: the **lower-body garment** (one of `trousers`/`jeans`/`chinos`/
+   `shorts`/`skirt`, or a one-piece `dress`/`jumpsuit`) × the present **upper-body layers**
+   (`base`, `shirt`, `mid`, `outer`), with the **outermost present layer dominant**
+   (`outer > mid > shirt > base`, FR-18). Any **per-category slot constraint** (FR-52) or
+   **pin** (FR-44) narrows a slot's candidate set up front — a constraint to a category
+   subset, a pin to a single garment — shrinking the space before enumeration. A one-piece
+   fills the lower-body slot **and** the `base` slot, excludes a separate `base` and a
+   separate lower-body garment (FR-50), and is never demoted to a covered layer
+   (FR-18/FR-20). Enumeration is **interleaved
    across distinct anchor garments** (F5 diversity) and **capped** by the
    count-independent named constant (`MAX_ANCHOR_CANDIDATES`); the shuffle and
    interleave draw from an **injected `random.Random`** (NFR-10) — a fixed seed in
