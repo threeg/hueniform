@@ -15,7 +15,13 @@ from fastapi import APIRouter, File, Request, UploadFile
 from fastapi.responses import FileResponse
 
 from app.api.converters import colour_out
-from app.api.errors import AppError
+from app.api.errors import (
+    DETECTION_NOT_FOUND,
+    FILE_TOO_LARGE,
+    UNREADABLE_IMAGE,
+    UNSUPPORTED_FORMAT,
+    AppError,
+)
 from app.api.schemas import DetectionImageInfo, DetectionResponse
 from app.services.detection_service import (
     UnreadableImageError,
@@ -53,7 +59,7 @@ async def upload_and_detect(
     if content_type not in _ALLOWED_CONTENT_TYPES:
         raise AppError(
             400,
-            "unsupported_format",
+            UNSUPPORTED_FORMAT,
             "Only JPEG, PNG and WebP photographs are accepted (FR-23).",
         )
 
@@ -62,7 +68,7 @@ async def upload_and_detect(
     # Read at most MAX + 1 bytes; any more means the upload exceeds the limit.
     data: bytes = await file.read(_MAX_UPLOAD_BYTES + 1)
     if len(data) > _MAX_UPLOAD_BYTES:
-        raise AppError(413, "file_too_large", "Upload exceeds the 20 MB limit (FR-23).")
+        raise AppError(413, FILE_TOO_LARGE, "Upload exceeds the 20 MB limit (FR-23).")
 
     settings = request.app.state.settings
     staging_dir: Path = settings.data_dir / "staging"
@@ -72,7 +78,7 @@ async def upload_and_detect(
     except UnreadableImageError:
         raise AppError(
             400,
-            "unreadable_image",
+            UNREADABLE_IMAGE,
             "The uploaded image could not be read. Check that the file is not corrupt.",
         )
 
@@ -101,7 +107,7 @@ async def get_detection_image(token: str, request: Request) -> FileResponse:
 
     found = get_staged_image_path(token, staging_dir)
     if found is None:
-        raise AppError(404, "detection_not_found", "Detection not found or has expired.")
+        raise AppError(404, DETECTION_NOT_FOUND, "Detection not found or has expired.")
 
     image_path, media_type = found
     return FileResponse(image_path, media_type=media_type)

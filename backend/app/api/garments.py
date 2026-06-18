@@ -17,7 +17,17 @@ from fastapi import APIRouter, Query, Request
 from fastapi.responses import FileResponse
 
 from app.api.converters import colour_out, garment_to_summary, require_garment
-from app.api.errors import AppError
+from app.api.errors import (
+    DETECTION_NOT_FOUND,
+    GARMENT_NOT_FOUND,
+    IMAGE_NOT_FOUND,
+    INVALID_FILTER,
+    INVALID_PALETTE,
+    INVALID_REGENERATION_TOKEN,
+    INVALID_TYPE,
+    THUMBNAIL_NOT_FOUND,
+    AppError,
+)
 from app.api.schemas import (
     DetectionImageInfo,
     GarmentCreateRequest,
@@ -90,13 +100,13 @@ def create_garment(body: GarmentCreateRequest, request: Request) -> GarmentDetai
     except TokenNotFoundError:
         raise AppError(
             404,
-            "detection_not_found",
+            DETECTION_NOT_FOUND,
             "Detection token not found, expired or already consumed.",
         )
     except InvalidTypeError as e:
-        raise AppError(422, "invalid_type", str(e))
+        raise AppError(422, INVALID_TYPE, str(e))
     except InvalidPaletteError as e:
-        raise AppError(422, "invalid_palette", str(e))
+        raise AppError(422, INVALID_PALETTE, str(e))
 
     return _to_detail(result)
 
@@ -126,7 +136,7 @@ def list_garments_endpoint(
             offset=offset,
         )
     except InvalidFilterError as e:
-        raise AppError(422, "invalid_filter", str(e))
+        raise AppError(422, INVALID_FILTER, str(e))
 
     return InventoryResponse(
         garments=[garment_to_summary(g) for g in page.garments],
@@ -152,7 +162,7 @@ def get_garment_image(garment_id: str, request: Request) -> FileResponse:
     result = require_garment(garment_id, engine)
     path = settings.data_dir / "images" / result.image_file
     if not path.exists():
-        raise AppError(404, "image_not_found", "Image file not found.")
+        raise AppError(404, IMAGE_NOT_FOUND, "Image file not found.")
     return FileResponse(path)
 
 
@@ -165,7 +175,7 @@ def get_garment_thumbnail(garment_id: str, request: Request) -> FileResponse:
     result = require_garment(garment_id, engine)
     path = settings.data_dir / "thumbnails" / result.thumbnail_file
     if not path.exists():
-        raise AppError(404, "thumbnail_not_found", "Thumbnail file not found.")
+        raise AppError(404, THUMBNAIL_NOT_FOUND, "Thumbnail file not found.")
     return FileResponse(path)
 
 
@@ -237,15 +247,15 @@ def update_garment(
     except RegenerationTokenError:
         raise AppError(
             409,
-            "invalid_regeneration_token",
+            INVALID_REGENERATION_TOKEN,
             "Regeneration token is absent, expired, consumed, or bound to a different garment.",
         )
     except GarmentNotFoundError:
-        raise AppError(404, "garment_not_found", "Garment not found.")
+        raise AppError(404, GARMENT_NOT_FOUND, "Garment not found.")
     except InvalidTypeError as e:
-        raise AppError(422, "invalid_type", str(e))
+        raise AppError(422, INVALID_TYPE, str(e))
     except InvalidPaletteError as e:
-        raise AppError(422, "invalid_palette", str(e))
+        raise AppError(422, INVALID_PALETTE, str(e))
 
     return _to_detail(result)
 
@@ -264,4 +274,4 @@ def delete_garment(garment_id: str, request: Request) -> None:
             engine=engine,
         )
     except GarmentNotFoundError:
-        raise AppError(404, "garment_not_found", "Garment not found.")
+        raise AppError(404, GARMENT_NOT_FOUND, "Garment not found.")

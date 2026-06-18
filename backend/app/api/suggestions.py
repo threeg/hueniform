@@ -12,7 +12,7 @@ import random
 from fastapi import APIRouter, Request
 
 from app.api.converters import garment_to_summary
-from app.api.errors import AppError
+from app.api.errors import EMPTY_SLOTS, INVALID_REQUEST, AppError
 from app.api.schemas import (
     CombinationOut,
     EchoOut,
@@ -41,11 +41,11 @@ def create_suggestion(body: SuggestionRequest, request: Request) -> SuggestionRe
     try:
         result = suggest(include_optional, engine, random.Random())
     except InvalidSlotError as exc:
-        raise AppError(422, "invalid_request", str(exc))
+        raise AppError(422, INVALID_REQUEST, str(exc))
     except EmptySlotsError as exc:
         raise AppError(
             409,
-            "empty_slots",
+            EMPTY_SLOTS,
             str(exc),
             details={"empty_slots": exc.empty_slots},
         )

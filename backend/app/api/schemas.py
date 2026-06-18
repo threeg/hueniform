@@ -3,8 +3,6 @@ Shared Pydantic schemas for the Hueniform API (contract §1.1–§1.2).
 
 ``ColourIn`` / ``ColourOut`` carry a single colour entry.
 ``GarmentSummary`` / ``GarmentDetail`` are the two garment response shapes.
-``validate_palette`` enforces the FR-6 count + sum-to-100 rule; call it from
-endpoint handlers before delegating to a service.
 """
 
 from __future__ import annotations
@@ -198,21 +196,3 @@ class SuggestionResponse(BaseModel):
     explanation: str | None = None
     hint: str | None = None
 
-
-def validate_palette(colours: list[ColourIn]) -> None:
-    """
-    Validate FR-6 palette constraints.
-
-    Raises ``ValueError`` if:
-    - The list has fewer than 1 or more than 4 entries.
-    - The proportions do not sum to exactly 100.
-    """
-    if not (1 <= len(colours) <= 4):
-        raise ValueError(
-            f"A palette must have 1–4 colours (FR-6); got {len(colours)}"
-        )
-    total = sum(c.proportion for c in colours)
-    if total != 100:
-        raise ValueError(
-            f"Colour proportions must sum to exactly 100 (FR-6); got {total}"
-        )

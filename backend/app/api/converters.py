@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from sqlalchemy.engine import Engine
 
-from app.api.errors import AppError
+from app.api.errors import GARMENT_NOT_FOUND, AppError
 from app.api.schemas import ColourOut, GarmentSummary
 from app.services.garment_service import (
     GarmentNotFoundError,
@@ -42,4 +42,4 @@ def require_garment(garment_id: str, engine: Engine) -> GarmentResult:
     try:
         return get_garment(garment_id, engine)
     except GarmentNotFoundError:
-        raise AppError(404, "garment_not_found", "Garment not found.")
+        raise AppError(404, GARMENT_NOT_FOUND, "Garment not found.")

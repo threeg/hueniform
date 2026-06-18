@@ -18,6 +18,23 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
 
 
+# ── Error code constants (contract §1.3) ──────────────────────────────────────
+
+GARMENT_NOT_FOUND = "garment_not_found"
+DETECTION_NOT_FOUND = "detection_not_found"
+IMAGE_NOT_FOUND = "image_not_found"
+THUMBNAIL_NOT_FOUND = "thumbnail_not_found"
+INVALID_TYPE = "invalid_type"
+INVALID_PALETTE = "invalid_palette"
+INVALID_FILTER = "invalid_filter"
+INVALID_REGENERATION_TOKEN = "invalid_regeneration_token"
+INVALID_REQUEST = "invalid_request"
+EMPTY_SLOTS = "empty_slots"
+UNSUPPORTED_FORMAT = "unsupported_format"
+FILE_TOO_LARGE = "file_too_large"
+UNREADABLE_IMAGE = "unreadable_image"
+
+
 class AppError(Exception):
     """
     Structured API error.  Raise this from endpoint handlers; the registered

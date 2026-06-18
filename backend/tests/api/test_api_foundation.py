@@ -17,7 +17,7 @@ import json
 from datetime import datetime, timedelta, timezone
 
 from app.api.errors import AppError
-from app.api.schemas import ColourIn, GarmentSummary, validate_palette
+from app.api.schemas import ColourIn, GarmentSummary
 from app.main import Settings, create_app
 from app.storage import staging as staging_store
 
@@ -180,38 +180,6 @@ class TestColourInValidation:
     def test_proportion_101_invalid(self):
         with pytest.raises(ValidationError):
             ColourIn(h=0.0, s=50.0, l=50.0, proportion=101)
-
-
-# ── validate_palette (FR-6) ───────────────────────────────────────────────────
-
-class TestValidatePalette:
-    def _c(self, proportion: int) -> ColourIn:
-        return ColourIn(h=0.0, s=50.0, l=50.0, proportion=proportion)
-
-    def test_single_colour_100_valid(self):
-        validate_palette([self._c(100)])
-
-    def test_four_colours_25_each_valid(self):
-        validate_palette([self._c(25)] * 4)
-
-    def test_zero_colours_raises(self):
-        with pytest.raises(ValueError):
-            validate_palette([])
-
-    def test_five_colours_raises(self):
-        with pytest.raises(ValueError):
-            validate_palette([self._c(20)] * 5)
-
-    def test_sum_99_raises(self):
-        with pytest.raises(ValueError):
-            validate_palette([self._c(50), self._c(49)])
-
-    def test_sum_101_raises(self):
-        with pytest.raises(ValueError):
-            validate_palette([self._c(50), self._c(51)])
-
-    def test_sum_100_two_colours_valid(self):
-        validate_palette([self._c(60), self._c(40)])
 
 
 # ── Static SPA mount + history-API fallback ───────────────────────────────────

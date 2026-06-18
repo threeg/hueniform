@@ -2,7 +2,7 @@
 id: HUE-045
 title: API error code constants and dead validate_palette removal
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: api
@@ -32,11 +32,11 @@ actually happens in the service layer.
 
 ## Definition of done (acceptance criteria)
 
-- [ ] Every `AppError` call references a constant from `errors.py`, not a string literal
-- [ ] `validate_palette` removed from `schemas.py`; module docstring updated
-- [ ] All existing API tests still pass unchanged
-- [ ] `make test` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] Every `AppError` call references a constant from `errors.py`, not a string literal
+- [x] `validate_palette` removed from `schemas.py`; module docstring updated
+- [x] All existing API tests still pass unchanged
+- [x] `make test` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -48,3 +48,4 @@ all error paths.
 ## Notes
 
 - 2026-06-16 — created by `/verify` review of API batch (HUE-025–031).
+- 2026-06-17 — implemented: 13 constants added to `errors.py`; all string literals in `garments.py`, `detections.py`, `suggestions.py`, `converters.py` replaced; `validate_palette` and its test class removed; `schemas.py` docstring updated. 885 passed, zero warnings.
