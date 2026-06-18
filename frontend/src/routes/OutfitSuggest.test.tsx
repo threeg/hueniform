@@ -19,6 +19,11 @@ const FALLBACK_RESPONSE = {
   combinations: [{ ...SUGGESTION_RESPONSE.combinations[0], fallback: true }],
 }
 
+// A neutral-based scheme response for SCHEME_LABELS coverage
+const NEUTRAL_BASED_RESPONSE = {
+  combinations: [{ ...SUGGESTION_RESPONSE.combinations[0], scheme: 'neutral-based' }],
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function renderScreen() {
@@ -157,6 +162,18 @@ describe('Suggest — result cards (FR-37/38/39/41)', () => {
     await user().click(screen.getByTestId('suggest-button'))
     await waitFor(() => screen.getByTestId('scheme-chip'))
     expect(screen.getByTestId('scheme-chip')).toHaveTextContent('Analogous scheme')
+  })
+
+  it('shows neutral-based scheme label correctly', async () => {
+    server.use(
+      http.post('http://127.0.0.1:8000/api/suggestions', () =>
+        HttpResponse.json(NEUTRAL_BASED_RESPONSE),
+      ),
+    )
+    renderScreen()
+    await user().click(screen.getByTestId('suggest-button'))
+    await waitFor(() => screen.getByTestId('scheme-chip'))
+    expect(screen.getByTestId('scheme-chip')).toHaveTextContent('Neutral-based scheme')
   })
 
   it('renders slot tiles for each slot in the combination (FR-37)', async () => {

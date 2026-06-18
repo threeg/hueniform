@@ -20,12 +20,11 @@ type OptionalSlot = typeof OPTIONAL_SLOTS[number]
 const SLOT_ORDER = ['top', 'jersey', 'jacket', 'bottom', 'socks', 'shoes', 'hat', 'accessory']
 
 const SCHEME_LABELS: Record<string, string> = {
-  analogous:            'Analogous',
-  complementary:        'Complementary',
-  triadic:              'Triadic',
-  split_complementary:  'Split-complementary',
-  monochromatic:        'Monochromatic',
-  neutral:              'Neutral',
+  analogous:        'Analogous',
+  complementary:    'Complementary',
+  triadic:          'Triadic',
+  monochromatic:    'Monochromatic',
+  'neutral-based':  'Neutral-based',
 }
 
 export default function Suggest() {

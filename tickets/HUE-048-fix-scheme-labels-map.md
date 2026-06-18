@@ -2,7 +2,7 @@
 id: HUE-048
 title: Fix SCHEME_LABELS map and add neutral-based test coverage
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: frontend
@@ -34,10 +34,10 @@ capitalised `"Neutral-based scheme"`.
 
 ## Definition of done (acceptance criteria)
 
-- [ ] `SCHEME_LABELS` keys match the backend's actual scheme values exactly
-- [ ] Test verifies neutral-based scheme label renders correctly
-- [ ] `make test-frontend` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] `SCHEME_LABELS` keys match the backend's actual scheme values exactly
+- [x] Test verifies neutral-based scheme label renders correctly
+- [x] `make test-frontend` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -46,3 +46,4 @@ capitalised `"Neutral-based scheme"`.
 ## Notes
 
 - 2026-06-17 — created by `/verify` review of frontend batch (HUE-032–037).
+- 2026-06-17 — implemented: replaced `neutral` key with `'neutral-based'` and removed `split_complementary` from `SCHEME_LABELS`; added `neutral-based` scheme chip test. 133 frontend tests passed, zero warnings.
