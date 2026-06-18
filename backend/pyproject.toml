@@ -131,4 +131,6 @@ ignore_imports = [
     "app.services.suggestion_service -> app.matcher.taxonomy",
     "app.services.suggestion_service -> app.storage.models",
     "app.services.taxonomy_service -> app.matcher.taxonomy",
+    # Narrow exception: compile-time constant only, no business logic crossing.
+    "app.api.schemas -> app.matcher.slots",
 ]

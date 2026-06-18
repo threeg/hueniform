@@ -9,10 +9,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, field_validator
 
-# FR-16 garment types (contract §1.3).
-GARMENT_TYPES: frozenset[str] = frozenset(
-    {"top", "bottom", "jersey", "jacket", "socks", "shoes", "hat", "accessory"}
-)
+from app.matcher.slots import GARMENT_TYPES as GARMENT_TYPES  # noqa: F401 — re-export for validators
 
 
 class ColourIn(BaseModel):

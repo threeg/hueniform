@@ -52,6 +52,17 @@ def test_matcher_stdlib_only() -> None:
     )
 
 
+def test_garment_types_consistent() -> None:
+    """storage.models.GARMENT_TYPES must equal matcher.slots.GARMENT_TYPES (HUE-054)."""
+    from app.matcher.slots import GARMENT_TYPES as matcher_types
+    from app.storage.models import GARMENT_TYPES as storage_types
+
+    assert frozenset(storage_types) == frozenset(matcher_types), (
+        "GARMENT_TYPES drift: storage.models and matcher.slots have different values. "
+        "Update storage/models.py to match matcher/slots.py."
+    )
+
+
 def test_harness_running() -> None:
     """Confirm pytest is reachable and the app package is importable."""
     from app.main import create_app
