@@ -71,9 +71,6 @@ def _materialise(engine, garments: list[Garment]) -> None:
         s.commit()
 
 
-_RNG = random.Random(42)
-
-
 def _rng() -> random.Random:
     return random.Random(42)
 

@@ -131,6 +131,52 @@ def _validate_palette(colours: list[ColourIn]) -> None:
 
 # ── Internal helpers ──────────────────────────────────────────────────────────
 
+def _validate_type(garment_type: str) -> None:
+    if garment_type not in _GARMENT_TYPES:
+        raise InvalidTypeError(
+            f"'{garment_type}' is not a valid garment type. "
+            f"Allowed: {', '.join(sorted(_GARMENT_TYPES))}."
+        )
+
+
+def _build_saved_colours(
+    colours: list[ColourIn],
+    families: list[str],
+) -> tuple[SavedColour, ...]:
+    return tuple(
+        SavedColour(
+            h=c.h,
+            s=c.s,
+            l=c.l,
+            family=f,
+            neutral=is_neutral(f),
+            hex=hsl_to_hex(c.h, c.s, c.l),
+            proportion=c.proportion,
+        )
+        for c, f in zip(colours, families)
+    )
+
+
+def _add_colour_rows(
+    session: Session,
+    garment_id: str,
+    colours: list[ColourIn],
+    families: list[str],
+) -> None:
+    for i, (c, f) in enumerate(zip(colours, families)):
+        session.add(
+            GarmentColourRow(
+                garment_id=garment_id,
+                position=i,
+                h=c.h,
+                s=c.s,
+                l=c.l,
+                family=f,
+                proportion=c.proportion,
+            )
+        )
+
+
 def _row_to_result(row: GarmentRow, colour_rows: list[GarmentColourRow]) -> GarmentResult:
     """Convert DB rows to a ``GarmentResult``, computing hex and neutral flag."""
     saved_colours = tuple(
@@ -297,12 +343,7 @@ def confirm(
     if entry is None:
         raise TokenNotFoundError(f"Detection token '{token}' not found or expired.")
 
-    if garment_type not in _GARMENT_TYPES:
-        raise InvalidTypeError(
-            f"'{garment_type}' is not a valid garment type. "
-            f"Allowed: {', '.join(sorted(_GARMENT_TYPES))}."
-        )
-
+    _validate_type(garment_type)
     _validate_palette(colours)
 
     # Derive families once — used in both the DB insert and the return value (FR-1).
@@ -331,19 +372,6 @@ def confirm(
         (thumbnails_dir / thumbnail_file).unlink(missing_ok=True)
         raise
 
-    saved_colours = tuple(
-        SavedColour(
-            h=c.h,
-            s=c.s,
-            l=c.l,
-            family=f,
-            neutral=is_neutral(f),
-            hex=hsl_to_hex(c.h, c.s, c.l),
-            proportion=c.proportion,
-        )
-        for c, f in zip(colours, families)
-    )
-
     return GarmentResult(
         id=garment_id,
         type=garment_type,
@@ -351,7 +379,7 @@ def confirm(
         regenerated_at=None,
         image_file=image_file,
         thumbnail_file=thumbnail_file,
-        colours=saved_colours,
+        colours=_build_saved_colours(colours, families),
     )
 
 
@@ -387,12 +415,7 @@ def confirm_regeneration(
             "Regeneration token is absent, expired, consumed, or bound to a different garment."
         )
 
-    if garment_type not in _GARMENT_TYPES:
-        raise InvalidTypeError(
-            f"'{garment_type}' is not a valid garment type. "
-            f"Allowed: {', '.join(sorted(_GARMENT_TYPES))}."
-        )
-
+    _validate_type(garment_type)
     _validate_palette(colours)
 
     families = [classify(c.h, c.s, c.l) for c in colours]
@@ -454,20 +477,7 @@ def _insert_garment(
         )
         session.add(garment)
         session.flush()  # make garment row visible before FK child rows
-
-        for i, (c, f) in enumerate(zip(colours, families)):
-            session.add(
-                GarmentColourRow(
-                    garment_id=garment_id,
-                    position=i,
-                    h=c.h,
-                    s=c.s,
-                    l=c.l,
-                    family=f,
-                    proportion=c.proportion,
-                )
-            )
-
+        _add_colour_rows(session, garment_id, colours, families)
         session.commit()
 
 
@@ -501,34 +511,8 @@ def _update_garment_in_place(
         for oc in old:
             session.delete(oc)
         session.flush()
-
-        for i, (c, f) in enumerate(zip(colours, families)):
-            session.add(
-                GarmentColourRow(
-                    garment_id=garment_id,
-                    position=i,
-                    h=c.h,
-                    s=c.s,
-                    l=c.l,
-                    family=f,
-                    proportion=c.proportion,
-                )
-            )
-
+        _add_colour_rows(session, garment_id, colours, families)
         session.commit()
-
-    saved_colours = tuple(
-        SavedColour(
-            h=c.h,
-            s=c.s,
-            l=c.l,
-            family=f,
-            neutral=is_neutral(f),
-            hex=hsl_to_hex(c.h, c.s, c.l),
-            proportion=c.proportion,
-        )
-        for c, f in zip(colours, families)
-    )
 
     return GarmentResult(
         id=garment_id,
@@ -537,5 +521,5 @@ def _update_garment_in_place(
         regenerated_at=regenerated_at,
         image_file=image_file,
         thumbnail_file=thumbnail_file,
-        colours=saved_colours,
+        colours=_build_saved_colours(colours, families),
     )

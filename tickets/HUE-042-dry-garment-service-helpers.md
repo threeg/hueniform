@@ -2,7 +2,7 @@
 id: HUE-042
 title: DRY garment_service internal helpers
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: services
@@ -35,11 +35,11 @@ estimate: 1
 
 ## Definition of done (acceptance criteria)
 
-- [ ] Three extracted helpers replace six duplicated blocks
-- [ ] Dead `_RNG` constant removed
-- [ ] All existing service tests still pass
-- [ ] `make test` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] Three extracted helpers replace six duplicated blocks
+- [x] Dead `_RNG` constant removed
+- [x] All existing service tests still pass
+- [x] `make test` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -50,3 +50,4 @@ No new tests required — this is a pure refactor. Existing tests cover all path
 ## Notes
 
 - 2026-06-16 — created by `/verify` review of services batch (HUE-021–024).
+- 2026-06-17 — done. Extracted `_validate_type`, `_build_saved_colours`, and `_add_colour_rows` into the `# Internal helpers` section; replaced all six duplicated blocks. Removed dead `_RNG = random.Random(42)` from test_suggestion_service.py. `make test` 892 passed, zero warnings.
