@@ -2,7 +2,7 @@
 id: HUE-043
 title: Shared conftest for service tests
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: tooling
@@ -36,11 +36,11 @@ discover the fixtures automatically).
 
 ## Definition of done (acceptance criteria)
 
-- [ ] Shared `conftest.py` created with the extracted fixtures/helpers
-- [ ] Per-file duplicates removed
-- [ ] All existing service tests still pass
-- [ ] `make test` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] Shared `conftest.py` created with the extracted fixtures/helpers
+- [x] Per-file duplicates removed
+- [x] All existing service tests still pass
+- [x] `make test` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -51,3 +51,4 @@ No new tests required — this is a pure refactor. Existing tests cover all path
 ## Notes
 
 - 2026-06-16 — created by `/verify` review of services batch (HUE-021–024).
+- 2026-06-17 — done. Created `tests/services/conftest.py` with `engine` and `dirs` fixtures (auto-discovered) and `_make_jpeg_bytes` / `_stage_image` helpers (imported explicitly). Removed per-file copies from test_garment_service.py, test_regeneration_service.py, and test_suggestion_service.py; renamed `_stage_upload` → `_stage_image` in the regen file. `_stage_regen_token` stays local to regen (unique to that file). 892 passed, zero warnings.

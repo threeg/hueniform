@@ -73,7 +73,7 @@ Reactive tickets from `/verify` post-batch reviews (CONVENTIONS.md §6). Worked 
 | # | id | title | type | layer | source batch | status | depends_on |
 |---|---|---|---|---|---|---|---|
 | 42 | HUE-042 | DRY garment_service internal helpers | task | services | services | done | HUE-022, HUE-023 |
-| 43 | HUE-043 | Shared conftest for service tests | task | tooling | services | todo | HUE-021, HUE-022, HUE-023, HUE-024 |
+| 43 | HUE-043 | Shared conftest for service tests | task | tooling | services | done | HUE-021, HUE-022, HUE-023, HUE-024 |
 | 44 | HUE-044 | DRY API response conversion helpers | task | api | api | todo | HUE-031 |
 | 45 | HUE-045 | API error code constants and dead validate_palette removal | task | api | api | todo | HUE-031 |
 | 46 | HUE-046 | Shared API test conftest | task | tooling | api | todo | HUE-031 |

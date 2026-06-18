@@ -23,7 +23,6 @@ from app.services.suggestion_service import (
     SuggestionResult,
     suggest,
 )
-from app.storage.engine import init_db, make_engine
 from app.storage.models import GarmentColourRow, GarmentRow
 from tests.fixtures.wardrobes import (
     neutral_fallback_only,
@@ -34,14 +33,6 @@ from tests.fixtures.wardrobes import (
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
-
-@pytest.fixture()
-def engine(tmp_path):
-    e = make_engine(tmp_path / "test.db")
-    init_db(e)
-    yield e
-    e.dispose()
-
 
 def _materialise(engine, garments: list[Garment]) -> None:
     """Insert a list of matcher Garment objects into the DB as GarmentRow records."""
