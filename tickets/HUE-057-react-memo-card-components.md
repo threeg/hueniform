@@ -2,7 +2,7 @@
 id: HUE-057
 title: React.memo for GarmentCard and PaletteStrip
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: frontend
@@ -33,11 +33,11 @@ re-render all children even when their props haven't changed.
 
 ## Definition of done (acceptance criteria)
 
-- [ ] `GarmentCard` exported as `React.memo(...)` component
-- [ ] `PaletteStrip` exported as `React.memo(...)` component
-- [ ] All existing frontend tests still pass unchanged
-- [ ] `make test-frontend` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] `GarmentCard` exported as `React.memo(...)` component
+- [x] `PaletteStrip` exported as `React.memo(...)` component
+- [x] All existing frontend tests still pass unchanged
+- [x] `make test-frontend` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -48,3 +48,4 @@ No new tests required — pure optimisation. Existing tests cover all paths.
 ## Notes
 
 - 2026-06-18 — created by `/verify` complete MVP review.
+- 2026-06-18 — implemented: `GarmentCard` and `PaletteStrip` converted to named functions and wrapped with `memo()` from React; default import remains unchanged. 134 tests passed, zero warnings.

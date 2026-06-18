@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import type { ColourOut } from '../api/types'
 import styles from './PaletteStrip.module.css'
 
@@ -6,7 +7,7 @@ interface Props {
   height?: number
 }
 
-export default function PaletteStrip({ colours, height = 12 }: Props) {
+function PaletteStrip({ colours, height = 12 }: Props) {
   return (
     <div
       className={styles.strip}
@@ -27,3 +28,5 @@ export default function PaletteStrip({ colours, height = 12 }: Props) {
     </div>
   )
 }
+
+export default memo(PaletteStrip)

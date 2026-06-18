@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import type { GarmentSummary } from '../api/types'
 import { typeLabel } from '../utils/typeLabel'
 import PaletteStrip from './PaletteStrip'
@@ -9,7 +10,7 @@ interface Props {
   slot?: string
 }
 
-export default function GarmentCard({ garment, slot }: Props) {
+function GarmentCard({ garment, slot }: Props) {
   return (
     <div className={styles.card}>
       {slot && <span className={styles.slot}>{slot}</span>}
@@ -25,3 +26,5 @@ export default function GarmentCard({ garment, slot }: Props) {
     </div>
   )
 }
+
+export default memo(GarmentCard)
