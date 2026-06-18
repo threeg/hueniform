@@ -2,7 +2,7 @@
 id: HUE-052
 title: Configure staleTime for taxonomy and garments queries
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: frontend
@@ -32,11 +32,11 @@ time avoids redundant network round-trips while keeping data reasonably fresh.
 
 ## Definition of done (acceptance criteria)
 
-- [ ] `useTaxonomy` has `staleTime: 300_000`
-- [ ] `useGarments` has `staleTime: 30_000`
-- [ ] All existing frontend tests still pass unchanged
-- [ ] `make test-frontend` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] `useTaxonomy` has `staleTime: 300_000`
+- [x] `useGarments` has `staleTime: 30_000`
+- [x] All existing frontend tests still pass unchanged
+- [x] `make test-frontend` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -48,3 +48,4 @@ tests mock at the MSW level and are unaffected.
 ## Notes
 
 - 2026-06-17 — created by `/verify` review of frontend batch (HUE-032–037).
+- 2026-06-18 — implemented: `useTaxonomy` given `staleTime: 300_000`; `useGarments` given `staleTime: 30_000`. 133 tests passed, zero warnings.

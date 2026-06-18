@@ -35,6 +35,7 @@ export function useTaxonomy(): UseQueryResult<TaxonomyResponse> {
   return useQuery({
     queryKey: ['taxonomy'],
     queryFn: getTaxonomy,
+    staleTime: 300_000,
   })
 }
 
@@ -46,6 +47,7 @@ export function useGarments(
   return useQuery({
     queryKey: ['garments', params],
     queryFn: () => getGarments(params),
+    staleTime: 30_000,
   })
 }
 
