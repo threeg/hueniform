@@ -2,17 +2,13 @@ import { useState } from 'react'
 import { useLocation, useNavigate, Navigate } from 'react-router-dom'
 import type { DetectionResponse, RegenerationProposalResponse } from '../api/types'
 import { useTaxonomy, useCreateGarment, useUpdateGarment } from '../api/queries'
-import { typeLabel } from '../utils/typeLabel'
+import { typeLabel, GARMENT_TYPES } from '../utils/typeLabel'
 import { hslToHex, normaliseProportions } from '../utils/colour'
 import Swatch from '../components/Swatch'
 import WarningBanner from '../components/WarningBanner'
 import ErrorBanner from '../components/ErrorBanner'
 import styles from './AddConfirm.module.css'
 
-const GARMENT_TYPES = [
-  'top', 'bottom', 'jersey', 'jacket',
-  'socks', 'shoes', 'hat', 'accessory',
-] as const
 
 interface EditableColour {
   h: number

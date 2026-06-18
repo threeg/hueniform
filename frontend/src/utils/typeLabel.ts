@@ -10,6 +10,10 @@ const LABELS: Record<string, string> = {
   accessory: 'Accessory',
 }
 
+export const GARMENT_TYPES = [
+  'top', 'bottom', 'jersey', 'jacket', 'socks', 'shoes', 'hat', 'accessory',
+] as const
+
 export function typeLabel(type: string): string {
   return LABELS[type] ?? type
 }

@@ -4,16 +4,9 @@ import GarmentCard from '../components/GarmentCard'
 import ErrorBanner from '../components/ErrorBanner'
 import LoadingState from '../components/LoadingState'
 import { hslToHex } from '../utils/colour'
+import { typeLabel, GARMENT_TYPES } from '../utils/typeLabel'
 import styles from './Wardrobe.module.css'
 
-const GARMENT_TYPES = [
-  'top', 'bottom', 'jersey', 'jacket', 'socks', 'shoes', 'hat', 'accessory',
-] as const
-
-const TYPE_LABELS: Record<string, string> = {
-  top: 'Top', bottom: 'Bottom', jersey: 'Jersey', jacket: 'Jacket',
-  socks: 'Socks', shoes: 'Shoes', hat: 'Hat', accessory: 'Accessory',
-}
 
 export default function Wardrobe() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -66,7 +59,7 @@ export default function Wardrobe() {
           >
             <option value="">All types</option>
             {GARMENT_TYPES.map(t => (
-              <option key={t} value={t}>{TYPE_LABELS[t]}</option>
+              <option key={t} value={t}>{typeLabel(t)}</option>
             ))}
           </select>
         </div>
@@ -144,7 +137,7 @@ export default function Wardrobe() {
                 to={`/garments/${g.id}`}
                 state={{ from: location.search.replace(/^\?/, '') }}
                 className={styles.cardLink}
-                aria-label={`${TYPE_LABELS[g.type] ?? g.type} garment detail`}
+                aria-label={`${typeLabel(g.type)} garment detail`}
               >
                 <GarmentCard garment={g} />
               </Link>

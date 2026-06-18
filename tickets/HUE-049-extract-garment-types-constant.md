@@ -2,7 +2,7 @@
 id: HUE-049
 title: Extract shared GARMENT_TYPES constant and remove TYPE_LABELS duplication
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: frontend
@@ -36,11 +36,11 @@ type constants:
 
 ## Definition of done (acceptance criteria)
 
-- [ ] `GARMENT_TYPES` defined in exactly one place and imported by consumers
-- [ ] `TYPE_LABELS` object removed from `Wardrobe.tsx`; `typeLabel()` used instead
-- [ ] All existing frontend tests still pass unchanged
-- [ ] `make test-frontend` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] `GARMENT_TYPES` defined in exactly one place and imported by consumers
+- [x] `TYPE_LABELS` object removed from `Wardrobe.tsx`; `typeLabel()` used instead
+- [x] All existing frontend tests still pass unchanged
+- [x] `make test-frontend` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -51,3 +51,4 @@ No new tests required — pure refactor. Existing tests cover all paths.
 ## Notes
 
 - 2026-06-17 — created by `/verify` review of frontend batch (HUE-032–037).
+- 2026-06-17 — implemented: exported `GARMENT_TYPES` from `typeLabel.ts`; removed local definitions from `AddConfirm.tsx` and `Wardrobe.tsx`; replaced `TYPE_LABELS[t]` with `typeLabel(t)`. 133 tests passed, zero warnings.
