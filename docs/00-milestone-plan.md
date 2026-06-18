@@ -4,7 +4,7 @@
 |---|---|
 | **Document** | Milestone plan and progress tracker |
 | **Repository location** | `docs/00-milestone-plan.md` |
-| **Last updated** | 17 June 2026 (Milestone 8 complete) |
+| **Last updated** | 18 June 2026 (Milestone 9 complete; v0.2.0 in planning) |
 
 This document is the single source of truth for **where the project is**. It was extracted from the project brief (§14) so the brief stays stable after approval while this tracker is updated as each milestone completes. Update the status column and the *Current position* line in the same commit as the milestone's deliverable.
 
@@ -12,11 +12,13 @@ This document is the single source of truth for **where the project is**. It was
 
 ## Current position
 
-> **Milestone 8 complete. All implementation tickets HUE-007 to HUE-041 done; all five capability epics closed; `make test-all` green.**
+> **v0.1.0 shipped and tagged `v0.1.0`. Milestone 9 complete — the v0.2.0 brief (`docs/09-v0.2.0-brief.md`) is approved. Next: Milestone 10 — the F4 category-model spike and the requirement deltas.**
 
 ---
 
 ## Milestones
+
+### v0.1.0 — MVP (shipped, tagged `v0.1.0`)
 
 | # | Milestone | Deliverable | Tool | Status |
 |---|---|---|---|---|
@@ -27,7 +29,18 @@ This document is the single source of truth for **where the project is**. It was
 | 5 | Test strategy | `docs/05-test-strategy.md` — frameworks, what is unit/integration/E2E tested, esp. the colour matcher | **Chat** | ✅ Complete |
 | 6 | Ticket generation | `tickets/*.md` + ticket-system conventions doc + `BOARD.md` index | **Cowork** | ✅ Complete |
 | 7 | Repository setup & scaffolding | Repo initialised, docs and tickets committed, backend/frontend skeletons | **Code** | ✅ Complete |
-| 8+ | Implementation, ticket by ticket | Working software; tickets updated in the same commits | **Code** (with Chat for design questions as they arise) | ✅ Complete |
+| 8 | Implementation, ticket by ticket | Working software (HUE-007–HUE-058); tickets updated in the same commits | **Code** | ✅ Complete |
+
+### v0.2.0 — Essential features (in planning)
+
+| # | Milestone | Deliverable | Tool | Status |
+|---|---|---|---|---|
+| 9 | v0.2.0 brief | `docs/09-v0.2.0-brief.md` — seven features (F1–F7), epics E06–E10, requirement deltas | **Cowork** | ✅ Complete |
+| 10 | Category-model design + requirement deltas | F4 spike output; updated `docs/02-requirements.md` (FR-16–22 rewrite, FR-44–51, NFR-10, FR-2 tuning) | **Cowork** | ⬜ Not started |
+| 11 | Architecture & API deltas | `docs/03-architecture.md`, `docs/03-api-contract.md` — category edit, pin/scheme + count suggestion API, taxonomy | **Cowork** | ⬜ Not started |
+| 12 | Wireframe deltas | `docs/04-wireframes/` — new/changed screens (category edit, build-around request, suggestion count, inventory grouping) | **Cowork** | ⬜ Not started |
+| 13 | Test-strategy delta + ticket generation | `docs/05-test-strategy.md` (test-first policy, seedable variety, snapshot baseline); `tickets/*` (HUE-059+), epics E06–E10 | **Cowork** | ⬜ Not started |
+| 14+ | Implementation, ticket by ticket | Working software; tickets updated in the same commits | **Code** | ⬜ Not started |
 
 ---
 

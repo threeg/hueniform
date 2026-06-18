@@ -82,6 +82,7 @@ The meta-goal (brief §11.6) is that tickets are updated *as work completes*, no
 3. **`## Notes` is the audit trail.** Creation, status transitions, blockers, and any decision that deviates from or refines the specification are recorded there with an ISO date. The ticket stays an honest, self-contained record of how the work actually went.
 4. **`BOARD.md` is regenerated, not hand-edited for status.** When a ticket's status changes, `BOARD.md`'s status column is brought into line in the same commit. Because the board is a derived view (§4.1), it is kept in step with the ticket files rather than treated as a parallel source that could drift.
 5. **A specification change is a documented change.** Numeric thresholds and rules are contractual (requirements §1.4). If implementing a ticket reveals the specification must change, the change is recorded in the relevant `docs/` document first and the ticket references it — tickets do not silently reinterpret a settled decision.
+6. **Every completed ticket carries a completion report.** On completion the ticket records — and the chat response repeats — a plain-language **summary** of what was done and a one-line **sanity test**; tickets that touch the UI/frontend additionally record manual **QA steps** under `## QA steps`. This is the content required by the root `CLAUDE.md` definition of done; it keeps the ticket a self-sufficient record of what was built and how to verify it, and the QA steps accumulate as living per-screen documentation.
 
 ---
 

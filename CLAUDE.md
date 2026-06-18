@@ -75,9 +75,13 @@ says so (`test-model` / `test-perf` / `test-e2e`); and the ticket's status + `##
 `BOARD.md` row are updated in that commit. Docs-only, pure-styling and build-plumbing tickets may
 set `tests_required: false` and must state the exemption in the body.
 
-End each ticket completion — both in the ticket's `## Notes` section and in the chat response
-— with a one-line sanity test the user can run, e.g.
-`cd backend && .venv/bin/pytest tests/<layer>/test_<module>.py -q`.
+End each ticket with a **completion report**, given in the chat response and appended to the ticket.
+It has three parts: (1) a short plain-language **summary** of what was done; (2) a one-line **sanity
+test** the user can run, e.g. `cd backend && .venv/bin/pytest tests/<layer>/test_<module>.py -q`; and
+(3) for any ticket that touches the UI/frontend, **QA steps** — the manual browser actions and their
+expected results, for the user to click through. The summary and sanity test are appended to the
+ticket's `## Notes`; the QA steps go in its `## QA steps` section. QA steps complement the automated
+e2e tests; they do not replace them.
 
 ## When a milestone completes
 

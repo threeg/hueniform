@@ -93,6 +93,13 @@ so that [benefit].
 - FR/NFR ids covered and the test-strategy sections their assertions draw on
 - Fixtures used (test strategy §11)
 
+## QA steps
+Manual browser checks for this screen/flow — what to do and what to expect — for the user to run.
+They complement the automated e2e tests (they do not replace them) and accumulate as living
+per-screen QA documentation.
+- [ ] [action] → expect [result]
+- [ ] …
+
 ## Definition of done
 - [ ] Acceptance criteria met
 - [ ] Tests added/updated per test strategy §12.2 and passing in `make test`
@@ -100,6 +107,7 @@ so that [benefit].
 - [ ] Detection-touching work: `make test-model` passes (§12.3.4)
 - [ ] Evaluation/inventory-perf-touching work: `make test-perf` passes (§12.3.5)
 - [ ] User-flow-touching work: `make test-e2e` passes (§12.3.6)
+- [ ] QA steps recorded under `## QA steps` and repeated in the chat completion report
 - [ ] Ticket status + notes updated in the same commit (§12.3.7)
 ```
 
@@ -155,7 +163,7 @@ What exists at the end of the timebox (e.g. a short decision note appended here,
 
 ## Working notes (any type)
 
-Append a dated notes section as work proceeds; this is where status changes, decisions and blockers are recorded so the ticket stays an honest record.
+Append a dated notes section as work proceeds; this is where status changes, decisions and blockers are recorded so the ticket stays an honest record. On completion, append the **completion report** here — a plain-language summary of what was done and the one-line sanity test; UI/frontend tickets additionally fill in the `## QA steps` section. The same content is given in the chat response (see the definition of done in the root `CLAUDE.md`).
 
 ```markdown
 ## Notes

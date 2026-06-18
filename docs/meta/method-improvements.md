@@ -5,7 +5,7 @@
 | **Document** | Actionable improvements to the AI-assisted development method |
 | **Repository location** | `docs/meta/method-improvements.md` |
 | **Context** | Identified during a review of alignment with spec-driven AI development (the "Karpathy Method") |
-| **Last updated** | 16 June 2026 |
+| **Last updated** | 18 June 2026 |
 
 This document tracks specific improvements to the development method, from identified
 gap through to resolution. Items move from "proposed" to "done" as they are addressed.
@@ -152,3 +152,4 @@ inconsistency between the ticket file and BOARD.md is only caught by human revie
 | Conditional context loading (CLAUDE.md split) | 2026-06-16 | Root + 7 layer files. See commit `0acb03f`. |
 | Cleanup backlog process | 2026-06-16 | CONVENTIONS.md §6, BOARD.md backlog table. See commit `b701f1b`. |
 | Post-batch /verify skill | 2026-06-16 | Spec audit + code quality review + ticket proposals. See `.claude/skills/verify/SKILL.md`. |
+| Ticket completion report | 2026-06-18 | Summary + sanity test + (for UI tickets) manual QA steps, given in chat and appended to the ticket. See CLAUDE.md definition of done, TICKET-TEMPLATE story `## QA steps`, CONVENTIONS §5.6. Extends improvement #3 (agentic handoff); QA steps build living per-screen docs. |
