@@ -9,8 +9,7 @@ import { server } from './server'
 import Swatch from '../components/Swatch'
 import PaletteStrip from '../components/PaletteStrip'
 import GarmentCard from '../components/GarmentCard'
-import ErrorBanner from '../components/ErrorBanner'
-import WarningBanner from '../components/WarningBanner'
+import Banner from '../components/Banner'
 import LoadingState from '../components/LoadingState'
 import { typeLabel } from '../utils/typeLabel'
 import { useTaxonomy, useGarments, useDetect, useSuggest } from '../api/queries'
@@ -136,12 +135,12 @@ describe('GarmentCard', () => {
   })
 })
 
-// ── ErrorBanner ───────────────────────────────────────────────────────────────
+// ── Banner ────────────────────────────────────────────────────────────────────
 
-describe('ErrorBanner', () => {
-  it('renders the message verbatim', () => {
+describe('Banner', () => {
+  it('renders the message verbatim (error variant)', () => {
     render(
-      <ErrorBanner message="Only JPEG, PNG and WebP photographs are accepted." />,
+      <Banner variant="error" message="Only JPEG, PNG and WebP photographs are accepted." />,
     )
     expect(
       screen.getByText('Only JPEG, PNG and WebP photographs are accepted.'),
@@ -149,26 +148,27 @@ describe('ErrorBanner', () => {
   })
 
   it('does not show a machine code', () => {
-    render(<ErrorBanner message="Only JPEG, PNG and WebP photographs are accepted." />)
+    render(<Banner variant="error" message="Only JPEG, PNG and WebP photographs are accepted." />)
     expect(screen.queryByText('unsupported_format')).not.toBeInTheDocument()
   })
 
-  it('has role=alert', () => {
-    render(<ErrorBanner message="Error." />)
+  it('has role=alert for error variant', () => {
+    render(<Banner variant="error" message="Error." />)
     expect(screen.getByRole('alert')).toBeInTheDocument()
   })
-})
 
-// ── WarningBanner ─────────────────────────────────────────────────────────────
-
-describe('WarningBanner', () => {
-  it('renders its message', () => {
+  it('renders the message verbatim (warning variant)', () => {
     render(
-      <WarningBanner message="Colour detection fell back to a simpler method." />,
+      <Banner variant="warning" message="Colour detection fell back to a simpler method." />,
     )
     expect(
       screen.getByText('Colour detection fell back to a simpler method.'),
     ).toBeInTheDocument()
+  })
+
+  it('has role=status for warning variant', () => {
+    render(<Banner variant="warning" message="Warning." />)
+    expect(screen.getByRole('status')).toBeInTheDocument()
   })
 })
 

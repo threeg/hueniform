@@ -5,8 +5,7 @@ import { useTaxonomy, useCreateGarment, useUpdateGarment } from '../api/queries'
 import { typeLabel, GARMENT_TYPES } from '../utils/typeLabel'
 import { hslToHex, normaliseProportions } from '../utils/colour'
 import Swatch from '../components/Swatch'
-import WarningBanner from '../components/WarningBanner'
-import ErrorBanner from '../components/ErrorBanner'
+import Banner from '../components/Banner'
 import styles from './AddConfirm.module.css'
 
 
@@ -128,10 +127,10 @@ export default function AddConfirm() {
         {/* Right: palette editor + controls */}
         <div className={styles.editor}>
           {detection.fallback_used && (
-            <WarningBanner message="Colour detection fell back to the whole image — background colours may be included." />
+            <Banner variant="warning" message="Colour detection fell back to the whole image — background colours may be included." />
           )}
 
-          {saveError && <ErrorBanner message={saveError.message} />}
+          {saveError && <Banner variant="error" message={saveError.message} />}
 
           {/* Colour rows (FR-28, FR-29) */}
           <section aria-label="Palette colours">

@@ -1,8 +1,17 @@
 .banner {
   padding: 10px 14px;
   border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.error {
   background: #fef2f2;
   border: 1px solid #fca5a5;
   color: #991b1b;
-  font-size: 0.875rem;
+}
+
+.warning {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  color: #92400e;
 }

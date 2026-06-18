@@ -2,7 +2,7 @@
 id: HUE-053
 title: Consolidate ErrorBanner and WarningBanner into Banner component
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: frontend
@@ -37,12 +37,12 @@ prop reduces duplication and simplifies maintenance.
 
 ## Definition of done (acceptance criteria)
 
-- [ ] Single `Banner` component handles both error and warning variants
-- [ ] `ErrorBanner.tsx` and `WarningBanner.tsx` removed
-- [ ] All consumers updated to use `Banner`
-- [ ] Component tests updated and passing
-- [ ] `make test-frontend` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] Single `Banner` component handles both error and warning variants
+- [x] `ErrorBanner.tsx` and `WarningBanner.tsx` removed
+- [x] All consumers updated to use `Banner`
+- [x] Component tests updated and passing
+- [x] `make test-frontend` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -51,3 +51,4 @@ prop reduces duplication and simplifies maintenance.
 ## Notes
 
 - 2026-06-17 — created by `/verify` review of frontend batch (HUE-032–037).
+- 2026-06-18 — implemented: `Banner.tsx` + `Banner.module.css` created with `variant: 'error' | 'warning'`; `role="alert"` for error, `role="status"` for warning; `ErrorBanner.tsx/css` and `WarningBanner.tsx/css` deleted; five consumer routes updated (`Suggest`, `AddConfirm`, `Wardrobe`, `GarmentDetail`, `AddGarment`); `components.test.tsx` updated with two-variant Banner tests. 134 tests passed, zero warnings.

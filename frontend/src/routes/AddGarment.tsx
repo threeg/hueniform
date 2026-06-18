@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDetect } from '../api/queries'
-import ErrorBanner from '../components/ErrorBanner'
+import Banner from '../components/Banner'
 import LoadingState from '../components/LoadingState'
 import styles from './AddGarment.module.css'
 
@@ -63,7 +63,7 @@ export default function AddGarment() {
     <div className={styles.page}>
       <h1 className={styles.title}>Add garment</h1>
 
-      {error && <ErrorBanner message={error.message} />}
+      {error && <Banner variant="error" message={error.message} />}
 
       {multiNotice && (
         <p className={styles.notice} role="status">

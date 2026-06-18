@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useSuggest, useTaxonomy } from '../api/queries'
 import { ApiRequestError } from '../api/types'
 import PaletteStrip from '../components/PaletteStrip'
-import ErrorBanner from '../components/ErrorBanner'
+import Banner from '../components/Banner'
 import LoadingState from '../components/LoadingState'
 import { hslToHex } from '../utils/colour'
 import { typeLabel } from '../utils/typeLabel'
@@ -111,7 +111,7 @@ export default function Suggest() {
           </div>
         </div>
 
-        {err && <ErrorBanner message={err.message} />}
+        {err && <Banner variant="error" message={err.message} />}
 
         <div className={styles.panelFooter}>
           <p className={styles.hint}>Top, bottom, socks and shoes are always included.</p>

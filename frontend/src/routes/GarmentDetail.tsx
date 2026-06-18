@@ -4,7 +4,7 @@ import { useGarment, useRegenerateGarment, useDeleteGarment } from '../api/queri
 import { ApiRequestError } from '../api/types'
 import PaletteStrip from '../components/PaletteStrip'
 import Swatch from '../components/Swatch'
-import ErrorBanner from '../components/ErrorBanner'
+import Banner from '../components/Banner'
 import LoadingState from '../components/LoadingState'
 import { typeLabel } from '../utils/typeLabel'
 import styles from './GarmentDetail.module.css'
@@ -55,7 +55,7 @@ export default function GarmentDetail() {
     }
     return (
       <main className={styles.page}>
-        <ErrorBanner message={err?.message ?? 'Failed to load garment.'} />
+        <Banner variant="error" message={err?.message ?? 'Failed to load garment.'} />
       </main>
     )
   }
@@ -104,7 +104,7 @@ export default function GarmentDetail() {
           </div>
 
           <div className={styles.actions}>
-            {actionError && <ErrorBanner message={(actionError as Error).message} />}
+            {actionError && <Banner variant="error" message={(actionError as Error).message} />}
 
             <p className={styles.actionHint}>
               Wrong colours? Regenerate re-detects them from the photograph.
