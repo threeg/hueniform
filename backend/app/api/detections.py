@@ -14,8 +14,9 @@ from pathlib import Path
 from fastapi import APIRouter, File, Request, UploadFile
 from fastapi.responses import FileResponse
 
+from app.api.converters import colour_out
 from app.api.errors import AppError
-from app.api.schemas import ColourOut, DetectionImageInfo, DetectionResponse
+from app.api.schemas import DetectionImageInfo, DetectionResponse
 from app.services.detection_service import (
     UnreadableImageError,
     get_staged_image_path,
@@ -84,18 +85,7 @@ async def upload_and_detect(
             width=result.image_width,
             height=result.image_height,
         ),
-        colours=[
-            ColourOut(
-                h=c.h,
-                s=c.s,
-                l=c.l,
-                family=c.family,
-                neutral=c.neutral,
-                hex=c.hex,
-                proportion=c.proportion,
-            )
-            for c in result.colours
-        ],
+        colours=[colour_out(c) for c in result.colours],
     )
 
 

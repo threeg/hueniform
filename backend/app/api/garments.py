@@ -16,13 +16,12 @@ from __future__ import annotations
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import FileResponse
 
+from app.api.converters import colour_out, garment_to_summary, require_garment
 from app.api.errors import AppError
 from app.api.schemas import (
-    ColourOut,
     DetectionImageInfo,
     GarmentCreateRequest,
     GarmentDetail,
-    GarmentSummary,
     GarmentUpdateRequest,
     InventoryResponse,
     RegenerationProposalResponse,
@@ -40,7 +39,6 @@ from app.services.garment_service import (
     confirm,
     confirm_regeneration,
     delete as garment_delete,
-    get_garment,
     list_garments,
 )
 
@@ -49,31 +47,11 @@ router = APIRouter()
 
 # ── Response conversion helpers ───────────────────────────────────────────────
 
-def _colours_out(result: GarmentResult) -> list[ColourOut]:
-    return [
-        ColourOut(
-            h=c.h, s=c.s, l=c.l,
-            family=c.family, neutral=c.neutral,
-            hex=c.hex, proportion=c.proportion,
-        )
-        for c in result.colours
-    ]
-
-
-def _to_summary(result: GarmentResult) -> GarmentSummary:
-    return GarmentSummary(
-        id=result.id,
-        type=result.type,
-        colours=_colours_out(result),
-        thumbnail_url=f"/api/garments/{result.id}/thumbnail",
-    )
-
-
 def _to_detail(result: GarmentResult) -> GarmentDetail:
     return GarmentDetail(
         id=result.id,
         type=result.type,
-        colours=_colours_out(result),
+        colours=[colour_out(c) for c in result.colours],
         thumbnail_url=f"/api/garments/{result.id}/thumbnail",
         image_url=f"/api/garments/{result.id}/image",
         created_at=result.created_at,
@@ -151,7 +129,7 @@ def list_garments_endpoint(
         raise AppError(422, "invalid_filter", str(e))
 
     return InventoryResponse(
-        garments=[_to_summary(g) for g in page.garments],
+        garments=[garment_to_summary(g) for g in page.garments],
         total=page.total,
     )
 
@@ -161,11 +139,7 @@ def get_garment_endpoint(garment_id: str, request: Request) -> GarmentDetail:
     """Return the full Garment detail (contract §2.7)."""
     engine = request.app.state.engine
 
-    try:
-        result = get_garment(garment_id, engine)
-    except GarmentNotFoundError:
-        raise AppError(404, "garment_not_found", "Garment not found.")
-
+    result = require_garment(garment_id, engine)
     return _to_detail(result)
 
 
@@ -175,11 +149,7 @@ def get_garment_image(garment_id: str, request: Request) -> FileResponse:
     engine = request.app.state.engine
     settings = request.app.state.settings
 
-    try:
-        result = get_garment(garment_id, engine)
-    except GarmentNotFoundError:
-        raise AppError(404, "garment_not_found", "Garment not found.")
-
+    result = require_garment(garment_id, engine)
     path = settings.data_dir / "images" / result.image_file
     if not path.exists():
         raise AppError(404, "image_not_found", "Image file not found.")
@@ -192,11 +162,7 @@ def get_garment_thumbnail(garment_id: str, request: Request) -> FileResponse:
     engine = request.app.state.engine
     settings = request.app.state.settings
 
-    try:
-        result = get_garment(garment_id, engine)
-    except GarmentNotFoundError:
-        raise AppError(404, "garment_not_found", "Garment not found.")
-
+    result = require_garment(garment_id, engine)
     path = settings.data_dir / "thumbnails" / result.thumbnail_file
     if not path.exists():
         raise AppError(404, "thumbnail_not_found", "Thumbnail file not found.")
@@ -215,11 +181,7 @@ def regenerate_garment(garment_id: str, request: Request) -> RegenerationProposa
     settings = request.app.state.settings
     engine = request.app.state.engine
 
-    try:
-        garment = get_garment(garment_id, engine)
-    except GarmentNotFoundError:
-        raise AppError(404, "garment_not_found", "Garment not found.")
-
+    garment = require_garment(garment_id, engine)
     result = run_regeneration(
         garment_id=garment_id,
         image_file=garment.image_file,
@@ -237,14 +199,7 @@ def regenerate_garment(garment_id: str, request: Request) -> RegenerationProposa
             width=result.image_width,
             height=result.image_height,
         ),
-        colours=[
-            ColourOut(
-                h=c.h, s=c.s, l=c.l,
-                family=c.family, neutral=c.neutral,
-                hex=c.hex, proportion=c.proportion,
-            )
-            for c in result.colours
-        ],
+        colours=[colour_out(c) for c in result.colours],
     )
 
 

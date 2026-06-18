@@ -2,7 +2,7 @@
 id: HUE-044
 title: DRY API response conversion helpers
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: api
@@ -39,12 +39,12 @@ modules. Divergence risk if the schema changes.
 
 ## Definition of done (acceptance criteria)
 
-- [ ] `ColourOut` construction exists in exactly one place
-- [ ] `GarmentSummary` construction exists in exactly one place
-- [ ] `_require_garment` replaces four identical try/except blocks
-- [ ] All existing API tests still pass unchanged
-- [ ] `make test` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] `ColourOut` construction exists in exactly one place
+- [x] `GarmentSummary` construction exists in exactly one place
+- [x] `_require_garment` replaces four identical try/except blocks
+- [x] All existing API tests still pass unchanged
+- [x] `make test` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -55,3 +55,4 @@ No new tests required — pure refactor. Existing tests cover all paths.
 ## Notes
 
 - 2026-06-16 — created by `/verify` review of API batch (HUE-025–031).
+- 2026-06-17 — done. Created `app/api/converters.py` with `colour_out`, `garment_to_summary`, and `require_garment`. Replaced all inline `ColourOut(...)` constructions in garments.py, suggestions.py, and detections.py; replaced the four identical `try: get_garment / except GarmentNotFoundError` blocks with `require_garment`; unified `_to_summary` / `_result_to_summary` into `garment_to_summary`. 892 passed, zero warnings.

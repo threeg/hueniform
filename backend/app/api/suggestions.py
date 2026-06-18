@@ -11,35 +11,18 @@ import random
 
 from fastapi import APIRouter, Request
 
+from app.api.converters import garment_to_summary
 from app.api.errors import AppError
 from app.api.schemas import (
     CombinationOut,
-    ColourOut,
     EchoOut,
-    GarmentSummary,
     SuggestionRequest,
     SuggestionResponse,
 )
-from app.services.garment_service import GarmentResult, get_garments_by_ids
+from app.services.garment_service import get_garments_by_ids
 from app.services.suggestion_service import EmptySlotsError, InvalidSlotError, suggest
 
 router = APIRouter()
-
-
-def _result_to_summary(result: GarmentResult) -> GarmentSummary:
-    return GarmentSummary(
-        id=result.id,
-        type=result.type,
-        colours=[
-            ColourOut(
-                h=c.h, s=c.s, l=c.l,
-                family=c.family, neutral=c.neutral,
-                hex=c.hex, proportion=c.proportion,
-            )
-            for c in result.colours
-        ],
-        thumbnail_url=f"/api/garments/{result.id}/thumbnail",
-    )
 
 
 @router.post("/suggestions", response_model=SuggestionResponse)
@@ -85,7 +68,7 @@ def create_suggestion(body: SuggestionRequest, request: Request) -> SuggestionRe
     combinations_out = []
     for combo in result.combinations:
         slots_out = {
-            slot: _result_to_summary(garment_results[row.id])
+            slot: garment_to_summary(garment_results[row.id])
             for slot, row in combo.slots.items()
         }
         combinations_out.append(CombinationOut(
