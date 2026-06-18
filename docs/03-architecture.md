@@ -2,14 +2,28 @@
 
 | | |
 |---|---|
-| **Document** | Architecture (Milestone 3) |
-| **Status** | Draft for approval |
-| **Date** | 12 June 2026 |
-| **Source** | Approved project brief (`docs/project-brief.md`) and requirements (`docs/requirements.md`) |
-| **Repository location** | `docs/architecture.md` |
-| **Companion document** | `docs/api-contract.md` (the HTTP contract; authoritative for all endpoint shapes) |
+| **Document** | Architecture (living document) |
+| **Status** | Approved (Milestone 3); amended for v0.2.0 (Milestone 11) |
+| **Originally approved** | 12 June 2026 (Milestone 3, v0.1.0) |
+| **Last amended** | 18 June 2026 — v0.2.0 architecture deltas (Milestone 11) |
+| **Source** | Approved project brief (`docs/01-project-brief.md`) and requirements (`docs/02-requirements.md`); v0.2.0 brief (`docs/09-v0.2.0-brief.md`); F4 spike (`docs/spikes/2026-06-18-f4-category-slot-model.md`) |
+| **Repository location** | `docs/03-architecture.md` |
+| **Companion document** | `docs/03-api-contract.md` (the HTTP contract; authoritative for all endpoint shapes) |
 
 ---
+
+> **v0.2.0 amendment note (18 June 2026).** This is a living document; it evolves
+> in place rather than being forked per version (v0.2.0 brief §1). The Milestone 11
+> delta pass propagates the settled M10 decisions — the category & slot model
+> (requirements §5, FR-16–FR-22, FR-49–FR-51), the Cream family (FR-2), the
+> constrained/­counted suggestion request (FR-44, FR-45, FR-48, FR-51), all-neutral
+> outfits as first-class results (FR-41), the slimmed fallback ladder (FR-43) and the
+> seedable matcher RNG (NFR-10) — into **§2.1/§2.2** (the matcher module), **§3.1**
+> (the data model) and **§4.3** (the outfit-request flow). The HTTP shapes are in the
+> companion contract `docs/03-api-contract.md`. Requirements §1.4 numeric thresholds
+> remain contractual and are referenced here, not restated. Superseded text is marked
+> *(superseded — v0.2.0)* in place. The reasoning behind the slot-model rewrite is in
+> the F4 spike note.
 
 ## 1. Architectural overview
 
@@ -61,22 +75,50 @@ docs/  tickets/        per the brief's repository strategy
 
 The **dependency rule** is enforced by convention and tested in CI-style unit tests (Milestone 5 will define how): `matcher` imports only the Python standard library; `detection` may import `matcher.taxonomy` plus its image/maths libraries; `services` may import `detection`, `matcher` and `storage`; `api` imports only `services` and its schemas. Nothing imports `api`. This keeps every numbered rule in requirements §2–§5 and §7 unit-testable with plain values (NFR-9).
 
+**v0.2.0 (F4) — the rule is unchanged; the slot model stays inside the matcher.** The
+rewritten category & slot model (requirements §5: regions, the four-level upper-body
+layer stack, one-piece garments, the statement/minor adornment tiers) lives entirely
+in `matcher` (`slots.py`, `constants.py`). It adds **no new harmony mathematics**: a
+statement adornment is evaluated exactly as a v0.1.0 echo slot, and a minor adornment
+exactly as a minor colour (FR-21, FR-22), so the two tiers reuse the existing
+echo-slot and minor-colour primitives. The matcher therefore remains pure and
+standard-library-only (NFR-9), and the 100 % line+branch coverage gate continues to
+apply to it. The seedable variety RNG (NFR-10) is **injected** into the matcher rather
+than held as global state, so determinism is a property of the caller's seed, not of
+the module (see §4.3). No layer gains a dependency; in particular nothing new imports
+`api`, and `storage` still imports none of the upper layers.
+
 ### 2.2 The matcher (pure module)
 
 `matcher` is a package of pure functions over small frozen dataclasses. Its submodules map one-to-one onto the requirements sections so a test file can mirror each:
 
 | Submodule | Responsibility | Requirements |
 |---|---|---|
-| `constants.py` | Every numeric threshold as a named constant (arc widths, tolerances, role cut-offs, ranking weights, candidate cap) | Req. §1.4 |
+| `constants.py` | Every numeric threshold and named set as a constant: arc widths, tolerances, role cut-offs, ranking weights, candidate cap; **v0.2.0** — the Cream thresholds, the category set, slot keys, the upper-body layer order, the statement/minor adornment membership, the default-selected slots, `NEUTRAL_BASED_STRENGTH`, the raised `WEIGHT_VARIETY`, and the count bounds (`COUNT_MIN/MAX/DEFAULT`) | Req. §1.4 |
 | `colour.py` | RGB↔HSL conversion, wrapping hue distance (max 180°), circular mean | Req. §1.3, FR-12 |
-| `taxonomy.py` | Family classification: ordered neutral rules, then chromatic arcs; half-open boundaries; canonical HSL per family | FR-1–FR-5 |
+| `taxonomy.py` | Family classification: ordered neutral rules, then chromatic arcs; half-open boundaries; canonical HSL per family. **v0.2.0** — adds the **Cream** neutral family (order 8) for pale warm near-neutrals | FR-1–FR-5 (FR-2) |
 | `roles.py` | Primary / dual-primary / secondary / minor derivation from proportions | FR-6–FR-11 |
 | `harmony.py` | Clustering of hues, ordered scheme test (neutral-based → monochromatic → analogous → complementary → triadic) | FR-12–FR-15 |
-| `slots.py` | Anchor identification, layering dominance, covered-layer and echo-slot qualification | FR-16–FR-22 |
-| `ranking.py` | Score composition (scheme strength, echo bonus, variety factor), fallback ladder | FR-39–FR-43 |
+| `slots.py` | **v0.2.0 — region/slot/role model.** Category→slot mapping; the four-level upper-body layer stack (`base → shirt → jersey → jacket`) with outermost-dominant; one-piece garments (lower-body anchor that also occupies `base`, never a covered layer); covered-layer constraint generalised across four layers; the two adornment tiers (statement = echo-constrained; minor = never disqualifies), each reusing the existing echo-slot/minor-colour primitives; mutual-exclusion groups and the mandatory lower-body floor | FR-16–FR-22, FR-49–FR-51 |
+| `ranking.py` | Score composition (scheme strength, echo bonus, variety factor) and the fallback ladder. **v0.2.0** — all-neutral outfits scored first-class at `NEUTRAL_BASED_STRENGTH`; minor-adornment echoes credited in the echo bonus; raised variety penalty with **anchor-interleaved enumeration** so diverse outfits are reached before the cap; selection of the top *N* (FR-48) from the capped pool; variety/enumeration randomness from an **injected** RNG | FR-39–FR-43, FR-48, NFR-5, NFR-10 |
 | `explain.py` | Plain-language explanation rendered from the evaluation result object | FR-37, FR-38 |
 
-The central design point for FR-38: evaluation returns an **`EvaluationResult`** value (matched scheme, per-garment roles, the echoes found, score components, and — on failure — the constraining slot). `explain.py` renders text *only* from this object, so explanations cannot drift from the evaluation. Garment roles (primary/secondary/minor) are **derived at evaluation time** from stored proportions, never persisted, so FR-7 has a single source of truth.
+The central design point for FR-38: evaluation returns an **`EvaluationResult`** value (matched scheme, per-garment roles, the echoes found, score components, and — on failure — the constraining slot). `explain.py` renders text *only* from this object, so explanations cannot drift from the evaluation. Garment roles (primary/secondary/minor) are **derived at evaluation time** from stored proportions, never persisted, so FR-7 has a single source of truth. **v0.2.0:** the result also distinguishes a **first-class neutral-based** outfit (scheme `neutral-based`, scored at `NEUTRAL_BASED_STRENGTH`, FR-41) from a **neutral fallback** (FR-43a), so the contract's `scheme`/`fallback` fields (contract §2.12) are rendered from the evaluation rather than inferred by the API.
+
+> **Regression-snapshot baseline (v0.2.0, standing instruction for M14).** The slot-model
+> rewrite changes the rules of the 100 %-covered, deterministic matcher: the layer stack
+> deepens 3→4, the lower-body slot generalises, the one-piece path is new, adornment slots
+> multiply, the Cream family shifts some classifications, and the all-neutral/diversity
+> ranking changes scores. Before the E08 refactor (Milestone 14), a **golden-file snapshot
+> of current matcher output** — family classifications, ranking order **and** scores, and
+> explanation text — must be captured and committed, so every behavioural change in the
+> rewrite surfaces as an explicit, reviewable diff rather than a silent regression
+> (`docs/meta/method-improvements.md` #2; F4 spike §6 risk flag). This is recorded here as
+> an architecture/test-strategy commitment; the **mechanism** (fixtures, the snapshot test
+> and its update workflow) is specified in the test-strategy delta (Milestone 13), and it
+> should be an **early E08 ticket, ahead of the slot-model code**. The injected, seedable
+> RNG (NFR-10) is what makes such a snapshot stable for the otherwise non-deterministic
+> ranking (FR-42).
 
 ### 2.3 The detection pipeline
 
@@ -110,8 +152,8 @@ Two persistent entities suffice. Suggestions are computed, not stored (FR-42 imp
 
 | Column | Type | Notes |
 |---|---|---|
-| `id` | TEXT, PK | UUID4 string; stable across regeneration (FR-33) |
-| `type` | TEXT, NOT NULL | One of the eight FR-16 values; CHECK constraint |
+| `id` | TEXT, PK | UUID4 string; stable across regeneration (FR-33) and across a category edit (FR-46) |
+| `type` | TEXT, NOT NULL | The garment's **category** (FR-16). One of the FR-16 category values; CHECK constraint. *(v0.2.0: the **value set** changes to the FR-16 categories — see note below — but the column, its name and its index are unchanged. The API exposes this field as `category`; the column keeps the name `type`.)* |
 | `image_file` | TEXT, NOT NULL | Filename in `data/images/`, original format preserved (FR-25) |
 | `thumbnail_file` | TEXT, NOT NULL | Filename in `data/thumbnails/` (WebP, longest edge 320 px) — generated at save so inventory browsing stays responsive (FR-35, NFR-6) |
 | `created_at` | TEXT, NOT NULL | ISO 8601 UTC |
@@ -130,7 +172,54 @@ Two persistent entities suffice. Suggestions are computed, not stored (FR-42 imp
 | `family` | TEXT, NOT NULL | Denormalised, deterministically derived from (h, s, l) on write (FR-1); stored solely so the FR-35 colour filter is an indexed query |
 | `proportion` | INTEGER, NOT NULL | 1–100; CHECK; per-garment sum is validated as exactly 100 in the service layer |
 
-Indices: `idx_garments_type (garments.type)`, `idx_colours_family (garment_colours.family)`, `idx_colours_garment (garment_colours.garment_id)`. With both filter columns indexed, the combined type-AND-family query is comfortably inside NFR-6 at 500 garments.
+Indices: `idx_garments_type (garments.type)`, `idx_colours_family (garment_colours.family)`, `idx_colours_garment (garment_colours.garment_id)`. With both filter columns indexed, the combined category-AND-family query is comfortably inside NFR-6 at 500 garments. `idx_garments_type` also serves the FR-47 grouping (by category) and the date/hue ordering query.
+
+> **v0.2.0 (F3/F4/F6) — no schema change.** The category model and its new features
+> require **no change to the table shapes**:
+>
+> - **Category value set (FR-16, F4).** The `garments.type` CHECK constraint's
+>   *allowed values* become the FR-16 categories — `base`, `shirt`, `jersey`, `jacket`
+>   (upper-body layers); `trousers`, `jeans`, `shorts`, `skirt`, `dress`, `jumpsuit`
+>   (lower body, the last two one-piece); `hat`, `glasses`, `earrings`, `tie`, `scarf`,
+>   `necklace`, `watch`, `ring`, `bracelet`, `belt` (head/neck/hand/waist adornments);
+>   `socks`, `shoes` (feet) — superseding the v0.1.0 eight-type list. This is a constant
+>   change (the allowlist), not a column or index change. The slot a category occupies,
+>   its region and its harmony role are **derived in the matcher** (`matcher.slots`),
+>   not stored — so no new column is needed.
+>
+>   **Data migration (no schema change, M14).** The `type` → `category` rename is
+>   **API-only** — the DB column keeps the name `type` (contract §1.3), so the rename
+>   moves and drops nothing. The **value** change, however, needs a one-off migration of
+>   existing rows *before* the new CHECK allowlist is applied (the old values would
+>   otherwise fail the constraint):
+>     - **Carry over unchanged:** `jersey`, `jacket`, `socks`, `shoes`, `hat`.
+>     - `top` → `base` (sensible default; a collared shirt stored as `top` would ideally
+>       be re-tagged `shirt`).
+>     - `bottom` → **ambiguous**: one of `trousers` / `jeans` / `shorts` / `skirt` —
+>       needs a default plus a manual re-categorisation pass (FR-46).
+>     - `accessory` → **ambiguous**: one of `hat` / `belt` / `tie` / `scarf` /
+>       `necklace` / `watch` / `ring` / `bracelet` / `glasses` / `earrings` — manual
+>       re-categorisation (FR-46).
+>
+>   The migration mechanism and the handling of the two ambiguous cases belong to the
+>   test-strategy delta (M13) and an early M14 ticket; they are recorded here so they are
+>   not lost, not implemented here. FR-46's `PATCH /api/garments/{id}` is the tool for the
+>   manual pass.
+> - **Direct category edit (FR-46, F3).** Editing a garment's category writes a single
+>   value to `garments.type` (validated against the FR-16 allowlist) and **touches
+>   nothing else** — no colour rows, no image, no re-detection, same `id`. The palette
+>   stays regenerate-only (FR-32/FR-33). Suggestion eligibility simply follows the new
+>   category and its slot role at evaluation time. *(See contract §2.10a — `PATCH
+>   /api/garments/{id}`.)*
+> - **Metadata, availability and multi-photo remain DEFERRED (F3).** No `brand`,
+>   `season`, `notes`, availability flag or additional image columns are added in
+>   v0.2.0; the two-entity model stands.
+> - **Inventory ordering (FR-47, F6).** Hue-spectrum ordering uses each garment's
+>   **primary colour** — the `garment_colours` row at `position = 0` (descending
+>   proportion, FR-7) — with neutral-primary garments ordered after the chromatic
+>   spectrum in a stable, defined order; date ordering uses `created_at` newest-first.
+>   Both are applied in the service/query layer over the existing rows and indices; no
+>   schema change and no new persisted ordering value.
 
 SQLite runs with `PRAGMA foreign_keys = ON` and WAL journal mode. Models are declared with **SQLModel**, giving one class per table shared between persistence and (via separate API schemas) validation.
 
@@ -159,24 +248,83 @@ Backing up the application is copying `data/` — a single directory.
 
 1. SPA `POST /api/detections` (multipart). API validates format and the 20 MB limit (FR-23); rejection returns a plain-language error and writes nothing (FR-24).
 2. Detection service stages the file, runs the §2.3 pipeline, stores the proposal in the sidecar, and returns it: token, per-colour swatch values (h, s, l, hex), family names, proportions, and `fallback_used` (FR-27's user warning, FR-28).
-3. SPA renders the confirm-and-correct screen (image preview served from staging). The user adjusts proportions, removes or manually adds colours (canonical HSL for the chosen family, from `GET /api/taxonomy`), and selects the mandatory type (FR-29, FR-31).
-4. SPA `POST /api/garments` with the token, type and confirmed colours. The service re-derives every family server-side, validates count and the sum of 100, then in one transaction moves the image, generates the thumbnail and inserts both tables (FR-30, FR-25). Response: the saved garment.
+3. SPA renders the confirm-and-correct screen (image preview served from staging). The user adjusts proportions, removes or manually adds colours (canonical HSL for the chosen family, from `GET /api/taxonomy`), and selects the mandatory **category** (FR-29, FR-31; v0.2.0 — one of the FR-16 categories).
+4. SPA `POST /api/garments` with the token, category and confirmed colours. The service re-derives every family server-side, validates count and the sum of 100, then in one transaction moves the image, generates the thumbnail and inserts both tables (FR-30, FR-25). Response: the saved garment.
 
 ### 4.2 Regenerate (FR-32–FR-33)
 
 1. SPA `POST /api/garments/{id}/regenerate`. The service runs the detection pipeline on the **stored** photograph and returns a fresh proposal with a regeneration token bound to the garment.
-2. The user passes through the same confirm-and-correct flow, including type selection.
-3. SPA `PUT /api/garments/{id}` with the regeneration token, type and colours. The service replaces the colour rows and type **in place** — same `id`, same image — and stamps `regenerated_at`. Requiring the token is how FR-32 is enforced architecturally: there is no field-edit path, because `PUT` is only honoured as the completion of a regeneration.
+2. The user passes through the same confirm-and-correct flow, including category selection.
+3. SPA `PUT /api/garments/{id}` with the regeneration token, category and colours. The service replaces the colour rows and category **in place** — same `id`, same image — and stamps `regenerated_at`. Requiring the token is how FR-32's *palette* immutability is enforced architecturally: `PUT` is honoured only as the completion of a regeneration. *(v0.2.0: the **category** alone is additionally editable directly via `PATCH /api/garments/{id}` without a token or re-detection — FR-46, contract §2.10a; that path never touches the palette.)*
 
-### 4.3 Outfit request → evaluation → ranked suggestions (FR-36–FR-43)
+### 4.3 Outfit request → evaluation → ranked suggestions (FR-36–FR-45, FR-48–FR-51, NFR-5, NFR-10)
 
-1. SPA `POST /api/suggestions` naming the requested optional slots. The service loads the inventory grouped by type and **fails fast** if any included slot is empty, naming the slots (FR-36).
-2. **Anchor enumeration.** Candidates are built anchors-first: bottom × outermost upper layer (jacket if requested, else jersey if requested, else top — FR-18) × covered layers. Enumeration is shuffled and capped by a named constant (`MAX_ANCHOR_CANDIDATES`), which both honours NFR-5 at 500 garments and supplies FR-42's permitted non-determinism.
-3. **Anchor evaluation** (pure matcher): build the scheme set — dominant-layer primaries, bottom primaries, all anchors' secondaries (FR-19) — test schemes in FR-13 order; check anchor secondary compatibility (FR-9) and covered-layer constraints (FR-20). Failures are pruned immediately.
-4. **Echo slots.** For each surviving anchor set, qualifying garments per echo slot are those whose primaries and secondaries are neutral or echo an anchor colour (FR-21), with minor-colour echoes recorded for the bonus (FR-11, FR-22). Minor colours never disqualify (FR-10).
-5. **Scoring and selection** (`matcher.ranking`): scheme strength, then echo-bonus count, then a variety penalty applied greedily so the three returned combinations do not reuse the same garments (FR-41); up to 3 distinct combinations returned best-first (FR-39, FR-40).
-6. **Fallback ladder** (FR-43): if nothing passes, retry restricted to all-neutral anchors and neutral echo slots, labelling results as neutral-based fallbacks; if that also fails, return zero combinations with the constraining slot named in a plain-language explanation and hint.
-7. **Explanation** (FR-37/FR-38): rendered per combination from its `EvaluationResult`, naming the matched scheme and each garment's role.
+> **Rewritten — v0.2.0 (F1/F2/F4/F5/F7).** The v0.1.0 flow assumed a fixed
+> top+bottom+socks+shoes outfit, three fixed upper layers, "up to 3" results and
+> all-neutral outfits only as a fallback. The flow below replaces it: a configurable,
+> mostly-removable slot selection over the new region/slot model with a mandatory
+> lower-body floor (FR-51); optional pins (FR-44) and colour/scheme anchors (FR-45); a
+> user-chosen count *N* (FR-48); all-neutral outfits as first-class results (FR-41);
+> the slimmed fallback ladder (FR-43); and a seedable RNG (NFR-10). The HTTP request
+> and response shapes are the companion contract §2.12.
+
+1. **Request and fail-fast.** SPA `POST /api/suggestions` carrying the slot selection,
+   any pins, an optional colour/scheme anchor and the count *N* (contract §2.12). The
+   service resolves the **selected slot set** by layering the request over the FR-51
+   defaults (`base`, the lower-body slot, `socks`, `shoes`), enforces the **mandatory
+   lower-body floor** (FR-51), loads the inventory grouped by category, and **fails
+   fast** (FR-36) when: no lower-body slot is selected or the selection is empty; a
+   *selected* slot has no eligible garment (`409 empty_slots`, naming the slots); or a
+   pin/anchor cannot be honoured (handled at step 6 as a zero result). A pin marks its
+   slot selected (FR-44); a pin to the lower-body slot of a **one-piece** is
+   incompatible with a separately selected `base` (FR-50.2) and is rejected up front.
+2. **Anchor enumeration** (seedable, capped). Candidates are built anchors-first over
+   the selected slots: the **lower-body garment** (one of `trousers`/`jeans`/`shorts`/
+   `skirt`, or a one-piece `dress`/`jumpsuit`) × the present **upper-body layers**
+   (`base`, `shirt`, `jersey`, `jacket`), with the **outermost present layer dominant**
+   (`jacket > jersey > shirt > base`, FR-18). A one-piece fills the lower-body slot
+   **and** the `base` slot, excludes a separate `base` and a separate lower-body
+   garment (FR-50), and is never demoted to a covered layer (FR-18/FR-20). Any **pins**
+   fix their slot to one garment, shrinking the space. Enumeration is **interleaved
+   across distinct anchor garments** (F5 diversity) and **capped** by the
+   count-independent named constant (`MAX_ANCHOR_CANDIDATES`); the shuffle and
+   interleave draw from an **injected `random.Random`** (NFR-10) — a fixed seed in
+   tests, an unseeded source at runtime (FR-42). The cap does **not** scale with *N*
+   (NFR-5).
+3. **Anchor evaluation** (pure matcher): build the scheme set — dominant-layer
+   primaries, lower-body primaries (the one-piece itself when present, counted once),
+   and all anchors' secondaries (FR-19) — test schemes in FR-13 order (including
+   **neutral-based** when the scheme set is empty); check anchor secondary
+   compatibility (FR-9) and the covered-layer constraint across the four layers
+   (FR-20). If a **colour/scheme anchor** is set (FR-45), prune any candidate whose
+   scheme set lacks the target family or whose matched scheme is not the named one.
+   Failures are pruned immediately.
+4. **Adornment slots (two tiers).** For each surviving anchor set, **statement**
+   adornments (`hat`, `tie`, `scarf`, `belt`, `socks`, `shoes`) qualify only if every
+   primary/secondary is neutral or echoes an anchor colour (FR-21) — a failing one
+   disqualifies the combination; **minor** adornments (`glasses`, `earrings`,
+   `necklace`, `watch`, `ring`, `bracelet`) never disqualify (FR-10/FR-21). Echoes of
+   any chromatic anchor colour — including minor-anchor and minor-adornment echoes —
+   are recorded for the bonus (FR-11, FR-22). Adornment slots are independent and
+   combine freely (FR-49.4).
+5. **Scoring and selection** (`matcher.ranking`): scheme strength — with an empty
+   (all-neutral) scheme set scored **first-class** at `NEUTRAL_BASED_STRENGTH`, just
+   below a perfect chromatic scheme (FR-41) — then the echo-bonus count, then a
+   **raised** variety penalty applied greedily during selection so results do not
+   reuse the same garments (FR-41.3). The top **_N_** distinct combinations (FR-48,
+   1–25) are returned best-first (FR-39, FR-40); selecting *N* from the capped pool is
+   cheap, so the NFR-5 bound holds at the maximum count (re-baselined in `test-perf`).
+6. **Fallback ladder** (FR-43, slimmed). All-neutral outfits are now **normal
+   first-class results** (step 5) and are **not** fallbacks. Only when the capped main
+   enumeration yields **no** combination satisfying FR-15 does the ladder run: (a)
+   retry restricted to **neutral-only** combinations — covering a cap exhausted before
+   neutral combinations were reached — labelling any result a **neutral fallback**; and
+   (b) if none exists, return **zero** combinations with a plain-language explanation
+   and, where identifiable, the most constraining slot. An unsatisfiable pin or anchor
+   (FR-44/FR-45) resolves here as a zero result with the reason named.
+7. **Explanation** (FR-37/FR-38): rendered per combination from its `EvaluationResult`,
+   naming the matched scheme (including `neutral-based`), each garment's role and slot,
+   and the echoes credited.
 
 ---
 

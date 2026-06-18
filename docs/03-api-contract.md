@@ -2,13 +2,25 @@
 
 | | |
 |---|---|
-| **Document** | API contract (Milestone 3) |
-| **Status** | Draft for approval |
-| **Date** | 12 June 2026 |
-| **Source** | `docs/requirements.md` (FR/NFR identifiers cited throughout) and `docs/architecture.md` |
-| **Repository location** | `docs/api-contract.md` |
+| **Document** | API contract (living document) |
+| **Status** | Approved (Milestone 3); amended for v0.2.0 (Milestone 11) |
+| **Originally approved** | 12 June 2026 (Milestone 3, v0.1.0) |
+| **Last amended** | 18 June 2026 — v0.2.0 API deltas (Milestone 11) |
+| **Source** | `docs/02-requirements.md` (FR/NFR identifiers cited throughout) and `docs/03-architecture.md`; v0.2.0 brief (`docs/09-v0.2.0-brief.md`); F4 spike (`docs/spikes/2026-06-18-f4-category-slot-model.md`) |
+| **Repository location** | `docs/03-api-contract.md` |
 
 This document is the authoritative contract between frontend and backend; each may be built independently against it. FastAPI's generated OpenAPI is a convenience mirror — where they disagree, this document wins and the code is wrong.
+
+> **v0.2.0 amendment note (18 June 2026).** This is a living document; it evolves in
+> place (v0.2.0 brief §1). The Milestone 11 delta pass amends: **§1** (conventions —
+> the garment field `type` → `category` and its new value set, the slot-key namespace);
+> **§1.2** (garment objects); **§2.2** (`GET /api/taxonomy` — the slot/region model and
+> the Cream family); **§2.6** (`GET /api/garments` — grouping/ordering, FR-47); adds
+> **§2.10a** (`PATCH /api/garments/{id}` — direct category edit, FR-46); **§2.12** (`POST
+> /api/suggestions` — slot selection, pins, colour/scheme anchor, count); and **§3**
+> (traceability). Requirements §1.4 numeric thresholds are referenced, not restated.
+> Superseded shapes are marked *(superseded — v0.2.0)* in place. Where this contract and
+> the code disagree, the contract wins (and the code is wrong).
 
 ---
 
@@ -16,9 +28,29 @@ This document is the authoritative contract between frontend and backend; each m
 
 1. Base URL `http://127.0.0.1:8000`; all endpoints are prefixed `/api`. Image endpoints return binary bodies; everything else is `application/json` (UTF-8).
 2. Identifiers are UUID4 strings. Timestamps are ISO 8601 UTC (e.g. `"2026-06-12T14:03:00Z"`).
-3. Garment **types** (FR-16): `top`, `bottom`, `jersey`, `jacket`, `socks`, `shoes`, `hat`, `accessory`. Optional **slot keys** in requests use the same identifiers; the slot the brief calls "accessories" is keyed `accessory` to match its garment type.
-4. **Scheme** names (FR-13): `neutral-based`, `monochromatic`, `analogous`, `complementary`, `triadic`.
-5. Colour `family` values are exactly the names in requirements §2: `Black`, `White`, `Grey`, `Navy`, `Denim`, `Brown`, `Beige/Tan`, `Red`, `Orange`, `Yellow`, `Chartreuse`, `Green`, `Mint`, `Teal`, `Azure`, `Blue`, `Violet`, `Magenta`, `Pink`.
+3. Garment **categories** (FR-16) — *(amended — v0.2.0; the field is renamed `type` → `category` and the value set is replaced; supersedes the v0.1.0 eight `type` values `top`/`bottom`/`jersey`/`jacket`/`socks`/`shoes`/`hat`/`accessory`)*. A garment carries exactly one `category` from:
+
+   `base`, `shirt`, `jersey`, `jacket` (upper-body layers); `trousers`, `jeans`, `shorts`, `skirt`, `dress`, `jumpsuit` (lower body; `dress`/`jumpsuit` are **one-piece**); `hat`, `glasses`, `earrings`, `tie`, `scarf`, `necklace`, `watch`, `ring`, `bracelet`, `belt` (head/neck/hand/waist adornments); `socks`, `shoes` (feet).
+
+   The JSON field is **`category`** everywhere a garment is represented or filtered (the underlying DB column keeps the name `type` — architecture §3.1 — but it is never exposed under that name).
+
+3a. **Slot keys** are a *separate namespace* from categories, used as the keys of the `slots` selection map and `pins` map in a suggestion request (§2.12) and of a combination's `slots` object. Each category occupies exactly one slot; several categories may share one slot. The slot keys and their FR-49 roles are:
+
+   | Slot key | Region | Categories | Role |
+   |---|---|---|---|
+   | `base`, `shirt`, `jersey`, `jacket` | upper body | same-named category each | anchor (layer; order base→jacket, outermost dominant) |
+   | `lower_body` | lower body | `trousers`, `jeans`, `shorts`, `skirt`, `dress`, `jumpsuit` | anchor (**mandatory**; one-piece also occupies `base`) |
+   | `hat` | head | `hat` | statement |
+   | `glasses`, `earrings` | head | same-named category each | minor |
+   | `tie`, `scarf` | neck | same-named category each | statement |
+   | `necklace` | neck | `necklace` | minor |
+   | `watch`, `ring`, `bracelet` | hands | same-named category each | minor |
+   | `belt` | waist | `belt` | statement |
+   | `socks`, `shoes` | feet | same-named category each | statement |
+
+   **Default-selected** slots (FR-51) are `base`, `lower_body`, `socks`, `shoes`; `lower_body` is mandatory and cannot be deselected; every other slot is optional. Category→slot is deterministic, so a pinned garment's slot key is derivable from its category (a one-piece pins to `lower_body`). The authoritative machine-readable form of this table is `GET /api/taxonomy` (§2.2).
+4. **Scheme** names (FR-13): `neutral-based`, `monochromatic`, `analogous`, `complementary`, `triadic`. *(v0.2.0: `neutral-based` is now a first-class result, FR-41 — see §2.12.)*
+5. Colour `family` values are exactly the names in requirements §2: `Black`, `White`, `Grey`, `Navy`, `Denim`, `Brown`, `Beige/Tan`, **`Cream`** *(new — v0.2.0, FR-2)*, `Red`, `Orange`, `Yellow`, `Chartreuse`, `Green`, `Mint`, `Teal`, `Azure`, `Blue`, `Violet`, `Magenta`, `Pink`.
 6. The server **always derives `family` from submitted HSL** (FR-1); a client-supplied family is never trusted and never sent on input.
 
 ### 1.1 Colour objects
@@ -39,12 +71,12 @@ Validation: `0 ≤ h < 360`, `0 ≤ s ≤ 100`, `0 ≤ l ≤ 100`; `proportion` 
 
 ### 1.2 Garment objects
 
-**`GarmentSummary`** (inventory lists, suggestion slots — FR-35, FR-37):
+**`GarmentSummary`** (inventory lists, suggestion slots — FR-35, FR-37). *(Amended — v0.2.0: the field `"type"` is renamed `"category"`, §1.3; its value is one of the FR-16 categories.)*
 
 ```json
 {
   "id": "0b6c4d1e-7a2f-4f7e-9d2a-1c3e5f7a9b0c",
-  "type": "jersey",
+  "category": "jersey",
   "colours": [ { "h": 174.0, "s": 58.0, "l": 41.0, "family": "Teal", "neutral": false, "hex": "#2CADA0", "proportion": 80 },
                { "h": 28.0, "s": 85.0, "l": 55.0, "family": "Orange", "neutral": false, "hex": "#EE8225", "proportion": 20 } ],
   "thumbnail_url": "/api/garments/0b6c4d1e-7a2f-4f7e-9d2a-1c3e5f7a9b0c/thumbnail"
@@ -83,19 +115,59 @@ Readiness probe used by the launch script before printing the URL (NFR-2). **200
 
 ### 2.2 `GET /api/taxonomy`
 
-The palette taxonomy for UI use: family pickers for manual colour adds (FR-29) and legend display (FR-5). `canonical` is the HSL stored when the user adds a colour by family alone; each canonical value classifies into its own family.
+The taxonomy for UI use: colour-family pickers for manual colour adds (FR-29) and legend display (FR-5); and *(new — v0.2.0)* the **category / slot / region model** (FR-16, FR-49–FR-51) the UI needs to render category pickers (confirm-and-correct, category edit) and the slot selector (outfit request). `canonical` is the HSL stored when the user adds a colour by family alone; each canonical value classifies into its own family.
+
+The response is a **backward-compatible superset** of the v0.1.0 shape: the `families` array is unchanged in form (it now also contains `Cream`), and a parallel `regions` array is added.
 
 **200:**
 
 ```json
-{ "families": [
+{
+  "families": [
     { "name": "Navy",  "neutral": true,  "canonical": { "h": 230.0, "s": 40.0, "l": 18.0 } },
+    { "name": "Cream", "neutral": true,  "canonical": { "h": 48.0,  "s": 28.0, "l": 91.0 } },
     { "name": "Teal",  "neutral": false, "representative_hue": 180.0, "hue_arc": [165.0, 195.0],
       "canonical": { "h": 180.0, "s": 70.0, "l": 50.0 } }
-] }
+  ],
+  "regions": [
+    { "region": "head", "slots": [
+        { "slot": "hat",      "categories": ["hat"],      "role": "statement", "default_selected": false },
+        { "slot": "glasses",  "categories": ["glasses"],  "role": "minor",     "default_selected": false },
+        { "slot": "earrings", "categories": ["earrings"], "role": "minor",     "default_selected": false }
+    ] },
+    { "region": "upper_body", "slots": [
+        { "slot": "base",     "categories": ["base"],     "role": "anchor", "layer_order": 0, "default_selected": true  },
+        { "slot": "shirt",    "categories": ["shirt"],    "role": "anchor", "layer_order": 1, "default_selected": false },
+        { "slot": "jersey",   "categories": ["jersey"],   "role": "anchor", "layer_order": 2, "default_selected": false },
+        { "slot": "jacket",   "categories": ["jacket"],   "role": "anchor", "layer_order": 3, "default_selected": false },
+        { "slot": "tie",      "categories": ["tie"],      "role": "statement", "default_selected": false },
+        { "slot": "scarf",    "categories": ["scarf"],    "role": "statement", "default_selected": false },
+        { "slot": "necklace", "categories": ["necklace"], "role": "minor",     "default_selected": false },
+        { "slot": "watch",    "categories": ["watch"],    "role": "minor",     "default_selected": false },
+        { "slot": "ring",     "categories": ["ring"],     "role": "minor",     "default_selected": false },
+        { "slot": "bracelet", "categories": ["bracelet"], "role": "minor",     "default_selected": false }
+    ] },
+    { "region": "lower_body", "slots": [
+        { "slot": "lower_body", "role": "anchor", "mandatory": true, "default_selected": true,
+          "categories": ["trousers", "jeans", "shorts", "skirt", "dress", "jumpsuit"],
+          "one_piece_categories": ["dress", "jumpsuit"], "one_piece_also_occupies": ["base"] },
+        { "slot": "belt", "categories": ["belt"], "role": "statement", "default_selected": false }
+    ] },
+    { "region": "feet", "slots": [
+        { "slot": "socks", "categories": ["socks"], "role": "statement", "default_selected": true },
+        { "slot": "shoes", "categories": ["shoes"], "role": "statement", "default_selected": true }
+    ] }
+  ]
+}
 ```
 
-(`representative_hue` and `hue_arc` are present only on chromatic families.)
+Notes on `regions`:
+
+- `region` ∈ `head`, `upper_body`, `lower_body`, `feet`. `role` ∈ `anchor`, `statement`, `minor` (FR-49.3). `categories` lists the FR-16 categories that occupy the slot.
+- `layer_order` is present only on the four upper-body anchor layers; it is the innermost-to-outermost order `base(0) → shirt(1) → jersey(2) → jacket(3)`, and the **outermost present layer is dominant** (FR-18). It is absent on all other slots.
+- `mandatory: true` appears only on `lower_body` (FR-51); absent (falsey) elsewhere. `default_selected` reflects the FR-51 default selection.
+- `one_piece_categories` / `one_piece_also_occupies` appear only on `lower_body`: `dress` and `jumpsuit` are one-piece and additionally occupy the `base` slot (FR-49.2, FR-50.2).
+- `representative_hue` and `hue_arc` remain present only on chromatic families; `Cream` is a neutral family, so it carries `canonical` only.
 
 ### 2.3 `POST /api/detections` — upload and detect (FR-23, FR-24, FR-26, FR-27, FR-28)
 
@@ -129,19 +201,28 @@ The staged image, for the confirmation screen preview. **200** image bytes (orig
 ```json
 {
   "detection_token": "3f9d2c8e-1b4a-4c6d-8e2f-7a9b0c1d2e3f",
-  "type": "jersey",
+  "category": "jersey",
   "colours": [ { "h": 174.0, "s": 58.0, "l": 41.0, "proportion": 80 },
                { "h": 28.0,  "s": 85.0, "l": 55.0, "proportion": 20 } ]
 }
 ```
 
-Atomically moves the staged image into permanent storage, generates the thumbnail and creates the garment. The token is consumed.
+*(Amended — v0.2.0: the request field `"type"` is renamed `"category"` and takes one of the FR-16 categories, §1.3.)* Atomically moves the staged image into permanent storage, generates the thumbnail and creates the garment. The token is consumed.
 
-**201:** the full `Garment`. **Errors:** `404 detection_not_found` (unknown, expired or consumed token); `422 invalid_palette` (count outside 1–4, proportions not summing to 100, values out of range); `422 invalid_type`.
+**201:** the full `Garment`. **Errors:** `404 detection_not_found` (unknown, expired or consumed token); `422 invalid_palette` (count outside 1–4, proportions not summing to 100, values out of range); `422 invalid_category` *(renamed — v0.2.0, was `invalid_type`)*.
 
-### 2.6 `GET /api/garments` — inventory (FR-35, NFR-6)
+### 2.6 `GET /api/garments` — inventory (FR-35, FR-47, NFR-6)
 
-Query parameters, all optional and combinable as AND: `type` (one FR-16 value), `family` (one §1 family name; matches a garment containing that family in **any** role), `limit` / `offset` (defaults 500 / 0 — a full wardrobe fits one response).
+Query parameters, all optional. Filters combine as AND:
+
+- `category` — one FR-16 category. *(Renamed — v0.2.0, was `type`.)*
+- `family` — one §1 family name; matches a garment containing that family in **any** role.
+- `order` *(new — v0.2.0, FR-47)* — the within-group ordering, one of:
+  - `hue` *(default)* — a colour spectrum by each garment's **primary-colour hue** (the `position = 0` colour, FR-7); garments whose primary is a **neutral** (no hue, FR-3) are ordered **after** the chromatic spectrum in a stable, defined order.
+  - `date` — by `created_at`, **newest first**.
+- `limit` / `offset` — defaults 500 / 0 (a full wardrobe fits one response).
+
+The server returns a **flat list already ordered** by category and then by the chosen `order` key, so the client groups by walking the list (FR-47 grouping is a frontend concern — v0.2.0 brief §F6; architecture §3.1). `total` is the full match count before pagination.
 
 **200:**
 
@@ -149,7 +230,9 @@ Query parameters, all optional and combinable as AND: `type` (one FR-16 value), 
 { "garments": [ GarmentSummary ], "total": 137 }
 ```
 
-**Errors:** `422 invalid_filter` for unknown `type` or `family` values.
+(Each `GarmentSummary` carries `category`, so the client buckets the ordered list into per-category groups without a second request.)
+
+**Errors:** `422 invalid_filter` for an unknown `category`, `family` or `order` value.
 
 ### 2.7 `GET /api/garments/{id}`
 
@@ -170,74 +253,144 @@ No body. Re-runs detection on the stored photograph and returns a proposal in ex
 ```json
 {
   "regeneration_token": "9c1e7a3b-5d2f-4e8a-b6c0-2f4d6e8a0b1c",
-  "type": "jersey",
+  "category": "jersey",
   "colours": [ { "h": 176.0, "s": 60.0, "l": 40.0, "proportion": 100 } ]
 }
 ```
 
-Replaces the palette and type **in place** — same `id`, same photograph — so existing references remain valid (FR-33). The token requirement is the FR-32 enforcement: this endpoint only completes a regeneration; there is no field-editing path.
+*(Amended — v0.2.0: the request field `"type"` is renamed `"category"`, §1.3.)* Replaces the palette and category **in place** — same `id`, same photograph — so existing references remain valid (FR-33). The token requirement is the FR-32 enforcement: this endpoint completes a regeneration (palette + category together); the direct single-field category edit is `PATCH` (§2.10a). *(Errors as §2.5, including `422 invalid_category`.)*
 
 **200:** the updated `Garment` (`regenerated_at` set). **Errors:** `404 garment_not_found`; `409 invalid_regeneration_token` (absent, expired, consumed, or bound to a different garment); `422` as §2.5.
+
+### 2.10a `PATCH /api/garments/{id}` — edit category *(new — v0.2.0, FR-46, F3)*
+
+Direct, single-field edit of a saved garment's **category** (FR-16), **without
+re-running detection** and without the confirm-and-correct flow. This is the only
+field-edit path permitted by FR-32 (as amended); it sits beside the token-gated `PUT`
+(§2.10), which remains the *only* way to change the palette (regenerate-only,
+FR-32/FR-33). `PATCH` carries no regeneration token and never touches the palette,
+image or identifier.
+
+The verb split is deliberate: `PATCH` modifies a **proper subset** of the mutable
+representation (the `category` field), whereas `PUT` (§2.10) **replaces the whole
+mutable set** (`category` + `colours`) as the confirmed regeneration outcome. The
+regeneration token is an *orthogonal* authorisation gate enforcing FR-32 (the palette
+changes only via re-detection), not the basis of the verb choice.
+
+```json
+{ "category": "jacket" }
+```
+
+The body has exactly one field, `category`, one of the FR-16 categories (§1.3). The
+garment keeps its `id`, photograph and stored palette; only `garments.type` changes
+(architecture §3.1). Suggestion eligibility then follows the new category and its slot
+role (FR-49–FR-51) at evaluation time. `regenerated_at` is **not** changed (a category
+edit is not a regeneration).
+
+**200:** the full updated `Garment`. **Errors:** `404 garment_not_found`; `422
+invalid_category` (value not in the FR-16 allowlist); `422 invalid_request` (missing
+`category`, or any field other than `category` supplied).
 
 ### 2.11 `DELETE /api/garments/{id}` (FR-34)
 
 Removes the record, photograph and thumbnail. The confirmation step is a UI responsibility. **204** no body; **404 `garment_not_found`**.
 
-### 2.12 `POST /api/suggestions` — outfit request (FR-36–FR-43, NFR-5)
+### 2.12 `POST /api/suggestions` — outfit request (FR-36, FR-39–FR-45, FR-48–FR-51, NFR-5, NFR-10)
 
-```json
-{ "include": { "jersey": true, "jacket": false, "hat": true, "accessory": false } }
-```
-
-Required slots (top, bottom, socks, shoes) are always included (FR-17); `include` selects the optional slots. Omitted keys default to `false`.
-
-**200 — combinations found** (up to 3, ranked best-first, all distinct — FR-39, FR-40, FR-41):
+> **Rewritten — v0.2.0 (F1/F2/F4/F7).** The v0.1.0 request was `{ "include": { … } }`
+> over four optional slots, with `top`/`bottom`/`socks`/`shoes` always included and "up
+> to 3" results. *(Superseded — v0.2.0.)* The request below adds configurable/removable
+> slot selection over the new slot model (FR-51), pins (FR-44), a colour/scheme anchor
+> (FR-45) and a count (FR-48). All four fields are **optional**; an empty body `{}` means
+> the FR-51 default slots, no pins, no anchor and `count = 3`.
 
 ```json
 {
+  "slots":  { "jacket": true, "socks": false },
+  "pins":   { "jacket": "0b6c4d1e-7a2f-4f7e-9d2a-1c3e5f7a9b0c" },
+  "anchor": { "family": "Teal", "scheme": "analogous" },
+  "count":  5
+}
+```
+
+- **`slots`** *(optional, FR-51)* — a **partial override map**, slot key (§1.3a) → bool,
+  layered over the FR-51 **default selection** (`base`, `lower_body`, `socks`, `shoes`
+  selected; every other slot deselected). Omitted keys keep their default; `true` selects,
+  `false` deselects. A **selected** slot must be filled in every returned combination (so
+  an empty selected slot fails fast — `409`, below). `lower_body` is **mandatory**: it may
+  be omitted or set `true`, but `false` is rejected (`422`). *Beach example:* `{ "base":
+  false, "socks": false }` yields `lower_body` + `shoes`.
+- **`pins`** *(optional, FR-44)* — a map slot key → garment `id`. Every returned
+  combination contains the pinned garment in that slot. The garment's **category must map
+  to the slot key** (§1.3a; a one-piece pins to `lower_body`); a pin **selects** its slot.
+  More than one slot may be pinned; all pins hold simultaneously.
+- **`anchor`** *(optional, FR-45)* — `{ "family"?, "scheme"? }`; either or both. `family`
+  is one §1 family name — every combination's scheme set (§4 of requirements) must include
+  that family on an anchor garment. `scheme` is one FR-13 name — every combination must
+  match it. When both are given, both must hold.
+- **`count`** *(optional, FR-48)* — integer **1–25**, **default 3**. Governs how many
+  combinations are returned (FR-39); it does **not** relax the enumeration cap or the
+  NFR-5 bound.
+
+**200 — combinations found** (up to `count`, ranked best-first, all distinct — FR-39, FR-40, FR-41, FR-48):
+
+```json
+{
+  "requested_count": 5,
   "combinations": [
     {
       "rank": 1,
       "scheme": "analogous",
       "fallback": false,
       "slots": {
-        "top":    GarmentSummary,
-        "bottom": GarmentSummary,
-        "jersey": GarmentSummary,
-        "socks":  GarmentSummary,
-        "shoes":  GarmentSummary,
-        "hat":    GarmentSummary
+        "base":       GarmentSummary,
+        "lower_body": GarmentSummary,
+        "jacket":     GarmentSummary,
+        "socks":      GarmentSummary,
+        "shoes":      GarmentSummary
       },
-      "echoes": [ { "family": "Orange", "from_slot": "hat", "to_slot": "socks" } ],
-      "explanation": "Analogous scheme: teal jersey and azure trousers sit side by side on the wheel; navy shoes and grey socks are neutrals; the orange cap echoes the stripe in the socks."
+      "echoes": [ { "family": "Orange", "from_slot": "socks", "to_slot": "lower_body" } ],
+      "explanation": "Analogous scheme: the teal jacket and azure trousers sit side by side on the wheel; the navy shoes are neutral; the orange flecks in the socks echo the trousers."
     }
   ]
 }
 ```
 
-`explanation` is rendered from the actual evaluation result (FR-38); `scheme` names the FR-13 match; `echoes` lists the FR-11 minor-colour echoes credited in ranking. `fallback: true` marks a neutral-based fallback combination (FR-43a) — the UI must label these.
+- `requested_count` echoes the effective `count`; `combinations` holds **at most** that many, fewer only when fewer exist (FR-39).
+- `slots` is keyed by **slot key** (§1.3a). A **one-piece** appears once, under `lower_body` (it also occupies `base` but is counted once — FR-18/FR-19); no separate `base` entry is present for that combination.
+- `scheme` is a non-null FR-13 name, **including `neutral-based`** when the scheme set is empty (now a first-class result, FR-41). *(Superseded — v0.2.0: the v0.1.0 `scheme: null` for neutral outfits.)*
+- `fallback: true` marks a **neutral fallback** only (FR-43a) — produced solely by the fallback retry; the UI must label these. A **first-class all-neutral** outfit has `scheme: "neutral-based"` and `fallback: false`. So `scheme` + `fallback` together distinguish the two neutral cases.
+- `echoes` lists the chromatic echoes credited in ranking (FR-11, FR-22), now **including minor-adornment echoes**: `from_slot` is the adornment slot, `to_slot` the anchor slot carrying that family.
+- `explanation` is rendered from the actual evaluation result (FR-38).
 
-**200 — no combination possible** (FR-43b):
+**200 — no combination possible** (FR-43b; also an unsatisfiable pin or anchor — FR-44/FR-45):
 
 ```json
 {
+  "requested_count": 5,
   "combinations": [],
-  "explanation": "No harmonious outfit was found: no jersey in the wardrobe is compatible with any bottom under any scheme.",
-  "hint": "The jersey slot most constrained the search — try the request without it, or add a neutral jersey."
+  "explanation": "No harmonious outfit was found: no jacket in the wardrobe is compatible with any lower-body garment under any scheme.",
+  "hint": "The jacket slot most constrained the search — try the request without it, or add a neutral jacket."
 }
 ```
 
-**409 — fail fast, empty slot** (FR-36):
+**409 — fail fast, empty selected slot** (FR-36):
 
 ```json
 { "error": { "code": "empty_slots",
-             "message": "You have no garments for the requested slot(s): jersey.",
-             "details": { "empty_slots": ["jersey"] } } }
+             "message": "You have no garments for the requested slot(s): jacket.",
+             "details": { "empty_slots": ["jacket"] } } }
 ```
 
-**Other errors:** `422 invalid_request` for unknown slot keys.
+**Other errors — `422 invalid_request`** (FR-36, FR-44, FR-45, FR-48, FR-51), with the offending value in `details`:
 
-Repeated identical requests may legitimately return different results (FR-42). Responses return within NFR-5's 2-second bound at 500 garments.
+- an unknown slot key in `slots` or `pins`, or an unknown `anchor.family` / `anchor.scheme`;
+- `count` outside 1–25 (`details: { "count": 26 }`);
+- `lower_body` set `false` (it is mandatory, FR-51);
+- a pin whose garment `id` does not exist, or whose **category does not map to the pinned slot key**;
+- a contradictory selection — e.g. pinning a one-piece (`dress`/`jumpsuit`) to `lower_body` while `base` is selected (FR-50.2), or two pins for one slot.
+
+Repeated identical requests may legitimately return different results (FR-42); the variety randomness is seedable (NFR-10), unseeded at runtime. Responses return within NFR-5's 2-second bound at 500 garments **including at `count = 25`** (the enumeration cap is count-independent; re-baselined in `test-perf`).
 
 ---
 
@@ -245,23 +398,37 @@ Repeated identical requests may legitimately return different results (FR-42). R
 
 | Requirement | Endpoint(s) |
 |---|---|
-| FR-1–FR-5 (taxonomy) | Server-side family derivation everywhere; `GET /api/taxonomy` |
+| FR-1–FR-5 (taxonomy) | Server-side family derivation everywhere; `GET /api/taxonomy` (§2.2) |
+| FR-2 (**Cream** family — v0.2.0) | §1.5 (`Cream`); §2.2 (`families` includes `Cream`) |
 | FR-6 (1–4 colours, sum 100) | §2.3 response; §2.5/§2.10 validation |
+| FR-16 (**categories** — v0.2.0) | §1.3 (category set); §1.2 garment objects (`category`); §2.2 (`regions`/`slots`) |
 | FR-23, FR-24 (upload, rejection) | §2.3 |
 | FR-25 (stored photograph) | §2.5, §2.8, §2.9 |
 | FR-26, FR-27 (detection, fallback) | §2.3, §2.9 (`fallback_used`) |
-| FR-28–FR-31 (confirm-and-correct, type) | §2.3 → §2.5; §2.2 (canonical HSL for manual adds) |
-| FR-32, FR-33 (no field editing; regenerate) | §2.9 → §2.10 (token-gated `PUT`) |
+| FR-28–FR-31 (confirm-and-correct, category) | §2.3 → §2.5 (`category`); §2.2 (canonical HSL for manual adds; category list) |
+| FR-32 (amended — category editable), FR-33 (regenerate) | §2.9 → §2.10 (token-gated `PUT`, palette); §2.10a (`PATCH`, category) |
+| FR-46 (**edit category** — v0.2.0) | §2.10a (`PATCH /api/garments/{id}`) |
 | FR-34 (delete) | §2.11 |
-| FR-35 (inventory, filters) | §2.6, §2.8 |
-| FR-36 (slot selection, fail fast) | §2.12 (`include`; `409 empty_slots`) |
+| FR-35 (inventory, filters) | §2.6 (`category`/`family`), §2.8 |
+| FR-47 (**grouping & ordering** — v0.2.0) | §2.6 (`order` = `hue`/`date`; client groups by `category`) |
+| FR-36 (slot selection, fail fast — amended) | §2.12 (`slots`; `409 empty_slots`; `422` for no/invalid `lower_body`) |
+| FR-44 (**pin a garment** — v0.2.0) | §2.12 (`pins`) |
+| FR-45 (**colour/scheme anchor** — v0.2.0) | §2.12 (`anchor`) |
 | FR-37, FR-38 (explanations from evaluation) | §2.12 (`scheme`, `echoes`, `explanation`) |
-| FR-39–FR-42 (up to 3, distinct, ranked, non-deterministic) | §2.12 |
-| FR-43 (fallback ladder) | §2.12 (`fallback`, empty-result shape with `hint`) |
+| FR-39 (up to *N* — amended), FR-48 (**count** — v0.2.0) | §2.12 (`count`, `requested_count`) |
+| FR-40, FR-42 (distinct, non-deterministic) | §2.12 |
+| FR-41 (refined — all-neutral first-class) | §2.12 (`scheme: "neutral-based"` with `fallback: false`) |
+| FR-43 (refined — slimmed fallback ladder) | §2.12 (`fallback: true` neutral fallback; empty-result shape with `hint`) |
+| FR-49–FR-51 (**slot model** — v0.2.0) | §1.3a (slot keys, roles, defaults, mandatory `lower_body`); §2.2 (`regions`); §2.12 (`slots`, `pins`, exclusion `422`s) |
 | NFR-2 (single command) | §2.1 |
-| NFR-5, NFR-6 (response bounds) | §2.12, §2.6 |
+| NFR-5 (amended — bound holds at count 25), NFR-6 (response bounds) | §2.12, §2.6 |
+| NFR-10 (**seedable variety** — v0.2.0) | §2.12 (non-determinism note; seed is server-internal, not contract surface) |
 
-FR-7–FR-22 (roles, harmony, slot rules) govern the evaluation behind §2.12 and are specified in `docs/requirements.md`; they impose no additional contract surface.
+FR-7–FR-15 (roles, proportion and harmony maths) and FR-17–FR-22 (anchors, layering, the
+covered-layer and adornment-tier rules) govern the evaluation behind §2.12 and are
+specified in `docs/02-requirements.md`; they impose no *additional* contract surface beyond
+the slot keys, roles and one-piece flags already surfaced by `GET /api/taxonomy` (§2.2) and
+the combination `slots`/`echoes` of §2.12.
 
 ---
 
