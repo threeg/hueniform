@@ -83,7 +83,16 @@ expected results, for the user to click through. The summary and sanity test are
 ticket's `## Notes`; the QA steps go in its `## QA steps` section. QA steps complement the automated
 e2e tests; they do not replace them.
 
-## When a milestone completes
+## Milestone status lifecycle
 
-Update `docs/00-milestone-plan.md` — the milestone's status **and** the *Current position* line —
-in the same commit as the milestone's deliverable.
+Milestones move `Not started (⬜) → In progress (🔶) → Complete (✅)`.
+
+- **When you start work on a milestone, mark it `In progress` (🔶)** in
+  `docs/00-milestone-plan.md` and move the *Current position* line to it.
+- **Never mark a milestone `Complete` (✅) on your own initiative.** Completion
+  requires **explicit sign-off from the user** — finishing the deliverable, passing
+  the gates, and your own verification are not sufficient. Until sign-off, the
+  milestone stays `In progress`, however done it looks.
+- **When the user signs off,** mark the milestone `Complete` and move the *Current
+  position* line to the next milestone — updating the milestone's status **and** the
+  *Current position* line in the same commit as the milestone's deliverable.
