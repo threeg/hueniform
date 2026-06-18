@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useLocation, useNavigate, Navigate } from 'react-router-dom'
 import type { DetectionResponse, RegenerationProposalResponse } from '../api/types'
 import { useTaxonomy, useCreateGarment, useUpdateGarment } from '../api/queries'
@@ -41,6 +41,12 @@ export default function AddConfirm() {
   const [newProportion, setNewProportion] = useState(20)
 
   const { data: taxonomy } = useTaxonomy()
+  const newFamilyHex = useMemo(() => {
+    if (!newFamily || !taxonomy) return null
+    const f = taxonomy.families.find(fam => fam.name === newFamily)
+    return f ? hslToHex(f.canonical.h, f.canonical.s, f.canonical.l) : null
+  }, [taxonomy, newFamily])
+
   const {
     mutate: createGarment, isPending: creating, error: createError,
   } = useCreateGarment()
@@ -222,15 +228,9 @@ export default function AddConfirm() {
                       <option key={f.name} value={f.name}>{f.name}</option>
                     ))}
                   </select>
-                  {newFamily && taxonomy && (() => {
-                    const fam = taxonomy.families.find(f => f.name === newFamily)!
-                    return (
-                      <Swatch
-                        hex={hslToHex(fam.canonical.h, fam.canonical.s, fam.canonical.l)}
-                        family={fam.name}
-                      />
-                    )
-                  })()}
+                  {newFamilyHex && (
+                    <Swatch hex={newFamilyHex} family={newFamily} />
+                  )}
                   <input
                     type="number"
                     aria-label="New colour proportion"

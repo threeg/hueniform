@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useSuggest, useTaxonomy } from '../api/queries'
 import { ApiRequestError } from '../api/types'
@@ -53,10 +53,13 @@ export default function Suggest() {
     })
   }
 
-  function familyHex(family: string): string | undefined {
-    const f = taxonomy?.families.find(t => t.name === family)
-    return f ? hslToHex(f.canonical.h, f.canonical.s, f.canonical.l) : undefined
-  }
+  const familyHexMap = useMemo(() => {
+    const map = new Map<string, string>()
+    taxonomy?.families.forEach(f => {
+      map.set(f.name, hslToHex(f.canonical.h, f.canonical.s, f.canonical.l))
+    })
+    return map
+  }, [taxonomy])
 
   return (
     <main className={styles.page}>
@@ -192,7 +195,7 @@ export default function Suggest() {
                   {combo.echoes.length > 0 && (
                     <ul className={styles.echoes}>
                       {combo.echoes.map((echo, j) => {
-                        const hex = familyHex(echo.family)
+                        const hex = familyHexMap.get(echo.family)
                         return (
                           <li key={j} className={styles.echoLine} data-testid="echo-line">
                             {hex && (

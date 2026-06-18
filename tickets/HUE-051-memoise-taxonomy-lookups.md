@@ -2,7 +2,7 @@
 id: HUE-051
 title: Memoise taxonomy lookups in Suggest, Wardrobe and AddConfirm
 type: task
-status: todo
+status: done
 milestone: 8
 batch: cleanup
 layer: frontend
@@ -38,11 +38,11 @@ lookups without memoisation in three route components:
 
 ## Definition of done (acceptance criteria)
 
-- [ ] All three taxonomy lookups wrapped in `useMemo` with correct dependency arrays
-- [ ] No `taxonomy.families.find()` call outside a memoisation boundary
-- [ ] All existing frontend tests still pass unchanged
-- [ ] `make test-frontend` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] All three taxonomy lookups wrapped in `useMemo` with correct dependency arrays
+- [x] No `taxonomy.families.find()` call outside a memoisation boundary
+- [x] All existing frontend tests still pass unchanged
+- [x] `make test-frontend` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -53,3 +53,4 @@ No new tests required — pure refactor. Existing tests cover all paths.
 ## Notes
 
 - 2026-06-17 — created by `/verify` review of frontend batch (HUE-032–037).
+- 2026-06-18 — implemented: Suggest — `familyHex()` replaced with `familyHexMap` (useMemo, keyed on taxonomy); Wardrobe — `selectedFamily`+`hslToHex` merged into `familySwatchHex` useMemo keyed on [taxonomy, familyFilter]; AddConfirm — IIFE replaced with `newFamilyHex` useMemo keyed on [taxonomy, newFamily]. Event handler in `handleAddColour` is a click callback (not render-time) — left as-is. 133 tests passed, zero warnings.

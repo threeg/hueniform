@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Link, useSearchParams, useLocation } from 'react-router-dom'
 import { useGarments, useTaxonomy } from '../api/queries'
 import GarmentCard from '../components/GarmentCard'
@@ -40,10 +41,10 @@ export default function Wardrobe() {
   const garments = data?.garments ?? []
   const total    = data?.total ?? 0
 
-  const selectedFamily = taxonomy?.families.find(f => f.name === familyFilter)
-  const familySwatchHex = selectedFamily
-    ? hslToHex(selectedFamily.canonical.h, selectedFamily.canonical.s, selectedFamily.canonical.l)
-    : null
+  const familySwatchHex = useMemo(() => {
+    const f = taxonomy?.families.find(fam => fam.name === familyFilter)
+    return f ? hslToHex(f.canonical.h, f.canonical.s, f.canonical.l) : null
+  }, [taxonomy, familyFilter])
 
   return (
     <main className={styles.page}>
