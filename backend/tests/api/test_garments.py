@@ -364,6 +364,21 @@ class TestGarmentFiles:
         assert r.status_code == 404
         assert r.json()["error"]["code"] == "garment_not_found"
 
+    def test_image_file_missing_returns_404(self, client, settings, seeded):
+        garment_id = seeded["top"]["id"]
+        for f in (settings.data_dir / "images").glob(f"{garment_id}.*"):
+            f.unlink()
+        r = client.get(f"/api/garments/{garment_id}/image")
+        assert r.status_code == 404
+        assert r.json()["error"]["code"] == "image_not_found"
+
+    def test_thumbnail_file_missing_returns_404(self, client, settings, seeded):
+        garment_id = seeded["top"]["id"]
+        (settings.data_dir / "thumbnails" / f"{garment_id}.webp").unlink()
+        r = client.get(f"/api/garments/{garment_id}/thumbnail")
+        assert r.status_code == 404
+        assert r.json()["error"]["code"] == "thumbnail_not_found"
+
 
 # ── Helpers for HUE-030 ───────────────────────────────────────────────────────
 

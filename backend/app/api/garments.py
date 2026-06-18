@@ -180,7 +180,10 @@ def get_garment_image(garment_id: str, request: Request) -> FileResponse:
     except GarmentNotFoundError:
         raise AppError(404, "garment_not_found", "Garment not found.")
 
-    return FileResponse(settings.data_dir / "images" / result.image_file)
+    path = settings.data_dir / "images" / result.image_file
+    if not path.exists():
+        raise AppError(404, "image_not_found", "Image file not found.")
+    return FileResponse(path)
 
 
 @router.get("/garments/{garment_id}/thumbnail", include_in_schema=False)
@@ -194,7 +197,10 @@ def get_garment_thumbnail(garment_id: str, request: Request) -> FileResponse:
     except GarmentNotFoundError:
         raise AppError(404, "garment_not_found", "Garment not found.")
 
-    return FileResponse(settings.data_dir / "thumbnails" / result.thumbnail_file)
+    path = settings.data_dir / "thumbnails" / result.thumbnail_file
+    if not path.exists():
+        raise AppError(404, "thumbnail_not_found", "Thumbnail file not found.")
+    return FileResponse(path)
 
 
 @router.post("/garments/{garment_id}/regenerate", response_model=RegenerationProposalResponse)
