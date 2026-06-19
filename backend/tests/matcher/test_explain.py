@@ -2,8 +2,11 @@
 Tests for matcher.explain (test strategy §4.9).
 
 Coverage:
-  - FR-37: scheme name, per-slot garment colour and role, echo families
-  - FR-38: covariance — changing any result field changes the rendered text
+  - FR-37: scheme name; per-slot garment colour and role using v0.2.0 labels
+            (outer layer, mid-layer, lower body); one-piece and adornment roles;
+            echo families including minor-adornment echoes
+  - FR-38: covariance — changing any result field changes the rendered text;
+            first-class neutral-based vs neutral-fallback wording distinction
   - Determinism: same input → same output
   - Sentinel (zero-result) and fallback label cases
 """
@@ -16,7 +19,7 @@ from app.matcher.colour import Colour
 from app.matcher.roles import Garment, GarmentRoles, derive_roles
 from app.matcher.ranking import evaluate_outfit, EvaluationResult
 from app.matcher.harmony import SchemeResult
-from app.matcher.explain import render
+from app.matcher.explain import _SLOT_LABELS, render
 from app.matcher.slots import category_to_slot
 from tests.fixtures.wardrobes import (
     neutral_fallback_only,
@@ -102,7 +105,8 @@ class TestSlotColoursInOutput:
         assert result is not None
         text = render(result)
         for slot in outfit:
-            assert slot in text
+            label = _SLOT_LABELS.get(slot, slot)
+            assert label in text, f"Expected slot label '{label}' in render output"
 
     def test_anchor_role_label_present(self) -> None:
         outfit = _outfit_from(single_valid_outfit())
@@ -337,6 +341,94 @@ class TestCovariance:
         assert result_normal is not None
         assert result_fallback is not None
         assert render(result_normal) != render(result_fallback)
+
+
+# ── FR-37: v0.2.0 slot vocabulary and role labels ────────────────────────────
+
+class TestSlotVocabulary:
+    """Human-readable slot labels, one-piece, and adornment role labels (FR-37)."""
+
+    def test_lower_body_renders_with_space(self) -> None:
+        # lower_body slot key → "lower body" (not "lower_body") in output
+        outfit = _outfit_from(single_valid_outfit())
+        result = evaluate_outfit(outfit)
+        assert result is not None
+        text = render(result)
+        assert "lower body" in text
+        assert "lower_body" not in text
+
+    def test_outer_layer_label(self) -> None:
+        outfit = {
+            "outer":      Garment("jacket",  (_red(100),)),
+            "lower_body": Garment("trousers",(_teal(100),)),
+            "socks":      Garment("socks",   (_grey(100),)),
+            "shoes":      Garment("shoes",   (_black(100),)),
+        }
+        result = evaluate_outfit(outfit)
+        assert result is not None
+        text = render(result)
+        assert "outer layer" in text
+        assert "outer:" not in text  # raw key must not appear
+
+    def test_mid_layer_label(self) -> None:
+        outfit = {
+            "mid":        Garment("jumper",  (_red(100),)),
+            "lower_body": Garment("trousers",(_teal(100),)),
+            "socks":      Garment("socks",   (_grey(100),)),
+            "shoes":      Garment("shoes",   (_black(100),)),
+        }
+        result = evaluate_outfit(outfit)
+        assert result is not None
+        text = render(result)
+        assert "mid-layer" in text
+        assert "mid:" not in text  # raw key must not appear
+
+    def test_one_piece_role_label(self) -> None:
+        # A dress in lower_body is a one-piece; role label is "one-piece" not "anchor"
+        outfit = {
+            "lower_body": Garment("dress", (_red(100),)),
+            "socks":      Garment("socks", (_grey(100),)),
+            "shoes":      Garment("shoes", (_black(100),)),
+        }
+        result = evaluate_outfit(outfit)
+        assert result is not None
+        text = render(result)
+        assert "one-piece" in text
+        assert "anchor" not in text
+
+    def test_minor_adornment_role_label(self) -> None:
+        # Glasses are a minor adornment (never disqualify); role label is "adornment"
+        outfit = {
+            "base":       Garment("t_shirt",  (_red(100),)),
+            "lower_body": Garment("trousers", (_teal(100),)),
+            "socks":      Garment("socks",    (_grey(100),)),
+            "shoes":      Garment("shoes",    (_black(100),)),
+            "glasses":    Garment("glasses",  (_grey(100),)),
+        }
+        result = evaluate_outfit(outfit)
+        assert result is not None
+        text = render(result)
+        assert "adornment" in text
+
+    def test_first_class_neutral_not_labelled_fallback(self) -> None:
+        # First-class neutral (is_fallback=False) must not say "fallback"
+        outfit = _outfit_from(neutral_fallback_only())
+        result = evaluate_outfit(outfit, is_fallback=False)
+        assert result is not None
+        text = render(result)
+        assert "fallback" not in text.lower()
+        assert "neutral" in text.lower()
+
+    def test_neutral_fallback_wording_distinct_from_first_class(self) -> None:
+        # Neutral fallback wording must differ from first-class neutral wording
+        outfit = _outfit_from(neutral_fallback_only())
+        r_first_class = evaluate_outfit(outfit, is_fallback=False)
+        r_fallback    = evaluate_outfit(outfit, is_fallback=True)
+        assert r_first_class is not None
+        assert r_fallback    is not None
+        assert render(r_first_class) != render(r_fallback)
+        assert "fallback" in render(r_fallback).lower()
+        assert "fallback" not in render(r_first_class).lower()
 
 
 # ── Determinism ───────────────────────────────────────────────────────────────

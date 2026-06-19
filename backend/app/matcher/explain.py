@@ -11,6 +11,7 @@ Standard library only (NFR-9).
 
 from __future__ import annotations
 
+from app.matcher import constants as C
 from app.matcher.ranking import EvaluationResult
 from app.matcher.roles import GarmentRoles
 from app.matcher.slots import (
@@ -28,6 +29,27 @@ _SLOT_ORDER: tuple[str, ...] = (
     "hat", "tie", "scarf", "belt", "socks", "shoes",
     "glasses", "earrings", "necklace", "watch", "ring", "bracelet",
 )
+
+# Human-readable labels for each slot key (FR-37 vocabulary)
+_SLOT_LABELS: dict[str, str] = {
+    "outer":      "outer layer",
+    "mid":        "mid-layer",
+    "shirt":      "shirt",
+    "base":       "base",
+    "lower_body": "lower body",
+    "hat":        "hat",
+    "tie":        "tie",
+    "scarf":      "scarf",
+    "belt":       "belt",
+    "socks":      "socks",
+    "shoes":      "shoes",
+    "glasses":    "glasses",
+    "earrings":   "earrings",
+    "necklace":   "necklace",
+    "watch":      "watch",
+    "ring":       "ring",
+    "bracelet":   "bracelet",
+}
 
 
 def _primary_families(roles: GarmentRoles) -> list[str]:
@@ -71,14 +93,22 @@ def render(result: EvaluationResult) -> str:
         else:
             colour_str = "/".join(families)
 
-        if gtype in anchor_types:
+        garment = result.outfit[gtype]
+        is_one_piece = garment.garment_type in C.ONE_PIECE_CATEGORIES
+
+        if gtype in anchor_types and is_one_piece:
+            role_label = "one-piece"
+        elif gtype in anchor_types:
             role_label = "anchor"
+        elif gtype in C.MINOR_ADORNMENT_SLOTS:
+            role_label = "adornment"
         elif not families or all(_is_neutral(f) for f in families):
             role_label = "neutral"
         else:
             role_label = "echo"
 
-        slot_descs.append(f"{gtype}: {colour_str} ({role_label})")
+        slot_label = _SLOT_LABELS.get(gtype, gtype)
+        slot_descs.append(f"{slot_label}: {colour_str} ({role_label})")
 
     slots_text = "; ".join(slot_descs)
 
