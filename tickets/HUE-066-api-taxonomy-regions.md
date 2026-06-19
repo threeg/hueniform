@@ -2,7 +2,7 @@
 id: HUE-066
 title: GET /api/taxonomy — regions/slots model
 type: task
-status: todo
+status: done
 milestone: 14
 batch: api
 layer: api
@@ -27,11 +27,11 @@ model is derived from `matcher.slots`; the endpoint stays a thin translation lay
 - `api` imports only `services`/schemas (or the taxonomy service), never `matcher.slots` directly if that breaks contract 5 — follow the existing taxonomy-endpoint pattern (HUE-026)
 
 ## Definition of done (acceptance criteria)
-- [ ] `families` includes Cream and matches §2.2; `regions` matches §2.2 field-for-field
-- [ ] `layer_order`/`mandatory`/`default_selected`/one-piece flags present exactly where specified
-- [ ] Slot keys are `mid`/`outer`; categories per slot are the FR-16 sets
-- [ ] Tests added/updated per §12.2 and passing in `make test`; import contracts kept
-- [ ] Ticket status + notes updated in the same commit
+- [x] `families` includes Cream and matches §2.2; `regions` matches §2.2 field-for-field
+- [x] `layer_order`/`mandatory`/`default_selected`/one-piece flags present exactly where specified
+- [x] Slot keys are `mid`/`outer`; categories per slot are the FR-16 sets
+- [x] Tests added/updated per §12.2 and passing in `make test`; import contracts kept
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `api/test_taxonomy.py` (§7.2): the twenty families with Cream canonical; the `regions` array
@@ -40,3 +40,9 @@ asserted against contract §2.2 (slots, labels, roles, `layer_order`, `mandatory
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-19 — implemented. `taxonomy_service.py` gains `list_regions()` returning 4 regions / 17 slots. `schemas.py` gains `SlotOut` and `RegionOut`; `TaxonomyResponse` now includes `regions`. `taxonomy.py` updated to build and return regions. 28 new tests added to `test_taxonomy.py`. 1033 backend + 134 frontend tests pass; matcher coverage 100%.
+- Sanity test: `cd backend && .venv/bin/pytest tests/api/test_taxonomy.py -q`
+
+## QA steps
+- `make run` → `curl -s http://127.0.0.1:8000/api/taxonomy | python3 -m json.tool | grep -A2 '"regions"'` — should see the regions array
+- Check `regions[0]["region"] == "head"` and `regions[-1]["region"] == "feet"`

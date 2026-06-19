@@ -95,10 +95,34 @@ class FamilyOut(BaseModel):
     hue_arc: tuple[float, float] | None = None
 
 
+class SlotOut(BaseModel):
+    """One slot entry inside a taxonomy region (contract §2.2)."""
+
+    slot: str
+    label: str
+    categories: list[str]
+    role: str
+    default_selected: bool
+    # Present only on the four upper-body anchor layers.
+    layer_order: int | None = None
+    # Present only on lower_body (the mandatory slot).
+    mandatory: bool | None = None
+    one_piece_categories: list[str] | None = None
+    one_piece_also_occupies: list[str] | None = None
+
+
+class RegionOut(BaseModel):
+    """One region entry in the taxonomy response (contract §2.2)."""
+
+    region: str
+    slots: list[SlotOut]
+
+
 class TaxonomyResponse(BaseModel):
     """Response body for GET /api/taxonomy (contract §2.2)."""
 
     families: list[FamilyOut]
+    regions: list[RegionOut]
 
 
 class GarmentUpdateRequest(BaseModel):
