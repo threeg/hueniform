@@ -8,19 +8,68 @@
 
 This board is the single topological view of the implementation order. Implementation tickets are listed by their execution number (`HUE-NNN`); reading top to bottom is a legal build sequence because no ticket depends on a higher-numbered one (CONVENTIONS.md §4.3). It is a *derived* view of the ticket files' `depends_on` edges and is regenerated, never hand-edited for status (CONVENTIONS.md §5.4). Epics are containers and sit outside the execution order.
 
+The version sections are ordered **latest first**: v0.2.0 (Milestone 14, in planning) above v0.1.0 (Milestones 7–8, shipped). Each version's execution order is followed by its own cleanup backlog.
+
 **Status legend:** `todo` · `in-progress` · `blocked` · `in-review` · `done`
 
 ## Capability epics
 
 | id | title | milestone | status |
 |---|---|---|---|
+| HUE-E06 | Constrained suggestions | 14 | todo |
+| HUE-E07 | Edit a garment's category | 14 | todo |
+| HUE-E08 | Category & slot-model overhaul | 14 | todo |
+| HUE-E09 | Suggestion quality & count | 14 | todo |
+| HUE-E10 | Inventory grouping & ordering | 14 | todo |
 | HUE-E01 | Local-first foundation and meta-goal | 8 | done |
 | HUE-E02 | Pure colour matcher | 8 | done |
 | HUE-E03 | Add a garment | 8 | done |
 | HUE-E04 | Browse the wardrobe | 8 | done |
 | HUE-E05 | Suggest an outfit | 8 | done |
 
-## Implementation tickets — execution order
+## v0.2.0 — execution order (Milestone 14)
+
+Leaf tickets for v0.2.0 (epics E06–E10). Reading top to bottom is a legal build sequence; no ticket depends on a higher-numbered one. The snapshot baseline (HUE-059) is sequenced first among the E08 slot-model work (test strategy §4.10; architecture §2.2). Epics close when their children are all `done`.
+
+| # | id | title | type | layer | M / batch | epic | status | depends_on |
+|---|---|---|---|---|---|---|---|---|
+| 59 | HUE-059 | Matcher golden-file snapshot baseline | task | matcher | 14 / matcher | HUE-E08 | todo | HUE-015 |
+| 60 | HUE-060 | matcher.constants v0.2.0 — category/slot model and new named values | task | matcher | 14 / matcher | HUE-E08 | todo | HUE-059, HUE-007 |
+| 61 | HUE-061 | matcher.slots rewrite — regions, four-layer stack, one-piece, adornment tiers | task | matcher | 14 / matcher | HUE-E08 | todo | HUE-060, HUE-013 |
+| 62 | HUE-062 | matcher.taxonomy — the Cream family | task | matcher | 14 / matcher | HUE-E09 | todo | HUE-060, HUE-009 |
+| 63 | HUE-063 | matcher.ranking refinements — first-class neutral, diversity, top-N, seedable RNG | task | matcher | 14 / matcher | HUE-E09 | todo | HUE-061, HUE-062, HUE-014 |
+| 64 | HUE-064 | matcher.explain — new slot vocabulary and neutral vs fallback wording | task | matcher | 14 / matcher | HUE-E09 | todo | HUE-061, HUE-063, HUE-015 |
+| 65 | HUE-065 | Storage category value-set and data migration | task | storage | 14 / storage | HUE-E08 | todo | HUE-016 |
+| 66 | HUE-066 | GET /api/taxonomy — regions/slots model | task | api | 14 / api | HUE-E08 | todo | HUE-061, HUE-062, HUE-026 |
+| 67 | HUE-067 | Frontend API client and MSW handlers — v0.2.0 contract | task | frontend | 14 / frontend | HUE-E08 | todo | HUE-032 |
+| 68 | HUE-068 | Suggestion service — slot-selection and per-category constraint rewrite | task | services | 14 / services | HUE-E08 | todo | HUE-061, HUE-063, HUE-064, HUE-065, HUE-024 |
+| 69 | HUE-069 | POST /api/suggestions — slot-selection and constraint request/response | task | api | 14 / api | HUE-E08 | todo | HUE-068, HUE-066, HUE-031 |
+| 70 | HUE-070 | Confirm-and-correct category picker | story | frontend | 14 / frontend | HUE-E08 | todo | HUE-067, HUE-034 |
+| 71 | HUE-071 | Outfit-request slot selector and category-constraint checklist | story | frontend | 14 / frontend | HUE-E08 | todo | HUE-067, HUE-037 |
+| 72 | HUE-072 | Garment service — direct category edit | task | services | 14 / services | HUE-E07 | todo | HUE-065, HUE-022 |
+| 73 | HUE-073 | PATCH /api/garments/{id} — edit category | task | api | 14 / api | HUE-E07 | todo | HUE-072, HUE-030 |
+| 74 | HUE-074 | Garment-detail category edit UI | story | frontend | 14 / frontend | HUE-E07 | todo | HUE-067, HUE-036 |
+| 75 | HUE-075 | Inventory ordering (hue spectrum / date) in the read query | task | services | 14 / services | HUE-E10 | todo | HUE-022, HUE-047 |
+| 76 | HUE-076 | GET /api/garments — order parameter and category filter rename | task | api | 14 / api | HUE-E10 | todo | HUE-075, HUE-029 |
+| 77 | HUE-077 | Grouped inventory view with order toggle | story | frontend | 14 / frontend | HUE-E10 | todo | HUE-067, HUE-035 |
+| 78 | HUE-078 | Suggestion service — count and refined ranking integration | task | services | 14 / services | HUE-E09 | todo | HUE-068, HUE-063 |
+| 79 | HUE-079 | POST /api/suggestions — count field and neutral/fallback response | task | api | 14 / api | HUE-E09 | todo | HUE-078, HUE-069 |
+| 80 | HUE-080 | Outfit-request count control and neutral/fallback labels | story | frontend | 14 / frontend | HUE-E09 | todo | HUE-071 |
+| 81 | HUE-081 | Suggestion service — pins and colour/scheme anchor | task | services | 14 / services | HUE-E06 | todo | HUE-068, HUE-063 |
+| 82 | HUE-082 | POST /api/suggestions — pins and anchor request and validation | task | api | 14 / api | HUE-E06 | todo | HUE-081, HUE-069 |
+| 83 | HUE-083 | Outfit-request pin picker and anchor controls | story | frontend | 14 / frontend | HUE-E06 | todo | HUE-071 |
+| 84 | HUE-084 | Performance re-baseline at count 25 and wardrobe_500 update | task | tooling | 14 / tooling | HUE-E09 | todo | HUE-079, HUE-076, HUE-039 |
+| 85 | HUE-085 | End-to-end smoke suite update (v0.2.0 journeys) | task | tooling | 14 / tooling | HUE-E06 | todo | HUE-070, HUE-071, HUE-074, HUE-077, HUE-080, HUE-083, HUE-069, HUE-073, HUE-076, HUE-079, HUE-082, HUE-040 |
+
+## Cleanup backlog — v0.2.0
+
+Reactive tickets from `/verify` post-batch reviews of the Milestone 14 work (CONVENTIONS.md §6). Worked between batches or at milestone end; critical tickets are promoted into the v0.2.0 execution order above. Allocated after the current highest number (next is HUE-086), preserving the no-forward-dependency invariant.
+
+| # | id | title | type | layer | source batch | status | depends_on |
+|---|---|---|---|---|---|---|---|
+| _none yet_ | | | | | | | |
+
+## Implementation tickets — execution order (v0.1.0 — shipped)
 
 | # | id | title | type | layer | M / batch | epic | status | depends_on |
 |---|---|---|---|---|---|---|---|---|
@@ -66,7 +115,7 @@ This board is the single topological view of the implementation order. Implement
 | 39 | HUE-039 | Performance suite and 500-garment fixture | task | tooling | 8 / tooling | HUE-E01 | done | HUE-031, HUE-029, HUE-024, HUE-041 |
 | 40 | HUE-040 | End-to-end smoke suite | task | tooling | 8 / tooling | HUE-E01 | done | HUE-033, HUE-034, HUE-035, HUE-036, HUE-037, HUE-027, HUE-028, HUE-029, HUE-030, HUE-031, HUE-020, HUE-038 |
 
-## Cleanup backlog
+## Cleanup backlog — v0.1.0
 
 Reactive tickets from `/verify` post-batch reviews (CONVENTIONS.md §6). Worked between batches or at milestone end; critical tickets are promoted to the main sequence.
 
@@ -94,8 +143,12 @@ Reactive tickets from `/verify` post-batch reviews (CONVENTIONS.md §6). Worked 
 
 | milestone | batch | tickets |
 |---|---|---|
-| 7 | scaffolding | HUE-001, HUE-002, HUE-003 |
-| 7 | tooling | HUE-004, HUE-005, HUE-006 |
+| 14 | matcher | HUE-059, HUE-060, HUE-061, HUE-062, HUE-063, HUE-064 |
+| 14 | storage | HUE-065 |
+| 14 | api | HUE-066, HUE-069, HUE-073, HUE-076, HUE-079, HUE-082 |
+| 14 | services | HUE-068, HUE-072, HUE-075, HUE-078, HUE-081 |
+| 14 | frontend | HUE-067, HUE-070, HUE-071, HUE-074, HUE-077, HUE-080, HUE-083 |
+| 14 | tooling | HUE-084, HUE-085 |
 | 8 | matcher | HUE-007, HUE-008, HUE-009, HUE-010, HUE-011, HUE-013, HUE-014, HUE-015 |
 | 8 | tooling | HUE-012, HUE-038, HUE-039, HUE-040 |
 | 8 | storage | HUE-016, HUE-017 |
@@ -103,8 +156,48 @@ Reactive tickets from `/verify` post-batch reviews (CONVENTIONS.md §6). Worked 
 | 8 | services | HUE-021, HUE-022, HUE-023, HUE-024 |
 | 8 | api | HUE-025, HUE-026, HUE-027, HUE-028, HUE-029, HUE-030, HUE-031 |
 | 8 | frontend | HUE-032, HUE-033, HUE-034, HUE-035, HUE-036, HUE-037 |
+| 7 | scaffolding | HUE-001, HUE-002, HUE-003 |
+| 7 | tooling | HUE-004, HUE-005, HUE-006 |
 
 ## Requirement traceability (derived from `implements`)
+
+### v0.2.0 requirement traceability (Milestone 14; new and amended requirements)
+
+New or amended FRs/NFRs and the v0.2.0 tickets that realise them (the v0.1.0 tickets below still implement the original behaviour where a requirement was amended in place).
+
+| requirement | tickets |
+|---|---|
+| FR-2 (Cream — amended) | HUE-062, HUE-066 |
+| FR-16 (categories — rewritten) | HUE-060, HUE-061, HUE-065, HUE-066, HUE-067, HUE-070, HUE-072, HUE-073 |
+| FR-17–FR-22 (slot model — rewritten) | HUE-061, HUE-068 |
+| FR-32 (category editable — amended) | HUE-072, HUE-073 |
+| FR-35 (inventory filters — extended) | HUE-076, HUE-077 |
+| FR-36 (slot selection, fail fast — amended) | HUE-068, HUE-069, HUE-071 |
+| FR-39 (up to N — amended) | HUE-063, HUE-078, HUE-079, HUE-080 |
+| FR-40 (distinct) | HUE-063 |
+| FR-41 (ranking, first-class neutral — refined) | HUE-063, HUE-079, HUE-080 |
+| FR-42 (non-determinism, seedable — refined) | HUE-063 |
+| FR-43 (fallback ladder — slimmed) | HUE-063, HUE-078, HUE-079, HUE-080 |
+| FR-44 (pin a garment — new) | HUE-081, HUE-082, HUE-083 |
+| FR-45 (colour/scheme anchor — new) | HUE-081, HUE-082, HUE-083 |
+| FR-46 (edit category — new) | HUE-072, HUE-073, HUE-074 |
+| FR-47 (grouping & ordering — new) | HUE-075, HUE-076, HUE-077 |
+| FR-48 (suggestion count — new) | HUE-063, HUE-078, HUE-079, HUE-080 |
+| FR-49 (region/slot structure — new) | HUE-060, HUE-061, HUE-066, HUE-068, HUE-069, HUE-071 |
+| FR-50 (mutual exclusion — new) | HUE-061, HUE-068, HUE-069, HUE-071 |
+| FR-51 (configurable required slots — new) | HUE-060, HUE-061, HUE-068, HUE-069, HUE-071 |
+| FR-52 (per-category slot constraint — new) | HUE-068, HUE-069, HUE-071 |
+| NFR-5 (perf — re-baselined at count 25) | HUE-063, HUE-068, HUE-084 |
+| NFR-6 (inventory responsive) | HUE-075, HUE-077, HUE-084 |
+| NFR-7 (Chrome + Firefox) | HUE-085 |
+| NFR-9 (pure matcher — preserved) | HUE-059, HUE-060, HUE-061, HUE-062, HUE-063, HUE-064 |
+| NFR-10 (seedable variety — new) | HUE-063 |
+
+> **Snapshot/migration guards (no requirement, regression safety):** HUE-059 (golden-file
+> snapshot baseline of current matcher output, captured before the E08 rewrite — test strategy
+> §4.10); the §7.5 data-migration test is delivered by HUE-065.
+
+### v0.1.0 requirement traceability
 
 Each FR/NFR maps to the implementation tickets that realise it (epics omitted; they aggregate their children).
 
@@ -162,4 +255,3 @@ Each FR/NFR maps to the implementation tickets that realise it (epics omitted; t
 | NFR-7 | HUE-003, HUE-005, HUE-040 |
 | NFR-8 | HUE-020, HUE-038 |
 | NFR-9 | HUE-004, HUE-007, HUE-008, HUE-009, HUE-010, HUE-011, HUE-012, HUE-013, HUE-014, HUE-015 |
-
