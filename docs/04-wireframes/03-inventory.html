@@ -26,12 +26,20 @@
   .filters{display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap}
   .ctrl{border:1px solid #b6b4b0;border-radius:5px;background:#fff;padding:7px 12px;display:inline-flex;align-items:center;gap:8px;color:#444}
   .ctrl .car{color:#999;font-size:11px}
+  .seg{display:inline-flex;border:1px solid #b6b4b0;border-radius:5px;overflow:hidden}
+  .seg span{padding:7px 12px;font-size:12.5px;color:#555;border-right:1px solid #d8d6d2}
+  .seg span:last-child{border-right:0}
+  .seg span.on{background:#3b3b3d;color:#fff;font-weight:600}
   .sw{display:inline-block;width:15px;height:15px;border-radius:3px;border:1px solid rgba(0,0,0,.25);vertical-align:-2px}
   .count{margin-left:auto;color:#666;font-weight:600}
   .clear{font-size:13px;text-decoration:underline;color:#3b3b6e}
+  .grouphdr{display:flex;align-items:baseline;gap:8px;margin:6px 0 10px;border-bottom:1px solid #e7e5e1;padding-bottom:5px}
+  .grouphdr b{font-size:13.5px;text-transform:uppercase;letter-spacing:.5px;color:#48484a}
+  .grouphdr .n{font-size:12px;color:#999}
+  .group{margin-bottom:24px}
   .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
   .card{border:1px solid #d8d6d2;border-radius:6px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;display:block}
-  .thumb{height:110px;background:repeating-linear-gradient(45deg,#e5e3df,#e5e3df 7px,#dcdad6 7px,#dcdad6 14px);display:flex;align-items:center;justify-content:center;color:#9a9a96;font-size:11.5px}
+  .thumb{height:104px;background:repeating-linear-gradient(45deg,#e5e3df,#e5e3df 7px,#dcdad6 7px,#dcdad6 14px);display:flex;align-items:center;justify-content:center;color:#9a9a96;font-size:11.5px}
   .strip{display:flex;height:12px}
   .meta{padding:7px 10px;font-size:12.5px;color:#555}
   .skel .thumb{background:#eeedeb}
@@ -39,6 +47,10 @@
   .skel .meta b{display:inline-block;width:50px;height:10px;background:#e4e2de;border-radius:3px}
   .emptybox{border:2px dashed #c9c7c3;border-radius:10px;padding:56px;text-align:center;color:#777;max-width:560px;margin:30px auto}
   .emptybox .big{font-size:16px;font-weight:600;color:#2d2d2d;margin-bottom:8px}
+  .menu{position:absolute;top:38px;left:0;z-index:2;background:#fff;border:1px solid #b6b4b0;border-radius:5px;width:210px;box-shadow:0 3px 8px rgba(0,0,0,.12);font-size:13px;padding:4px 0}
+  .menu .reg{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:#a0a0a0;padding:6px 12px 2px}
+  .menu .it{display:block;padding:4px 12px;color:#444}
+  .menu .it.sel{background:#f1f0ee;font-weight:600}
 </style>
 </head>
 <body>
@@ -63,142 +75,140 @@
   <a class="spec" href="03-inventory.md">This screen’s spec (MD) →</a>
 </nav>
 
-
-<h1>Wireframe 3 — Inventory browser</h1>
-<p class="intro">Route <code>/</code> (home) · FR-35, NFR-6 · <code>GET /api/garments</code>. Callouts ① – ⑤ explained in <code>03-inventory.md</code>.</p>
+<h1>Wireframe 3 — Inventory browser <span style="font-size:12px;font-weight:400;color:#b58900">(amended — v0.2.0)</span></h1>
+<p class="intro">Route <code>/</code> (home) · FR-35, FR-47, NFR-6 · <code>GET /api/garments?category=&amp;family=&amp;order=hue|date</code>. Grouped by category; hue or date ordering. Callouts ① – ⑦ in <code>03-inventory.md</code>.</p>
 
 <!-- ============================================================ -->
-<div class="state"><h2>State A — Default grid</h2><span>no filters; grid continues below the fold (~500 garments fit one response)</span></div>
+<div class="state"><h2>State A — Default grid (grouped by category, order = Hue)</h2><span>no filters; groups headed by category; within a group, hue spectrum then neutrals last</span></div>
 <div class="frame">
   <div class="side">
     <div class="brand">HUENIFORM</div>
-    <nav class="nav">
-      <a href="#" class="active">Wardrobe</a>
-      <a href="#">Add garment</a>
-      <a href="#">Suggest outfit</a>
-    </nav>
+    <nav class="nav"><a href="#" class="active">Wardrobe</a><a href="#">Add garment</a><a href="#">Suggest outfit</a></nav>
   </div>
   <div class="main">
     <div class="pagetitle">Wardrobe</div>
     <div class="filters">
-      <span class="ctrl">Type: <b>All types</b> <span class="car">▾</span></span> <span class="callout">1</span>
+      <span style="position:relative">
+        <span class="ctrl">Category: <b>All categories</b> <span class="car">▾</span></span> <span class="callout">1</span>
+        <span class="menu">
+          <span class="it sel">All categories</span>
+          <span class="reg">Upper body</span>
+          <span class="it">T-shirt</span><span class="it">Shirt</span><span class="it">Jumper</span><span class="it">Blazer</span>
+          <span class="reg">Lower body</span>
+          <span class="it">Trousers</span><span class="it">Shorts</span><span class="it">Dress</span>
+          <span class="reg">Feet</span>
+          <span class="it">Trainers</span><span class="it">Boots</span>
+          <span class="it" style="color:#999">… all FR-16 categories, by region</span>
+        </span>
+      </span>
       <span class="ctrl">Colour: <b>All colours</b> <span class="car">▾</span></span> <span class="callout">2</span>
-      <span class="count">137 garments <span class="callout">3</span></span>
+      <span class="seg" title="order"><span class="on">Hue</span><span>Date added</span></span> <span class="callout">3</span>
+      <span class="count">137 garments</span>
     </div>
-    <div class="grid">
-      <a class="card" href="#">
-        <div class="thumb">thumbnail</div>
-        <div class="strip"><div style="width:80%;background:#2CADA0"></div><div style="width:20%;background:#EE8225"></div></div>
-        <div class="meta"><b>Jersey</b> <span class="callout">4</span></div>
-      </a>
-      <a class="card" href="#">
-        <div class="thumb">thumbnail</div>
-        <div class="strip"><div style="width:100%;background:#2B7FC4"></div></div>
-        <div class="meta"><b>Top</b></div>
-      </a>
-      <a class="card" href="#">
-        <div class="thumb">thumbnail</div>
-        <div class="strip"><div style="width:100%;background:#27314f"></div></div>
-        <div class="meta"><b>Bottom</b></div>
-      </a>
-      <a class="card" href="#">
-        <div class="thumb">thumbnail</div>
-        <div class="strip"><div style="width:70%;background:#8a8a86"></div><div style="width:30%;background:#c23b2e"></div></div>
-        <div class="meta"><b>Socks</b></div>
-      </a>
-      <a class="card" href="#">
-        <div class="thumb">thumbnail</div>
-        <div class="strip"><div style="width:100%;background:#fff;outline:1px solid #ddd;outline-offset:-1px"></div></div>
-        <div class="meta"><b>Shoes</b></div>
-      </a>
-      <a class="card" href="#">
-        <div class="thumb">thumbnail</div>
-        <div class="strip"><div style="width:60%;background:#3d6b35"></div><div style="width:25%;background:#c2a36b"></div><div style="width:15%;background:#1d1d1d"></div></div>
-        <div class="meta"><b>Jacket</b></div>
-      </a>
-      <a class="card" href="#">
-        <div class="thumb">thumbnail</div>
-        <div class="strip"><div style="width:85%;background:#EE8225"></div><div style="width:15%;background:#fff;outline:1px solid #ddd;outline-offset:-1px"></div></div>
-        <div class="meta"><b>Hat</b> <span class="callout">5</span></div>
-      </a>
-      <a class="card" href="#">
-        <div class="thumb">thumbnail</div>
-        <div class="strip"><div style="width:100%;background:#5a4632"></div></div>
-        <div class="meta"><b>Accessory</b></div>
-      </a>
-      <a class="card" href="#">
-        <div class="thumb">thumbnail</div>
-        <div class="strip"><div style="width:50%;background:#6a3fb5"></div><div style="width:50%;background:#1d1d1d"></div></div>
-        <div class="meta"><b>Top</b></div>
-      </a>
-      <a class="card" href="#">
-        <div class="thumb">thumbnail</div>
-        <div class="strip"><div style="width:100%;background:#b8b6b2"></div></div>
-        <div class="meta"><b>Bottom</b></div>
-      </a>
+
+    <div class="group">
+      <div class="grouphdr"><b>Shirt</b> <span class="n">· 4</span> <span class="callout">4</span></div>
+      <div class="grid">
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:100%;background:#c23b2e"></div></div><div class="meta"><b>Shirt</b></div></a>
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:100%;background:#EE8225"></div></div><div class="meta"><b>Shirt</b></div></a>
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:100%;background:#2B7FC4"></div></div><div class="meta"><b>Shirt</b></div></a>
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:100%;background:#fff;outline:1px solid #ddd;outline-offset:-1px"></div></div><div class="meta"><b>Shirt</b> <span class="callout">5</span></div></a>
+      </div>
+      <p style="margin-top:6px;font-size:12px;color:#999">Red → orange → azure spectrum, then the white (neutral) shirt last (FR-47).</p>
+    </div>
+
+    <div class="group">
+      <div class="grouphdr"><b>Jumper</b> <span class="n">· 3</span></div>
+      <div class="grid">
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:80%;background:#2CADA0"></div><div style="width:20%;background:#EE8225"></div></div><div class="meta"><b>Jumper</b> <span class="callout">6</span></div></a>
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:100%;background:#3d6b35"></div></div><div class="meta"><b>Jumper</b></div></a>
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:100%;background:#b8b6b2"></div></div><div class="meta"><b>Jumper</b></div></a>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="grouphdr"><b>Trousers</b> <span class="n">· 5</span></div>
+      <div class="grid">
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:100%;background:#2B7FC4"></div></div><div class="meta"><b>Trousers</b></div></a>
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:100%;background:#6a3fb5"></div></div><div class="meta"><b>Trousers</b></div></a>
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:100%;background:#27314f"></div></div><div class="meta"><b>Trousers</b></div></a>
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:100%;background:#5a4632"></div></div><div class="meta"><b>Trousers</b></div></a>
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:100%;background:#b8b6b2"></div></div><div class="meta"><b>Trousers</b></div></a>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- ============================================================ -->
-<div class="state"><h2>State B — Filtered (type AND family)</h2><span><code>GET /api/garments?type=jersey&amp;family=Teal</code>; family dropdown shown open</span></div>
-<div class="frame">
+<div class="state"><h2>State B — Order = Date added</h2><span>same grouping; within each group, newest first (left→right) — <code>order=date</code></span></div>
+<div class="frame" style="min-height:0">
   <div class="side">
     <div class="brand">HUENIFORM</div>
-    <nav class="nav">
-      <a href="#" class="active">Wardrobe</a>
-      <a href="#">Add garment</a>
-      <a href="#">Suggest outfit</a>
-    </nav>
+    <nav class="nav"><a href="#" class="active">Wardrobe</a><a href="#">Add garment</a><a href="#">Suggest outfit</a></nav>
   </div>
   <div class="main">
     <div class="pagetitle">Wardrobe</div>
     <div class="filters">
-      <span class="ctrl">Type: <b>Jersey</b> <span class="car">▾</span></span>
+      <span class="ctrl">Category: <b>All categories</b> <span class="car">▾</span></span>
+      <span class="ctrl">Colour: <b>All colours</b> <span class="car">▾</span></span>
+      <span class="seg" title="order"><span>Hue</span><span class="on">Date added</span></span>
+      <span class="count">137 garments</span>
+    </div>
+    <div class="group">
+      <div class="grouphdr"><b>Jumper</b> <span class="n">· 3</span></div>
+      <div class="grid">
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:100%;background:#b8b6b2"></div></div><div class="meta"><b>Jumper</b> <span style="font-size:11px;color:#999">newest</span></div></a>
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:80%;background:#2CADA0"></div><div style="width:20%;background:#EE8225"></div></div><div class="meta"><b>Jumper</b></div></a>
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:100%;background:#3d6b35"></div></div><div class="meta"><b>Jumper</b> <span style="font-size:11px;color:#999">oldest</span></div></a>
+      </div>
+    </div>
+    <p style="font-size:12.5px;color:#888">Grouping is unchanged; only the within-group sequence changes (newest first). The toggle re-queries with <code>order=date</code> (&lt; 1 s at 500 garments, NFR-6).</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State C — Filtered (category AND family)</h2><span><code>GET /api/garments?category=jumper&amp;family=Teal&amp;order=hue</code>; family dropdown open</span></div>
+<div class="frame" style="min-height:0">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav"><a href="#" class="active">Wardrobe</a><a href="#">Add garment</a><a href="#">Suggest outfit</a></nav>
+  </div>
+  <div class="main">
+    <div class="pagetitle">Wardrobe</div>
+    <div class="filters">
+      <span class="ctrl">Category: <b>Jumper</b> <span class="car">▾</span></span>
       <span style="position:relative">
         <span class="ctrl">Colour: <span class="sw" style="background:#26d9d9"></span> <b>Teal</b> <span class="car">▾</span></span>
-        <span style="position:absolute;top:38px;left:0;z-index:2;background:#fff;border:1px solid #b6b4b0;border-radius:5px;width:200px;box-shadow:0 3px 8px rgba(0,0,0,.12);font-size:13px">
-          <span style="display:flex;gap:8px;align-items:center;padding:6px 12px;border-bottom:1px solid #eee">All colours</span>
-          <span style="display:flex;gap:8px;align-items:center;padding:6px 12px;border-bottom:1px solid #eee"><span class="sw" style="background:#1d1d1d"></span> Black</span>
-          <span style="display:flex;gap:8px;align-items:center;padding:6px 12px;border-bottom:1px solid #eee"><span class="sw" style="background:#27314f"></span> Navy</span>
-          <span style="display:flex;gap:8px;align-items:center;padding:6px 12px;border-bottom:1px solid #eee;background:#f1f0ee;font-weight:600"><span class="sw" style="background:#26d9d9"></span> Teal ✓</span>
-          <span style="display:flex;gap:8px;align-items:center;padding:6px 12px;color:#999">… 19 families in all</span>
+        <span class="menu" style="width:200px">
+          <span class="it">All colours</span>
+          <span class="it"><span class="sw" style="background:#1d1d1d"></span> Black</span>
+          <span class="it"><span class="sw" style="background:#27314f"></span> Navy</span>
+          <span class="it sel"><span class="sw" style="background:#26d9d9"></span> Teal ✓</span>
+          <span class="it" style="color:#999">… 20 families in all</span>
         </span>
       </span>
+      <span class="seg" title="order"><span class="on">Hue</span><span>Date added</span></span>
       <a class="clear" href="#">Clear filters</a>
       <span class="count">3 garments</span>
     </div>
-    <div class="grid">
-      <a class="card" href="#">
-        <div class="thumb">thumbnail</div>
-        <div class="strip"><div style="width:80%;background:#2CADA0"></div><div style="width:20%;background:#EE8225"></div></div>
-        <div class="meta"><b>Jersey</b></div>
-      </a>
-      <a class="card" href="#">
-        <div class="thumb">thumbnail</div>
-        <div class="strip"><div style="width:100%;background:#2CA193"></div></div>
-        <div class="meta"><b>Jersey</b></div>
-      </a>
-      <a class="card" href="#">
-        <div class="thumb">thumbnail</div>
-        <div class="strip"><div style="width:88%;background:#48484a"></div><div style="width:12%;background:#2CADA0"></div></div>
-        <div class="meta"><b>Jersey</b></div>
-      </a>
+    <div class="group">
+      <div class="grouphdr"><b>Jumper</b> <span class="n">· 3</span></div>
+      <div class="grid">
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:80%;background:#2CADA0"></div><div style="width:20%;background:#EE8225"></div></div><div class="meta"><b>Jumper</b></div></a>
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:100%;background:#2CA193"></div></div><div class="meta"><b>Jumper</b></div></a>
+        <a class="card" href="#"><div class="thumb">thumbnail</div><div class="strip"><div style="width:88%;background:#48484a"></div><div style="width:12%;background:#2CADA0"></div></div><div class="meta"><b>Jumper</b></div></a>
+      </div>
     </div>
-    <p style="margin-top:14px;font-size:12.5px;color:#888">The third card matches through a 12&nbsp;% teal stripe — the family filter matches any colour of the garment, regardless of role (FR-35).</p>
+    <p style="margin-top:6px;font-size:12.5px;color:#888">The third card matches through a 12&nbsp;% teal stripe — the family filter matches any colour of the garment, regardless of role (FR-35).</p>
   </div>
 </div>
 
 <!-- ============================================================ -->
-<div class="state"><h2>State C — Empty wardrobe</h2><span><code>total: 0</code>, no filters</span></div>
+<div class="state"><h2>State D — Empty wardrobe</h2><span><code>total: 0</code>, no filters</span></div>
 <div class="frame">
   <div class="side">
     <div class="brand">HUENIFORM</div>
-    <nav class="nav">
-      <a href="#" class="active">Wardrobe</a>
-      <a href="#">Add garment</a>
-      <a href="#">Suggest outfit</a>
-    </nav>
+    <nav class="nav"><a href="#" class="active">Wardrobe</a><a href="#">Add garment</a><a href="#">Suggest outfit</a></nav>
   </div>
   <div class="main">
     <div class="pagetitle">Wardrobe</div>
@@ -211,69 +221,62 @@
 </div>
 
 <!-- ============================================================ -->
-<div class="state"><h2>State D — Empty filter result</h2><span><code>total: 0</code> with filters active</span></div>
+<div class="state"><h2>State E — Empty filter result</h2><span><code>total: 0</code> with filters active</span></div>
 <div class="frame">
   <div class="side">
     <div class="brand">HUENIFORM</div>
-    <nav class="nav">
-      <a href="#" class="active">Wardrobe</a>
-      <a href="#">Add garment</a>
-      <a href="#">Suggest outfit</a>
-    </nav>
+    <nav class="nav"><a href="#" class="active">Wardrobe</a><a href="#">Add garment</a><a href="#">Suggest outfit</a></nav>
   </div>
   <div class="main">
     <div class="pagetitle">Wardrobe</div>
     <div class="filters">
-      <span class="ctrl">Type: <b>Hat</b> <span class="car">▾</span></span>
+      <span class="ctrl">Category: <b>Beanie</b> <span class="car">▾</span></span>
       <span class="ctrl">Colour: <span class="sw" style="background:#d926ac"></span> <b>Magenta</b> <span class="car">▾</span></span>
+      <span class="seg"><span class="on">Hue</span><span>Date added</span></span>
       <a class="clear" href="#">Clear filters</a>
       <span class="count">0 garments</span>
     </div>
     <div class="emptybox">
       <div class="big">No garments match</div>
-      <p>No hat contains magenta. <a class="clear" href="#">Clear the filters</a> to see everything.</p>
+      <p>No beanie contains magenta. <a class="clear" href="#">Clear the filters</a> to see everything.</p>
     </div>
   </div>
 </div>
 
 <!-- ============================================================ -->
-<div class="state"><h2>State E — Loading</h2><span>skeleton grid while the query runs; filter changes reflect in &lt; 1 s at 500 garments (NFR-6)</span></div>
+<div class="state"><h2>State F — Loading</h2><span>skeleton grid while the query runs; filter/order changes reflect in &lt; 1 s at 500 garments (NFR-6)</span></div>
 <div class="frame">
   <div class="side">
     <div class="brand">HUENIFORM</div>
-    <nav class="nav">
-      <a href="#" class="active">Wardrobe</a>
-      <a href="#">Add garment</a>
-      <a href="#">Suggest outfit</a>
-    </nav>
+    <nav class="nav"><a href="#" class="active">Wardrobe</a><a href="#">Add garment</a><a href="#">Suggest outfit</a></nav>
   </div>
   <div class="main">
     <div class="pagetitle">Wardrobe</div>
     <div class="filters">
-      <span class="ctrl">Type: <b>All types</b> <span class="car">▾</span></span>
+      <span class="ctrl">Category: <b>All categories</b> <span class="car">▾</span></span>
       <span class="ctrl">Colour: <b>All colours</b> <span class="car">▾</span></span>
+      <span class="seg"><span class="on">Hue</span><span>Date added</span></span>
       <span class="count">…</span>
     </div>
-    <div class="grid">
-      <span class="card skel"><span class="thumb"></span><span class="strip"></span><span class="meta"><b></b></span></span>
-      <span class="card skel"><span class="thumb"></span><span class="strip"></span><span class="meta"><b></b></span></span>
-      <span class="card skel"><span class="thumb"></span><span class="strip"></span><span class="meta"><b></b></span></span>
-      <span class="card skel"><span class="thumb"></span><span class="strip"></span><span class="meta"><b></b></span></span>
-      <span class="card skel"><span class="thumb"></span><span class="strip"></span><span class="meta"><b></b></span></span>
+    <div class="group">
+      <div class="grouphdr"><b style="background:#e4e2de;color:transparent;border-radius:3px">Loading</b></div>
+      <div class="grid">
+        <span class="card skel"><span class="thumb"></span><span class="strip"></span><span class="meta"><b></b></span></span>
+        <span class="card skel"><span class="thumb"></span><span class="strip"></span><span class="meta"><b></b></span></span>
+        <span class="card skel"><span class="thumb"></span><span class="strip"></span><span class="meta"><b></b></span></span>
+        <span class="card skel"><span class="thumb"></span><span class="strip"></span><span class="meta"><b></b></span></span>
+        <span class="card skel"><span class="thumb"></span><span class="strip"></span><span class="meta"><b></b></span></span>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- ============================================================ -->
-<div class="state"><h2>State F — Load failure (error)</h2></div>
+<div class="state"><h2>State G — Load failure (error)</h2></div>
 <div class="frame" style="min-height:0">
   <div class="side">
     <div class="brand">HUENIFORM</div>
-    <nav class="nav">
-      <a href="#" class="active">Wardrobe</a>
-      <a href="#">Add garment</a>
-      <a href="#">Suggest outfit</a>
-    </nav>
+    <nav class="nav"><a href="#" class="active">Wardrobe</a><a href="#">Add garment</a><a href="#">Suggest outfit</a></nav>
   </div>
   <div class="main">
     <div class="pagetitle">Wardrobe</div>

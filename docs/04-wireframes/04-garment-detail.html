@@ -19,11 +19,16 @@
   .main{flex:1;padding:26px 32px}
   .back{font-size:13px;color:#3b3b6e;text-decoration:underline}
   .pagetitle{font-size:18px;font-weight:700;margin:10px 0 18px}
+  .titlerow{display:flex;align-items:center;gap:12px;margin:10px 0 18px}
+  .titlerow .pagetitle{margin:0}
+  .editlink{font-size:12.5px;color:#3b3b6e;text-decoration:underline}
   .callout{display:inline-flex;width:18px;height:18px;border-radius:50%;background:#b58900;color:#fff;font-size:11px;font-weight:700;align-items:center;justify-content:center;vertical-align:2px;margin-left:6px;flex-shrink:0}
   .btn{display:inline-block;padding:8px 18px;border:1px solid #76767a;border-radius:5px;background:#fff;font-weight:600;color:#2d2d2d;text-decoration:none}
+  .btn.primary{background:#3b3b3d;border-color:#3b3b3d;color:#fff}
   .btn.danger{border-color:#c4564a;color:#a33527}
   .btn.dangerfill{background:#c4564a;border-color:#c4564a;color:#fff}
   .btn.busy{opacity:.55}
+  .btn.sm{padding:5px 12px;font-size:12.5px}
   .twocol{display:flex;gap:30px}
   .photo{width:380px;height:330px;flex-shrink:0;background:repeating-linear-gradient(45deg,#e5e3df,#e5e3df 7px,#dcdad6 7px,#dcdad6 14px);border:1px solid #c9c7c3;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#8a8a86;font-size:12.5px}
   .crow{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #eceae6;max-width:360px}
@@ -39,6 +44,16 @@
   .dialog h3{font-size:16px;margin-bottom:10px}
   .dialog .mini{display:flex;gap:12px;align-items:center;margin:12px 0 18px}
   .dialog .mthumb{width:64px;height:52px;background:repeating-linear-gradient(45deg,#e5e3df,#e5e3df 6px,#dcdad6 6px,#dcdad6 12px);border:1px solid #c9c7c3;border-radius:4px}
+  /* inline category picker */
+  .catedit{border:1px solid #b6b4b0;border-radius:8px;background:#fff;width:360px;box-shadow:0 4px 14px rgba(0,0,0,.12);margin:6px 0 14px}
+  .catedit .ceh{padding:9px 14px;border-bottom:1px solid #e7e5e1;font-weight:700;font-size:13px}
+  .catedit .ceb{padding:10px 14px;max-height:230px;overflow:auto}
+  .catedit .reg{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:#a0a0a0;margin:8px 0 4px}
+  .catedit .reg:first-child{margin-top:0}
+  .catopts{display:flex;flex-wrap:wrap;gap:6px}
+  .catopt{padding:5px 11px;border-radius:14px;border:1px solid #c9c7c3;background:#fff;font-size:12.5px;color:#555}
+  .catopt.sel{background:#3b3b3d;border-color:#3b3b3d;color:#fff;font-weight:600}
+  .catedit .cef{padding:10px 14px;border-top:1px solid #e7e5e1;display:flex;gap:10px;justify-content:flex-end}
 </style>
 </head>
 <body>
@@ -63,67 +78,75 @@
   <a class="spec" href="04-garment-detail.md">This screen’s spec (MD) →</a>
 </nav>
 
-
-<h1>Wireframe 4 — Garment detail</h1>
-<p class="intro">Route <code>/garments/{id}</code> · FR-25, FR-32, FR-33, FR-34 · <code>GET /api/garments/{id}</code>, <code>POST /api/garments/{id}/regenerate</code>, <code>DELETE /api/garments/{id}</code>. Callouts ① – ⑥ explained in <code>04-garment-detail.md</code>.</p>
+<h1>Wireframe 4 — Garment detail <span style="font-size:12px;font-weight:400;color:#b58900">(amended — v0.2.0)</span></h1>
+<p class="intro">Route <code>/garments/{id}</code> · FR-25, FR-32 (amended), FR-46, FR-33, FR-34 · <code>GET</code>/<code>PATCH</code>/<code>POST …/regenerate</code>/<code>DELETE</code> <code>/api/garments/{id}</code>. Category now directly editable. Callouts ① – ⑦ in <code>04-garment-detail.md</code>.</p>
 
 <!-- ============================================================ -->
-<div class="state"><h2>State A — Default</h2><span>sample: the contract's teal/orange jersey</span></div>
+<div class="state"><h2>State A — Default</h2><span>sample: a teal/orange jumper</span></div>
 <div class="frame">
   <div class="side">
     <div class="brand">HUENIFORM</div>
-    <nav class="nav">
-      <a href="#" class="active">Wardrobe</a>
-      <a href="#">Add garment</a>
-      <a href="#">Suggest outfit</a>
-    </nav>
+    <nav class="nav"><a href="#" class="active">Wardrobe</a><a href="#">Add garment</a><a href="#">Suggest outfit</a></nav>
   </div>
   <div class="main">
     <a class="back" href="#">← Wardrobe</a>
-    <div class="pagetitle">Jersey</div>
+    <div class="titlerow"><div class="pagetitle">Jumper</div><a class="editlink" href="#">Edit category</a> <span class="callout">4</span></div>
     <div class="twocol">
       <div class="photo">full photograph <span class="callout">1</span></div>
       <div>
         <div class="lab">Palette <span class="callout">2</span></div>
-        <div class="crow">
-          <div class="sw" style="background:#2CADA0"></div>
-          <div class="fam">Teal</div>
-          <div>80&nbsp;%</div>
-        </div>
-        <div class="crow">
-          <div class="sw" style="background:#EE8225"></div>
-          <div class="fam">Orange</div>
-          <div>20&nbsp;%</div>
-        </div>
-        <div class="strip">
-          <div style="width:80%;background:#2CADA0"></div>
-          <div style="width:20%;background:#EE8225"></div>
-        </div>
+        <div class="crow"><div class="sw" style="background:#2CADA0"></div><div class="fam">Teal</div><div>80&nbsp;%</div></div>
+        <div class="crow"><div class="sw" style="background:#EE8225"></div><div class="fam">Orange</div><div>20&nbsp;%</div></div>
+        <div class="strip"><div style="width:80%;background:#2CADA0"></div><div style="width:20%;background:#EE8225"></div></div>
         <div class="dates">Added 12 June 2026 · Colours regenerated 14 June 2026 <span class="callout">3</span></div>
         <div class="actions">
-          <a class="btn" href="#">Regenerate colours</a> <span class="callout">4</span>
-          <a class="btn danger" href="#">Delete garment</a> <span class="callout">5</span>
+          <a class="btn" href="#">Regenerate colours</a> <span class="callout">5</span>
+          <a class="btn danger" href="#">Delete garment</a> <span class="callout">6</span>
         </div>
-        <p class="ghostnote">Wrong colours? <b>Regenerate</b> re-detects them from the photograph and reopens confirmation. Saved garments have no field editing <span class="callout">6</span> (FR-32).</p>
+        <p class="ghostnote"><span class="callout">7</span> The <b>category</b> is editable above. The <b>colours</b> are regenerate-only — <b>Regenerate</b> re-detects them from the photograph (FR-32 amended, FR-46, FR-33).</p>
       </div>
     </div>
   </div>
 </div>
 
 <!-- ============================================================ -->
-<div class="state"><h2>State B — Delete confirmation</h2><span>FR-34: confirmation before <code>DELETE /api/garments/{id}</code></span></div>
+<div class="state"><h2>State B — Category edit</h2><span>FR-46: inline region-grouped FR-16 picker → <code>PATCH /api/garments/{id}</code> { category }; palette + dates untouched</span></div>
 <div class="frame">
   <div class="side">
     <div class="brand">HUENIFORM</div>
-    <nav class="nav">
-      <a href="#" class="active">Wardrobe</a>
-      <a href="#">Add garment</a>
-      <a href="#">Suggest outfit</a>
-    </nav>
+    <nav class="nav"><a href="#" class="active">Wardrobe</a><a href="#">Add garment</a><a href="#">Suggest outfit</a></nav>
   </div>
   <div class="main">
     <a class="back" href="#">← Wardrobe</a>
-    <div class="pagetitle">Jersey</div>
+    <div class="titlerow"><div class="pagetitle">Jumper</div><a class="editlink" href="#">Editing…</a></div>
+    <div class="catedit">
+      <div class="ceh">Change category</div>
+      <div class="ceb">
+        <div class="reg">Head</div>
+        <div class="catopts"><span class="catopt">Hat</span><span class="catopt">Cap</span><span class="catopt">Beanie</span><span class="catopt">Glasses</span><span class="catopt">Sunglasses</span><span class="catopt">Earrings</span></div>
+        <div class="reg">Upper body</div>
+        <div class="catopts"><span class="catopt">T-shirt</span><span class="catopt">Vest</span><span class="catopt">Long-sleeve</span><span class="catopt">Shirt</span><span class="catopt">Blouse</span><span class="catopt">Polo</span><span class="catopt sel">Jumper</span><span class="catopt">Hoodie</span><span class="catopt">Cardigan</span><span class="catopt">Sweatshirt</span><span class="catopt">Track top</span><span class="catopt">Waistcoat</span><span class="catopt">Jacket</span><span class="catopt">Blazer</span><span class="catopt">Coat</span><span class="catopt">Tie</span><span class="catopt">Scarf</span><span class="catopt">Necklace</span><span class="catopt">Watch</span><span class="catopt">Ring</span><span class="catopt">Bracelet</span></div>
+        <div class="reg">Lower body</div>
+        <div class="catopts"><span class="catopt">Trousers</span><span class="catopt">Jeans</span><span class="catopt">Chinos</span><span class="catopt">Shorts</span><span class="catopt">Skirt</span><span class="catopt">Dress</span><span class="catopt">Jumpsuit</span><span class="catopt">Belt</span></div>
+        <div class="reg">Feet</div>
+        <div class="catopts"><span class="catopt">Socks</span><span class="catopt">Shoes</span><span class="catopt">Boots</span><span class="catopt">Trainers</span><span class="catopt">Sandals</span></div>
+      </div>
+      <div class="cef"><a class="btn sm" href="#">Cancel</a><a class="btn sm primary" href="#">Save category</a></div>
+    </div>
+    <p class="ghostnote">Save sends <code>PATCH /api/garments/{id}</code> <code>{ "category": "cardigan" }</code>. No re-detection; the palette, photograph, <code>id</code> and <code>regenerated_at</code> are unchanged (contract §2.10a).</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="state"><h2>State C — Delete confirmation</h2><span>FR-34: confirmation before <code>DELETE /api/garments/{id}</code></span></div>
+<div class="frame">
+  <div class="side">
+    <div class="brand">HUENIFORM</div>
+    <nav class="nav"><a href="#" class="active">Wardrobe</a><a href="#">Add garment</a><a href="#">Suggest outfit</a></nav>
+  </div>
+  <div class="main">
+    <a class="back" href="#">← Wardrobe</a>
+    <div class="titlerow"><div class="pagetitle">Jumper</div><a class="editlink" href="#">Edit category</a></div>
     <div class="twocol">
       <div class="photo">full photograph</div>
       <div><div class="lab">Palette</div><p style="color:#999;font-size:13px">…as State A, behind the dialogue…</p></div>
@@ -131,10 +154,10 @@
   </div>
   <div class="scrim">
     <div class="dialog">
-      <h3>Delete this jersey?</h3>
+      <h3>Delete this jumper?</h3>
       <div class="mini">
         <div class="mthumb"></div>
-        <div style="font-size:13px;color:#555">Teal / orange jersey<br>Added 12 June 2026</div>
+        <div style="font-size:13px;color:#555">Jumper · teal / orange<br>Added 12 June 2026</div>
       </div>
       <p style="font-size:13.5px">The garment, its photograph and its thumbnail will be removed. This cannot be undone.</p>
       <div class="actions" style="margin-top:18px;justify-content:flex-end">
@@ -147,37 +170,29 @@
 </div>
 
 <!-- ============================================================ -->
-<div class="state"><h2>State C — Regenerate pending (loading)</h2><span><code>POST …/regenerate</code> in flight; &lt; 5 s (NFR-4), then into wireframe 2 state G</span></div>
+<div class="state"><h2>State D — Regenerate pending (loading)</h2><span><code>POST …/regenerate</code> in flight; &lt; 5 s (NFR-4), then into wireframe 2 regeneration variant</span></div>
 <div class="frame" style="min-height:0">
   <div class="side">
     <div class="brand">HUENIFORM</div>
-    <nav class="nav">
-      <a href="#" class="active">Wardrobe</a>
-      <a href="#">Add garment</a>
-      <a href="#">Suggest outfit</a>
-    </nav>
+    <nav class="nav"><a href="#" class="active">Wardrobe</a><a href="#">Add garment</a><a href="#">Suggest outfit</a></nav>
   </div>
   <div class="main">
     <a class="back" href="#">← Wardrobe</a>
-    <div class="pagetitle">Jersey</div>
+    <div class="titlerow"><div class="pagetitle">Jumper</div><a class="editlink" style="color:#bbb" href="#">Edit category</a></div>
     <div class="actions">
       <a class="btn busy" href="#">Re-detecting colours ···</a>
       <a class="btn danger busy" href="#">Delete garment</a>
     </div>
-    <p class="ghostnote">Both actions are inert while detection runs. The stored record and photograph are untouched until the regeneration is confirmed.</p>
+    <p class="ghostnote">All actions are inert while detection runs. The stored record and photograph are untouched until the regeneration is confirmed.</p>
   </div>
 </div>
 
 <!-- ============================================================ -->
-<div class="state"><h2>State D — Not found (error)</h2><span><code>404 garment_not_found</code> — e.g. a stale link after deletion</span></div>
+<div class="state"><h2>State E — Not found (error)</h2><span><code>404 garment_not_found</code> — e.g. a stale link after deletion</span></div>
 <div class="frame" style="min-height:0">
   <div class="side">
     <div class="brand">HUENIFORM</div>
-    <nav class="nav">
-      <a href="#" class="active">Wardrobe</a>
-      <a href="#">Add garment</a>
-      <a href="#">Suggest outfit</a>
-    </nav>
+    <nav class="nav"><a href="#" class="active">Wardrobe</a><a href="#">Add garment</a><a href="#">Suggest outfit</a></nav>
   </div>
   <div class="main">
     <div class="pagetitle">Garment not found</div>

@@ -50,10 +50,12 @@
   .pick .opt.sel{background:#f1f0ee;font-weight:600}
   .pick .more{padding:6px 12px;color:#999;font-size:12px}
   .neutraltag{margin-left:auto;font-size:11px;color:#999;border:1px solid #ddd;border-radius:3px;padding:0 5px}
-  .types{display:flex;flex-wrap:wrap;gap:0;border:1px solid #76767a;border-radius:6px;overflow:hidden;width:fit-content;margin-top:6px}
-  .types a{padding:7px 14px;border-right:1px solid #76767a;color:#2d2d2d;text-decoration:none;font-size:13.5px}
-  .types a:last-child{border-right:0}
-  .types a.sel{background:#3b3b3d;color:#fff;font-weight:600}
+  .catpick{border:1px solid #c9c7c3;border-radius:7px;padding:10px 12px;margin-top:6px;max-width:640px}
+  .catpick .reg{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:#a0a0a0;margin:9px 0 4px}
+  .catpick .reg:first-child{margin-top:0}
+  .catopts{display:flex;flex-wrap:wrap;gap:6px}
+  .catopt{padding:5px 11px;border-radius:14px;border:1px solid #c9c7c3;background:#fff;font-size:12.5px;color:#555}
+  .catopt.sel{background:#3b3b3d;border-color:#3b3b3d;color:#fff;font-weight:600}
   .sect{margin-top:22px}
   .sect .lab{font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.4px;color:#666}
   .actions{margin-top:26px;display:flex;gap:12px;align-items:center}
@@ -83,8 +85,8 @@
 </nav>
 
 
-<h1>Wireframe 2 — Confirm-and-correct</h1>
-<p class="intro">Route <code>/add/confirm</code> (also the FR-33 regeneration flow) · FR-5, FR-27–FR-31, FR-33 · saves via <code>POST /api/garments</code> or <code>PUT /api/garments/{id}</code>. Callouts ① – ⑧ explained in <code>02-confirm-and-correct.md</code>.</p>
+<h1>Wireframe 2 — Confirm-and-correct <span style="font-size:12px;font-weight:400;color:#b58900">(amended — v0.2.0)</span></h1>
+<p class="intro">Route <code>/add/confirm</code> (also the FR-33 regeneration flow) · FR-5, FR-27–FR-31, FR-33 · saves via <code>POST /api/garments</code> or <code>PUT /api/garments/{id}</code> carrying <code>category</code>. The garment <b>type</b> picker is now the region-grouped FR-16 <b>category</b> picker. Callouts ① – ⑧ in <code>02-confirm-and-correct.md</code>.</p>
 
 <!-- ============================================================ -->
 <div class="state"><h2>State A — Default proposal</h2><span>arrival from a successful detection; sample data is the contract's own example (teal 80 / orange 20)</span></div>
@@ -125,15 +127,22 @@
         <div class="total">Total: 100&nbsp;% <span class="callout">4</span></div>
         <a class="addlink" href="#">+ Add a colour</a>
         <div class="sect">
-          <div class="lab">Garment type — required <span class="callout">6</span></div>
-          <div class="types">
-            <a href="#">Top</a><a href="#">Bottom</a><a href="#">Jersey</a><a href="#">Jacket</a><a href="#">Socks</a><a href="#">Shoes</a><a href="#">Hat</a><a href="#">Accessory</a>
+          <div class="lab">Garment category — required <span class="callout">6</span></div>
+          <div class="catpick">
+            <div class="reg">Head</div>
+            <div class="catopts"><span class="catopt">Hat</span><span class="catopt">Cap</span><span class="catopt">Beanie</span><span class="catopt">Glasses</span><span class="catopt">Sunglasses</span><span class="catopt">Earrings</span></div>
+            <div class="reg">Upper body</div>
+            <div class="catopts"><span class="catopt">T-shirt</span><span class="catopt">Vest</span><span class="catopt">Long-sleeve</span><span class="catopt">Shirt</span><span class="catopt">Blouse</span><span class="catopt">Polo</span><span class="catopt">Jumper</span><span class="catopt">Hoodie</span><span class="catopt">Cardigan</span><span class="catopt">Sweatshirt</span><span class="catopt">Track top</span><span class="catopt">Waistcoat</span><span class="catopt">Jacket</span><span class="catopt">Blazer</span><span class="catopt">Coat</span><span class="catopt">Tie</span><span class="catopt">Scarf</span><span class="catopt">Necklace</span><span class="catopt">Watch</span><span class="catopt">Ring</span><span class="catopt">Bracelet</span></div>
+            <div class="reg">Lower body</div>
+            <div class="catopts"><span class="catopt">Trousers</span><span class="catopt">Jeans</span><span class="catopt">Chinos</span><span class="catopt">Shorts</span><span class="catopt">Skirt</span><span class="catopt">Dress</span><span class="catopt">Jumpsuit</span><span class="catopt">Belt</span></div>
+            <div class="reg">Feet</div>
+            <div class="catopts"><span class="catopt">Socks</span><span class="catopt">Shoes</span><span class="catopt">Boots</span><span class="catopt">Trainers</span><span class="catopt">Sandals</span></div>
           </div>
         </div>
         <div class="actions">
           <a class="btn primary disabled" href="#">Save garment</a> <span class="callout">7</span>
           <a class="btn" href="#">Cancel</a>
-          <span class="ghostnote">Save is disabled until a type is chosen (FR-30, FR-31)</span>
+          <span class="ghostnote">Save is disabled until a category is chosen (FR-30, FR-31)</span>
         </div>
       </div>
     </div>
@@ -242,17 +251,20 @@
   </div>
   <div class="main">
     <div class="pagetitle">Confirm colours</div>
-    <div class="editor" style="max-width:640px">
+    <div class="editor" style="max-width:680px">
       <div class="sect" style="margin-top:0">
-        <div class="lab">Garment type — required</div>
-        <div class="types">
-          <a href="#">Top</a><a href="#">Bottom</a><a href="#" class="sel">Jersey</a><a href="#">Jacket</a><a href="#">Socks</a><a href="#">Shoes</a><a href="#">Hat</a><a href="#">Accessory</a>
+        <div class="lab">Garment category — required</div>
+        <div class="catpick">
+          <div class="reg">Upper body</div>
+          <div class="catopts"><span class="catopt">T-shirt</span><span class="catopt">Vest</span><span class="catopt">Long-sleeve</span><span class="catopt">Shirt</span><span class="catopt">Blouse</span><span class="catopt">Polo</span><span class="catopt sel">Jumper</span><span class="catopt">Hoodie</span><span class="catopt">Cardigan</span><span class="catopt">Sweatshirt</span><span class="catopt">Track top</span><span class="catopt">Waistcoat</span><span class="catopt">Jacket</span><span class="catopt">Blazer</span><span class="catopt">Coat</span><span class="catopt">…</span></div>
+          <div class="reg">Lower body · Head · Feet</div>
+          <div class="catopts"><span class="catopt">Trousers</span><span class="catopt">Shorts</span><span class="catopt">Dress</span><span class="catopt">Hat</span><span class="catopt">Shoes</span><span class="catopt">Boots</span><span class="catopt">…</span></div>
         </div>
       </div>
       <div class="actions">
         <a class="btn primary" href="#">Save garment</a>
         <a class="btn" href="#">Cancel</a>
-        <span class="ghostnote">POST /api/garments — token, type, colours (h/s/l/proportion only; the server derives family)</span>
+        <span class="ghostnote">POST /api/garments — token, <b>category</b>, colours (h/s/l/proportion only; the server derives family)</span>
       </div>
     </div>
   </div>
@@ -272,7 +284,7 @@
   <div class="main">
     <div class="pagetitle">Confirm colours</div>
     <div class="banner error"><b>Couldn't save.</b> This detection has expired — please upload the photograph again. &nbsp;<a href="#" style="color:inherit;font-weight:700">Upload it again</a></div>
-    <p class="ghostnote">Other save failure: <code>422 invalid_palette</code> / <code>422 invalid_type</code> — should be unreachable with this UI, but the envelope message is shown in the same banner if it occurs. The edited palette stays on screen; nothing is lost.</p>
+    <p class="ghostnote">Other save failure: <code>422 invalid_palette</code> / <code>422 invalid_category</code> — should be unreachable with this UI, but the envelope message is shown in the same banner if it occurs. The edited palette stays on screen; nothing is lost.</p>
   </div>
 </div>
 
@@ -305,9 +317,12 @@
         <div class="bar"><div style="width:100%;background:#2CA193"></div></div>
         <div class="total">Total: 100&nbsp;%</div>
         <div class="sect">
-          <div class="lab">Garment type — required (re-selected each regeneration, FR-33)</div>
-          <div class="types">
-            <a href="#">Top</a><a href="#">Bottom</a><a href="#">Jersey</a><a href="#">Jacket</a><a href="#">Socks</a><a href="#">Shoes</a><a href="#">Hat</a><a href="#">Accessory</a>
+          <div class="lab">Garment category — required (re-selected each regeneration, FR-33)</div>
+          <div class="catpick">
+            <div class="reg">Upper body</div>
+            <div class="catopts"><span class="catopt">T-shirt</span><span class="catopt">Shirt</span><span class="catopt">Jumper</span><span class="catopt">Cardigan</span><span class="catopt">Blazer</span><span class="catopt">Coat</span><span class="catopt">…</span></div>
+            <div class="reg">Lower body · Head · Feet</div>
+            <div class="catopts"><span class="catopt">Trousers</span><span class="catopt">Shorts</span><span class="catopt">Dress</span><span class="catopt">Hat</span><span class="catopt">Shoes</span><span class="catopt">Trainers</span><span class="catopt">…</span></div>
           </div>
         </div>
         <div class="actions">
@@ -315,7 +330,7 @@
           <a class="btn" href="#">Cancel — keep the garment as it is</a>
           <span class="callout">7</span>
         </div>
-        <p class="ghostnote" style="margin-top:10px">A <code>409 invalid_regeneration_token</code> on save (expired/consumed) shows an error banner with a “Start regeneration again” action. There is no other editing path: saved garments are not field-editable (FR-32).</p>
+        <p class="ghostnote" style="margin-top:10px">A <code>409 invalid_regeneration_token</code> on save (expired/consumed) shows an error banner with a “Start regeneration again” action. Regeneration re-confirms <b>category and palette together</b> (<code>PUT</code>); to change <em>only</em> the category on a saved garment, use the direct edit on garment detail (<code>PATCH</code>, FR-46). The palette remains regenerate-only (FR-32 amended).</p>
       </div>
     </div>
   </div>
