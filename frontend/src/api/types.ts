@@ -27,7 +27,7 @@ export interface ColourIn {
 
 export interface GarmentSummary {
   id: string
-  type: string
+  category: string
   colours: ColourOut[]
   thumbnail_url: string
 }
@@ -71,8 +71,26 @@ export interface TaxonomyFamily {
   hue_arc?: [number, number]
 }
 
+export interface TaxonomySlot {
+  slot: string
+  label: string
+  categories: string[]
+  role: string
+  default_selected: boolean
+  layer_order?: number
+  mandatory?: boolean
+  one_piece_categories?: string[]
+  one_piece_also_occupies?: string[]
+}
+
+export interface TaxonomyRegion {
+  region: string
+  slots: TaxonomySlot[]
+}
+
 export interface TaxonomyResponse {
   families: TaxonomyFamily[]
+  regions?: TaxonomyRegion[]
 }
 
 // ── §2.3 Detection ────────────────────────────────────────────────────────────
@@ -89,23 +107,28 @@ export interface DetectionResponse {
 
 export interface GarmentCreateRequest {
   detection_token: string
-  type: string
+  category: string
   colours: ColourIn[]
 }
 
 export interface GarmentUpdateRequest {
   regeneration_token: string
-  type: string
+  category: string
   colours: ColourIn[]
+}
+
+export interface PatchGarmentRequest {
+  category: string
 }
 
 // ── §2.6 Inventory ────────────────────────────────────────────────────────────
 
 export interface InventoryParams {
-  type?: string
+  category?: string
   family?: string
   limit?: number
   offset?: number
+  order?: string
 }
 
 export interface InventoryResponse {
@@ -137,11 +160,15 @@ export interface SuggestionCombination {
 }
 
 export interface SuggestionRequest {
-  include?: Record<string, boolean>
+  slots?: Record<string, boolean | { categories: string[] }>
+  pins?: Record<string, string>
+  anchor?: { family?: string; scheme?: string }
+  count?: number
 }
 
 export interface SuggestionResponse {
   combinations: SuggestionCombination[]
   explanation?: string
   hint?: string
+  requested_count?: number
 }

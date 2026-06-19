@@ -2,7 +2,7 @@
 id: HUE-067
 title: Frontend API client and MSW handlers — v0.2.0 contract
 type: task
-status: todo
+status: done
 milestone: 14
 batch: frontend
 layer: frontend
@@ -40,3 +40,10 @@ test asserts the documented example bodies parse into the typed client. No backe
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-19 — implemented. `types.ts`: `GarmentSummary`/`Garment`/`GarmentCreateRequest`/`GarmentUpdateRequest` rename `type`→`category`; `InventoryParams` adds `category`/`order`; `PatchGarmentRequest` added; `TaxonomySlot`/`TaxonomyRegion` added; `TaxonomyResponse` gains `regions?`; `SuggestionRequest` updated to v0.2.0 `slots/pins/anchor/count`; `SuggestionResponse` gains `requested_count?`. `endpoints.ts`: `getGarments` sends `category=`; `patchGarment` added. `contract-examples.ts`: Cream family added (20 total), full `regions` array (4 regions/17 slots), `GARMENT_DETAIL.category='jumper'`, `SUGGESTION_RESPONSE` slots updated to v0.2.0 (`base`/`lower_body`). `handlers.ts`: PATCH handler added. Components updated: `GarmentCard`, `GarmentDetail`, `Wardrobe`, `AddConfirm`, `Suggest` (`include`→`slots`). `typeLabel.ts`: 40 v0.2.0 categories with title-case fallback. All tests updated; 1033 backend + 134 frontend pass, zero warnings.
+- Sanity test: `cd frontend && npx vitest run 2>&1 | tail -5`
+
+## QA steps
+- `make run` → open browser → add a garment → confirm screen shows all 40 category buttons
+- Wardrobe filter dropdown shows v0.2.0 categories (T-shirt, Jumper, Trousers, etc.)
+- Garment detail heading shows 'Jumper' for a garment with category='jumper'

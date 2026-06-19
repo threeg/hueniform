@@ -17,10 +17,10 @@ function GarmentCard({ garment, slot }: Props) {
       <img
         className={styles.thumbnail}
         src={garment.thumbnail_url}
-        alt={`${typeLabel(garment.type)} thumbnail`}
+        alt={`${typeLabel(garment.category)} thumbnail`}
       />
       <div className={styles.meta}>
-        <span className={styles.typeLabel}>{typeLabel(garment.type)}</span>
+        <span className={styles.typeLabel}>{typeLabel(garment.category)}</span>
         <PaletteStrip colours={garment.colours} />
       </div>
     </div>

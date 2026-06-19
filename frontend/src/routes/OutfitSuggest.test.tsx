@@ -86,7 +86,7 @@ describe('Suggest — request panel', () => {
   })
 })
 
-// ── Request body — include object (FR-36) ─────────────────────────────────────
+// ── Request body — slots object (FR-36) ──────────────────────────────────────
 
 describe('Suggest — request body (FR-36)', () => {
   it('sends all four optional slot keys explicitly', async () => {
@@ -100,14 +100,14 @@ describe('Suggest — request body (FR-36)', () => {
     renderScreen()
     await user().click(screen.getByTestId('suggest-button'))
     await waitFor(() => expect(capturedBody).toBeDefined())
-    const body = capturedBody as { include: Record<string, boolean> }
-    expect(body.include).toHaveProperty('jersey', false)
-    expect(body.include).toHaveProperty('jacket', false)
-    expect(body.include).toHaveProperty('hat', false)
-    expect(body.include).toHaveProperty('accessory', false)
+    const body = capturedBody as { slots: Record<string, boolean> }
+    expect(body.slots).toHaveProperty('jersey', false)
+    expect(body.slots).toHaveProperty('jacket', false)
+    expect(body.slots).toHaveProperty('hat', false)
+    expect(body.slots).toHaveProperty('accessory', false)
   })
 
-  it('sets selected slot keys to true in include', async () => {
+  it('sets selected slot keys to true in slots', async () => {
     let capturedBody: unknown
     server.use(
       http.post('http://127.0.0.1:8000/api/suggestions', async ({ request }) => {
@@ -120,11 +120,11 @@ describe('Suggest — request body (FR-36)', () => {
     await user().click(screen.getByTestId('slot-hat'))
     await user().click(screen.getByTestId('suggest-button'))
     await waitFor(() => expect(capturedBody).toBeDefined())
-    const body = capturedBody as { include: Record<string, boolean> }
-    expect(body.include).toHaveProperty('jersey', true)
-    expect(body.include).toHaveProperty('hat', true)
-    expect(body.include).toHaveProperty('jacket', false)
-    expect(body.include).toHaveProperty('accessory', false)
+    const body = capturedBody as { slots: Record<string, boolean> }
+    expect(body.slots).toHaveProperty('jersey', true)
+    expect(body.slots).toHaveProperty('hat', true)
+    expect(body.slots).toHaveProperty('jacket', false)
+    expect(body.slots).toHaveProperty('accessory', false)
   })
 })
 
@@ -259,7 +259,7 @@ describe('Suggest — 409 empty_slots (FR-36)', () => {
       ),
     )
     renderScreen()
-    await user().click(screen.getByTestId('slot-jersey'))
+    await user().click(screen.getByTestId('slot-hat'))
     await user().click(screen.getByTestId('suggest-button'))
     await waitFor(() => screen.getByRole('alert'))
     expect(screen.getByRole('alert')).toHaveTextContent(ERR_EMPTY_SLOTS.error.message)
@@ -272,10 +272,10 @@ describe('Suggest — 409 empty_slots (FR-36)', () => {
       ),
     )
     renderScreen()
-    await user().click(screen.getByTestId('slot-jersey'))
+    await user().click(screen.getByTestId('slot-hat'))
     await user().click(screen.getByTestId('suggest-button'))
     await waitFor(() => screen.getByRole('alert'))
-    expect(screen.getByTestId('slot-jersey')).toHaveTextContent('none in wardrobe')
+    expect(screen.getByTestId('slot-hat')).toHaveTextContent('none in wardrobe')
   })
 })
 

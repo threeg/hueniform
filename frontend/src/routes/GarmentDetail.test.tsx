@@ -42,12 +42,12 @@ describe('GarmentDetail — default state', () => {
 
   it('shows the type as the heading', async () => {
     renderScreen()
-    expect(await screen.findByRole('heading', { name: 'Jersey' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Jumper' })).toBeInTheDocument()
   })
 
   it('renders one palette row per colour (FR-5)', async () => {
     renderScreen()
-    await screen.findByRole('heading', { name: 'Jersey' })
+    await screen.findByRole('heading', { name: 'Jumper' })
     expect(screen.getAllByTestId('palette-row')).toHaveLength(GARMENT_DETAIL.colours.length)
   })
 
@@ -58,7 +58,7 @@ describe('GarmentDetail — default state', () => {
 
   it('does not show regenerated date when regenerated_at is null', async () => {
     renderScreen()
-    await screen.findByRole('heading', { name: 'Jersey' })
+    await screen.findByRole('heading', { name: 'Jumper' })
     expect(screen.queryByTestId('regen-date')).not.toBeInTheDocument()
   })
 
@@ -76,7 +76,7 @@ describe('GarmentDetail — default state', () => {
 
   it('has no text input or edit field (FR-32)', async () => {
     const { container } = renderScreen()
-    await screen.findByRole('heading', { name: 'Jersey' })
+    await screen.findByRole('heading', { name: 'Jumper' })
     expect(container.querySelectorAll('input, textarea')).toHaveLength(0)
   })
 
@@ -92,9 +92,9 @@ describe('GarmentDetail — default state', () => {
   })
 
   it('back link preserves filter state passed from inventory', async () => {
-    renderScreen({ from: 'type=jersey&family=Teal' })
+    renderScreen({ from: 'category=jumper&family=Teal' })
     const link = await screen.findByTestId('back-link')
-    expect(link).toHaveAttribute('href', '/?type=jersey&family=Teal')
+    expect(link).toHaveAttribute('href', '/?category=jumper&family=Teal')
   })
 })
 
@@ -150,7 +150,7 @@ describe('GarmentDetail — delete (FR-34)', () => {
   it('names the garment type in the dialogue', async () => {
     renderScreen()
     await user().click(await screen.findByTestId('delete-button'))
-    expect(screen.getByText(/Delete this jersey/i)).toBeInTheDocument()
+    expect(screen.getByText(/Delete this jumper/i)).toBeInTheDocument()
   })
 
   it('Cancel dismisses the dialogue without calling DELETE', async () => {

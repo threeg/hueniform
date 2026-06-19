@@ -5,6 +5,7 @@ import type {
   Garment,
   GarmentCreateRequest,
   GarmentUpdateRequest,
+  PatchGarmentRequest,
   InventoryParams,
   InventoryResponse,
   RegenerationProposalResponse,
@@ -52,8 +53,9 @@ export function postGarment(body: GarmentCreateRequest): Promise<Garment> {
 
 export function getGarments(params?: InventoryParams): Promise<InventoryResponse> {
   const qs = new URLSearchParams()
-  if (params?.type)   qs.set('type', params.type)
-  if (params?.family) qs.set('family', params.family)
+  if (params?.category) qs.set('category', params.category)
+  if (params?.family)   qs.set('family', params.family)
+  if (params?.order)    qs.set('order', params.order)
   if (params?.limit  != null) qs.set('limit',  String(params.limit))
   if (params?.offset != null) qs.set('offset', String(params.offset))
   const suffix = qs.size > 0 ? `?${qs}` : ''
@@ -90,6 +92,19 @@ export function putGarment(
 ): Promise<Garment> {
   return apiFetch(`/api/garments/${id}`, {
     method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+}
+
+// ── §2.10a Direct category edit ──────────────────────────────────────────────
+
+export function patchGarment(
+  id: string,
+  body: PatchGarmentRequest,
+): Promise<Garment> {
+  return apiFetch(`/api/garments/${id}`, {
+    method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })

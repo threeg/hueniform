@@ -23,7 +23,7 @@ export interface ColourOut {
 
 export interface GarmentSummary {
   id: string
-  type: string
+  category: string
   colours: ColourOut[]
   thumbnail_url: string
 }
@@ -61,7 +61,7 @@ export interface TaxonomyFamily {
   hue_arc?: [number, number]
 }
 
-export const TAXONOMY_RESPONSE: { families: TaxonomyFamily[] } = {
+export const TAXONOMY_RESPONSE: { families: TaxonomyFamily[]; regions: unknown[] } = {
   families: [
     // Neutrals — no representative_hue / hue_arc
     { name: 'Black',     neutral: true,  canonical: { h: 0,   s: 0,  l: 6  } },
@@ -71,6 +71,7 @@ export const TAXONOMY_RESPONSE: { families: TaxonomyFamily[] } = {
     { name: 'Denim',     neutral: true,  canonical: { h: 215, s: 30, l: 45 } },
     { name: 'Brown',     neutral: true,  canonical: { h: 25,  s: 40, l: 30 } },
     { name: 'Beige/Tan', neutral: true,  canonical: { h: 35,  s: 30, l: 72 } },
+    { name: 'Cream',     neutral: true,  canonical: { h: 45,  s: 25, l: 90 } },
     // Chromatics
     { name: 'Red',        neutral: false, representative_hue: 0,   hue_arc: [345, 15],  canonical: { h: 0,   s: 80, l: 50 } },
     { name: 'Orange',     neutral: false, representative_hue: 30,  hue_arc: [15,  45],  canonical: { h: 30,  s: 90, l: 55 } },
@@ -84,6 +85,45 @@ export const TAXONOMY_RESPONSE: { families: TaxonomyFamily[] } = {
     { name: 'Violet',     neutral: false, representative_hue: 270, hue_arc: [255, 285], canonical: { h: 270, s: 60, l: 45 } },
     { name: 'Magenta',    neutral: false, representative_hue: 300, hue_arc: [285, 315], canonical: { h: 300, s: 70, l: 45 } },
     { name: 'Pink',       neutral: false, representative_hue: 330, hue_arc: [315, 345], canonical: { h: 330, s: 70, l: 65 } },
+  ],
+  regions: [
+    {
+      region: 'head',
+      slots: [
+        { slot: 'hat',      label: 'Hat',      categories: ['hat', 'cap', 'beanie'],   role: 'statement', default_selected: false },
+        { slot: 'glasses',  label: 'Glasses',  categories: ['glasses', 'sunglasses'], role: 'minor',     default_selected: false },
+        { slot: 'earrings', label: 'Earrings', categories: ['earrings'],              role: 'minor',     default_selected: false },
+      ],
+    },
+    {
+      region: 'upper_body',
+      slots: [
+        { slot: 'base',  label: 'Base',  categories: ['t_shirt', 'vest', 'long_sleeve'],                              role: 'anchor', default_selected: true,  layer_order: 0 },
+        { slot: 'shirt', label: 'Shirt', categories: ['shirt', 'blouse', 'polo'],                                     role: 'anchor', default_selected: false, layer_order: 1 },
+        { slot: 'mid',   label: 'Mid',   categories: ['jumper', 'hoodie', 'cardigan', 'sweatshirt', 'track_top', 'waistcoat'], role: 'anchor', default_selected: false, layer_order: 2 },
+        { slot: 'outer', label: 'Outer', categories: ['jacket', 'blazer', 'coat'],                                    role: 'anchor', default_selected: false, layer_order: 3 },
+        { slot: 'tie',      label: 'Tie',      categories: ['tie'],       role: 'minor', default_selected: false },
+        { slot: 'scarf',    label: 'Scarf',    categories: ['scarf'],     role: 'minor', default_selected: false },
+        { slot: 'necklace', label: 'Necklace', categories: ['necklace'],  role: 'minor', default_selected: false },
+        { slot: 'watch',    label: 'Watch',    categories: ['watch'],     role: 'minor', default_selected: false },
+        { slot: 'ring',     label: 'Ring',     categories: ['ring'],      role: 'minor', default_selected: false },
+        { slot: 'bracelet', label: 'Bracelet', categories: ['bracelet'],  role: 'minor', default_selected: false },
+      ],
+    },
+    {
+      region: 'lower_body',
+      slots: [
+        { slot: 'lower_body', label: 'Lower body', categories: ['trousers', 'jeans', 'chinos', 'shorts', 'skirt', 'dress', 'jumpsuit'], role: 'anchor', default_selected: true,  mandatory: true, one_piece_categories: ['dress', 'jumpsuit'], one_piece_also_occupies: ['base'] },
+        { slot: 'belt',       label: 'Belt',       categories: ['belt'],                                                                role: 'minor',  default_selected: false },
+      ],
+    },
+    {
+      region: 'feet',
+      slots: [
+        { slot: 'socks', label: 'Socks', categories: ['socks'],                             role: 'anchor', default_selected: true },
+        { slot: 'shoes', label: 'Shoes', categories: ['shoes', 'boots', 'trainers', 'sandals'], role: 'anchor', default_selected: true },
+      ],
+    },
   ],
 }
 
@@ -128,7 +168,7 @@ export const GARMENT_ID = '0b6c4d1e-7a2f-4f7e-9d2a-1c3e5f7a9b0c'
 
 export const GARMENT_DETAIL: Garment = {
   id: GARMENT_ID,
-  type: 'jersey',
+  category: 'jumper',
   colours: [
     { h: 174, s: 58, l: 41, family: 'Teal',   neutral: false, hex: '#2CADA0', proportion: 80 },
     { h: 28,  s: 85, l: 55, family: 'Orange', neutral: false, hex: '#EE8225', proportion: 20 },
@@ -141,7 +181,7 @@ export const GARMENT_DETAIL: Garment = {
 
 export const GARMENT_SUMMARY: GarmentSummary = {
   id:            GARMENT_DETAIL.id,
-  type:          GARMENT_DETAIL.type,
+  category:      GARMENT_DETAIL.category,
   colours:       GARMENT_DETAIL.colours,
   thumbnail_url: GARMENT_DETAIL.thumbnail_url,
 }
@@ -184,14 +224,14 @@ export const SUGGESTION_RESPONSE = {
       scheme: 'analogous',
       fallback: false,
       slots: {
-        top:    { ...GARMENT_SUMMARY, id: 'top-0000-0000-0000-000000000001',    type: 'top' },
-        bottom: { ...GARMENT_SUMMARY, id: 'bottom-0000-0000-0000-000000000002', type: 'bottom' },
-        socks:  { ...GARMENT_SUMMARY, id: 'socks-0000-0000-0000-000000000003',  type: 'socks' },
-        shoes:  { ...GARMENT_SUMMARY, id: 'shoes-0000-0000-0000-000000000004',  type: 'shoes' },
+        base:       { ...GARMENT_SUMMARY, id: 'base-0000-0000-0000-000000000001',  category: 't_shirt' },
+        lower_body: { ...GARMENT_SUMMARY, id: 'lower-0000-0000-0000-000000000002', category: 'trousers' },
+        socks:      { ...GARMENT_SUMMARY, id: 'socks-0000-0000-0000-000000000003', category: 'socks' },
+        shoes:      { ...GARMENT_SUMMARY, id: 'shoes-0000-0000-0000-000000000004', category: 'shoes' },
       },
       echoes: [{ family: 'Orange', from_slot: 'hat', to_slot: 'socks' }],
       explanation:
-        'Analogous scheme: teal jersey and azure trousers sit side by side on the wheel; navy shoes and grey socks are neutrals; the orange cap echoes the stripe in the socks.',
+        'Analogous scheme: teal t-shirt and azure trousers sit side by side on the wheel; navy shoes and grey socks are neutrals; the orange cap echoes the stripe in the socks.',
     },
   ],
 }
@@ -201,8 +241,8 @@ export const SUGGESTION_RESPONSE = {
 export const SUGGESTION_EMPTY_RESPONSE = {
   combinations: [],
   explanation:
-    'No harmonious outfit was found: no jersey in the wardrobe is compatible with any bottom under any scheme.',
-  hint: 'The jersey slot most constrained the search — try the request without it, or add a neutral jersey.',
+    'No harmonious outfit was found: no mid-layer garment in the wardrobe is compatible with any lower_body under any scheme.',
+  hint: 'The mid slot most constrained the search — try the request without it, or add a neutral jumper.',
 }
 
 // ── §2.12 errors ──────────────────────────────────────────────────────────────
@@ -210,8 +250,8 @@ export const SUGGESTION_EMPTY_RESPONSE = {
 export const ERR_EMPTY_SLOTS: ApiError = {
   error: {
     code: 'empty_slots',
-    message: 'You have no garments for the requested slot(s): jersey.',
-    details: { empty_slots: ['jersey'] },
+    message: 'You have no garments for the requested slot(s): hat.',
+    details: { empty_slots: ['hat'] },
   },
 }
 export const ERR_INVALID_REQUEST: ApiError = {

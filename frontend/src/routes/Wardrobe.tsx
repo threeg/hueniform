@@ -13,19 +13,19 @@ export default function Wardrobe() {
   const [searchParams, setSearchParams] = useSearchParams()
   const location = useLocation()
 
-  const typeFilter   = searchParams.get('type')   ?? undefined
-  const familyFilter = searchParams.get('family') ?? undefined
+  const typeFilter   = searchParams.get('category') ?? undefined
+  const familyFilter = searchParams.get('family')   ?? undefined
   const hasFilters   = !!(typeFilter || familyFilter)
 
   const { data, isLoading, isError, error, refetch } = useGarments({
-    ...(typeFilter   && { type: typeFilter }),
+    ...(typeFilter   && { category: typeFilter }),
     ...(familyFilter && { family: familyFilter }),
     limit: 500,
   })
 
   const { data: taxonomy } = useTaxonomy()
 
-  function setFilter(key: 'type' | 'family', value: string) {
+  function setFilter(key: 'category' | 'family', value: string) {
     setSearchParams(prev => {
       const next = new URLSearchParams(prev)
       if (value) next.set(key, value)
@@ -55,7 +55,7 @@ export default function Wardrobe() {
             id="type-filter"
             aria-label="Filter by type"
             value={typeFilter ?? ''}
-            onChange={e => setFilter('type', e.target.value)}
+            onChange={e => setFilter('category', e.target.value)}
             className={styles.filterSelect}
           >
             <option value="">All types</option>
@@ -138,7 +138,7 @@ export default function Wardrobe() {
                 to={`/garments/${g.id}`}
                 state={{ from: location.search.replace(/^\?/, '') }}
                 className={styles.cardLink}
-                aria-label={`${typeLabel(g.type)} garment detail`}
+                aria-label={`${typeLabel(g.category)} garment detail`}
               >
                 <GarmentCard garment={g} />
               </Link>

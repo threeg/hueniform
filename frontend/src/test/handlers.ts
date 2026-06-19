@@ -84,6 +84,11 @@ export const handlers: HttpHandler[] = [
     HttpResponse.json(GARMENT_DETAIL),
   ),
 
+  // §2.10a Direct category edit
+  http.patch(`${BASE}/api/garments/:id`, () =>
+    HttpResponse.json(GARMENT_DETAIL),
+  ),
+
   // §2.11 Delete
   http.delete(`${BASE}/api/garments/:id`, () =>
     new HttpResponse(null, { status: 204 }),

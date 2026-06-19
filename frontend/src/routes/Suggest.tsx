@@ -17,7 +17,13 @@ const OPTIONAL_SLOTS = ['jersey', 'jacket', 'hat', 'accessory'] as const
 type OptionalSlot = typeof OPTIONAL_SLOTS[number]
 
 // Fixed wearing order for slot tiles (wireframe §6)
-const SLOT_ORDER = ['top', 'jersey', 'jacket', 'bottom', 'socks', 'shoes', 'hat', 'accessory']
+const SLOT_ORDER = [
+  'base', 'shirt', 'mid', 'outer',
+  'lower_body', 'belt',
+  'socks', 'shoes',
+  'hat', 'glasses', 'earrings',
+  'tie', 'scarf', 'necklace', 'watch', 'ring', 'bracelet',
+]
 
 const SCHEME_LABELS: Record<string, string> = {
   analogous:        'Analogous',
@@ -49,7 +55,7 @@ export default function Suggest() {
 
   function handleSuggest() {
     suggest({
-      include: Object.fromEntries(OPTIONAL_SLOTS.map(s => [s, selected.has(s)])),
+      slots: Object.fromEntries(OPTIONAL_SLOTS.map(s => [s, selected.has(s)])),
     })
   }
 

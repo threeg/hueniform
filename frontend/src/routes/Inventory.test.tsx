@@ -79,25 +79,25 @@ describe('Wardrobe — filter bar taxonomy', () => {
     expect(options).toContain('Red')
   })
 
-  it('includes all 8 garment types in the type dropdown', () => {
+  it('includes all 40 garment categories in the type dropdown', () => {
     renderScreen()
     const select = screen.getByRole('combobox', { name: 'Filter by type' })
     const values = Array.from((select as HTMLSelectElement).options).map(o => o.value)
-    expect(values).toContain('top')
-    expect(values).toContain('bottom')
-    expect(values).toContain('jersey')
+    expect(values).toContain('t_shirt')
+    expect(values).toContain('trousers')
+    expect(values).toContain('jumper')
     expect(values).toContain('jacket')
     expect(values).toContain('socks')
     expect(values).toContain('shoes')
     expect(values).toContain('hat')
-    expect(values).toContain('accessory')
+    expect(values).toContain('dress')
   })
 })
 
 // ── Filtering — query parameters (FR-35) ─────────────────────────────────────
 
 describe('Wardrobe — filtering (FR-35)', () => {
-  it('sends type param when type filter is selected', async () => {
+  it('sends category param when type filter is selected', async () => {
     let capturedUrl: string | undefined
     server.use(
       http.get('http://127.0.0.1:8000/api/garments', ({ request }) => {
@@ -107,10 +107,10 @@ describe('Wardrobe — filtering (FR-35)', () => {
     )
     renderScreen()
     const select = screen.getByRole('combobox', { name: 'Filter by type' })
-    await user().selectOptions(select, 'jersey')
+    await user().selectOptions(select, 'jumper')
     await waitFor(() => {
       expect(capturedUrl).toBeDefined()
-      expect(capturedUrl).toContain('type=jersey')
+      expect(capturedUrl).toContain('category=jumper')
     })
   })
 
@@ -152,10 +152,10 @@ describe('Wardrobe — filtering (FR-35)', () => {
       const opts = Array.from((familySelect as HTMLSelectElement).options).map(o => o.value)
       expect(opts).toContain('Teal')
     })
-    await user().selectOptions(typeSelect,   'jersey')
+    await user().selectOptions(typeSelect,   'jumper')
     await user().selectOptions(familySelect, 'Teal')
     await waitFor(() => {
-      expect(capturedUrl).toContain('type=jersey')
+      expect(capturedUrl).toContain('category=jumper')
       expect(capturedUrl).toContain('family=Teal')
     })
   })
@@ -163,7 +163,7 @@ describe('Wardrobe — filtering (FR-35)', () => {
   it('shows the clear-filters button when a filter is active', async () => {
     renderScreen()
     const typeSelect = screen.getByRole('combobox', { name: 'Filter by type' })
-    await user().selectOptions(typeSelect, 'top')
+    await user().selectOptions(typeSelect, 't_shirt')
     await waitFor(() =>
       expect(screen.getByTestId('clear-filters')).toBeInTheDocument(),
     )
@@ -177,7 +177,7 @@ describe('Wardrobe — filtering (FR-35)', () => {
   it('clears filters and resets the dropdowns when Clear is clicked', async () => {
     renderScreen()
     const typeSelect = screen.getByRole('combobox', { name: 'Filter by type' })
-    await user().selectOptions(typeSelect, 'top')
+    await user().selectOptions(typeSelect, 't_shirt')
     await waitFor(() =>
       expect(screen.getByTestId('clear-filters')).toBeInTheDocument(),
     )
@@ -211,7 +211,7 @@ describe('Wardrobe — empty wardrobe (FR-35)', () => {
         HttpResponse.json({ garments: [], total: 0 }),
       ),
     )
-    renderScreen({ initialSearch: 'type=jersey' })
+    renderScreen({ initialSearch: 'category=jumper' })
     await waitFor(() =>
       expect(screen.getByTestId('empty-filter')).toBeInTheDocument(),
     )
@@ -261,9 +261,9 @@ describe('Wardrobe — error state', () => {
 
 describe('Wardrobe — URL filter state', () => {
   it('pre-selects type from URL search params on mount', async () => {
-    renderScreen({ initialSearch: 'type=jersey' })
+    renderScreen({ initialSearch: 'category=jumper' })
     const select = screen.getByRole('combobox', { name: 'Filter by type' }) as HTMLSelectElement
     // The select value is set from URL immediately
-    await waitFor(() => expect(select.value).toBe('jersey'))
+    await waitFor(() => expect(select.value).toBe('jumper'))
   })
 })

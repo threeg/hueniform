@@ -109,7 +109,7 @@ describe('PaletteStrip', () => {
 describe('GarmentCard', () => {
   it('shows the capitalised type label', () => {
     render(<GarmentCard garment={GARMENT_SUMMARY} />)
-    expect(screen.getByText('Jersey')).toBeInTheDocument()
+    expect(screen.getByText('Jumper')).toBeInTheDocument()
   })
 
   it('shows the thumbnail image with the thumbnail_url', () => {
@@ -236,7 +236,7 @@ describe('useGarments', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
     const g = result.current.data!.garments[0]
     expect(g).toHaveProperty('id')
-    expect(g).toHaveProperty('type')
+    expect(g).toHaveProperty('category')
     expect(g).toHaveProperty('colours')
     expect(g).toHaveProperty('thumbnail_url')
   })

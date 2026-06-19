@@ -71,10 +71,10 @@ describe('AddConfirm — default state', () => {
     expect(img).toHaveAttribute('src', DETECTION_RESPONSE.image.url)
   })
 
-  it('shows all eight type buttons (FR-31)', () => {
+  it('shows all forty type buttons (FR-31)', () => {
     renderScreen()
     const section = screen.getByRole('region', { name: 'Garment type' })
-    expect(within(section).getAllByRole('button')).toHaveLength(8)
+    expect(within(section).getAllByRole('button')).toHaveLength(40)
   })
 })
 
@@ -103,13 +103,13 @@ describe('AddConfirm — type picker', () => {
 
   it('save button is enabled after selecting a type', async () => {
     renderScreen()
-    await user().click(screen.getByRole('button', { name: 'Top' }))
+    await user().click(screen.getByRole('button', { name: 'T-shirt' }))
     expect(screen.getByTestId('save-button')).not.toBeDisabled()
   })
 
   it('marks the selected type as pressed', async () => {
     renderScreen()
-    const bottomBtn = screen.getByRole('button', { name: 'Bottom' })
+    const bottomBtn = screen.getByRole('button', { name: 'Trousers' })
     await user().click(bottomBtn)
     expect(bottomBtn).toHaveAttribute('aria-pressed', 'true')
   })
@@ -203,7 +203,7 @@ describe('AddConfirm — add a colour (FR-29)', () => {
 // ── Save — POST /api/garments (FR-30) ─────────────────────────────────────────
 
 describe('AddConfirm — save (FR-30)', () => {
-  it('sends POST /api/garments with detection_token, type and colours', async () => {
+  it('sends POST /api/garments with detection_token, category and colours', async () => {
     let captured: unknown
     server.use(
       http.post('http://127.0.0.1:8000/api/garments', async ({ request }) => {
@@ -212,12 +212,12 @@ describe('AddConfirm — save (FR-30)', () => {
       }),
     )
     renderScreen()
-    await user().click(screen.getByRole('button', { name: 'Jersey' }))
+    await user().click(screen.getByRole('button', { name: 'Jumper' }))
     await user().click(screen.getByTestId('save-button'))
     await waitFor(() => expect(captured).toBeDefined())
     const body = captured as Record<string, unknown>
     expect(body.detection_token).toBe(DETECTION_RESPONSE.token)
-    expect(body.type).toBe('jersey')
+    expect(body.category).toBe('jumper')
     expect(Array.isArray(body.colours)).toBe(true)
   })
 
@@ -236,7 +236,7 @@ describe('AddConfirm — save (FR-30)', () => {
     )
     expect(screen.getByTestId('total-line')).toHaveTextContent('Total: 99%')
 
-    await user().click(screen.getByRole('button', { name: 'Jersey' }))
+    await user().click(screen.getByRole('button', { name: 'Jumper' }))
     await user().click(screen.getByTestId('save-button'))
     await waitFor(() => expect(captured).toBeDefined())
 
@@ -247,7 +247,7 @@ describe('AddConfirm — save (FR-30)', () => {
 
   it('navigates to / after a successful save', async () => {
     renderScreen()
-    await user().click(screen.getByRole('button', { name: 'Top' }))
+    await user().click(screen.getByRole('button', { name: 'T-shirt' }))
     await user().click(screen.getByTestId('save-button'))
     await waitFor(() =>
       expect(screen.getByTestId('wardrobe-screen')).toBeInTheDocument(),
@@ -261,7 +261,7 @@ describe('AddConfirm — save (FR-30)', () => {
       ),
     )
     renderScreen()
-    await user().click(screen.getByRole('button', { name: 'Top' }))
+    await user().click(screen.getByRole('button', { name: 'T-shirt' }))
     await user().click(screen.getByTestId('save-button'))
     await waitFor(() =>
       expect(
@@ -292,13 +292,13 @@ describe('AddConfirm — regeneration variant (FR-33)', () => {
       }),
     )
     renderScreen({ detection: REGEN_DETECTION })
-    await user().click(screen.getByRole('button', { name: 'Jersey' }))
+    await user().click(screen.getByRole('button', { name: 'Jumper' }))
     await user().click(screen.getByTestId('save-button'))
     await waitFor(() => expect(captured).toBeDefined())
     const body = captured as Record<string, unknown>
     expect(capturedId).toBe(GARMENT_ID)
     expect(body.regeneration_token).toBe(REGEN_DETECTION.token)
-    expect(body.type).toBe('jersey')
+    expect(body.category).toBe('jumper')
   })
 
   it('shows error banner on invalid regeneration token', async () => {
@@ -308,7 +308,7 @@ describe('AddConfirm — regeneration variant (FR-33)', () => {
       ),
     )
     renderScreen({ detection: REGEN_DETECTION })
-    await user().click(screen.getByRole('button', { name: 'Top' }))
+    await user().click(screen.getByRole('button', { name: 'T-shirt' }))
     await user().click(screen.getByTestId('save-button'))
     await waitFor(() =>
       expect(

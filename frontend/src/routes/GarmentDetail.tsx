@@ -82,7 +82,7 @@ export default function GarmentDetail() {
 
         {/* Right column — detail and actions */}
         <div className={styles.detailCol}>
-          <h1 className={styles.typeHeading}>{typeLabel(garment.type)}</h1>
+          <h1 className={styles.typeHeading}>{typeLabel(garment.category)}</h1>
 
           <PaletteStrip colours={garment.colours} height={16} />
 
@@ -143,7 +143,7 @@ export default function GarmentDetail() {
         >
           <div className={styles.dialog}>
             <p className={styles.dialogQuestion}>
-              Delete this {typeLabel(garment.type).toLowerCase()}?
+              Delete this {typeLabel(garment.category).toLowerCase()}?
             </p>
             <img
               src={garment.thumbnail_url}
