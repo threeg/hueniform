@@ -30,6 +30,7 @@ from app.matcher.slots import (
     ECHO_SLOTS,
     OPTIONAL_SLOTS,
     REQUIRED_SLOTS,
+    category_to_slot,
     get_anchor_chromatic_families,
     get_anchor_types,
     qualify_echo_slot,
@@ -221,12 +222,13 @@ def suggest(
 
     wardrobe, garment_index = _load_wardrobe(engine)
 
-    # Group by type to detect empty slots (FR-36).
-    by_type: dict[str, int] = {}
+    # Group by slot to detect empty requested slots (FR-36).
+    by_slot: dict[str, int] = {}
     for g in wardrobe:
-        by_type[g.garment_type] = by_type.get(g.garment_type, 0) + 1
+        slot = category_to_slot(g.garment_type)
+        by_slot[slot] = by_slot.get(slot, 0) + 1
 
-    empty = [s for s in requested_slots if by_type.get(s, 0) == 0]
+    empty = [s for s in requested_slots if by_slot.get(s, 0) == 0]
     if empty:
         raise EmptySlotsError(empty)
 

@@ -46,7 +46,7 @@ def _stage(settings: Settings, data: bytes = b"") -> str:
     )
 
 
-def _create_body(token: str, garment_type: str = "top", colours: list | None = None) -> dict:
+def _create_body(token: str, garment_type: str = "t_shirt", colours: list | None = None) -> dict:
     if colours is None:
         colours = [{"h": 210.0, "s": 60.0, "l": 50.0, "proportion": 100}]
     return {"detection_token": token, "type": garment_type, "colours": colours}
@@ -69,8 +69,8 @@ class TestCreateGarmentSuccess:
 
     def test_type_matches_request(self, api_client, api_settings):
         token = _stage(api_settings)
-        body = api_client.post("/api/garments", json=_create_body(token, "jersey")).json()
-        assert body["type"] == "jersey"
+        body = api_client.post("/api/garments", json=_create_body(token, "jumper")).json()
+        assert body["type"] == "jumper"
 
     def test_colours_present(self, api_client, api_settings):
         token = _stage(api_settings)
@@ -173,7 +173,7 @@ class TestPaletteErrors:
 class TestTypeErrors:
     def test_unknown_type_returns_422(self, api_client, api_settings):
         token = _stage(api_settings)
-        r = api_client.post("/api/garments", json=_create_body(token, garment_type="jumpsuit"))
+        r = api_client.post("/api/garments", json=_create_body(token, garment_type="onesie"))
         assert r.status_code == 422
         assert r.json()["error"]["code"] == "invalid_type"
 
@@ -190,9 +190,9 @@ class TestTokenErrors:
 # ── Seeded wardrobe fixture ───────────────────────────────────────────────────
 #
 # Creates three garments:
-#   g_top    — type=top,    primary=Blue  (h=240, s=70, l=50)
-#   g_bottom — type=bottom, primary=Red   (h=0,   s=80, l=50)
-#   g_jersey — type=jersey, Red 80% + Blue 20% (Blue is a minor role)
+#   g_tshirt  — type=t_shirt, primary=Blue  (h=240, s=70, l=50)
+#   g_trouser — type=trousers, primary=Red   (h=0,   s=80, l=50)
+#   g_jumper  — type=jumper, Red 80% + Blue 20% (Blue is a minor role)
 
 def _save(api_client: object, api_settings: Settings, garment_type: str, colours: list) -> dict:
     token = _stage(api_settings)
@@ -211,10 +211,10 @@ _RED_BLUE_COLOURS = [
 
 @pytest.fixture()
 def seeded(api_client, api_settings):
-    g_top    = _save(api_client, api_settings, "top",    _BLUE_COLOUR)
-    g_bottom = _save(api_client, api_settings, "bottom", _RED_COLOUR)
-    g_jersey = _save(api_client, api_settings, "jersey", _RED_BLUE_COLOURS)
-    return {"top": g_top, "bottom": g_bottom, "jersey": g_jersey}
+    g_tshirt  = _save(api_client, api_settings, "t_shirt",  _BLUE_COLOUR)
+    g_trouser = _save(api_client, api_settings, "trousers", _RED_COLOUR)
+    g_jumper  = _save(api_client, api_settings, "jumper",   _RED_BLUE_COLOURS)
+    return {"t_shirt": g_tshirt, "trousers": g_trouser, "jumper": g_jumper}
 
 
 # ── GET /api/garments — list ──────────────────────────────────────────────────
@@ -241,40 +241,40 @@ class TestListGarments:
         assert "image_url" not in garment  # GarmentSummary, not detail
 
     def test_type_filter(self, api_client, seeded):
-        body = api_client.get("/api/garments", params={"type": "top"}).json()
+        body = api_client.get("/api/garments", params={"type": "t_shirt"}).json()
         assert body["total"] == 1
-        assert body["garments"][0]["type"] == "top"
+        assert body["garments"][0]["type"] == "t_shirt"
 
     def test_family_filter_matches_primary_colour(self, api_client, seeded):
-        # Blue is primary in the top.
+        # Blue is primary in the t_shirt.
         body = api_client.get("/api/garments", params={"family": "Blue"}).json()
-        assert body["total"] == 2  # top (primary Blue) + jersey (minor Blue)
+        assert body["total"] == 2  # t_shirt (primary Blue) + jumper (minor Blue)
         ids = {g["id"] for g in body["garments"]}
-        assert seeded["top"]["id"] in ids
-        assert seeded["jersey"]["id"] in ids
+        assert seeded["t_shirt"]["id"] in ids
+        assert seeded["jumper"]["id"] in ids
 
     def test_family_filter_matches_minor_role(self, api_client, seeded):
-        # jersey has Blue as a 20 % minor colour — must still match.
+        # jumper has Blue as a 20 % minor colour — must still match.
         body = api_client.get("/api/garments", params={"family": "Blue"}).json()
         ids = {g["id"] for g in body["garments"]}
-        assert seeded["jersey"]["id"] in ids
+        assert seeded["jumper"]["id"] in ids
 
     def test_family_filter_red(self, api_client, seeded):
         body = api_client.get("/api/garments", params={"family": "Red"}).json()
-        assert body["total"] == 2  # bottom + jersey
+        assert body["total"] == 2  # trousers + jumper
         ids = {g["id"] for g in body["garments"]}
-        assert seeded["bottom"]["id"] in ids
-        assert seeded["jersey"]["id"] in ids
+        assert seeded["trousers"]["id"] in ids
+        assert seeded["jumper"]["id"] in ids
 
     def test_type_and_family_combined_match(self, api_client, seeded):
-        # jersey type AND Blue family → 1 result
-        body = api_client.get("/api/garments", params={"type": "jersey", "family": "Blue"}).json()
+        # jumper type AND Blue family → 1 result
+        body = api_client.get("/api/garments", params={"type": "jumper", "family": "Blue"}).json()
         assert body["total"] == 1
-        assert body["garments"][0]["id"] == seeded["jersey"]["id"]
+        assert body["garments"][0]["id"] == seeded["jumper"]["id"]
 
     def test_type_and_family_combined_no_match(self, api_client, seeded):
-        # bottom type AND Blue family → 0 results (bottom is Red only)
-        body = api_client.get("/api/garments", params={"type": "bottom", "family": "Blue"}).json()
+        # trousers type AND Blue family → 0 results (trousers is Red only)
+        body = api_client.get("/api/garments", params={"type": "trousers", "family": "Blue"}).json()
         assert body["total"] == 0
         assert body["garments"] == []
 
@@ -311,10 +311,10 @@ class TestListGarments:
 
 class TestGetGarmentDetail:
     def test_returns_full_detail(self, api_client, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         body = api_client.get(f"/api/garments/{garment_id}").json()
         assert body["id"] == garment_id
-        assert body["type"] == "top"
+        assert body["type"] == "t_shirt"
         assert "image_url" in body
         assert "thumbnail_url" in body
         assert "created_at" in body
@@ -330,13 +330,13 @@ class TestGetGarmentDetail:
 
 class TestGarmentFiles:
     def test_image_serves_binary(self, api_client, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         r = api_client.get(f"/api/garments/{garment_id}/image")
         assert r.status_code == 200
         assert len(r.content) > 0
 
     def test_thumbnail_serves_binary(self, api_client, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         r = api_client.get(f"/api/garments/{garment_id}/thumbnail")
         assert r.status_code == 200
         assert len(r.content) > 0
@@ -352,7 +352,7 @@ class TestGarmentFiles:
         assert r.json()["error"]["code"] == "garment_not_found"
 
     def test_image_file_missing_returns_404(self, api_client, api_settings, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         for f in (api_settings.data_dir / "images").glob(f"{garment_id}.*"):
             f.unlink()
         r = api_client.get(f"/api/garments/{garment_id}/image")
@@ -360,7 +360,7 @@ class TestGarmentFiles:
         assert r.json()["error"]["code"] == "image_not_found"
 
     def test_thumbnail_file_missing_returns_404(self, api_client, api_settings, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         (api_settings.data_dir / "thumbnails" / f"{garment_id}.webp").unlink()
         r = api_client.get(f"/api/garments/{garment_id}/thumbnail")
         assert r.status_code == 404
@@ -399,7 +399,7 @@ def _stage_regen_token(settings: Settings, garment_id: str) -> str:
     )
 
 
-def _put_body(token: str, garment_type: str = "bottom") -> dict:
+def _put_body(token: str, garment_type: str = "trousers") -> dict:
     return {
         "regeneration_token": token,
         "type": garment_type,
@@ -411,7 +411,7 @@ def _put_body(token: str, garment_type: str = "bottom") -> dict:
 
 class TestRegenerateGarment:
     def test_returns_200_with_proposal_shape(self, api_client, api_settings, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         token = _stage_regen_token(api_settings, garment_id)
         with patch(
             "app.api.garments.run_regeneration",
@@ -428,7 +428,7 @@ class TestRegenerateGarment:
         assert "colours" in body
 
     def test_image_url_points_to_detections(self, api_client, api_settings, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         token = _stage_regen_token(api_settings, garment_id)
         with patch(
             "app.api.garments.run_regeneration",
@@ -438,7 +438,7 @@ class TestRegenerateGarment:
         assert body["image"]["url"].startswith("/api/detections/")
 
     def test_colour_shape_returned(self, api_client, api_settings, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         token = _stage_regen_token(api_settings, garment_id)
         with patch(
             "app.api.garments.run_regeneration",
@@ -455,7 +455,7 @@ class TestRegenerateGarment:
 
     def test_record_unchanged_after_regenerate(self, api_client, api_settings, seeded):
         """The original garment record must not be mutated by the regenerate call (FR-33)."""
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         original = api_client.get(f"/api/garments/{garment_id}").json()
         token = _stage_regen_token(api_settings, garment_id)
         with patch(
@@ -473,23 +473,23 @@ class TestRegenerateGarment:
 
 class TestUpdateGarment:
     def test_put_replaces_type_and_palette(self, api_client, api_settings, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         token = _stage_regen_token(api_settings, garment_id)
-        r = api_client.put(f"/api/garments/{garment_id}", json=_put_body(token, "bottom"))
+        r = api_client.put(f"/api/garments/{garment_id}", json=_put_body(token, "trousers"))
         assert r.status_code == 200
         body = r.json()
         assert body["id"] == garment_id  # id unchanged
-        assert body["type"] == "bottom"
+        assert body["type"] == "trousers"
         assert body["colours"][0]["family"] == "Green"  # h=120 → Green
 
     def test_put_sets_regenerated_at(self, api_client, api_settings, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         token = _stage_regen_token(api_settings, garment_id)
         body = api_client.put(f"/api/garments/{garment_id}", json=_put_body(token)).json()
         assert body["regenerated_at"] is not None
 
     def test_put_keeps_same_image(self, api_client, api_settings, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         before_image = api_client.get(f"/api/garments/{garment_id}/image").content
         token = _stage_regen_token(api_settings, garment_id)
         api_client.put(f"/api/garments/{garment_id}", json=_put_body(token))
@@ -497,7 +497,7 @@ class TestUpdateGarment:
         assert before_image == after_image
 
     def test_put_token_consumed(self, api_client, api_settings, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         token = _stage_regen_token(api_settings, garment_id)
         api_client.put(f"/api/garments/{garment_id}", json=_put_body(token))
         r2 = api_client.put(f"/api/garments/{garment_id}", json=_put_body(token))
@@ -506,16 +506,16 @@ class TestUpdateGarment:
 
     def test_put_missing_token_409(self, api_client, seeded):
         """FR-32: no valid regen token → always fails."""
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         r = api_client.put(f"/api/garments/{garment_id}", json=_put_body("no-such-token"))
         assert r.status_code == 409
         assert r.json()["error"]["code"] == "invalid_regeneration_token"
 
     def test_put_foreign_garment_token_409(self, api_client, api_settings, seeded):
         """Token bound to a different garment must be rejected (FR-32)."""
-        other_garment_id = seeded["bottom"]["id"]
+        other_garment_id = seeded["trousers"]["id"]
         foreign_token = _stage_regen_token(api_settings, other_garment_id)
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         r = api_client.put(f"/api/garments/{garment_id}", json=_put_body(foreign_token))
         assert r.status_code == 409
         assert r.json()["error"]["code"] == "invalid_regeneration_token"
@@ -530,7 +530,7 @@ class TestUpdateGarment:
         assert r.json()["error"]["code"] == "garment_not_found"
 
     def test_put_invalid_type_422(self, api_client, api_settings, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         token = _stage_regen_token(api_settings, garment_id)
         body = {**_put_body(token), "type": "onesie"}
         r = api_client.put(f"/api/garments/{garment_id}", json=body)
@@ -538,11 +538,11 @@ class TestUpdateGarment:
         assert r.json()["error"]["code"] == "invalid_type"
 
     def test_put_invalid_palette_422(self, api_client, api_settings, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         token = _stage_regen_token(api_settings, garment_id)
         body = {
             "regeneration_token": token,
-            "type": "top",
+            "type": "t_shirt",
             "colours": [
                 {"h": 0.0, "s": 80.0, "l": 50.0, "proportion": 60},
                 {"h": 120.0, "s": 60.0, "l": 40.0, "proportion": 30},
@@ -557,13 +557,13 @@ class TestUpdateGarment:
 
 class TestDeleteGarment:
     def test_delete_returns_204(self, api_client, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         r = api_client.delete(f"/api/garments/{garment_id}")
         assert r.status_code == 204
         assert r.content == b""
 
     def test_deleted_garment_absent_from_inventory(self, api_client, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         api_client.delete(f"/api/garments/{garment_id}")
         body = api_client.get("/api/garments").json()
         assert body["total"] == 2
@@ -571,14 +571,14 @@ class TestDeleteGarment:
         assert garment_id not in ids
 
     def test_deleted_garment_returns_404_on_detail(self, api_client, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         api_client.delete(f"/api/garments/{garment_id}")
         r = api_client.get(f"/api/garments/{garment_id}")
         assert r.status_code == 404
         assert r.json()["error"]["code"] == "garment_not_found"
 
     def test_deleted_image_returns_404(self, api_client, api_settings, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         api_client.delete(f"/api/garments/{garment_id}")
         r = api_client.get(f"/api/garments/{garment_id}/image")
         assert r.status_code == 404
@@ -589,7 +589,7 @@ class TestDeleteGarment:
         assert r.json()["error"]["code"] == "garment_not_found"
 
     def test_double_delete_returns_404(self, api_client, seeded):
-        garment_id = seeded["top"]["id"]
+        garment_id = seeded["t_shirt"]["id"]
         api_client.delete(f"/api/garments/{garment_id}")
         r2 = api_client.delete(f"/api/garments/{garment_id}")
         assert r2.status_code == 404

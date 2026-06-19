@@ -2,7 +2,7 @@
 id: HUE-065
 title: Storage category value-set and data migration
 type: task
-status: todo
+status: done
 milestone: 14
 batch: storage
 layer: storage
@@ -31,11 +31,11 @@ maintained here independently of `matcher`.
 - WAL/foreign-keys/cascade behaviour unchanged
 
 ## Definition of done (acceptance criteria)
-- [ ] New CHECK allowlist = FR-16 categories; old values rejected after migration
-- [ ] Migration maps every old value per the rules; ambiguous `bottom`/`accessory` use the documented default and stay editable (FR-46)
-- [ ] Idempotent; row counts, images and colour rows unchanged
-- [ ] Tests added/updated per §12.2 and passing in `make test`
-- [ ] Ticket status + notes updated in the same commit
+- [x] New CHECK allowlist = FR-16 categories; old values rejected after migration
+- [x] Migration maps every old value per the rules; ambiguous `bottom`/`accessory` use the documented default and stay editable (FR-46)
+- [x] Idempotent; row counts, images and colour rows unchanged
+- [x] Tests added/updated per §12.2 and passing in `make test`
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `storage/test_migration.py` (or `api/test_migration.py`) per §7.5: a v0.1.0-schema/value-set
@@ -44,3 +44,9 @@ defaults plus re-editability, the new-CHECK pass, idempotency, and untouched ids
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-19 — implemented. `storage/models.py` GARMENT_TYPES updated to all 40 FR-16 categories. `storage/migration.py` added: v0.1.0 → v0.2.0 table-rename migration, idempotent, maps `top`→`t_shirt`, `bottom`→`trousers`, `jersey`→`jumper`, `accessory`→`glasses`; jacket/socks/shoes/hat pass through. `engine.py` calls `migrate()` before `create_all()`. `matcher/slots.py` constants updated to v0.2.0 (GARMENT_TYPES = ALL_CATEGORIES, REQUIRED_SLOTS = DEFAULT_SLOTS). `matcher/ranking.py` backward-compat translation removed. `suggestion_service.py` empty-slot check now groups by slot via `category_to_slot()`. All test fixtures and tests updated to FR-16 category names. 1014 backend + 134 frontend tests pass; matcher coverage 100%.
+- Sanity test: `cd backend && .venv/bin/pytest tests/storage/test_migration.py -q`
+
+## QA steps
+- `make run` → open app → add a garment (the new-DB path must work)
+- Confirm the garment is saved with a type from the FR-16 list (inspect via GET /api/garments)

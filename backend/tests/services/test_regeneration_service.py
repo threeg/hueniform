@@ -57,7 +57,7 @@ def saved_garment(engine, dirs):
     """A confirmed garment to regenerate against."""
     token = _stage_image(dirs["staging"])
     return confirm(
-        token, "top", _ORIGINAL_COLOURS,
+        token, "t_shirt", _ORIGINAL_COLOURS,
         dirs["staging"], dirs["images"], dirs["thumbnails"], engine,
     )
 
@@ -68,7 +68,7 @@ class TestConfirmRegenerationHappyPath:
     def test_palette_replaced_in_db(self, engine, dirs, saved_garment):
         regen_token = _stage_regen_token(dirs["staging"], saved_garment.id)
         confirm_regeneration(
-            saved_garment.id, regen_token, "jersey", _NEW_COLOURS,
+            saved_garment.id, regen_token, "jumper", _NEW_COLOURS,
             dirs["staging"], dirs["images"], engine,
         )
         with Session(engine) as s:
@@ -83,7 +83,7 @@ class TestConfirmRegenerationHappyPath:
     def test_old_colour_rows_removed(self, engine, dirs, saved_garment):
         regen_token = _stage_regen_token(dirs["staging"], saved_garment.id)
         confirm_regeneration(
-            saved_garment.id, regen_token, "jersey", _NEW_COLOURS,
+            saved_garment.id, regen_token, "jumper", _NEW_COLOURS,
             dirs["staging"], dirs["images"], engine,
         )
         with Session(engine) as s:
@@ -96,7 +96,7 @@ class TestConfirmRegenerationHappyPath:
     def test_same_garment_id(self, engine, dirs, saved_garment):
         regen_token = _stage_regen_token(dirs["staging"], saved_garment.id)
         result = confirm_regeneration(
-            saved_garment.id, regen_token, "jersey", _NEW_COLOURS,
+            saved_garment.id, regen_token, "jumper", _NEW_COLOURS,
             dirs["staging"], dirs["images"], engine,
         )
         assert result.id == saved_garment.id
@@ -104,7 +104,7 @@ class TestConfirmRegenerationHappyPath:
     def test_same_image_file(self, engine, dirs, saved_garment):
         regen_token = _stage_regen_token(dirs["staging"], saved_garment.id)
         result = confirm_regeneration(
-            saved_garment.id, regen_token, "jersey", _NEW_COLOURS,
+            saved_garment.id, regen_token, "jumper", _NEW_COLOURS,
             dirs["staging"], dirs["images"], engine,
         )
         assert result.image_file == saved_garment.image_file
@@ -112,18 +112,18 @@ class TestConfirmRegenerationHappyPath:
     def test_type_updated(self, engine, dirs, saved_garment):
         regen_token = _stage_regen_token(dirs["staging"], saved_garment.id)
         result = confirm_regeneration(
-            saved_garment.id, regen_token, "jersey", _NEW_COLOURS,
+            saved_garment.id, regen_token, "jumper", _NEW_COLOURS,
             dirs["staging"], dirs["images"], engine,
         )
-        assert result.type == "jersey"
+        assert result.type == "jumper"
         with Session(engine) as s:
             row = s.get(GarmentRow, saved_garment.id)
-        assert row.type == "jersey"
+        assert row.type == "jumper"
 
     def test_regenerated_at_set(self, engine, dirs, saved_garment):
         regen_token = _stage_regen_token(dirs["staging"], saved_garment.id)
         result = confirm_regeneration(
-            saved_garment.id, regen_token, "jersey", _NEW_COLOURS,
+            saved_garment.id, regen_token, "jumper", _NEW_COLOURS,
             dirs["staging"], dirs["images"], engine,
         )
         assert result.regenerated_at is not None
@@ -134,14 +134,14 @@ class TestConfirmRegenerationHappyPath:
         """Second confirm with the same token → RegenerationTokenError (token consumed)."""
         regen_token = _stage_regen_token(dirs["staging"], saved_garment.id)
         confirm_regeneration(
-            saved_garment.id, regen_token, "jersey", _NEW_COLOURS,
+            saved_garment.id, regen_token, "jumper", _NEW_COLOURS,
             dirs["staging"], dirs["images"], engine,
         )
         # Re-stage a new token so the garment is re-patchable; old token should be gone.
         second_token = _stage_regen_token(dirs["staging"], saved_garment.id)
         with pytest.raises(RegenerationTokenError):
             confirm_regeneration(
-                saved_garment.id, regen_token, "jersey", _NEW_COLOURS,
+                saved_garment.id, regen_token, "jumper", _NEW_COLOURS,
                 dirs["staging"], dirs["images"], engine,
             )
 
@@ -149,7 +149,7 @@ class TestConfirmRegenerationHappyPath:
         from app.matcher.taxonomy import classify
         regen_token = _stage_regen_token(dirs["staging"], saved_garment.id)
         result = confirm_regeneration(
-            saved_garment.id, regen_token, "jersey",
+            saved_garment.id, regen_token, "jumper",
             [ColourIn(h=180.0, s=70.0, l=50.0, proportion=100)],
             dirs["staging"], dirs["images"], engine,
         )
@@ -159,7 +159,7 @@ class TestConfirmRegenerationHappyPath:
     def test_proportions_sum_to_100(self, engine, dirs, saved_garment):
         regen_token = _stage_regen_token(dirs["staging"], saved_garment.id)
         result = confirm_regeneration(
-            saved_garment.id, regen_token, "jersey", _NEW_COLOURS,
+            saved_garment.id, regen_token, "jumper", _NEW_COLOURS,
             dirs["staging"], dirs["images"], engine,
         )
         assert sum(c.proportion for c in result.colours) == 100
@@ -173,7 +173,7 @@ class TestRegenerationTokenValidation:
             confirm_regeneration(
                 saved_garment.id,
                 "00000000-0000-0000-0000-000000000000",
-                "jersey", _NEW_COLOURS,
+                "jumper", _NEW_COLOURS,
                 dirs["staging"], dirs["images"], engine,
             )
 
@@ -186,7 +186,7 @@ class TestRegenerationTokenValidation:
         sidecar.write_text(json.dumps(data))
         with pytest.raises(RegenerationTokenError):
             confirm_regeneration(
-                saved_garment.id, regen_token, "jersey", _NEW_COLOURS,
+                saved_garment.id, regen_token, "jumper", _NEW_COLOURS,
                 dirs["staging"], dirs["images"], engine,
             )
 
@@ -195,7 +195,7 @@ class TestRegenerationTokenValidation:
         foreign_token = _stage_regen_token(dirs["staging"], "other-garment-id")
         with pytest.raises(RegenerationTokenError):
             confirm_regeneration(
-                saved_garment.id, foreign_token, "jersey", _NEW_COLOURS,
+                saved_garment.id, foreign_token, "jumper", _NEW_COLOURS,
                 dirs["staging"], dirs["images"], engine,
             )
 
@@ -204,7 +204,7 @@ class TestRegenerationTokenValidation:
         upload_token = _stage_image(dirs["staging"])
         with pytest.raises(RegenerationTokenError):
             confirm_regeneration(
-                saved_garment.id, upload_token, "jersey", _NEW_COLOURS,
+                saved_garment.id, upload_token, "jumper", _NEW_COLOURS,
                 dirs["staging"], dirs["images"], engine,
             )
 
@@ -216,7 +216,7 @@ class TestRegenerationValidation:
         regen_token = _stage_regen_token(dirs["staging"], saved_garment.id)
         with pytest.raises(InvalidTypeError):
             confirm_regeneration(
-                saved_garment.id, regen_token, "trousers", _NEW_COLOURS,
+                saved_garment.id, regen_token, "onesie", _NEW_COLOURS,
                 dirs["staging"], dirs["images"], engine,
             )
 
@@ -225,6 +225,6 @@ class TestRegenerationValidation:
         bad_colours = [ColourIn(h=0.0, s=80.0, l=40.0, proportion=90)]
         with pytest.raises(InvalidPaletteError):
             confirm_regeneration(
-                saved_garment.id, regen_token, "jersey", bad_colours,
+                saved_garment.id, regen_token, "jumper", bad_colours,
                 dirs["staging"], dirs["images"], engine,
             )

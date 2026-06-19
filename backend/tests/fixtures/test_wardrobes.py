@@ -21,9 +21,9 @@ from tests.fixtures.wardrobes import (
     two_valid_outfits,
 )
 
-_REQUIRED_SLOTS = {"top", "bottom", "socks", "shoes"}
-_ECHO_SLOTS = {"socks", "shoes", "hat", "accessory"}
-_ANCHOR_SLOTS = {"top", "bottom"}
+_REQUIRED_SLOTS = {"t_shirt", "trousers", "socks", "shoes"}
+_ECHO_SLOTS = {"socks", "shoes", "hat", "glasses"}
+_ANCHOR_SLOTS = {"t_shirt", "trousers"}
 _CONSTRAINED_BY_SLOTS = list(_REQUIRED_SLOTS | _ECHO_SLOTS)
 
 
@@ -78,11 +78,11 @@ class TestTwoValidOutfits:
         assert _REQUIRED_SLOTS <= types
 
     def test_exactly_two_tops(self) -> None:
-        tops = [g for g in two_valid_outfits() if g.garment_type == "top"]
+        tops = [g for g in two_valid_outfits() if g.garment_type == "t_shirt"]
         assert len(tops) == 2
 
     def test_two_tops_are_distinct(self) -> None:
-        tops = [g for g in two_valid_outfits() if g.garment_type == "top"]
+        tops = [g for g in two_valid_outfits() if g.garment_type == "t_shirt"]
         assert tops[0] != tops[1]
 
 
@@ -113,7 +113,7 @@ class TestNoValidOutfitConstrainedBy:
     def test_has_required_slots(self, slot: str) -> None:
         garments = no_valid_outfit_constrained_by(slot)
         types = {g.garment_type for g in garments}
-        required = _REQUIRED_SLOTS if slot not in {"hat", "accessory"} else _REQUIRED_SLOTS
+        required = _REQUIRED_SLOTS
         assert required <= types, (
             f"Wardrobe constrained by '{slot}' missing required slots"
         )
@@ -134,7 +134,7 @@ class TestRichEchoWardrobe:
         assert _REQUIRED_SLOTS <= types
 
     def test_top_has_minor_colour(self) -> None:
-        top = next(g for g in rich_echo_wardrobe() if g.garment_type == "top")
+        top = next(g for g in rich_echo_wardrobe() if g.garment_type == "t_shirt")
         assert len(top.colours) == 2, "Top should have 2 colours (primary + minor)"
         minor = min(top.colours, key=lambda c: c.proportion)
         assert minor.proportion < 15, (
@@ -142,5 +142,5 @@ class TestRichEchoWardrobe:
         )
 
     def test_top_palette_sums_to_100(self) -> None:
-        top = next(g for g in rich_echo_wardrobe() if g.garment_type == "top")
+        top = next(g for g in rich_echo_wardrobe() if g.garment_type == "t_shirt")
         assert sum(c.proportion for c in top.colours) == 100

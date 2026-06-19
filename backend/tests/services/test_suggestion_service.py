@@ -70,29 +70,29 @@ def _rng() -> random.Random:
 
 class TestEmptySlotsFailFast:
     def test_empty_required_slot_raises(self, engine):
-        # Only insert top + socks + shoes; bottom is missing.
+        # Only insert t_shirt + socks + shoes; lower_body is missing.
         _materialise(engine, [
-            Garment("top",   (pytest.importorskip("app.matcher.colour").Colour(h=0.0, s=80.0, l=50.0, proportion=100),)),
-            Garment("socks", (pytest.importorskip("app.matcher.colour").Colour(h=0.0, s=0.0, l=50.0, proportion=100),)),
-            Garment("shoes", (pytest.importorskip("app.matcher.colour").Colour(h=0.0, s=0.0, l=6.0, proportion=100),)),
+            Garment("t_shirt", (pytest.importorskip("app.matcher.colour").Colour(h=0.0, s=80.0, l=50.0, proportion=100),)),
+            Garment("socks",   (pytest.importorskip("app.matcher.colour").Colour(h=0.0, s=0.0, l=50.0, proportion=100),)),
+            Garment("shoes",   (pytest.importorskip("app.matcher.colour").Colour(h=0.0, s=0.0, l=6.0, proportion=100),)),
         ])
         with pytest.raises(EmptySlotsError) as exc_info:
             suggest(frozenset(), engine, _rng())
-        assert "bottom" in exc_info.value.empty_slots
+        assert "lower_body" in exc_info.value.empty_slots
 
     def test_empty_optional_slot_raises(self, engine):
         _materialise(engine, single_valid_outfit())
-        # Request jersey but wardrobe has no jersey.
+        # Request mid but wardrobe has no mid-layer garments.
         with pytest.raises(EmptySlotsError) as exc_info:
-            suggest(frozenset({"jersey"}), engine, _rng())
-        assert "jersey" in exc_info.value.empty_slots
+            suggest(frozenset({"mid"}), engine, _rng())
+        assert "mid" in exc_info.value.empty_slots
 
     def test_empty_slots_error_lists_all_missing(self, engine):
         # Completely empty wardrobe.
         with pytest.raises(EmptySlotsError) as exc_info:
             suggest(frozenset(), engine, _rng())
         missing = exc_info.value.empty_slots
-        assert "top" in missing and "bottom" in missing
+        assert "base" in missing and "lower_body" in missing
 
     def test_no_error_when_all_slots_populated(self, engine):
         _materialise(engine, single_valid_outfit())

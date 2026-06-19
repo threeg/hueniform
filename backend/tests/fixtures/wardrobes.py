@@ -42,8 +42,8 @@ def _black(p: int)       -> Colour: return Colour(h=  0.0, s= 0.0, l= 6.0, propo
 def _white(p: int)       -> Colour: return Colour(h=  0.0, s= 0.0, l=96.0, proportion=p)
 def _navy(p: int)        -> Colour: return Colour(h=230.0, s=40.0, l=18.0, proportion=p)
 
-# Valid garment type strings (FR-16)
-GARMENT_TYPES = frozenset({"top", "bottom", "jersey", "jacket", "socks", "shoes", "hat", "accessory"})
+# Valid garment category strings (FR-16 subset used in these fixtures).
+GARMENT_TYPES = frozenset({"t_shirt", "trousers", "jumper", "jacket", "socks", "shoes", "hat", "glasses"})
 
 
 # ── Scenario factories ────────────────────────────────────────────────────────
@@ -52,15 +52,15 @@ def single_valid_outfit() -> list[Garment]:
     """
     FR-13/FR-15: exactly one valid harmonious outfit possible.
 
-    Scheme: complementary (Red top + Teal bottom; hue_distance = 180°).
+    Scheme: complementary (Red t_shirt + Teal trousers; hue_distance = 180°).
     Echo slots (socks, shoes) carry neutrals and qualify unconditionally (FR-21).
     Only one garment per required slot → exactly one combination.
     """
     return [
-        Garment("top",    (_red(100),)),
-        Garment("bottom", (_teal(100),)),
-        Garment("socks",  (_grey(100),)),
-        Garment("shoes",  (_black(100),)),
+        Garment("t_shirt",  (_red(100),)),
+        Garment("trousers", (_teal(100),)),
+        Garment("socks",    (_grey(100),)),
+        Garment("shoes",    (_black(100),)),
     ]
 
 
@@ -68,19 +68,19 @@ def two_valid_outfits() -> list[Garment]:
     """
     FR-40/FR-39/FR-42: exactly two valid harmonious outfits.
 
-    Two top garments both carrying Red as primary; both form a complementary
-    scheme with the single Teal bottom.  Produces exactly two combinations
+    Two t_shirt garments both carrying Red as primary; both form a complementary
+    scheme with the single Teal trousers.  Produces exactly two combinations
     without duplicate garments (FR-40).
 
-    top_a: Red at higher saturation (s=80)
-    top_b: Red at lower saturation  (s=60) — distinct value, same family
+    t_shirt_a: Red at higher saturation (s=80)
+    t_shirt_b: Red at lower saturation  (s=60) — distinct value, same family
     """
     return [
-        Garment("top",    (Colour(h=0.0, s=80.0, l=50.0, proportion=100),)),  # top_a
-        Garment("top",    (Colour(h=0.0, s=60.0, l=50.0, proportion=100),)),  # top_b
-        Garment("bottom", (_teal(100),)),
-        Garment("socks",  (_grey(100),)),
-        Garment("shoes",  (_black(100),)),
+        Garment("t_shirt",  (Colour(h=0.0, s=80.0, l=50.0, proportion=100),)),  # t_shirt_a
+        Garment("t_shirt",  (Colour(h=0.0, s=60.0, l=50.0, proportion=100),)),  # t_shirt_b
+        Garment("trousers", (_teal(100),)),
+        Garment("socks",    (_grey(100),)),
+        Garment("shoes",    (_black(100),)),
     ]
 
 
@@ -93,10 +93,10 @@ def neutral_fallback_only() -> list[Garment]:
     garment is present, so non-neutral scheme tests cannot fire.
     """
     return [
-        Garment("top",    (_navy(100),)),
-        Garment("bottom", (_grey(100),)),
-        Garment("socks",  (_black(100),)),
-        Garment("shoes",  (_white(100),)),
+        Garment("t_shirt",  (_navy(100),)),
+        Garment("trousers", (_grey(100),)),
+        Garment("socks",    (_black(100),)),
+        Garment("shoes",    (_white(100),)),
     ]
 
 
@@ -104,38 +104,42 @@ def no_valid_outfit_constrained_by(slot: str) -> list[Garment]:
     """
     FR-43: no valid outfit; the named slot is the provable constraint.
 
-    For echo slots ('socks', 'shoes', 'hat', 'accessory'):
+    For echo/adornment slots ('socks', 'shoes', 'hat', 'glasses', …):
       The anchors form a valid complementary scheme (Red + Teal), but the
       specified slot contains only a Blue garment, which is neither neutral nor
       an echo of Red or Teal — so FR-21 fails for that slot.
+      Required echo slots ('socks', 'shoes') are replaced; optional adornment
+      slots are appended.
 
-    For anchor slots ('top', 'bottom'):
-      The top carries Chartreuse (h=90°) and the bottom carries Blue (h=240°),
-      which are 150° apart — outside the complementary tolerance (±20°) and
-      outside the analogous arc (60°), so no FR-13 scheme matches.  The failing
-      anchor is the named slot.
+    For anchor slots ('base', 'lower_body'):
+      A t_shirt carrying Chartreuse (h=90°) and trousers carrying Blue (h=240°)
+      are 150° apart — outside complementary tolerance (±20°) and the analogous
+      arc (60°), so no FR-13 scheme matches.
     """
-    if slot in {"socks", "shoes", "hat", "accessory"}:
+    _required_echo = {"socks", "shoes"}
+    _optional_echo = {"hat", "glasses", "tie", "scarf", "belt",
+                      "earrings", "necklace", "watch", "ring", "bracelet"}
+    if slot in _required_echo | _optional_echo:
         garments = [
-            Garment("top",    (_red(100),)),
-            Garment("bottom", (_teal(100),)),
-            Garment("socks",  (_grey(100),)),
-            Garment("shoes",  (_grey(100),)),
+            Garment("t_shirt",  (_red(100),)),
+            Garment("trousers", (_teal(100),)),
+            Garment("socks",    (_grey(100),)),
+            Garment("shoes",    (_grey(100),)),
         ]
-        if slot in {"hat", "accessory"}:
-            # Add the constrained optional slot; other echo slots remain neutral
+        if slot in _optional_echo:
+            # Add the constrained optional slot; required echo slots remain neutral
             garments.append(Garment(slot, (_blue(100),)))
         else:
             # Replace the failing required echo slot with non-echoing Blue
             garments = [g for g in garments if g.garment_type != slot]
             garments.append(Garment(slot, (_blue(100),)))
     else:
-        # Anchor slot constraint: Chartreuse + Blue = 150° apart, no valid scheme
+        # Anchor slot constraint ('base', 'lower_body'): Chartreuse + Blue = 150° apart
         garments = [
-            Garment("top",    (_chartreuse(100),)),
-            Garment("bottom", (_blue(100),)),
-            Garment("socks",  (_grey(100),)),
-            Garment("shoes",  (_black(100),)),
+            Garment("t_shirt",  (_chartreuse(100),)),
+            Garment("trousers", (_blue(100),)),
+            Garment("socks",    (_grey(100),)),
+            Garment("shoes",    (_black(100),)),
         ]
     return garments
 
@@ -144,33 +148,33 @@ def rich_echo_wardrobe() -> list[Garment]:
     """
     FR-11/FR-22: minor-colour echoes earn the echo bonus in ranking.
 
-    Top carries Red as primary (85%) and Teal as minor (15%).
-    Bottom carries Teal as primary (100%).
+    T_shirt carries Red as primary (85%) and Teal as minor (15%).
+    Trousers carries Teal as primary (100%).
 
-    The Teal minor on the top echoes the Teal primary on the bottom →
+    The Teal minor on the t_shirt echoes the Teal primary on the trousers →
     echo bonus awarded (FR-11).  Socks echo the anchor Red (FR-22).
     The scheme is complementary (Red + Teal).
     """
     return [
-        Garment("top",    (_red(87), _teal(13))),
-        Garment("bottom", (_teal(100),)),
-        Garment("socks",  (_red(100),)),
-        Garment("shoes",  (_grey(100),)),
+        Garment("t_shirt",  (_red(87), _teal(13))),
+        Garment("trousers", (_teal(100),)),
+        Garment("socks",    (_red(100),)),
+        Garment("shoes",    (_grey(100),)),
     ]
 
 
 # ── 500-garment performance fixture (§11.2, NFR-5/NFR-6) ─────────────────────
 
-# Realistic slot distribution across 500 garments.
+# Realistic category distribution across 500 garments.
 _SLOT_COUNTS: dict[str, int] = {
-    "top":       120,
-    "bottom":    100,
-    "socks":      70,
-    "shoes":      70,
-    "jersey":     50,
-    "jacket":     50,
-    "hat":        20,
-    "accessory":  20,
+    "t_shirt":  120,
+    "trousers": 100,
+    "socks":     70,
+    "shoes":     70,
+    "jumper":    50,
+    "jacket":    50,
+    "hat":       20,
+    "glasses":   20,
 }
 
 # All taxonomy family canonical (h, s, l) values, used as colour anchors.

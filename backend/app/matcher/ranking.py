@@ -346,9 +346,6 @@ def rank(
       (a) neutral-based combinations flagged with ``is_fallback=True``;
       (b) a single zero-result sentinel with ``constraining_slot`` set.
     """
-    # Translate v0.1.0 requested_slot keys to v0.2.0 (backward compat — HUE-065 removes this)
-    requested_slots = frozenset(category_to_slot(s) for s in requested_slots)
-
     # Group garments by slot; verify all requested slots are present
     garments_by_slot: dict[str, list[Garment]] = {}
     for g in wardrobe:

@@ -62,16 +62,15 @@ STATEMENT_ADORNMENT_SLOTS: frozenset[str] = C.STATEMENT_ADORNMENT_SLOTS
 MINOR_ADORNMENT_SLOTS: frozenset[str] = C.MINOR_ADORNMENT_SLOTS
 ADORNMENT_SLOTS: frozenset[str] = C.STATEMENT_ADORNMENT_SLOTS | C.MINOR_ADORNMENT_SLOTS
 
-# Backward-compatibility aliases consumed by ranking.py / services / test code.
-# These retain their v0.1.0 meanings until the API/storage migration (HUE-065+).
-GARMENT_TYPES: frozenset[str] = frozenset({
-    "top", "bottom", "jersey", "jacket", "socks", "shoes", "hat", "accessory",
-})  # v0.1.0 slot-as-type keys; kept for architecture/storage consistency
+# v0.2.0 category and slot sets (re-exported from constants; single import point).
+GARMENT_TYPES: frozenset[str] = C.ALL_CATEGORIES
 
-REQUIRED_SLOTS: frozenset[str] = frozenset({"top", "bottom", "socks", "shoes"})
-OPTIONAL_SLOTS: frozenset[str] = frozenset({"jersey", "jacket", "hat", "accessory"})
+# Required slots are the four default-selected slots for every request (FR-51.1).
+REQUIRED_SLOTS: frozenset[str] = C.DEFAULT_SLOTS          # base, lower_body, socks, shoes
+# Optional slots are every other slot the user may add to a request.
+OPTIONAL_SLOTS: frozenset[str] = C.ALL_SLOTS - C.DEFAULT_SLOTS
 
-ECHO_SLOTS: frozenset[str] = ADORNMENT_SLOTS        # backward-compat alias
+ECHO_SLOTS: frozenset[str] = ADORNMENT_SLOTS        # adornment slots qualify as echoes
 
 # Upper-body slots, outermost → innermost (FR-18 dominance order)
 _UPPER_BODY: tuple[str, ...] = tuple(reversed(C.UPPER_BODY_LAYERS))  # outer, mid, shirt, base

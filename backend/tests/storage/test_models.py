@@ -35,7 +35,7 @@ def engine(tmp_path):
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-def _garment(gid: str = "g1", gtype: str = "top") -> GarmentRow:
+def _garment(gid: str = "g1", gtype: str = "t_shirt") -> GarmentRow:
     return GarmentRow(
         id=gid,
         type=gtype,
@@ -100,7 +100,8 @@ class TestIndices:
 
 class TestGarmentTypeConstraint:
     def test_all_valid_types_accepted(self, engine) -> None:
-        valid = ("top", "bottom", "jersey", "jacket", "socks", "shoes", "hat", "accessory")
+        # Spot-check a representative subset of FR-16 categories.
+        valid = ("t_shirt", "trousers", "jumper", "jacket", "socks", "shoes", "hat", "glasses")
         with Session(engine) as session:
             for gtype in valid:
                 session.add(_garment(gid=gtype, gtype=gtype))
@@ -109,7 +110,7 @@ class TestGarmentTypeConstraint:
     def test_invalid_type_rejected(self, engine) -> None:
         with pytest.raises(IntegrityError):
             with Session(engine) as session:
-                session.add(_garment(gtype="tshirt"))
+                session.add(_garment(gtype="onesie"))
                 session.commit()
 
     def test_empty_type_rejected(self, engine) -> None:

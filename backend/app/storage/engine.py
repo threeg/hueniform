@@ -19,6 +19,7 @@ from sqlmodel import Session, SQLModel, create_engine
 
 # Import models so their metadata is registered before create_all is called.
 import app.storage.models  # noqa: F401
+from app.storage.migration import migrate
 
 
 def make_engine(db_path: Path) -> Engine:
@@ -34,7 +35,8 @@ def make_engine(db_path: Path) -> Engine:
 
 
 def init_db(engine: Engine) -> None:
-    """Create all tables that do not yet exist (safe to call repeatedly)."""
+    """Migrate v0.1.0 type values then create any tables that do not yet exist."""
+    migrate(engine)
     SQLModel.metadata.create_all(engine)
 
 

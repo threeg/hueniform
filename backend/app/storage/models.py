@@ -14,9 +14,35 @@ import sqlalchemy as sa
 import sqlmodel as sm
 
 # ── Garment type allowlist (FR-16) ────────────────────────────────────────────
+# Mirrors ALL_CATEGORIES in matcher.constants (storage imports nothing from matcher).
 
 GARMENT_TYPES: tuple[str, ...] = (
-    "top", "bottom", "jersey", "jacket", "socks", "shoes", "hat", "accessory"
+    # upper body — base slot
+    "t_shirt", "vest", "long_sleeve",
+    # upper body — shirt slot
+    "shirt", "blouse", "polo",
+    # upper body — mid slot
+    "jumper", "hoodie", "cardigan", "sweatshirt", "track_top", "waistcoat",
+    # upper body — outer slot
+    "jacket", "blazer", "coat",
+    # head
+    "hat", "cap", "beanie",
+    "glasses", "sunglasses",
+    "earrings",
+    # neck
+    "tie", "scarf",
+    "necklace",
+    # hand
+    "watch", "ring", "bracelet",
+    # lower body
+    "trousers", "jeans", "chinos", "shorts", "skirt",
+    # one-piece
+    "dress", "jumpsuit",
+    # waist
+    "belt",
+    # feet
+    "socks",
+    "shoes", "boots", "trainers", "sandals",
 )
 
 _TYPE_IN = ", ".join(f"'{t}'" for t in GARMENT_TYPES)

@@ -157,18 +157,16 @@ class TestCategoryToSlot:
 # ── FR-16 / FR-17: slot constants ────────────────────────────────────────────
 
 class TestSlotConstants:
-    def test_garment_types_has_eight_members(self) -> None:
-        # Backward-compat v0.1.0 set; kept for architecture / storage consistency
-        assert len(GARMENT_TYPES) == 8
+    def test_garment_types_has_forty_members(self) -> None:
+        assert len(GARMENT_TYPES) == 40
 
     def test_garment_types_content(self) -> None:
-        assert GARMENT_TYPES == frozenset({
-            "top", "bottom", "jersey", "jacket", "socks", "shoes", "hat", "accessory",
-        })
+        from app.matcher import constants as C
+        assert GARMENT_TYPES == C.ALL_CATEGORIES
 
-    def test_required_slots_v1_backward_compat(self) -> None:
-        # REQUIRED_SLOTS keeps its v0.1.0 meaning for service/API backward compat (HUE-065+)
-        assert REQUIRED_SLOTS == frozenset({"top", "bottom", "socks", "shoes"})
+    def test_required_slots_v2_content(self) -> None:
+        # After HUE-065 REQUIRED_SLOTS == DEFAULT_SLOTS (v0.2.0 slot names)
+        assert REQUIRED_SLOTS == frozenset({"base", "lower_body", "socks", "shoes"})
 
     def test_default_slots_v2_content(self) -> None:
         assert DEFAULT_SLOTS == frozenset({"base", "lower_body", "socks", "shoes"})
@@ -804,13 +802,12 @@ class TestTwoValidOutfitsSlots:
 
     def test_both_tops_yield_same_scheme_family(self) -> None:
         garments = two_valid_outfits()
-        # v0.1.0 type "top" → slot "base" via category_to_slot
-        tops = [g for g in garments if g.garment_type == "top"]
+        tops = [g for g in garments if g.garment_type == "t_shirt"]
         assert len(tops) == 2
         for top in tops:
             outfit = {
                 "base":       top,
-                "lower_body": next(g for g in garments if g.garment_type == "bottom"),
+                "lower_body": next(g for g in garments if g.garment_type == "trousers"),
                 "socks":      next(g for g in garments if g.garment_type == "socks"),
                 "shoes":      next(g for g in garments if g.garment_type == "shoes"),
             }
