@@ -28,6 +28,7 @@ from app.matcher.ranking import (
     evaluate_outfit,
     rank,
 )
+from app.matcher.slots import category_to_slot
 from tests.fixtures.wardrobes import (
     no_valid_outfit_constrained_by,
     rich_echo_wardrobe,
@@ -41,7 +42,8 @@ from tests.fixtures.wardrobes import (
 
 _RNG = random.Random(42)
 
-_REQUIRED = frozenset({"top", "bottom", "socks", "shoes"})
+# v0.2.0 default slots (base, lower_body, socks, shoes)
+_REQUIRED = frozenset({"base", "lower_body", "socks", "shoes"})
 
 
 def _c(h: float, s: float, l: float, p: int) -> Colour:
@@ -56,11 +58,16 @@ def _black(p: int)  -> Colour: return _c(  0.0,  0.0,  6.0, p)
 def _navy(p: int)   -> Colour: return _c(230.0, 40.0, 18.0, p)
 
 
+def _outfit_from(garments) -> dict[str, Garment]:
+    """Convert a garment list to an outfit dict using v0.2.0 slot keys."""
+    return {category_to_slot(g.garment_type): g for g in garments}
+
+
 # ── evaluate_outfit ───────────────────────────────────────────────────────────
 
 class TestEvaluateOutfit:
     def test_valid_complementary_returns_result(self) -> None:
-        outfit = {g.garment_type: g for g in single_valid_outfit()}
+        outfit = _outfit_from(single_valid_outfit())
         result = evaluate_outfit(outfit)
         assert result is not None
         assert result.scheme_result is not None
@@ -69,21 +76,21 @@ class TestEvaluateOutfit:
     def test_non_harmonious_returns_none(self) -> None:
         # Chartreuse + Blue = 150° apart — no valid scheme
         outfit = {
-            "top":    Garment("top",    (Colour(90.0, 70.0, 40.0, 100),)),
-            "bottom": Garment("bottom", (_blue(100),)),
-            "socks":  Garment("socks",  (_grey(100),)),
-            "shoes":  Garment("shoes",  (_black(100),)),
+            "base":       Garment("t_shirt",  (Colour(90.0, 70.0, 40.0, 100),)),
+            "lower_body": Garment("trousers", (_blue(100),)),
+            "socks":      Garment("socks",    (_grey(100),)),
+            "shoes":      Garment("shoes",    (_black(100),)),
         }
         assert evaluate_outfit(outfit) is None
 
     def test_echo_slot_failure_returns_none(self) -> None:
         # Blue socks do not echo Red/Teal anchors
         garments = no_valid_outfit_constrained_by("socks")
-        outfit = {g.garment_type: g for g in garments}
+        outfit = _outfit_from(garments)
         assert evaluate_outfit(outfit) is None
 
     def test_score_fields_populated(self) -> None:
-        outfit = {g.garment_type: g for g in single_valid_outfit()}
+        outfit = _outfit_from(single_valid_outfit())
         result = evaluate_outfit(outfit)
         assert result is not None
         assert result.score > 0.0
@@ -91,23 +98,33 @@ class TestEvaluateOutfit:
         assert isinstance(result.echo_bonus, int)
 
     def test_garment_roles_populated_for_each_slot(self) -> None:
-        outfit = {g.garment_type: g for g in single_valid_outfit()}
+        outfit = _outfit_from(single_valid_outfit())
         result = evaluate_outfit(outfit)
         assert result is not None
         for slot in outfit:
             assert slot in result.garment_roles
 
     def test_is_fallback_flag_forwarded(self) -> None:
-        outfit = {g.garment_type: g for g in neutral_fallback_only()}
+        outfit = _outfit_from(neutral_fallback_only())
         result = evaluate_outfit(outfit, is_fallback=True)
         assert result is not None
         assert result.is_fallback
 
     def test_normal_result_not_flagged_fallback(self) -> None:
-        outfit = {g.garment_type: g for g in single_valid_outfit()}
+        outfit = _outfit_from(single_valid_outfit())
         result = evaluate_outfit(outfit)
         assert result is not None
         assert not result.is_fallback
+
+    def test_one_piece_with_separate_base_returns_none(self) -> None:
+        # FR-50.2: dress (lower_body one-piece) + t_shirt (base) is invalid
+        outfit = {
+            "lower_body": Garment("dress",   (_red(100),)),
+            "base":       Garment("t_shirt", (_teal(100),)),
+            "socks":      Garment("socks",   (_grey(100),)),
+            "shoes":      Garment("shoes",   (_black(100),)),
+        }
+        assert evaluate_outfit(outfit) is None
 
 
 # ── FR-41.1: scheme-strength ordering ────────────────────────────────────────
@@ -115,12 +132,12 @@ class TestEvaluateOutfit:
 class TestSchemeStrengthOrdering:
     """Perfect complement (180°) scores higher than imperfect (165°)."""
 
-    def _make_outfit(self, bottom_hue: float) -> dict[str, Garment]:
+    def _make_outfit(self, lower_body_hue: float) -> dict[str, Garment]:
         return {
-            "top":    Garment("top",    (_red(100),)),
-            "bottom": Garment("bottom", (Colour(bottom_hue, 70.0, 50.0, 100),)),
-            "socks":  Garment("socks",  (_grey(100),)),
-            "shoes":  Garment("shoes",  (_black(100),)),
+            "base":       Garment("t_shirt",  (_red(100),)),
+            "lower_body": Garment("trousers", (Colour(lower_body_hue, 70.0, 50.0, 100),)),
+            "socks":      Garment("socks",    (_grey(100),)),
+            "shoes":      Garment("shoes",    (_black(100),)),
         }
 
     def test_perfect_complement_stronger_than_imperfect(self) -> None:
@@ -139,19 +156,19 @@ class TestSchemeStrengthOrdering:
 
     def test_narrower_analogous_scores_higher(self) -> None:
         # Two analogous outfits; span must be in (30°, 60°] for analogous.
-        # top=Red(h=0), bottom=h=35 → span=35° (analogous, narrow)
-        # top=Red(h=0), bottom=h=55 → span=55° (analogous, wide)
+        # base=Red(h=0), lower_body=h=35 → span=35° (analogous, narrow)
+        # base=Red(h=0), lower_body=h=55 → span=55° (analogous, wide)
         narrow = {
-            "top":    Garment("top",    (_red(100),)),
-            "bottom": Garment("bottom", (Colour(35.0, 70.0, 50.0, 100),)),
-            "socks":  Garment("socks",  (_grey(100),)),
-            "shoes":  Garment("shoes",  (_black(100),)),
+            "base":       Garment("t_shirt",  (_red(100),)),
+            "lower_body": Garment("trousers", (Colour(35.0, 70.0, 50.0, 100),)),
+            "socks":      Garment("socks",    (_grey(100),)),
+            "shoes":      Garment("shoes",    (_black(100),)),
         }
         wide = {
-            "top":    Garment("top",    (_red(100),)),
-            "bottom": Garment("bottom", (Colour(55.0, 70.0, 50.0, 100),)),
-            "socks":  Garment("socks",  (_grey(100),)),
-            "shoes":  Garment("shoes",  (_black(100),)),
+            "base":       Garment("t_shirt",  (_red(100),)),
+            "lower_body": Garment("trousers", (Colour(55.0, 70.0, 50.0, 100),)),
+            "socks":      Garment("socks",    (_grey(100),)),
+            "shoes":      Garment("shoes",    (_black(100),)),
         }
         r_narrow = evaluate_outfit(narrow)
         r_wide   = evaluate_outfit(wide)
@@ -162,7 +179,7 @@ class TestSchemeStrengthOrdering:
         assert r_narrow.scheme_strength > r_wide.scheme_strength
 
     def test_neutral_based_scheme_strength_is_one(self) -> None:
-        outfit = {g.garment_type: g for g in neutral_fallback_only()}
+        outfit = _outfit_from(neutral_fallback_only())
         result = evaluate_outfit(outfit)
         assert result is not None
         assert result.scheme_strength == 1.0
@@ -170,10 +187,10 @@ class TestSchemeStrengthOrdering:
     def test_perfect_monochromatic_scheme_strength_is_one(self) -> None:
         # Single Red hue → arc_span = 0 → deviation 0
         outfit = {
-            "top":    Garment("top",    (_red(100),)),
-            "bottom": Garment("bottom", (_red(100),)),
-            "socks":  Garment("socks",  (_grey(100),)),
-            "shoes":  Garment("shoes",  (_black(100),)),
+            "base":       Garment("t_shirt",  (_red(100),)),
+            "lower_body": Garment("trousers", (_red(100),)),
+            "socks":      Garment("socks",    (_grey(100),)),
+            "shoes":      Garment("shoes",    (_black(100),)),
         }
         result = evaluate_outfit(outfit)
         assert result is not None
@@ -190,22 +207,22 @@ class TestEchoBonusOrdering:
         # Echo bonus comes from minor colours on ECHO SLOTS (socks/shoes) that
         # echo a chromatic colour on the anchors (FR-22).
         #
-        # Anchors: Red top + Teal bottom → anchor_chromatic = {Red, Teal}
+        # Anchors: Red base + Teal lower_body → anchor_chromatic = {Red, Teal}
         #
         # no_echo: socks = Red primary only → qualifies, no minor echoes
         # with_echo: socks = Red primary (90%) + Teal minor (10%)
         #   → Red qualifies (echo), Teal minor echoes anchor Teal → echo_bonus = 1
         no_echo = {
-            "top":    Garment("top",    (_red(100),)),
-            "bottom": Garment("bottom", (_teal(100),)),
-            "socks":  Garment("socks",  (_red(100),)),
-            "shoes":  Garment("shoes",  (_grey(100),)),
+            "base":       Garment("t_shirt",  (_red(100),)),
+            "lower_body": Garment("trousers", (_teal(100),)),
+            "socks":      Garment("socks",    (_red(100),)),
+            "shoes":      Garment("shoes",    (_grey(100),)),
         }
         with_echo = {
-            "top":    Garment("top",    (_red(100),)),
-            "bottom": Garment("bottom", (_teal(100),)),
-            "socks":  Garment("socks",  (Colour(0.0, 80.0, 50.0, 90), _teal(10))),
-            "shoes":  Garment("shoes",  (_grey(100),)),
+            "base":       Garment("t_shirt",  (_red(100),)),
+            "lower_body": Garment("trousers", (_teal(100),)),
+            "socks":      Garment("socks",    (Colour(0.0, 80.0, 50.0, 90), _teal(10))),
+            "shoes":      Garment("shoes",    (_grey(100),)),
         }
         r_no_echo   = evaluate_outfit(no_echo)
         r_with_echo = evaluate_outfit(with_echo)
@@ -284,9 +301,9 @@ class TestVarietyFactor:
         wardrobe = tops + bottoms + [socks, shoes]
         results = rank(wardrobe, _REQUIRED, random.Random(1))
         assert len(results) == 3
-        # The 3 results should use at least 2 distinct tops across them
-        used_tops = {r.outfit["top"] for r in results}
-        assert len(used_tops) >= 2, "Variety should favour different tops"
+        # The 3 results should use at least 2 distinct bases across them
+        used_bases = {r.outfit["base"] for r in results}
+        assert len(used_bases) >= 2, "Variety should favour different base layers"
 
 
 # ── FR-43: fallback ladder ────────────────────────────────────────────────────
@@ -298,45 +315,6 @@ class TestFallbackLadder:
         # (not requiring the fallback path) — but if we force step 1 to miss it
         # by building a wardrobe with ONLY non-harmonious chromatic options plus
         # neutral alternatives, we trigger FR-43(a).
-        #
-        # Build: one clashing non-neutral top (Chartreuse) + one clashing
-        # non-neutral bottom (Blue) — 150° apart, no scheme.
-        # ALSO add neutral top + neutral bottom so the neutral fallback can fire.
-        chartreuse_top    = Garment("top",    (Colour(90.0, 70.0, 40.0, 100),))
-        blue_bottom       = Garment("bottom", (_blue(100),))
-        neutral_top       = Garment("top",    (_grey(100),))
-        neutral_bottom    = Garment("bottom", (_navy(100),))
-        socks             = Garment("socks",  (_grey(100),))
-        shoes             = Garment("shoes",  (_black(100),))
-
-        # Step 1: try all combos.
-        # - chartreuse_top  + blue_bottom → no scheme → fail
-        # - chartreuse_top  + neutral_bottom → scheme set = {Chartreuse} → mono → valid!
-        # So this DOES produce step-1 results.  We need all chromatic combos to fail.
-        #
-        # Use socks that are also chromatic (Blue) but only neutral_top/bottom exist:
-        # All tops in the wardrobe have only neutral options as an anchor?
-        # Actually: the only way to guarantee step 1 fails is to have NO valid outfit.
-        # Use the echo slot failure to break all combos: Blue socks that can't echo
-        # any anchor colour — even neutral anchors can't provide an echo target.
-        #
-        # Wardrobe: neutral top, neutral bottom (→ scheme = neutral-based),
-        #   Blue socks (→ anchor_chromatic_families = {} for neutral anchors → fail FR-21),
-        #   Black shoes (neutral).
-        #
-        # Step 1: neutral_top + neutral_bottom + blue_socks + black_shoes
-        #   scheme = neutral-based ✓
-        #   echo slot: Blue socks; anchor_chromatic = {} → "Blue" not in {} → FAIL
-        # Step 2: neutral fallback filters to neutral-only garments.
-        #   Blue socks are NOT neutral → filtered out → no socks option → fallback = []
-        # Step 3: zero results, constraining = "socks"
-        #
-        # We actually can't isolate step 2 with this approach either.
-        # The neutral fallback REQUIRES neutral garments in every slot.
-        #
-        # Let's test FR-43(a) directly using the `neutral_fallback_only` fixture
-        # and verifying rank() returns a result flagged as is_fallback=True
-        # when there are neutral-only garments but we set up so normal combos fail.
         #
         # The cleanest testable scenario for FR-43(a):
         # ALL available garments are neutral (neutral_fallback_only wardrobe).
@@ -386,9 +364,10 @@ class TestFallbackLadder:
         assert results[0].constraining_slot == "socks"
 
     def test_constraining_slot_for_anchor_clash(self) -> None:
+        # The top (now mapped to "base") causes the scheme clash
         wardrobe = no_valid_outfit_constrained_by("top")
         results  = rank(wardrobe, _REQUIRED, random.Random(0))
-        assert results[0].constraining_slot == "top"
+        assert results[0].constraining_slot == "base"
 
     def test_missing_slot_in_wardrobe_returns_sentinel(self) -> None:
         # Wardrobe missing "shoes" → constraining_slot = "shoes"
@@ -448,29 +427,29 @@ class TestWardrobeIntegration:
 # ── Internal function tests: coverage for private helpers ────────────────────
 
 class TestEvaluateOutfitCoveredLayer:
-    """Covered-layer failure path (FR-20): lines 102-103 of evaluate_outfit."""
+    """Covered-layer failure path (FR-20): evaluate_outfit covered-layer check."""
 
-    def test_covered_jersey_with_discordant_colour_returns_none(self) -> None:
-        # Jacket (Red) is dominant; jersey (Blue) is covered.
+    def test_covered_mid_with_discordant_colour_returns_none(self) -> None:
+        # Outer (Red) is dominant; mid (Blue) is covered.
         # outer anchors = {Red, Teal}; Blue not in scheme and not in outer anchors.
         outfit = {
-            "jacket": Garment("jacket", (_red(100),)),
-            "jersey": Garment("jersey", (_blue(100),)),
-            "bottom": Garment("bottom", (_teal(100),)),
-            "socks":  Garment("socks",  (_grey(100),)),
-            "shoes":  Garment("shoes",  (_black(100),)),
+            "outer":      Garment("jacket",  (_red(100),)),
+            "mid":        Garment("jumper",  (_blue(100),)),
+            "lower_body": Garment("trousers",(_teal(100),)),
+            "socks":      Garment("socks",   (_grey(100),)),
+            "shoes":      Garment("shoes",   (_black(100),)),
         }
         assert evaluate_outfit(outfit) is None
 
-    def test_covered_jersey_echoing_outer_anchor_passes(self) -> None:
-        # Jacket (Red) is dominant; jersey (Red) is covered.
+    def test_covered_mid_echoing_outer_anchor_passes(self) -> None:
+        # Outer (Red) is dominant; mid (Red) is covered.
         # Red is in-scheme → covered-layer check passes.
         outfit = {
-            "jacket": Garment("jacket", (_red(100),)),
-            "jersey": Garment("jersey", (_red(100),)),
-            "bottom": Garment("bottom", (_teal(100),)),
-            "socks":  Garment("socks",  (_grey(100),)),
-            "shoes":  Garment("shoes",  (_black(100),)),
+            "outer":      Garment("jacket",  (_red(100),)),
+            "mid":        Garment("jumper",  (_red(100),)),
+            "lower_body": Garment("trousers",(_teal(100),)),
+            "socks":      Garment("socks",   (_grey(100),)),
+            "shoes":      Garment("shoes",   (_black(100),)),
         }
         result = evaluate_outfit(outfit)
         assert result is not None
@@ -481,51 +460,50 @@ class TestFailureSlotHelpers:
     """Direct tests of private helpers for coverage."""
 
     def test_failure_slot_returns_none_for_valid_outfit(self) -> None:
-        outfit = {g.garment_type: g for g in single_valid_outfit()}
+        outfit = _outfit_from(single_valid_outfit())
         assert _failure_slot(outfit) is None
 
     def test_failure_slot_identifies_dominant_for_scheme_failure(self) -> None:
-        outfit = {g.garment_type: g for g in no_valid_outfit_constrained_by("top")}
-        assert _failure_slot(outfit) == "top"
+        # top type → "base" slot → dominant layer for scheme failure
+        outfit = _outfit_from(no_valid_outfit_constrained_by("top"))
+        assert _failure_slot(outfit) == "base"
 
     def test_failure_slot_identifies_echo_slot(self) -> None:
-        outfit = {g.garment_type: g for g in no_valid_outfit_constrained_by("socks")}
+        outfit = _outfit_from(no_valid_outfit_constrained_by("socks"))
         assert _failure_slot(outfit) == "socks"
 
     def test_failure_slot_identifies_covered_layer(self) -> None:
-        # Jacket (Red) + jersey (Blue covered) + bottom (Teal)
-        # Scheme passes (Red+Teal complementary), but jersey Blue fails FR-20
+        # Outer (Red) + mid (Blue covered) + lower_body (Teal)
+        # Scheme passes (Red+Teal complementary), but mid Blue fails FR-20
         outfit = {
-            "jacket": Garment("jacket", (_red(100),)),
-            "jersey": Garment("jersey", (_blue(100),)),
-            "bottom": Garment("bottom", (_teal(100),)),
-            "socks":  Garment("socks",  (_grey(100),)),
-            "shoes":  Garment("shoes",  (_black(100),)),
+            "outer":      Garment("jacket",  (_red(100),)),
+            "mid":        Garment("jumper",  (_blue(100),)),
+            "lower_body": Garment("trousers",(_teal(100),)),
+            "socks":      Garment("socks",   (_grey(100),)),
+            "shoes":      Garment("shoes",   (_black(100),)),
         }
-        assert _failure_slot(outfit) == "jersey"
+        assert _failure_slot(outfit) == "mid"
 
     def test_failure_slot_returns_none_for_covered_layer_that_passes(self) -> None:
-        # Jacket (Red) + jersey (Red covered) + bottom (Teal)
-        # Covered jersey: Red is in-scheme {Red, Teal} → passes FR-20 → _failure_slot = None
-        # Exercises branch 159->158 (covered loop, condition False → continue).
+        # Outer (Red) + mid (Red covered) + lower_body (Teal)
+        # Covered mid: Red is in-scheme {Red, Teal} → passes FR-20 → _failure_slot = None
         outfit = {
-            "jacket": Garment("jacket", (_red(100),)),
-            "jersey": Garment("jersey", (_red(100),)),
-            "bottom": Garment("bottom", (_teal(100),)),
-            "socks":  Garment("socks",  (_grey(100),)),
-            "shoes":  Garment("shoes",  (_black(100),)),
+            "outer":      Garment("jacket",  (_red(100),)),
+            "mid":        Garment("jumper",  (_red(100),)),
+            "lower_body": Garment("trousers",(_teal(100),)),
+            "socks":      Garment("socks",   (_grey(100),)),
+            "shoes":      Garment("shoes",   (_black(100),)),
         }
         assert _failure_slot(outfit) is None
 
     def test_failure_slot_returns_none_with_passing_secondary(self) -> None:
-        # Top: Red(70%) + Teal(20% secondary) + Grey(10% minor)
-        # Bottom: Teal. Secondary Teal is in-scheme → passes; _failure_slot → None.
-        # Exercises line 165 (fam = _classify inside secondary-check loop).
+        # Base: Red(70%) + Teal(20% secondary) + Grey(10% minor)
+        # Lower_body: Teal. Secondary Teal is in-scheme → passes; _failure_slot → None.
         outfit = {
-            "top":    Garment("top",    (_red(70), _teal(20), _grey(10))),
-            "bottom": Garment("bottom", (_teal(100),)),
-            "socks":  Garment("socks",  (_grey(100),)),
-            "shoes":  Garment("shoes",  (_black(100),)),
+            "base":       Garment("t_shirt",  (_red(70), _teal(20), _grey(10))),
+            "lower_body": Garment("trousers", (_teal(100),)),
+            "socks":      Garment("socks",    (_grey(100),)),
+            "shoes":      Garment("shoes",    (_black(100),)),
         }
         assert _failure_slot(outfit) is None
 
@@ -535,9 +513,9 @@ class TestNeutralFallbackDirect:
 
     def test_neutral_fallback_returns_valid_results_for_neutral_wardrobe(self) -> None:
         wardrobe = neutral_fallback_only()
-        garments_by_slot = {}
+        garments_by_slot: dict = {}
         for g in wardrobe:
-            garments_by_slot.setdefault(g.garment_type, []).append(g)
+            garments_by_slot.setdefault(category_to_slot(g.garment_type), []).append(g)
         results = _neutral_fallback(garments_by_slot, _REQUIRED)
         assert len(results) >= 1
         for r in results:
@@ -547,10 +525,10 @@ class TestNeutralFallbackDirect:
 
     def test_neutral_fallback_returns_empty_when_no_neutral_garments(self) -> None:
         wardrobe = no_valid_outfit_constrained_by("top")
-        garments_by_slot = {}
+        garments_by_slot: dict = {}
         for g in wardrobe:
-            garments_by_slot.setdefault(g.garment_type, []).append(g)
-        # No neutral top or bottom → neutral fallback cannot fill all required slots
+            garments_by_slot.setdefault(category_to_slot(g.garment_type), []).append(g)
+        # No neutral base or lower_body → neutral fallback cannot fill all required slots
         results = _neutral_fallback(garments_by_slot, _REQUIRED)
         assert results == []
 
@@ -562,44 +540,44 @@ class TestConstrainingSlotDirect:
         # Wardrobe with only a valid outfit → _failure_slot returns None for all
         # combinations → counts empty → _constraining_slot returns None
         wardrobe = single_valid_outfit()
-        garments_by_slot = {}
+        garments_by_slot: dict = {}
         for g in wardrobe:
-            garments_by_slot.setdefault(g.garment_type, []).append(g)
+            garments_by_slot.setdefault(category_to_slot(g.garment_type), []).append(g)
         result = _constraining_slot(garments_by_slot, _REQUIRED)
         assert result is None
 
 
 class TestEnumerateOutfitsNoEchoSlots:
-    """_enumerate_outfits line 236 (no echo_slots_lists branch)."""
+    """_enumerate_outfits no-echo-slots branch."""
 
     def test_enumerate_with_no_echo_slots(self) -> None:
         # requested_slots with no ECHO_SLOTS types → echo_slots_lists is empty
-        # → the else branch at line 236 appends the anchor-only dict
+        # → the else branch appends the anchor-only dict
         garments_by_slot = {
-            "top":    [Garment("top",    (_red(100),))],
-            "bottom": [Garment("bottom", (_teal(100),))],
+            "base":       [Garment("t_shirt",  (_red(100),))],
+            "lower_body": [Garment("trousers", (_teal(100),))],
         }
         outfits = _enumerate_outfits(
             garments_by_slot,
-            frozenset({"top", "bottom"}),
+            frozenset({"base", "lower_body"}),
             rng=None,
         )
         assert len(outfits) == 1
-        assert set(outfits[0].keys()) == {"top", "bottom"}
+        assert set(outfits[0].keys()) == {"base", "lower_body"}
 
 
 class TestOutfitWithSecondaries:
     """Exercise the anchor-secondary loop body to cover the secondary-check lines."""
 
     def test_outfit_with_secondary_is_valid(self) -> None:
-        # Top: Red primary 70%, Teal secondary 20%, Grey minor 10%.
+        # Base: Red primary 70%, Teal secondary 20%, Grey minor 10%.
         # Teal secondary is in the complementary scheme {Red, Teal} → in_scheme.
         # Exercises the secondary-check loop in evaluate_outfit and _failure_slot.
         outfit = {
-            "top":    Garment("top",    (_red(70), _teal(20), _grey(10))),
-            "bottom": Garment("bottom", (_teal(100),)),
-            "socks":  Garment("socks",  (_grey(100),)),
-            "shoes":  Garment("shoes",  (_black(100),)),
+            "base":       Garment("t_shirt",  (_red(70), _teal(20), _grey(10))),
+            "lower_body": Garment("trousers", (_teal(100),)),
+            "socks":      Garment("socks",    (_grey(100),)),
+            "shoes":      Garment("shoes",    (_black(100),)),
         }
         result = evaluate_outfit(outfit)
         assert result is not None

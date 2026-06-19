@@ -1,9 +1,9 @@
 """
-Slot mechanics (FR-16–FR-22, requirements §5).
+Slot mechanics (FR-16–FR-22, FR-49–FR-51, requirements §5).
 
-Defines type-to-slot eligibility, anchor identification with layering dominance,
-scheme-set assembly (covered-layer primaries excluded), covered-layer and echo-slot
-qualification, and minor-echo recording.
+Maps garment categories to slots, provides anchor identification with
+four-level upper-body dominance, one-piece spanning, scheme-set assembly,
+covered-layer and adornment-tier qualification, and mutual-exclusion validation.
 
 Standard library only (NFR-9).
 """
@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from app.matcher import constants as C
 from app.matcher.roles import (
     Garment,
     classify_secondary,
@@ -22,50 +23,135 @@ from app.matcher.taxonomy import classify as _classify
 from app.matcher.taxonomy import is_neutral as _is_neutral
 
 
-# ── Slot constants (FR-16, FR-17) ─────────────────────────────────────────────
+# ── Backward-compatibility slot key map (v0.1.0 → v0.2.0) ────────────────────
+# Maps the eight v0.1.0 slot-as-type strings to their v0.2.0 slot keys.
+# Used during the API/storage migration period (removed when complete).
+_V1_TO_SLOT: dict[str, str] = {
+    "top":    "base",
+    "bottom": "lower_body",
+    "jersey": "mid",
+    # "jacket" → is a v0.2.0 category (outer slot) handled by CATEGORY_SLOT
+    # "socks" / "shoes" / "hat" → same keys in v0.2.0
+}
 
+
+# ── Category → slot lookup ────────────────────────────────────────────────────
+
+def category_to_slot(category: str) -> str:
+    """
+    Return the slot key for *category* (FR-16).
+
+    Resolution order:
+    1. v0.2.0 CATEGORY_SLOT mapping ("t_shirt" → "base", "jumper" → "mid", etc.)
+    2. v0.1.0 backward-compat map  ("top" → "base", "jersey" → "mid", etc.)
+    3. Identity fallback            (unknown values returned unchanged)
+    """
+    if category in C.CATEGORY_SLOT:
+        return C.CATEGORY_SLOT[category]
+    return _V1_TO_SLOT.get(category, category)
+
+
+# ── Slot constants (re-exported from constants; single import point) ──────────
+
+# v0.2.0 model
+ALL_CATEGORIES: frozenset[str] = C.ALL_CATEGORIES
+ALL_SLOTS: frozenset[str] = C.ALL_SLOTS
+DEFAULT_SLOTS: frozenset[str] = C.DEFAULT_SLOTS
+MANDATORY_SLOT: str = C.MANDATORY_SLOT
+STATEMENT_ADORNMENT_SLOTS: frozenset[str] = C.STATEMENT_ADORNMENT_SLOTS
+MINOR_ADORNMENT_SLOTS: frozenset[str] = C.MINOR_ADORNMENT_SLOTS
+ADORNMENT_SLOTS: frozenset[str] = C.STATEMENT_ADORNMENT_SLOTS | C.MINOR_ADORNMENT_SLOTS
+
+# Backward-compatibility aliases consumed by ranking.py / services / test code.
+# These retain their v0.1.0 meanings until the API/storage migration (HUE-065+).
 GARMENT_TYPES: frozenset[str] = frozenset({
     "top", "bottom", "jersey", "jacket", "socks", "shoes", "hat", "accessory",
-})
+})  # v0.1.0 slot-as-type keys; kept for architecture/storage consistency
 
 REQUIRED_SLOTS: frozenset[str] = frozenset({"top", "bottom", "socks", "shoes"})
 OPTIONAL_SLOTS: frozenset[str] = frozenset({"jersey", "jacket", "hat", "accessory"})
-ECHO_SLOTS: frozenset[str] = frozenset({"socks", "shoes", "hat", "accessory"})
 
-# Upper-body layers listed outermost-first; drives dominance and covered-layer logic
-_UPPER_BODY: tuple[str, ...] = ("jacket", "jersey", "top")
+ECHO_SLOTS: frozenset[str] = ADORNMENT_SLOTS        # backward-compat alias
+
+# Upper-body slots, outermost → innermost (FR-18 dominance order)
+_UPPER_BODY: tuple[str, ...] = tuple(reversed(C.UPPER_BODY_LAYERS))  # outer, mid, shirt, base
+
+
+# ── One-piece helper ──────────────────────────────────────────────────────────
+
+def _is_one_piece(garment: Garment) -> bool:
+    """True iff the garment category is a one-piece (dress/jumpsuit) (FR-49.2)."""
+    return garment.garment_type in C.ONE_PIECE_CATEGORIES
+
+
+# ── FR-50 mutual-exclusion validation ─────────────────────────────────────────
+
+def is_valid_slot_combination(outfit: dict[str, Garment]) -> bool:
+    """
+    FR-50: True iff the outfit respects all mutual-exclusion groups.
+
+    FR-50.2: a one-piece in lower_body occupies the base slot too, so a
+    separate base garment is invalid when a one-piece is present.
+    """
+    if "lower_body" in outfit and _is_one_piece(outfit["lower_body"]):
+        if "base" in outfit:
+            return False
+    return True
 
 
 # ── FR-18 anchor identification ───────────────────────────────────────────────
 
 def dominant_layer(outfit: dict[str, Garment]) -> str:
     """
-    FR-18: return the type key of the outermost upper-body layer present.
-    Precedence: jacket > jersey > top.
-    Raises ``ValueError`` when no upper-body layer is in the outfit.
+    FR-18: return the slot key of the outermost upper-body layer present.
+    Precedence: outer > mid > shirt > base.
+
+    When no separate upper-body layer exists but a one-piece fills lower_body,
+    the one-piece is the dominant (base-position) upper layer (FR-18) and
+    'lower_body' is returned.
+
+    Raises ValueError when no upper-body garment and no one-piece is present.
     """
-    for t in _UPPER_BODY:
-        if t in outfit:
-            return t
-    raise ValueError("Outfit contains no upper-body layer (top, jersey or jacket)")
+    for slot in _UPPER_BODY:
+        if slot in outfit:
+            return slot
+    if "lower_body" in outfit and _is_one_piece(outfit["lower_body"]):
+        return "lower_body"
+    raise ValueError(
+        f"Outfit contains no upper-body layer and no one-piece; "
+        f"slots present: {sorted(outfit)}"
+    )
 
 
 def covered_upper_layers(outfit: dict[str, Garment]) -> list[str]:
     """
-    FR-18 / FR-20: type keys of upper-body layers that lie beneath the dominant,
-    sorted outermost-first.  These layers are subject to the covered-layer constraint
-    instead of contributing primaries to the scheme set.
+    FR-18 / FR-20: slot keys of upper-body layers beneath the dominant layer,
+    outermost-first.
+
+    A one-piece at lower_body is never a covered layer (FR-50.2 — its lower
+    portion remains visible even when outer layers are worn over it).
     """
-    dom_idx = _UPPER_BODY.index(dominant_layer(outfit))
+    try:
+        dom = dominant_layer(outfit)
+    except ValueError:
+        return []
+    if dom == "lower_body":
+        return []
+    dom_idx = _UPPER_BODY.index(dom)
     return [t for t in _UPPER_BODY[dom_idx + 1:] if t in outfit]
 
 
 def get_anchor_types(outfit: dict[str, Garment]) -> list[str]:
     """
-    FR-18: type keys of all anchor garments — every upper-body layer plus bottom.
-    Order: jacket → jersey → top → bottom.
+    FR-18: slot keys of all anchor garments, outermost-first.
+
+    Order: outer → mid → shirt → base → lower_body.
+    A one-piece at lower_body is listed once; it is never duplicated for its
+    implicit base-position role (FR-18).
     """
-    return [t for t in (*_UPPER_BODY, "bottom") if t in outfit]
+    upper = [t for t in _UPPER_BODY if t in outfit]
+    lower = ["lower_body"] if "lower_body" in outfit else []
+    return upper + lower
 
 
 # ── FR-19 scheme-set assembly ─────────────────────────────────────────────────
@@ -75,8 +161,8 @@ class SchemeSet:
     """
     Colours driving scheme evaluation (FR-19).
 
-    ``hues`` — passed directly to ``harmony.evaluate_scheme``.
-    ``chromatic_families`` — used for FR-9 / FR-20 in-scheme membership tests.
+    hues — passed directly to harmony.evaluate_scheme.
+    chromatic_families — used for FR-9 / FR-20 membership tests.
     """
     hues: tuple[float, ...]
     chromatic_families: frozenset[str]
@@ -87,12 +173,13 @@ def build_scheme_set(outfit: dict[str, Garment]) -> SchemeSet:
     FR-19: collect the scheme-set hues and family names.
 
     Contributions:
-      - Dominant-layer primary colours
-      - Bottom primary colours
-      - All anchor secondary colours (including covered layers — FR-19)
+      - Dominant layer's primary colours.
+      - Lower-body garment's primary colours — skipped when the dominant IS
+        the lower_body (one-piece with no upper layers), so it is counted once
+        (FR-18, FR-19).
+      - All anchors' secondary colours, including covered layers (FR-19).
 
-    Covered-layer primaries are explicitly excluded (FR-20).
-    Neutral colours are filtered out (FR-3, FR-14).
+    Neutral colours are excluded (FR-3, FR-14).
     """
     dom = dominant_layer(outfit)
     anchors = get_anchor_types(outfit)
@@ -106,18 +193,18 @@ def build_scheme_set(outfit: dict[str, Garment]) -> SchemeSet:
             hues.append(colour.h)
             families.add(fam)
 
-    # Dominant primaries (FR-19)
+    # Dominant-layer primaries
     for c in derive_roles(outfit[dom].colours).primaries:
         _add_if_chromatic(c)
 
-    # Bottom primaries (FR-19)
-    if "bottom" in outfit:
-        for c in derive_roles(outfit["bottom"].colours).primaries:
+    # Lower-body primaries — omitted when lower_body IS the dominant (already counted)
+    if "lower_body" in outfit and dom != "lower_body":
+        for c in derive_roles(outfit["lower_body"].colours).primaries:
             _add_if_chromatic(c)
 
     # All anchor secondaries — including covered layers (FR-19)
-    for gtype in anchors:
-        for c in derive_roles(outfit[gtype].colours).secondaries:
+    for slot in anchors:
+        for c in derive_roles(outfit[slot].colours).secondaries:
             _add_if_chromatic(c)
 
     return SchemeSet(hues=tuple(hues), chromatic_families=frozenset(families))
@@ -127,13 +214,12 @@ def build_scheme_set(outfit: dict[str, Garment]) -> SchemeSet:
 
 def get_anchor_chromatic_families(outfit: dict[str, Garment]) -> frozenset[str]:
     """
-    All chromatic colour families present on any anchor garment in any role
-    (primary, secondary or minor).  Used for FR-21 echo qualification and the
-    FR-20 covered-layer echo check.
+    All chromatic colour families on any anchor garment in any role.
+    Used for FR-21 echo qualification and the FR-20 covered-layer echo check.
     """
     families: set[str] = set()
-    for gtype in get_anchor_types(outfit):
-        for c in outfit[gtype].colours:
+    for slot in get_anchor_types(outfit):
+        for c in outfit[slot].colours:
             fam = _classify(c.h, c.s, c.l)
             if not _is_neutral(fam):
                 families.add(fam)
@@ -148,7 +234,7 @@ def check_covered_layer(
     anchor_chromatic_families: frozenset[str],
 ) -> bool:
     """
-    FR-20: True iff every chromatic primary and secondary of *garment* is either
+    FR-20: True iff every chromatic primary and secondary of *garment* is
     in-scheme or echoes a chromatic colour present on the anchors.
     All-neutral passes unconditionally.
     """
@@ -170,11 +256,11 @@ def check_anchor_secondaries(
     anchor_chromatic_families: frozenset[str],
 ) -> bool:
     """
-    FR-9: True iff every secondary colour on every anchor garment is compatible —
-    neutral, in-scheme, or an echo of an anchor chromatic colour.
+    FR-9: True iff every secondary on every anchor garment is neutral,
+    in-scheme, or echoes an anchor chromatic colour.
     """
-    for gtype in get_anchor_types(outfit):
-        roles = derive_roles(outfit[gtype].colours)
+    for slot in get_anchor_types(outfit):
+        roles = derive_roles(outfit[slot].colours)
         for c in roles.secondaries:
             fam = _classify(c.h, c.s, c.l)
             if classify_secondary(fam, scheme_families, anchor_chromatic_families) is None:
@@ -182,15 +268,16 @@ def check_anchor_secondaries(
     return True
 
 
-# ── FR-21 / FR-22 echo-slot qualification ────────────────────────────────────
+# ── FR-21 / FR-22 adornment-slot qualification ────────────────────────────────
 
 @dataclass(frozen=True)
 class EchoQualification:
     """
-    FR-21 / FR-22: result of qualifying a garment for an echo slot.
+    FR-21 / FR-22: result of qualifying a garment for an adornment slot.
 
-    ``qualifies`` — False if any chromatic primary or secondary fails the echo test.
-    ``minor_echoes`` — family names of minor colours that echo an anchor (FR-22 bonus).
+    qualifies — False only for statement-adornment slots where a primary or
+                secondary is chromatic and does not echo the anchors.
+    minor_echoes — family names of minor colours that echo an anchor (FR-22 bonus).
     """
     qualifies: bool
     minor_echoes: frozenset[str]
@@ -201,13 +288,27 @@ def qualify_echo_slot(
     anchor_chromatic_families: frozenset[str],
 ) -> EchoQualification:
     """
-    FR-21 / FR-22: check whether *garment* qualifies for an echo slot.
+    FR-21 / FR-22: check whether *garment* qualifies for its adornment slot.
 
-    Qualifies iff every primary and secondary colour is either neutral or shares
-    a family with a chromatic colour on any anchor garment.  Minor colours never
-    disqualify (FR-10); minor echoes are recorded for the ranking bonus (FR-22).
+    Minor adornments (glasses, earrings, necklace, watch, ring, bracelet)
+    never disqualify (FR-49.3); their minor echoes are still recorded (FR-22).
+
+    Statement adornments (hat, tie, scarf, belt, socks, shoes) qualify iff
+    every primary and secondary colour is neutral or echoes an anchor family.
+    Minor colours never disqualify (FR-10); minor echoes are recorded (FR-22).
+
+    Unknown/legacy slot keys fall through to statement-adornment logic (safe
+    default during the v0.1.0→v0.2.0 migration period).
     """
+    slot = category_to_slot(garment.garment_type)
     roles = derive_roles(garment.colours)
+
+    if slot in C.MINOR_ADORNMENT_SLOTS:
+        # Minor adornment: never disqualifies (FR-49.3)
+        echoes = minor_echo_families(roles, anchor_chromatic_families)
+        return EchoQualification(qualifies=True, minor_echoes=echoes)
+
+    # Statement adornment (or unknown): echo-constrained
     for c in (*roles.primaries, *roles.secondaries):
         fam = _classify(c.h, c.s, c.l)
         if _is_neutral(fam):

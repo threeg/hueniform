@@ -129,7 +129,7 @@ class TestNormalCombinations:
         _materialise(engine, single_valid_outfit())
         result = suggest(frozenset(), engine, _rng())
         combo = result.combinations[0]
-        assert set(combo.slots.keys()) == {"top", "bottom", "socks", "shoes"}
+        assert set(combo.slots.keys()) == {"base", "lower_body", "socks", "shoes"}
 
     def test_combination_slots_are_garment_rows(self, engine):
         _materialise(engine, single_valid_outfit())
@@ -238,8 +238,8 @@ class TestZeroResultSentinel:
     def test_constraining_slot_named_in_hint(self, engine):
         _materialise(engine, no_valid_outfit_constrained_by("top"))
         result = suggest(frozenset(), engine, _rng())
-        # The constraining slot ("top") should be mentioned in the hint.
-        assert "top" in result.hint
+        # The constraining slot maps to "base" (v0.2.0) — must appear in the hint.
+        assert "base" in result.hint
 
     def test_echo_slot_constraint(self, engine):
         """An incompatible echo slot triggers the zero-result path."""

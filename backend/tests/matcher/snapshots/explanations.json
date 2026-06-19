@@ -3,7 +3,7 @@
     "scenario": "single_valid_outfit",
     "combinations": [
       {
-        "text": "Complementary scheme. top: Red (anchor); bottom: Teal (anchor); socks: Grey (neutral); shoes: Black (neutral)."
+        "text": "Complementary scheme. base: Red (anchor); lower_body: Teal (anchor); socks: Grey (neutral); shoes: Black (neutral)."
       }
     ]
   },
@@ -11,10 +11,10 @@
     "scenario": "two_valid_outfits",
     "combinations": [
       {
-        "text": "Complementary scheme. top: Red (anchor); bottom: Teal (anchor); socks: Grey (neutral); shoes: Black (neutral)."
+        "text": "Complementary scheme. base: Red (anchor); lower_body: Teal (anchor); socks: Grey (neutral); shoes: Black (neutral)."
       },
       {
-        "text": "Complementary scheme. top: Red (anchor); bottom: Teal (anchor); socks: Grey (neutral); shoes: Black (neutral)."
+        "text": "Complementary scheme. base: Red (anchor); lower_body: Teal (anchor); socks: Grey (neutral); shoes: Black (neutral)."
       }
     ]
   },
@@ -22,7 +22,7 @@
     "scenario": "neutral_fallback_only",
     "combinations": [
       {
-        "text": "Neutral based scheme. top: Navy (anchor); bottom: Grey (anchor); socks: Black (neutral); shoes: White (neutral)."
+        "text": "Neutral based scheme. base: Navy (anchor); lower_body: Grey (anchor); socks: Black (neutral); shoes: White (neutral)."
       }
     ]
   },
@@ -30,7 +30,7 @@
     "scenario": "rich_echo_wardrobe",
     "combinations": [
       {
-        "text": "Complementary scheme. top: Red (anchor); bottom: Teal (anchor); socks: Red (echo); shoes: Grey (neutral)."
+        "text": "Complementary scheme. base: Red (anchor); lower_body: Teal (anchor); socks: Red (echo); shoes: Grey (neutral)."
       }
     ]
   },

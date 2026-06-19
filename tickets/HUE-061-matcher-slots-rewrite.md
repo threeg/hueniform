@@ -2,7 +2,7 @@
 id: HUE-061
 title: matcher.slots rewrite — regions, four-layer stack, one-piece, adornment tiers
 type: task
-status: todo
+status: done
 milestone: 14
 batch: matcher
 layer: matcher
@@ -34,14 +34,14 @@ behavioural shift is captured as a HUE-059 snapshot diff committed with this tic
 - Standard library only (NFR-9); ranking/explain adapted only enough to keep the gate green
 
 ## Definition of done (acceptance criteria)
-- [ ] Category→slot mapping and matcher-equivalence-within-a-slot enforced (FR-16, FR-49.5)
-- [ ] Four-layer dominance, one-piece behaviour, covered-layer constraint ×4, and the two adornment tiers correct (FR-18–FR-22)
-- [ ] Mutual-exclusion groups and the mandatory lower-body floor enforced (FR-50, FR-51)
-- [ ] Standard library only; passes the §5.2 allowlist; import contracts unchanged
-- [ ] HUE-059 snapshot updated for the intended changes and committed in this commit (§4.10)
-- [ ] Tests added/updated per test strategy §12.2 and passing in `make test`
-- [ ] Matcher coverage gate (100% line+branch on app/matcher/) holds (§12.3.3)
-- [ ] Ticket status + notes updated in the same commit
+- [x] Category→slot mapping and matcher-equivalence-within-a-slot enforced (FR-16, FR-49.5)
+- [x] Four-layer dominance, one-piece behaviour, covered-layer constraint ×4, and the two adornment tiers correct (FR-18–FR-22)
+- [x] Mutual-exclusion groups and the mandatory lower-body floor enforced (FR-50, FR-51)
+- [x] Standard library only; passes the §5.2 allowlist; import contracts unchanged
+- [x] HUE-059 snapshot updated for the intended changes and committed in this commit (§4.10)
+- [x] Tests added/updated per test strategy §12.2 and passing in `make test`
+- [x] Matcher coverage gate (100% line+branch on app/matcher/) holds (§12.3.3)
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `matcher/test_slots.py` rewritten per §4.6: category→slot mapping and equivalence; four-layer
@@ -51,3 +51,8 @@ floor. The HUE-059 snapshot diff is reviewed as part of the change.
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-19 — implemented. `matcher/slots.py` fully rewritten to v0.2.0: 40-category CATEGORY_SLOT map, `category_to_slot()` with v0.1.0 backward-compat fallback via `_V1_TO_SLOT`, four-level upper-body stack (`outer > mid > shirt > base`), one-piece spanning (FR-49.2), `is_valid_slot_combination()` (FR-50.2), two adornment tiers (statement echo-constrained, minor never disqualifies, FR-49.3). `ranking.py` translates v0.1.0 requested-slot keys and garment types at the `rank()` entry point so the service layer requires no changes. Backward-compat aliases (`REQUIRED_SLOTS`, `OPTIONAL_SLOTS`, `GARMENT_TYPES`) retained for the migration period. `test_slots.py` fully rewritten; `test_ranking.py`, `test_explain.py`, and service/API tests updated for v0.2.0 slot keys. `explanations.json` snapshot regenerated (slot names changed in rendered text). `make test` passes with 100% matcher line+branch coverage, zero warnings.
+- Sanity test: `cd backend && .venv/bin/pytest tests/matcher/ -q`
+
+## QA steps
+No frontend UI changes in this ticket.

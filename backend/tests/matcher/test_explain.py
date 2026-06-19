@@ -17,11 +17,17 @@ from app.matcher.roles import Garment, GarmentRoles, derive_roles
 from app.matcher.ranking import evaluate_outfit, EvaluationResult
 from app.matcher.harmony import SchemeResult
 from app.matcher.explain import render
+from app.matcher.slots import category_to_slot
 from tests.fixtures.wardrobes import (
     neutral_fallback_only,
     no_valid_outfit_constrained_by,
     single_valid_outfit,
 )
+
+
+def _outfit_from(garments) -> dict[str, Garment]:
+    """Convert a garment list to an outfit dict using v0.2.0 slot keys."""
+    return {category_to_slot(g.garment_type): g for g in garments}
 
 
 # ── Colour helpers ────────────────────────────────────────────────────────────
@@ -41,14 +47,14 @@ def _white(p: int) -> Colour: return _c(  0.0,  0.0, 96.0, p)
 
 class TestSchemeInOutput:
     def test_complementary_scheme_named(self) -> None:
-        outfit = {g.garment_type: g for g in single_valid_outfit()}
+        outfit = _outfit_from(single_valid_outfit())
         result = evaluate_outfit(outfit)
         assert result is not None
         text = render(result)
         assert "complementary" in text.lower()
 
     def test_neutral_based_scheme_named(self) -> None:
-        outfit = {g.garment_type: g for g in neutral_fallback_only()}
+        outfit = _outfit_from(neutral_fallback_only())
         result = evaluate_outfit(outfit)
         assert result is not None
         text = render(result)
@@ -56,10 +62,10 @@ class TestSchemeInOutput:
 
     def test_analogous_scheme_named(self) -> None:
         outfit = {
-            "top":    Garment("top",    (_c(0.0, 80.0, 50.0, 100),)),   # red
-            "bottom": Garment("bottom", (_c(35.0, 70.0, 50.0, 100),)),  # orange (35° span)
-            "socks":  Garment("socks",  (_grey(100),)),
-            "shoes":  Garment("shoes",  (_black(100),)),
+            "base":       Garment("t_shirt",  (_c(0.0, 80.0, 50.0, 100),)),   # red
+            "lower_body": Garment("trousers", (_c(35.0, 70.0, 50.0, 100),)),  # orange (35° span)
+            "socks":      Garment("socks",    (_grey(100),)),
+            "shoes":      Garment("shoes",    (_black(100),)),
         }
         result = evaluate_outfit(outfit)
         assert result is not None
@@ -73,16 +79,16 @@ class TestSchemeInOutput:
 
 class TestSlotColoursInOutput:
     def test_anchor_slot_colour_families_appear(self) -> None:
-        outfit = {g.garment_type: g for g in single_valid_outfit()}
+        outfit = _outfit_from(single_valid_outfit())
         result = evaluate_outfit(outfit)
         assert result is not None
         text = render(result).lower()
-        # Red top and teal bottom are anchors; their family names must appear
+        # Red base and teal lower_body are anchors; their family names must appear
         assert "red" in text
         assert "teal" in text
 
     def test_neutral_echo_slot_families_appear(self) -> None:
-        outfit = {g.garment_type: g for g in single_valid_outfit()}
+        outfit = _outfit_from(single_valid_outfit())
         result = evaluate_outfit(outfit)
         assert result is not None
         text = render(result)
@@ -91,22 +97,22 @@ class TestSlotColoursInOutput:
         assert "shoes" in text
 
     def test_all_requested_slots_appear(self) -> None:
-        outfit = {g.garment_type: g for g in single_valid_outfit()}
+        outfit = _outfit_from(single_valid_outfit())
         result = evaluate_outfit(outfit)
         assert result is not None
         text = render(result)
-        for gtype in outfit:
-            assert gtype in text
+        for slot in outfit:
+            assert slot in text
 
     def test_anchor_role_label_present(self) -> None:
-        outfit = {g.garment_type: g for g in single_valid_outfit()}
+        outfit = _outfit_from(single_valid_outfit())
         result = evaluate_outfit(outfit)
         assert result is not None
         text = render(result)
         assert "anchor" in text
 
     def test_neutral_role_label_present(self) -> None:
-        outfit = {g.garment_type: g for g in single_valid_outfit()}
+        outfit = _outfit_from(single_valid_outfit())
         result = evaluate_outfit(outfit)
         assert result is not None
         text = render(result)
@@ -119,11 +125,11 @@ class TestEchoFamiliesInOutput:
     def _echo_outfit(self) -> dict[str, Garment]:
         """Red+Teal complementary anchors; socks has Teal minor → echo_bonus=1."""
         return {
-            "top":    Garment("top",    (_red(100),)),
-            "bottom": Garment("bottom", (_teal(100),)),
+            "base":       Garment("t_shirt",  (_red(100),)),
+            "lower_body": Garment("trousers", (_teal(100),)),
             # Red(87%) primary echoes anchor Red; Teal(13%) minor echoes anchor Teal
-            "socks":  Garment("socks",  (Colour(0.0, 80.0, 50.0, 87), Colour(180.0, 70.0, 50.0, 13))),
-            "shoes":  Garment("shoes",  (_grey(100),)),
+            "socks":      Garment("socks",    (Colour(0.0, 80.0, 50.0, 87), Colour(180.0, 70.0, 50.0, 13))),
+            "shoes":      Garment("shoes",    (_grey(100),)),
         }
 
     def test_echo_family_appears_when_echo_bonus_positive(self) -> None:
@@ -142,7 +148,7 @@ class TestEchoFamiliesInOutput:
         assert "echo" in text.lower()
 
     def test_no_echo_text_when_echo_bonus_zero(self) -> None:
-        outfit = {g.garment_type: g for g in single_valid_outfit()}
+        outfit = _outfit_from(single_valid_outfit())
         result = evaluate_outfit(outfit)
         assert result is not None
         assert result.echo_bonus == 0
@@ -164,17 +170,17 @@ class TestNoPrimaryGarment:
             Colour(h=0.0, s=0.0, l=50.0, proportion=25),
         )
         outfit = {
-            "top":    Garment("top",    (_red(100),)),
-            "bottom": Garment("bottom", (_teal(100),)),
-            "socks":  Garment("socks",  (_grey(100),)),
-            "shoes":  Garment("shoes",  (_black(100),)),
+            "base":       Garment("t_shirt",  (_red(100),)),
+            "lower_body": Garment("trousers", (_teal(100),)),
+            "socks":      Garment("socks",    (_grey(100),)),
+            "shoes":      Garment("shoes",    (_black(100),)),
         }
         # Build EvaluationResult directly with a no-primary garment_roles for socks
         garment_roles = {
-            "top":    derive_roles(outfit["top"].colours),
-            "bottom": derive_roles(outfit["bottom"].colours),
-            "socks":  GarmentRoles(primaries=(), secondaries=(), minors=colours_no_primary, is_dual_primary=False),
-            "shoes":  derive_roles(outfit["shoes"].colours),
+            "base":       derive_roles(outfit["base"].colours),
+            "lower_body": derive_roles(outfit["lower_body"].colours),
+            "socks":      GarmentRoles(primaries=(), secondaries=(), minors=colours_no_primary, is_dual_primary=False),
+            "shoes":      derive_roles(outfit["shoes"].colours),
         }
         result = EvaluationResult(
             outfit=outfit,
@@ -228,7 +234,7 @@ class TestSentinelOutput:
 
 class TestFallbackLabel:
     def test_fallback_result_labelled(self) -> None:
-        outfit = {g.garment_type: g for g in neutral_fallback_only()}
+        outfit = _outfit_from(neutral_fallback_only())
         result = evaluate_outfit(outfit, is_fallback=True)
         assert result is not None
         assert result.is_fallback is True
@@ -236,7 +242,7 @@ class TestFallbackLabel:
         assert "fallback" in text.lower()
 
     def test_non_fallback_not_labelled_as_fallback(self) -> None:
-        outfit = {g.garment_type: g for g in single_valid_outfit()}
+        outfit = _outfit_from(single_valid_outfit())
         result = evaluate_outfit(outfit)
         assert result is not None
         assert result.is_fallback is False
@@ -249,8 +255,8 @@ class TestFallbackLabel:
 class TestCovariance:
     def test_scheme_change_changes_text(self) -> None:
         """Different matched schemes must produce different output."""
-        outfit_comp = {g.garment_type: g for g in single_valid_outfit()}
-        outfit_neutral = {g.garment_type: g for g in neutral_fallback_only()}
+        outfit_comp    = _outfit_from(single_valid_outfit())
+        outfit_neutral = _outfit_from(neutral_fallback_only())
         result_comp = evaluate_outfit(outfit_comp)
         result_neutral = evaluate_outfit(outfit_neutral)
         assert result_comp is not None
@@ -260,20 +266,20 @@ class TestCovariance:
         assert text_comp != text_neutral
 
     def test_top_colour_change_changes_text(self) -> None:
-        """Changing the top's primary colour changes the output text."""
-        # Red top → complementary with Teal bottom
+        """Changing the base's primary colour changes the output text."""
+        # Red base → complementary with Teal lower_body
         outfit_red = {
-            "top":    Garment("top",    (_red(100),)),
-            "bottom": Garment("bottom", (_teal(100),)),
-            "socks":  Garment("socks",  (_grey(100),)),
-            "shoes":  Garment("shoes",  (_black(100),)),
+            "base":       Garment("t_shirt",  (_red(100),)),
+            "lower_body": Garment("trousers", (_teal(100),)),
+            "socks":      Garment("socks",    (_grey(100),)),
+            "shoes":      Garment("shoes",    (_black(100),)),
         }
-        # Top replaced by Teal (monochromatic with Teal bottom)
+        # Base replaced by Teal (monochromatic with Teal lower_body)
         outfit_teal = {
-            "top":    Garment("top",    (_teal(100),)),
-            "bottom": Garment("bottom", (_teal(100),)),
-            "socks":  Garment("socks",  (_grey(100),)),
-            "shoes":  Garment("shoes",  (_black(100),)),
+            "base":       Garment("t_shirt",  (_teal(100),)),
+            "lower_body": Garment("trousers", (_teal(100),)),
+            "socks":      Garment("socks",    (_grey(100),)),
+            "shoes":      Garment("shoes",    (_black(100),)),
         }
         result_red = evaluate_outfit(outfit_red)
         result_teal = evaluate_outfit(outfit_teal)
@@ -287,17 +293,17 @@ class TestCovariance:
         """Adding a minor echo changes the output text."""
         # Without minor echo: socks 100% Red (primary, no minor)
         outfit_no_echo = {
-            "top":    Garment("top",    (_red(100),)),
-            "bottom": Garment("bottom", (_teal(100),)),
-            "socks":  Garment("socks",  (_red(100),)),
-            "shoes":  Garment("shoes",  (_grey(100),)),
+            "base":       Garment("t_shirt",  (_red(100),)),
+            "lower_body": Garment("trousers", (_teal(100),)),
+            "socks":      Garment("socks",    (_red(100),)),
+            "shoes":      Garment("shoes",    (_grey(100),)),
         }
         # With minor echo: socks Red(87%) + Teal(13% minor) → echo_bonus=1
         outfit_with_echo = {
-            "top":    Garment("top",    (_red(100),)),
-            "bottom": Garment("bottom", (_teal(100),)),
-            "socks":  Garment("socks",  (Colour(0.0, 80.0, 50.0, 87), Colour(180.0, 70.0, 50.0, 13))),
-            "shoes":  Garment("shoes",  (_grey(100),)),
+            "base":       Garment("t_shirt",  (_red(100),)),
+            "lower_body": Garment("trousers", (_teal(100),)),
+            "socks":      Garment("socks",    (Colour(0.0, 80.0, 50.0, 87), Colour(180.0, 70.0, 50.0, 13))),
+            "shoes":      Garment("shoes",    (_grey(100),)),
         }
         result_no_echo = evaluate_outfit(outfit_no_echo)
         result_with_echo = evaluate_outfit(outfit_with_echo)
@@ -325,7 +331,7 @@ class TestCovariance:
 
     def test_is_fallback_change_changes_text(self) -> None:
         """Setting is_fallback changes the output."""
-        outfit = {g.garment_type: g for g in neutral_fallback_only()}
+        outfit = _outfit_from(neutral_fallback_only())
         result_normal = evaluate_outfit(outfit, is_fallback=False)
         result_fallback = evaluate_outfit(outfit, is_fallback=True)
         assert result_normal is not None
@@ -338,24 +344,24 @@ class TestCovariance:
 class TestDeterminism:
     def test_same_result_same_text(self) -> None:
         """render is deterministic: calling twice returns identical text."""
-        outfit = {g.garment_type: g for g in single_valid_outfit()}
+        outfit = _outfit_from(single_valid_outfit())
         result = evaluate_outfit(outfit)
         assert result is not None
         assert render(result) == render(result)
 
     def test_same_result_same_text_with_echoes(self) -> None:
         outfit = {
-            "top":    Garment("top",    (_red(100),)),
-            "bottom": Garment("bottom", (_teal(100),)),
-            "socks":  Garment("socks",  (Colour(0.0, 80.0, 50.0, 87), Colour(180.0, 70.0, 50.0, 13))),
-            "shoes":  Garment("shoes",  (_grey(100),)),
+            "base":       Garment("t_shirt",  (_red(100),)),
+            "lower_body": Garment("trousers", (_teal(100),)),
+            "socks":      Garment("socks",    (Colour(0.0, 80.0, 50.0, 87), Colour(180.0, 70.0, 50.0, 13))),
+            "shoes":      Garment("shoes",    (_grey(100),)),
         }
         result = evaluate_outfit(outfit)
         assert result is not None
         assert render(result) == render(result)
 
     def test_determinism_neutral_fallback(self) -> None:
-        outfit = {g.garment_type: g for g in neutral_fallback_only()}
+        outfit = _outfit_from(neutral_fallback_only())
         result = evaluate_outfit(outfit, is_fallback=True)
         assert result is not None
         assert render(result) == render(result)

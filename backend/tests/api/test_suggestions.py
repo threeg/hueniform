@@ -154,13 +154,13 @@ class TestSuggestionFound:
     def test_slots_contain_required_types(self, api_client):
         _seed(api_client, single_valid_outfit())
         slots = api_client.post("/api/suggestions", json={}).json()["combinations"][0]["slots"]
-        for required in ("top", "bottom", "socks", "shoes"):
+        for required in ("base", "lower_body", "socks", "shoes"):
             assert required in slots
 
     def test_slot_garment_summary_shape(self, api_client):
         _seed(api_client, single_valid_outfit())
         combo = api_client.post("/api/suggestions", json={}).json()["combinations"][0]
-        garment = combo["slots"]["top"]
+        garment = combo["slots"]["base"]
         assert "id" in garment
         assert "type" in garment
         assert "colours" in garment
@@ -301,4 +301,4 @@ class TestOptionalSlots:
         ).json()["combinations"]
         assert len(combos) >= 1
         slots = combos[0]["slots"]
-        assert "jersey" in slots
+        assert "mid" in slots

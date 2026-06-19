@@ -22,9 +22,11 @@ from app.matcher.slots import (
 from app.matcher.taxonomy import classify as _classify
 from app.matcher.taxonomy import is_neutral as _is_neutral
 
-# Presentation order for deterministic slot listing
+# Presentation order for deterministic slot listing (outermost → innermost → adornments)
 _SLOT_ORDER: tuple[str, ...] = (
-    "jacket", "jersey", "top", "bottom", "socks", "shoes", "hat", "accessory"
+    "outer", "mid", "shirt", "base", "lower_body",
+    "hat", "tie", "scarf", "belt", "socks", "shoes",
+    "glasses", "earrings", "necklace", "watch", "ring", "bracelet",
 )
 
 

@@ -22,14 +22,15 @@ from app.matcher.harmony import SchemeResult, evaluate_scheme
 from app.matcher.roles import Garment, GarmentRoles, classify_secondary, derive_roles
 from app.matcher.slots import (
     ECHO_SLOTS,
-    REQUIRED_SLOTS,
     build_scheme_set,
+    category_to_slot,
     check_anchor_secondaries,
     check_covered_layer,
     covered_upper_layers,
     dominant_layer,
     get_anchor_chromatic_families,
     get_anchor_types,
+    is_valid_slot_combination,
     qualify_echo_slot,
 )
 from app.matcher.taxonomy import classify as _classify
@@ -90,6 +91,9 @@ def evaluate_outfit(
     Returns ``None`` if the scheme set is not harmonious or any slot rule fails.
     Otherwise returns a fully scored ``EvaluationResult``.
     """
+    if not is_valid_slot_combination(outfit):
+        return None
+
     ss = build_scheme_set(outfit)
     scheme_result = evaluate_scheme(ss.hues)
     if scheme_result is None:
@@ -208,7 +212,7 @@ def _greedy_select(results: list[EvaluationResult], n: int) -> list[EvaluationRe
 
 # ── Outfit enumeration ────────────────────────────────────────────────────────
 
-_ANCHOR_ORDER: tuple[str, ...] = ("jacket", "jersey", "top", "bottom")
+_ANCHOR_ORDER: tuple[str, ...] = ("outer", "mid", "shirt", "base", "lower_body")
 
 
 def _enumerate_outfits(
@@ -328,10 +332,13 @@ def rank(
       (a) neutral-based combinations flagged with ``is_fallback=True``;
       (b) a single zero-result sentinel with ``constraining_slot`` set.
     """
-    # Group garments by type; verify all requested slots are present
+    # Translate v0.1.0 requested_slot keys to v0.2.0 (backward compat — HUE-065 removes this)
+    requested_slots = frozenset(category_to_slot(s) for s in requested_slots)
+
+    # Group garments by slot; verify all requested slots are present
     garments_by_slot: dict[str, list[Garment]] = {}
     for g in wardrobe:
-        garments_by_slot.setdefault(g.garment_type, []).append(g)
+        garments_by_slot.setdefault(category_to_slot(g.garment_type), []).append(g)
 
     missing = requested_slots - frozenset(garments_by_slot)
     if missing:
