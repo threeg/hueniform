@@ -1,7 +1,7 @@
 """
 Colour family taxonomy (FR-1–FR-5, requirements §2).
 
-``classify(h, s, l)`` maps any valid HSL value to exactly one of the nineteen
+``classify(h, s, l)`` maps any valid HSL value to exactly one of the twenty
 family names, deterministically (FR-1).  Rules are evaluated in this order:
 
   1. Neutral rules in the FR-2 table order (first match wins).
@@ -50,6 +50,7 @@ FAMILIES: list[Family] = [
     Family("Denim",     True,  (215.0,  30.0, 45.0)),
     Family("Brown",     True,  ( 25.0,  40.0, 30.0)),
     Family("Beige/Tan", True,  ( 35.0,  30.0, 72.0)),
+    Family("Cream",     True,  ( 45.0,  25.0, 90.0)),
     # ── Chromatics (hue order) ───────────────────────────────────────────────
     Family("Red",        False, (  0.0, 80.0, 50.0), representative_hue=  0.0, hue_arc=(345.0,  15.0)),
     Family("Orange",     False, ( 30.0, 90.0, 55.0), representative_hue= 30.0, hue_arc=( 15.0,  45.0)),
@@ -143,6 +144,14 @@ def classify(h: float, s: float, l: float) -> str:
             and C.BEIGE_L_LOW <= l <= C.BEIGE_L_HIGH):
         return "Beige/Tan"
 
-    # 8. Chromatic arc (FR-4: half-open boundaries; boundary belongs to starting arc).
+    # 8. Cream — CREAM_H_LOW ≤ H ≤ CREAM_H_HIGH, CREAM_S_LOW ≤ S ≤ CREAM_S_HIGH,
+    #            L > CREAM_L_MIN (lighter than Beige/Tan; evaluated after White so
+    #            high-L low-S values go to White first) (FR-2 rule 8)
+    if (C.CREAM_H_LOW <= h <= C.CREAM_H_HIGH
+            and C.CREAM_S_LOW <= s <= C.CREAM_S_HIGH
+            and l > C.CREAM_L_MIN):
+        return "Cream"
+
+    # 9. Chromatic arc (FR-4: half-open boundaries; boundary belongs to starting arc).
     # Red's arc starts at 345°; offset by that, then every 30° is one arc index.
     return _CHROMATIC_NAMES[int((h - 345.0) % 360.0 // C.CHROMATIC_ARC) % 12]

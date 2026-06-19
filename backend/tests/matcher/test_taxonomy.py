@@ -197,8 +197,8 @@ class TestBeigeBoundary:
         (35.0, 30.0, 60.0,  "Beige/Tan"),  # L at lower bound
         (35.0, 30.0, 88.0,  "Beige/Tan"),  # L at upper bound
         (35.0, 30.0, 59.9,  "Orange"),      # L just below → chromatic Orange
-        # L=88.1 is NOT > 92 so White rule doesn't fire; H=35 → Orange
-        (35.0, 15.0, 88.1,  "Orange"),      # L just above Beige upper → chromatic Orange
+        # L=88.1 exceeds Beige/Tan ceiling (L ≤ 88) and meets Cream (L > 88)
+        (35.0, 15.0, 88.1,  "Cream"),       # L just above Beige upper → Cream (rule 8)
         # H boundaries
         (20.0, 30.0, 72.0,  "Beige/Tan"),  # H at lower bound
         # H=19.9 is in Orange arc [15,45) — Red arc is [345,15), not [0,15)
@@ -213,6 +213,37 @@ class TestBeigeBoundary:
     def test_fr2_beige(self, h, s, l, expected) -> None:
         assert classify(h, s, l) == expected, (
             f"FR-2 rule 7 (Beige/Tan): classify({h},{s},{l}) expected {expected}"
+        )
+
+
+class TestCreamBoundary:
+    """Cream: 20 ≤ H ≤ 70, 10 ≤ S ≤ 45, L > 88 (rule 8); White takes priority at L > 92, S < 20."""
+
+    @pytest.mark.parametrize("h,s,l,expected", [
+        # canonical and worked example (ticket)
+        (45.0, 25.0, 90.0,  "Cream"),       # canonical
+        (52.0, 28.0, 90.0,  "Cream"),       # ecru/white-jeans example (≈ H52, S28, L90)
+        # L boundary — Beige/Tan hands off at L=88
+        (45.0, 25.0, 88.1,  "Cream"),       # L just above threshold
+        (45.0, 25.0, 88.0,  "Beige/Tan"),   # L at threshold → Beige/Tan (L ≤ 88)
+        # H lower boundary (Cream shares H_LOW=20 with Beige/Tan)
+        (20.0, 25.0, 90.0,  "Cream"),       # H at lower bound
+        (19.9, 25.0, 90.0,  "Orange"),      # H just below → Orange arc [15, 45)
+        # H upper boundary — Cream extends to 70°, Beige/Tan only to 60°
+        (70.0, 25.0, 90.0,  "Cream"),       # H at upper bound
+        (70.1, 25.0, 90.0,  "Yellow"),      # H just above → Yellow arc [45, 75)
+        (65.0, 25.0, 90.0,  "Cream"),       # H in (60, 70] — above Beige/Tan ceiling
+        # S boundaries
+        (45.0, 10.0, 90.0,  "Cream"),       # S at lower bound
+        (45.0, 45.0, 90.0,  "Cream"),       # S at upper bound
+        (45.0, 45.1, 90.0,  "Yellow"),      # S just above → chromatic Yellow
+        (45.0,  9.9, 90.0,  "Grey"),        # S just below 10 → Grey (S < 10, 12 ≤ L ≤ 92)
+        # White takes priority when L > 92 and S < 20 (rule 2 before rule 8)
+        (45.0, 15.0, 93.0,  "White"),       # White before Cream
+    ])
+    def test_fr2_cream(self, h, s, l, expected) -> None:
+        assert classify(h, s, l) == expected, (
+            f"FR-2 rule 8 (Cream): classify({h},{s},{l}) expected {expected}"
         )
 
 
@@ -288,7 +319,7 @@ def test_canonical_classifies_into_own_family(family_name: str) -> None:
 # ── FAMILIES registry checks ──────────────────────────────────────────────────
 
 def test_families_count() -> None:
-    assert len(FAMILIES) == 19
+    assert len(FAMILIES) == 20
 
 def test_neutral_chromatic_distinction() -> None:
     neutral_names = {f.name for f in FAMILIES if f.is_neutral}
@@ -338,7 +369,7 @@ _L = st.floats(min_value=0.0, max_value=100.0, allow_nan=False, allow_infinity=F
 
 @given(_H, _S, _L)
 def test_fr1_totality(h: float, s: float, l: float) -> None:
-    """FR-1: classification always returns exactly one of the nineteen families."""
+    """FR-1: classification always returns exactly one of the twenty families."""
     result = classify(h, s, l)
     assert result in ALL_FAMILIES, f"classify({h},{s},{l}) returned unknown family '{result}'"
 

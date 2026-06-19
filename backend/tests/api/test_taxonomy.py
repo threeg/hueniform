@@ -28,8 +28,8 @@ class TestResponseShape:
     def test_top_level_key(self, api_client):
         assert "families" in api_client.get("/api/taxonomy").json()
 
-    def test_nineteen_families(self, families):
-        assert len(families) == 19
+    def test_twenty_families(self, families):
+        assert len(families) == 20
 
     def test_each_family_has_name(self, families):
         for fam in families:
@@ -83,8 +83,8 @@ class TestChromaticFields:
     def test_twelve_chromatic_families(self, families):
         assert sum(1 for f in families if not f["neutral"]) == 12
 
-    def test_seven_neutral_families(self, families):
-        assert sum(1 for f in families if f["neutral"]) == 7
+    def test_eight_neutral_families(self, families):
+        assert sum(1 for f in families if f["neutral"]) == 8
 
 
 # ── Canonical self-classification invariant (contract §2.2) ──────────────────

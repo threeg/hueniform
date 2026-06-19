@@ -114,13 +114,13 @@ class TestInvalidUploadFixtures:
 # ── Palette table checks (§11.3) ─────────────────────────────────────────────
 
 class TestPalettesTables:
-    def test_all_nineteen_families_present(self) -> None:
-        assert len(ALL_FAMILIES) == 19, (
-            f"Expected 19 families, got {len(ALL_FAMILIES)}: {ALL_FAMILIES}"
+    def test_all_twenty_families_present(self) -> None:
+        assert len(ALL_FAMILIES) == 20, (
+            f"Expected 20 families, got {len(ALL_FAMILIES)}: {ALL_FAMILIES}"
         )
 
-    def test_seven_neutrals(self) -> None:
-        assert len(NEUTRAL_FAMILIES) == 7, NEUTRAL_FAMILIES
+    def test_eight_neutrals(self) -> None:
+        assert len(NEUTRAL_FAMILIES) == 8, NEUTRAL_FAMILIES
 
     def test_twelve_chromatics(self) -> None:
         assert len(CHROMATIC_FAMILIES) == 12, CHROMATIC_FAMILIES

@@ -36,7 +36,7 @@ Leaf tickets for v0.2.0 (epics E06–E10). Reading top to bottom is a legal buil
 | 59 | HUE-059 | Matcher golden-file snapshot baseline | task | matcher | 14 / matcher | HUE-E08 | done | HUE-015 |
 | 60 | HUE-060 | matcher.constants v0.2.0 — category/slot model and new named values | task | matcher | 14 / matcher | HUE-E08 | done | HUE-059, HUE-007 |
 | 61 | HUE-061 | matcher.slots rewrite — regions, four-layer stack, one-piece, adornment tiers | task | matcher | 14 / matcher | HUE-E08 | done | HUE-060, HUE-013 |
-| 62 | HUE-062 | matcher.taxonomy — the Cream family | task | matcher | 14 / matcher | HUE-E09 | todo | HUE-060, HUE-009 |
+| 62 | HUE-062 | matcher.taxonomy — the Cream family | task | matcher | 14 / matcher | HUE-E09 | done | HUE-060, HUE-009 |
 | 63 | HUE-063 | matcher.ranking refinements — first-class neutral, diversity, top-N, seedable RNG | task | matcher | 14 / matcher | HUE-E09 | todo | HUE-061, HUE-062, HUE-014 |
 | 64 | HUE-064 | matcher.explain — new slot vocabulary and neutral vs fallback wording | task | matcher | 14 / matcher | HUE-E09 | todo | HUE-061, HUE-063, HUE-015 |
 | 65 | HUE-065 | Storage category value-set and data migration | task | storage | 14 / storage | HUE-E08 | todo | HUE-016 |

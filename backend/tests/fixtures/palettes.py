@@ -43,6 +43,11 @@ BEIGE_S_LOW  = 10.0          # 10 ≤ S ≤ 45
 BEIGE_S_HIGH = 45.0
 BEIGE_L_LOW  = 60.0          # 60 ≤ L ≤ 88
 BEIGE_L_HIGH = 88.0
+CREAM_H_LOW  = 20.0          # 20 ≤ H ≤ 70
+CREAM_H_HIGH = 70.0
+CREAM_S_LOW  = 10.0          # 10 ≤ S ≤ 45
+CREAM_S_HIGH = 45.0
+CREAM_L_MIN  = 88.0          # L > 88 (lighter than Beige/Tan)
 
 # ── Chromatic arc width (FR-4, §2.2) ────────────────────────────────────────
 CHROMATIC_ARC = 30.0         # each family owns a 30° half-open arc
@@ -77,6 +82,7 @@ CANONICAL: dict[str, tuple[float, float, float]] = {
     "Denim":    (215.0, 30.0, 45.0),
     "Brown":    (25.0,  40.0, 30.0),
     "Beige/Tan":(35.0,  30.0, 72.0),
+    "Cream":    (45.0,  25.0, 90.0),
     # Chromatics — canonical is the representative hue (arc centre)
     "Red":      (0.0,   80.0, 50.0),
     "Orange":   (30.0,  90.0, 55.0),
@@ -94,7 +100,7 @@ CANONICAL: dict[str, tuple[float, float, float]] = {
 
 ALL_FAMILIES: list[str] = list(CANONICAL.keys())
 NEUTRAL_FAMILIES: list[str] = [
-    "Black", "White", "Grey", "Navy", "Denim", "Brown", "Beige/Tan"
+    "Black", "White", "Grey", "Navy", "Denim", "Brown", "Beige/Tan", "Cream"
 ]
 CHROMATIC_FAMILIES: list[str] = [f for f in ALL_FAMILIES if f not in NEUTRAL_FAMILIES]
 
