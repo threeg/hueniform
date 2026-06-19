@@ -8,6 +8,15 @@ from hypothesis import settings
 from app.main import Settings, create_app
 from tests.fixtures.generate_images import generate_all as _generate_synthetic
 
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    parser.addoption(
+        "--snapshot-update",
+        action="store_true",
+        default=False,
+        help="Regenerate matcher golden files (test strategy §4.10).",
+    )
+
 # ── Hypothesis profiles (test strategy §4.8) ─────────────────────────────────
 # "deterministic" profile is activated by HYPOTHESIS_PROFILE=deterministic in
 # make test-backend. Local runs use "default" (randomised, finds new examples).

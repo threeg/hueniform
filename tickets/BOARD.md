@@ -33,7 +33,7 @@ Leaf tickets for v0.2.0 (epics E06–E10). Reading top to bottom is a legal buil
 
 | # | id | title | type | layer | M / batch | epic | status | depends_on |
 |---|---|---|---|---|---|---|---|---|
-| 59 | HUE-059 | Matcher golden-file snapshot baseline | task | matcher | 14 / matcher | HUE-E08 | todo | HUE-015 |
+| 59 | HUE-059 | Matcher golden-file snapshot baseline | task | matcher | 14 / matcher | HUE-E08 | done | HUE-015 |
 | 60 | HUE-060 | matcher.constants v0.2.0 — category/slot model and new named values | task | matcher | 14 / matcher | HUE-E08 | todo | HUE-059, HUE-007 |
 | 61 | HUE-061 | matcher.slots rewrite — regions, four-layer stack, one-piece, adornment tiers | task | matcher | 14 / matcher | HUE-E08 | todo | HUE-060, HUE-013 |
 | 62 | HUE-062 | matcher.taxonomy — the Cream family | task | matcher | 14 / matcher | HUE-E09 | todo | HUE-060, HUE-009 |

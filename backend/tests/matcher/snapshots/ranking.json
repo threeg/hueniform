@@ -1,0 +1,81 @@
+[
+  {
+    "scenario": "single_valid_outfit",
+    "combinations": [
+      {
+        "scheme": "complementary",
+        "scheme_deviation": "0.0000",
+        "echo_bonus": 0,
+        "scheme_strength": "1.0000",
+        "score": "100.0000",
+        "is_fallback": false,
+        "constraining_slot": null
+      }
+    ]
+  },
+  {
+    "scenario": "two_valid_outfits",
+    "combinations": [
+      {
+        "scheme": "complementary",
+        "scheme_deviation": "0.0000",
+        "echo_bonus": 0,
+        "scheme_strength": "1.0000",
+        "score": "100.0000",
+        "is_fallback": false,
+        "constraining_slot": null
+      },
+      {
+        "scheme": "complementary",
+        "scheme_deviation": "0.0000",
+        "echo_bonus": 0,
+        "scheme_strength": "1.0000",
+        "score": "100.0000",
+        "is_fallback": false,
+        "constraining_slot": null
+      }
+    ]
+  },
+  {
+    "scenario": "neutral_fallback_only",
+    "combinations": [
+      {
+        "scheme": "neutral-based",
+        "scheme_deviation": "0.0000",
+        "echo_bonus": 0,
+        "scheme_strength": "1.0000",
+        "score": "100.0000",
+        "is_fallback": false,
+        "constraining_slot": null
+      }
+    ]
+  },
+  {
+    "scenario": "rich_echo_wardrobe",
+    "combinations": [
+      {
+        "scheme": "complementary",
+        "scheme_deviation": "0.0000",
+        "echo_bonus": 0,
+        "scheme_strength": "1.0000",
+        "score": "100.0000",
+        "is_fallback": false,
+        "constraining_slot": null
+      }
+    ]
+  },
+  {
+    "scenario": "no_valid_outfit_socks",
+    "combinations": [
+      {
+        "scheme": null,
+        "scheme_deviation": null,
+        "echo_bonus": 0,
+        "scheme_strength": "0.0000",
+        "score": "0.0000",
+        "is_fallback": false,
+        "constraining_slot": "socks"
+      }
+    ]
+  }
+]

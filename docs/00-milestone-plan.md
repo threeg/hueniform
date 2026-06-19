@@ -40,7 +40,7 @@ This document is the single source of truth for **where the project is**. It was
 | 11 | Architecture & API deltas | `docs/03-architecture.md`, `docs/03-api-contract.md` — category edit, pin/scheme + count suggestion API, taxonomy | **Cowork** | ✅ Complete (addended in M12 session — expanded category set, `jersey`/`jacket` → `mid`/`outer` slot keys, per-category slot constraints) |
 | 12 | Wireframe deltas | `docs/04-wireframes/` — new/changed screens (category edit, build-around request, suggestion count, inventory grouping) + design-handoff briefs | **Cowork** | ✅ Complete |
 | 13 | Test-strategy delta + ticket generation | `docs/05-test-strategy.md` (test-first policy, seedable variety, snapshot baseline); `tickets/*` (HUE-059+), epics E06–E10 | **Cowork** | ✅ Complete |
-| 14+ | Implementation, ticket by ticket | Working software; tickets updated in the same commits | **Code** | ⬜ Not started |
+| 14+ | Implementation, ticket by ticket | Working software; tickets updated in the same commits | **Code** | 🔶 In progress |
 
 ---
 

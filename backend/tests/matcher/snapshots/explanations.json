@@ -1,0 +1,45 @@
+[
+  {
+    "scenario": "single_valid_outfit",
+    "combinations": [
+      {
+        "text": "Complementary scheme. top: Red (anchor); bottom: Teal (anchor); socks: Grey (neutral); shoes: Black (neutral)."
+      }
+    ]
+  },
+  {
+    "scenario": "two_valid_outfits",
+    "combinations": [
+      {
+        "text": "Complementary scheme. top: Red (anchor); bottom: Teal (anchor); socks: Grey (neutral); shoes: Black (neutral)."
+      },
+      {
+        "text": "Complementary scheme. top: Red (anchor); bottom: Teal (anchor); socks: Grey (neutral); shoes: Black (neutral)."
+      }
+    ]
+  },
+  {
+    "scenario": "neutral_fallback_only",
+    "combinations": [
+      {
+        "text": "Neutral based scheme. top: Navy (anchor); bottom: Grey (anchor); socks: Black (neutral); shoes: White (neutral)."
+      }
+    ]
+  },
+  {
+    "scenario": "rich_echo_wardrobe",
+    "combinations": [
+      {
+        "text": "Complementary scheme. top: Red (anchor); bottom: Teal (anchor); socks: Red (echo); shoes: Grey (neutral)."
+      }
+    ]
+  },
+  {
+    "scenario": "no_valid_outfit_socks",
+    "combinations": [
+      {
+        "text": "No harmonious outfit could be assembled. The most constrained slot was 'socks'."
+      }
+    ]
+  }
+]

@@ -19,7 +19,7 @@ LINT_IMPORTS := $(VENV)/bin/lint-imports
 .PHONY: setup run dev \
         test test-backend test-frontend \
         test-model test-perf test-e2e test-all \
-        seed-wardrobe
+        seed-wardrobe snapshot-update
 
 # ─── One-time setup (requires internet) ──────────────────────────────────────
 setup:
@@ -81,3 +81,9 @@ test-all: test test-model test-perf test-e2e
 # ─── Seed a running instance for E2E / manual NFR-6 checks ───────────────────
 seed-wardrobe:
 	$(PY) scripts/seed_test_wardrobe.py
+
+# ─── Regenerate matcher golden-file snapshots (test strategy §4.10) ──────────
+# Run after an intentional matcher behaviour change; commit the updated goldens
+# alongside the code in the same commit (see tickets/HUE-059 Notes).
+snapshot-update:
+	cd backend && $(CURDIR)/$(PYTEST) tests/matcher/test_snapshot.py --snapshot-update -v

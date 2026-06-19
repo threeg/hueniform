@@ -2,7 +2,7 @@
 id: HUE-059
 title: Matcher golden-file snapshot baseline
 type: task
-status: todo
+status: done
 milestone: 14
 batch: matcher
 layer: matcher
@@ -31,12 +31,12 @@ It captures behaviour only; it changes no production code.
 - Captured against the **current (pre-rewrite) matcher** — no changes to `app/matcher/`
 
 ## Definition of done (acceptance criteria)
-- [ ] Three golden files committed, generated from current matcher output, exact-compared with fixed-precision scores (§4.10)
-- [ ] Regeneration path documented; goldens otherwise read-only
-- [ ] `test_snapshot.py` is in the default gate and green; no `app/matcher/` production change
-- [ ] Tests added per test strategy §12.2 and passing in `make test`
-- [ ] Matcher coverage gate (100% line+branch on app/matcher/) still holds (§12.3.3)
-- [ ] Ticket status + notes updated in the same commit
+- [x] Three golden files committed, generated from current matcher output, exact-compared with fixed-precision scores (§4.10)
+- [x] Regeneration path documented; goldens otherwise read-only
+- [x] `test_snapshot.py` is in the default gate and green; no `app/matcher/` production change
+- [x] Tests added per test strategy §12.2 and passing in `make test`
+- [x] Matcher coverage gate (100% line+branch on app/matcher/) still holds (§12.3.3)
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `matcher/test_snapshot.py` (§4.10) compares live matcher output against the committed goldens;
@@ -46,3 +46,4 @@ the changed goldens alongside the code.
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-19 — implemented: `test_snapshot.py` + `snapshots/` created; three golden files generated (classifications: 36 HSL inputs → family names; ranking: 5 scenario wardrobes × seeded rank(); explanations: rendered text for each result). `--snapshot-update` pytest option registered in top-level `conftest.py`; `make snapshot-update` Makefile target added. Milestone 14 marked in-progress. 889 backend tests passed (3 new), matcher 100% coverage gate held, 134 frontend tests passed.
