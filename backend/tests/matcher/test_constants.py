@@ -105,6 +105,24 @@ def test_beige_l_high() -> None:
     assert C.BEIGE_L_HIGH == 88.0, "BEIGE_L_HIGH — requirements §2.1 rule 7"
 
 
+# ── §2.1 Cream thresholds (FR-2 rule 8) ──────────────────────────────────────
+
+def test_cream_h_low() -> None:
+    assert C.CREAM_H_LOW == 20.0, "CREAM_H_LOW — requirements §2.1 rule 8"
+
+def test_cream_h_high() -> None:
+    assert C.CREAM_H_HIGH == 70.0, "CREAM_H_HIGH — requirements §2.1 rule 8"
+
+def test_cream_s_low() -> None:
+    assert C.CREAM_S_LOW == 10.0, "CREAM_S_LOW — requirements §2.1 rule 8"
+
+def test_cream_s_high() -> None:
+    assert C.CREAM_S_HIGH == 45.0, "CREAM_S_HIGH — requirements §2.1 rule 8"
+
+def test_cream_l_min() -> None:
+    assert C.CREAM_L_MIN == 88.0, "CREAM_L_MIN — requirements §2.1 rule 8"
+
+
 # ── §3 Role cut-offs (FR-7) ──────────────────────────────────────────────────
 
 def test_primary_threshold() -> None:
@@ -152,9 +170,29 @@ def test_weight_echo_bonus() -> None:
 # ── §7 / FR-41 Variety penalty ────────────────────────────────────────────────
 
 def test_weight_variety() -> None:
-    assert C.WEIGHT_VARIETY == 5, (
-        "WEIGHT_VARIETY — requirements §7 / FR-41.3 (named constant)"
+    assert C.WEIGHT_VARIETY == 15, (
+        "WEIGHT_VARIETY — requirements §7 / FR-41.3 (raised to 15 in v0.2.0 — F5)"
     )
+
+
+# ── §7 / FR-41 All-neutral strength ──────────────────────────────────────────
+
+def test_neutral_based_strength() -> None:
+    assert C.NEUTRAL_BASED_STRENGTH == 0.98, (
+        "NEUTRAL_BASED_STRENGTH — requirements §7 / FR-41 (named constant)"
+    )
+
+
+# ── §7 / FR-48 Suggestion count bounds ───────────────────────────────────────
+
+def test_count_min() -> None:
+    assert C.COUNT_MIN == 1, "COUNT_MIN — requirements §7 / FR-48 (named constant)"
+
+def test_count_max() -> None:
+    assert C.COUNT_MAX == 25, "COUNT_MAX — requirements §7 / FR-48 (named constant)"
+
+def test_count_default() -> None:
+    assert C.COUNT_DEFAULT == 3, "COUNT_DEFAULT — requirements §7 / FR-48 (named constant)"
 
 
 # ── §6.1 / FR-27 Detection thresholds ────────────────────────────────────────
@@ -175,4 +213,128 @@ def test_k_elbow_factor() -> None:
 def test_max_anchor_candidates() -> None:
     assert C.MAX_ANCHOR_CANDIDATES == 200, (
         "MAX_ANCHOR_CANDIDATES — architecture §4.3 / FR-42 (named constant)"
+    )
+
+
+# ── §5 / FR-16 Slot model (v0.2.0) ───────────────────────────────────────────
+
+def test_upper_body_layers() -> None:
+    assert C.UPPER_BODY_LAYERS == ("base", "shirt", "mid", "outer"), (
+        "UPPER_BODY_LAYERS — requirements §5 / FR-49.1 (innermost→outermost)"
+    )
+
+
+def test_all_slots() -> None:
+    assert C.ALL_SLOTS == frozenset({
+        "base", "shirt", "mid", "outer",
+        "hat", "glasses", "earrings",
+        "tie", "scarf", "necklace",
+        "watch", "ring", "bracelet",
+        "lower_body",
+        "belt",
+        "socks", "shoes",
+    }), "ALL_SLOTS — requirements §5 / FR-16"
+
+
+def test_all_categories() -> None:
+    assert C.ALL_CATEGORIES == frozenset({
+        "t_shirt", "vest", "long_sleeve",
+        "shirt", "blouse", "polo",
+        "jumper", "hoodie", "cardigan", "sweatshirt", "track_top", "waistcoat",
+        "jacket", "blazer", "coat",
+        "hat", "cap", "beanie",
+        "glasses", "sunglasses",
+        "earrings",
+        "tie", "scarf",
+        "necklace",
+        "watch", "ring", "bracelet",
+        "trousers", "jeans", "chinos", "shorts", "skirt",
+        "dress", "jumpsuit",
+        "belt",
+        "socks",
+        "shoes", "boots", "trainers", "sandals",
+    }), "ALL_CATEGORIES — requirements §5 / FR-16 (`jersey` not a v0.2.0 category)"
+
+
+def test_jersey_not_in_all_categories() -> None:
+    assert "jersey" not in C.ALL_CATEGORIES, (
+        "`jersey` was superseded in v0.2.0 — must not appear in ALL_CATEGORIES (FR-16)"
+    )
+
+
+def test_category_slot() -> None:
+    assert C.CATEGORY_SLOT == {
+        "t_shirt": "base",    "vest": "base",     "long_sleeve": "base",
+        "shirt": "shirt",     "blouse": "shirt",  "polo": "shirt",
+        "jumper": "mid",      "hoodie": "mid",    "cardigan": "mid",
+        "sweatshirt": "mid",  "track_top": "mid", "waistcoat": "mid",
+        "jacket": "outer",    "blazer": "outer",  "coat": "outer",
+        "hat": "hat",         "cap": "hat",       "beanie": "hat",
+        "glasses": "glasses", "sunglasses": "glasses",
+        "earrings": "earrings",
+        "tie": "tie",         "scarf": "scarf",
+        "necklace": "necklace",
+        "watch": "watch",     "ring": "ring",     "bracelet": "bracelet",
+        "trousers": "lower_body", "jeans": "lower_body", "chinos": "lower_body",
+        "shorts": "lower_body",   "skirt": "lower_body",
+        "dress": "lower_body",    "jumpsuit": "lower_body",
+        "belt": "belt",
+        "socks": "socks",
+        "shoes": "shoes",  "boots": "shoes",  "trainers": "shoes",  "sandals": "shoes",
+    }, "CATEGORY_SLOT — requirements §5 / FR-16"
+
+
+def test_one_piece_categories() -> None:
+    assert C.ONE_PIECE_CATEGORIES == frozenset({"dress", "jumpsuit"}), (
+        "ONE_PIECE_CATEGORIES — requirements §5 / FR-49.2"
+    )
+
+
+def test_one_piece_upper_slot() -> None:
+    assert C.ONE_PIECE_UPPER_SLOT == "base", (
+        "ONE_PIECE_UPPER_SLOT — requirements §5 / FR-49.2 (one-piece also occupies `base`)"
+    )
+
+
+def test_statement_adornment_slots() -> None:
+    assert C.STATEMENT_ADORNMENT_SLOTS == frozenset({
+        "hat", "tie", "scarf", "belt", "socks", "shoes",
+    }), "STATEMENT_ADORNMENT_SLOTS — requirements §5 / FR-49.3"
+
+
+def test_minor_adornment_slots() -> None:
+    assert C.MINOR_ADORNMENT_SLOTS == frozenset({
+        "glasses", "earrings", "necklace", "watch", "ring", "bracelet",
+    }), "MINOR_ADORNMENT_SLOTS — requirements §5 / FR-49.3"
+
+
+def test_statement_minor_adornments_disjoint() -> None:
+    overlap = C.STATEMENT_ADORNMENT_SLOTS & C.MINOR_ADORNMENT_SLOTS
+    assert not overlap, (
+        f"Statement and minor adornment slot sets must be disjoint — overlap: {overlap}"
+    )
+
+
+def test_default_slots() -> None:
+    assert C.DEFAULT_SLOTS == frozenset({"base", "lower_body", "socks", "shoes"}), (
+        "DEFAULT_SLOTS — requirements §5 / FR-51.1"
+    )
+
+
+def test_mandatory_slot() -> None:
+    assert C.MANDATORY_SLOT == "lower_body", (
+        "MANDATORY_SLOT — requirements §5 / FR-51.2"
+    )
+
+
+def test_mandatory_slot_in_default_slots() -> None:
+    assert C.MANDATORY_SLOT in C.DEFAULT_SLOTS, (
+        "MANDATORY_SLOT must be a member of DEFAULT_SLOTS (FR-51.1 / FR-51.2)"
+    )
+
+
+def test_category_slot_covers_all_categories() -> None:
+    unmapped = C.ALL_CATEGORIES - C.CATEGORY_SLOT.keys()
+    assert not unmapped, (
+        f"Every category in ALL_CATEGORIES must appear in CATEGORY_SLOT — missing: {unmapped}"
     )

@@ -60,6 +60,14 @@ BEIGE_S_HIGH: float = 45.0
 BEIGE_L_LOW:  float = 60.0
 BEIGE_L_HIGH: float = 88.0
 
+# 8. Cream — CREAM_H_LOW ≤ H ≤ CREAM_H_HIGH and CREAM_S_LOW ≤ S ≤ CREAM_S_HIGH
+#            and L ≥ CREAM_L_MIN  (lighter than Beige — see FR-2)
+CREAM_H_LOW:  float = 20.0
+CREAM_H_HIGH: float = 70.0
+CREAM_S_LOW:  float = 10.0
+CREAM_S_HIGH: float = 45.0
+CREAM_L_MIN:  float = 88.0
+
 # ── §3 Role cut-offs (FR-7) ──────────────────────────────────────────────────
 # proportion ≥ PRIMARY_THRESHOLD → primary (or dual-primary when two qualify)
 # SECONDARY_THRESHOLD ≤ proportion < PRIMARY_THRESHOLD → secondary
@@ -85,7 +93,19 @@ WEIGHT_ECHO_BONUS:      int = 10
 # ── §7 / FR-41 Variety penalty ────────────────────────────────────────────────
 # Greedy variety selection: each garment shared with an already-selected outfit
 # subtracts this value from the candidate's adjusted score (FR-41.3).
-WEIGHT_VARIETY: int = 5
+# Raised from 5 → 15 in v0.2.0 to strengthen outfit diversity (F5).
+WEIGHT_VARIETY: int = 15
+
+# ── §7 / FR-41 All-neutral strength ──────────────────────────────────────────
+# Outfits with an empty chromatic scheme set score at this fixed strength —
+# just below a perfect chromatic scheme (1.0) so they are first-class results
+# that still rank below an otherwise equal chromatic outfit (FR-41).
+NEUTRAL_BASED_STRENGTH: float = 0.98
+
+# ── §7 / FR-48 Suggestion count bounds ───────────────────────────────────────
+COUNT_MIN:     int = 1
+COUNT_MAX:     int = 25
+COUNT_DEFAULT: int = 3
 
 # ── §6.1 / FR-27 Detection fallback threshold ────────────────────────────────
 # If the fraction of non-transparent pixels in the rembg mask falls below this
@@ -109,3 +129,101 @@ MAX_ANCHOR_CANDIDATES: int = 200
 # numerous (NFR-5).  The shuffle is seeded from the same injected RNG that
 # shuffles anchors, preserving FR-42 non-determinism.
 MAX_ECHO_COMBOS: int = 50
+
+# ── §5 / FR-16 Slot model (v0.2.0) ───────────────────────────────────────────
+
+# Four-level upper-body layer order, innermost→outermost (FR-49.1).
+# `jersey` is no longer a slot key; the four new keys are `base`, `shirt`, `mid`, `outer`.
+UPPER_BODY_LAYERS: tuple[str, ...] = ("base", "shirt", "mid", "outer")
+
+# All slot keys in the v0.2.0 model (FR-16).
+ALL_SLOTS: frozenset[str] = frozenset({
+    "base", "shirt", "mid", "outer",    # upper-body layers
+    "hat", "glasses", "earrings",       # head
+    "tie", "scarf", "necklace",         # neck
+    "watch", "ring", "bracelet",        # hand
+    "lower_body",                       # lower body
+    "belt",                             # waist
+    "socks", "shoes",                   # feet
+})
+
+# All garment categories in the v0.2.0 model (FR-16).
+# Note: `jersey` is not a category — superseded by `jumper` et al. in the `mid` slot.
+ALL_CATEGORIES: frozenset[str] = frozenset({
+    # upper body — base slot
+    "t_shirt", "vest", "long_sleeve",
+    # upper body — shirt slot
+    "shirt", "blouse", "polo",
+    # upper body — mid slot
+    "jumper", "hoodie", "cardigan", "sweatshirt", "track_top", "waistcoat",
+    # upper body — outer slot
+    "jacket", "blazer", "coat",
+    # head
+    "hat", "cap", "beanie",
+    "glasses", "sunglasses",
+    "earrings",
+    # neck
+    "tie", "scarf",
+    "necklace",
+    # hand
+    "watch", "ring", "bracelet",
+    # lower body
+    "trousers", "jeans", "chinos", "shorts", "skirt",
+    # one-piece (lower body + base simultaneously)
+    "dress", "jumpsuit",
+    # waist
+    "belt",
+    # feet
+    "socks",
+    "shoes", "boots", "trainers", "sandals",
+})
+
+# Category → primary slot mapping (FR-16).
+# One-piece categories map to `lower_body`; they additionally occupy `base` (FR-49.2).
+CATEGORY_SLOT: dict[str, str] = {
+    # upper body
+    "t_shirt": "base",    "vest": "base",     "long_sleeve": "base",
+    "shirt": "shirt",     "blouse": "shirt",  "polo": "shirt",
+    "jumper": "mid",      "hoodie": "mid",    "cardigan": "mid",
+    "sweatshirt": "mid",  "track_top": "mid", "waistcoat": "mid",
+    "jacket": "outer",    "blazer": "outer",  "coat": "outer",
+    # head
+    "hat": "hat",      "cap": "hat",       "beanie": "hat",
+    "glasses": "glasses", "sunglasses": "glasses",
+    "earrings": "earrings",
+    # neck
+    "tie": "tie",    "scarf": "scarf",
+    "necklace": "necklace",
+    # hand
+    "watch": "watch",  "ring": "ring",  "bracelet": "bracelet",
+    # lower body
+    "trousers": "lower_body", "jeans": "lower_body", "chinos": "lower_body",
+    "shorts": "lower_body",   "skirt": "lower_body",
+    # one-piece (primary slot is lower_body; also occupies base — see ONE_PIECE_UPPER_SLOT)
+    "dress": "lower_body", "jumpsuit": "lower_body",
+    # waist
+    "belt": "belt",
+    # feet
+    "socks": "socks",
+    "shoes": "shoes", "boots": "shoes", "trainers": "shoes", "sandals": "shoes",
+}
+
+# One-piece categories and the additional upper-body slot they occupy (FR-49.2).
+ONE_PIECE_CATEGORIES: frozenset[str] = frozenset({"dress", "jumpsuit"})
+ONE_PIECE_UPPER_SLOT: str = "base"
+
+# Statement adornment slot keys — visible anchors that drive scheme evaluation (FR-49.3).
+STATEMENT_ADORNMENT_SLOTS: frozenset[str] = frozenset({
+    "hat", "tie", "scarf", "belt", "socks", "shoes",
+})
+
+# Minor adornment slot keys — echo-only, never disqualify (FR-49.3).
+MINOR_ADORNMENT_SLOTS: frozenset[str] = frozenset({
+    "glasses", "earrings", "necklace", "watch", "ring", "bracelet",
+})
+
+# Default-selected slots for a new suggestion request (FR-51.1).
+DEFAULT_SLOTS: frozenset[str] = frozenset({"base", "lower_body", "socks", "shoes"})
+
+# The mandatory slot that may never be deselected from a request (FR-51.2).
+MANDATORY_SLOT: str = "lower_body"

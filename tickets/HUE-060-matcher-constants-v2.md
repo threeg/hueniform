@@ -2,7 +2,7 @@
 id: HUE-060
 title: matcher.constants v0.2.0 — category/slot model and new named values
 type: task
-status: todo
+status: done
 milestone: 14
 batch: matcher
 layer: matcher
@@ -30,12 +30,12 @@ behaviour that consumes them is implemented by the submodule tickets (HUE-061–
 - Old v0.1.0 type/slot constants superseded by the new sets (note any removed names)
 
 ## Definition of done (acceptance criteria)
-- [ ] Every new constant present with its contractual value; old superseded ones removed/renamed
-- [ ] `test_constants.py` asserts each value and the named-set membership/order (renamed keys `mid`/`outer`, dropped `jersey` category) per §4.1
-- [ ] Standard library only; passes the §5.2 allowlist
-- [ ] Tests added/updated per test strategy §12.2 and passing in `make test`
-- [ ] Matcher coverage gate (100% line+branch) holds (§12.3.3)
-- [ ] Ticket status + notes updated in the same commit
+- [x] Every new constant present with its contractual value; old superseded ones removed/renamed
+- [x] `test_constants.py` asserts each value and the named-set membership/order (renamed keys `mid`/`outer`, dropped `jersey` category) per §4.1
+- [x] Standard library only; passes the §5.2 allowlist
+- [x] Tests added/updated per test strategy §12.2 and passing in `make test`
+- [x] Matcher coverage gate (100% line+branch) holds (§12.3.3)
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `matcher/test_constants.py` (§4.1) — the drift guard extended to every new value and named set,
@@ -44,3 +44,7 @@ ticket alone (constants are not yet consumed).
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-19 — implemented: added Cream thresholds (FR-2 rule 8), raised `WEIGHT_VARIETY` 5→15, added `NEUTRAL_BASED_STRENGTH=0.98`, `COUNT_MIN/MAX/DEFAULT`, and the full §5 slot model (`UPPER_BODY_LAYERS`, `ALL_SLOTS`, `ALL_CATEGORIES`, `CATEGORY_SLOT`, `ONE_PIECE_CATEGORIES`, `ONE_PIECE_UPPER_SLOT`, `STATEMENT_ADORNMENT_SLOTS`, `MINOR_ADORNMENT_SLOTS`, `DEFAULT_SLOTS`, `MANDATORY_SLOT`). `jersey` absent from `ALL_CATEGORIES`; slot keys `mid`/`outer` replace v0.1.0 `jersey`/`jacket`. `test_constants.py` extended with 23 new drift-guard assertions. 912 backend tests passed, matcher 100% coverage gate held, 134 frontend tests passed. No snapshot change (constants not yet consumed).
+
+## QA steps
+N/A — constants-only change; no user-visible behaviour.
