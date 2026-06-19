@@ -2,7 +2,7 @@
 id: HUE-063
 title: matcher.ranking refinements — first-class neutral, diversity, top-N, seedable RNG
 type: task
-status: todo
+status: done
 milestone: 14
 batch: matcher
 layer: matcher
@@ -30,14 +30,14 @@ the HUE-059 snapshot ranking goldens are updated in this commit.
 - Standard library only (NFR-9)
 
 ## Definition of done (acceptance criteria)
-- [ ] All-neutral outfits rank first-class at 0.98; the neutral-vs-fallback distinction is in the result object (FR-41/FR-43)
-- [ ] Minor-adornment echoes credited; diversity raised with anchor-interleaved enumeration (FR-22, FR-41)
-- [ ] Up to *N* distinct results (1–25), cap count-independent (FR-39, FR-40, FR-48, NFR-5)
-- [ ] Injected RNG; no global state; two seeds → independent streams (NFR-10, FR-42)
-- [ ] HUE-059 snapshot ranking/scores updated and committed (§4.10)
-- [ ] Tests added/updated per §12.2 and passing in `make test`; matcher 100% gate holds (§12.3.3)
-- [ ] `make test-perf` re-checked where applicable (full perf re-baseline is HUE-084)
-- [ ] Ticket status + notes updated in the same commit
+- [x] All-neutral outfits rank first-class at 0.98; the neutral-vs-fallback distinction is in the result object (FR-41/FR-43)
+- [x] Minor-adornment echoes credited; diversity raised with anchor-interleaved enumeration (FR-22, FR-41)
+- [x] Up to *N* distinct results (1–25), cap count-independent (FR-39, FR-40, FR-48, NFR-5)
+- [x] Injected RNG; no global state; two seeds → independent streams (NFR-10, FR-42)
+- [x] HUE-059 snapshot ranking/scores updated and committed (§4.10)
+- [x] Tests added/updated per §12.2 and passing in `make test`; matcher 100% gate holds (§12.3.3)
+- [x] `make test-perf` re-checked where applicable (full perf re-baseline is HUE-084)
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `matcher/test_ranking.py` (§4.7) — first-class neutral boundary pairs; echo bonus incl. minor
@@ -46,3 +46,8 @@ slimmed fallback ladder; injected-RNG independence and no-global-state. Snapshot
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-19 — implemented. `_scheme_strength()` now returns `C.NEUTRAL_BASED_STRENGTH` (0.98) for neutral-based schemes (was 1.0). `rank()` gains a `count: int = C.COUNT_DEFAULT` parameter threaded through `_greedy_select`. `_enumerate_outfits()` uses anchor-interleaved enumeration: `product(*reversed(anchor_lists))` then reverses each tuple so the first anchor slot (e.g. "base") cycles fastest, ensuring diverse base garments appear before the `MAX_ANCHOR_CANDIDATES=200` cap. `ranking.json` snapshot updated: `neutral_fallback_only` scheme_strength 1.0000→0.9800, score 100.0000→98.0000. New test classes: `TestTopNSelection` (count=1, count=25, cap independence), `TestFirstClassNeutral` (0.98 is first-class not fallback, below perfect chromatic), `TestAnchorInterleave` (first 4 outfits have distinct bases, single-anchor else branch covered), `TestSeedableRNG` (same seed → identical results, different seeds both valid). `make test` passes: 990 backend + 134 frontend, 0 failures; matcher 100% line+branch.
+- Sanity test: `cd backend && .venv/bin/pytest tests/matcher/test_ranking.py -q`
+
+## QA steps
+No frontend UI changes in this ticket.

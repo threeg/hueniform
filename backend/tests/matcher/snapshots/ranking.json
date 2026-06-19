@@ -43,8 +43,8 @@
         "scheme": "neutral-based",
         "scheme_deviation": "0.0000",
         "echo_bonus": 0,
-        "scheme_strength": "1.0000",
-        "score": "100.0000",
+        "scheme_strength": "0.9800",
+        "score": "98.0000",
         "is_fallback": false,
         "constraining_slot": null
       }

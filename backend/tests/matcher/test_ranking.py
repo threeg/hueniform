@@ -2,11 +2,13 @@
 Tests for matcher.ranking (test strategy §4.7).
 
 Coverage:
-  - FR-39: up to 3 results; fewer when fewer exist
+  - FR-39 / FR-48: up to N results (default 3, 1–25); fewer when fewer exist
   - FR-40: all returned combinations are pairwise distinct
   - FR-41: scheme-strength ordering (180° over 165°; narrower analogous);
-            echo-bonus ordering; variety prevents same garments dominating
-  - FR-42: seeded random.Random is accepted; results are valid per FR-15
+            neutral-based first-class at NEUTRAL_BASED_STRENGTH (0.98);
+            echo-bonus ordering; variety prevents same garments dominating;
+            anchor-interleaved enumeration for diversity within the cap
+  - FR-42: seeded random.Random accepted; two seeds → independent streams
   - FR-43: fallback ladder — neutral-based (rung 1) and zero-result sentinel
             with constraining_slot set (rung 2)
 """
@@ -17,6 +19,7 @@ import random
 
 import pytest
 
+from app.matcher import constants as C
 from app.matcher.colour import Colour
 from app.matcher.roles import Garment
 from app.matcher.ranking import (
@@ -178,11 +181,11 @@ class TestSchemeStrengthOrdering:
         assert r_wide.scheme_result.scheme   == "analogous"
         assert r_narrow.scheme_strength > r_wide.scheme_strength
 
-    def test_neutral_based_scheme_strength_is_one(self) -> None:
+    def test_neutral_based_scheme_strength(self) -> None:
         outfit = _outfit_from(neutral_fallback_only())
         result = evaluate_outfit(outfit)
         assert result is not None
-        assert result.scheme_strength == 1.0
+        assert result.scheme_strength == pytest.approx(C.NEUTRAL_BASED_STRENGTH)
 
     def test_perfect_monochromatic_scheme_strength_is_one(self) -> None:
         # Single Red hue → arc_span = 0 → deviation 0
@@ -245,7 +248,7 @@ class TestCapAndDistinctness:
         results  = rank(wardrobe, _REQUIRED, random.Random(0))
         assert len(results) == 2
 
-    def test_never_more_than_three(self) -> None:
+    def test_never_more_than_default_count(self) -> None:
         # Build a wardrobe with many valid combinations:
         # 4 different Red tops (different saturation), 2 Teal bottoms, Grey socks, Black shoes
         tops = [
@@ -261,7 +264,7 @@ class TestCapAndDistinctness:
             Garment("shoes", (_black(100),)),
         ]
         results = rank(wardrobe, _REQUIRED, random.Random(0))
-        assert len(results) <= 3
+        assert len(results) <= C.COUNT_DEFAULT
 
     def test_all_results_pairwise_distinct(self) -> None:
         wardrobe = two_valid_outfits()
@@ -278,6 +281,139 @@ class TestCapAndDistinctness:
         for r in results:
             assert r.scheme_result is not None
             assert r.constraining_slot is None
+
+
+# ── FR-39 / FR-48: top-N selection ───────────────────────────────────────────
+
+class TestTopNSelection:
+    """rank() respects the count parameter (FR-39, FR-48)."""
+
+    def test_count_one_returns_at_most_one(self) -> None:
+        wardrobe = two_valid_outfits()
+        results = rank(wardrobe, _REQUIRED, random.Random(0), count=1)
+        assert len(results) == 1
+
+    def test_count_twenty_five_returns_all_when_fewer_exist(self) -> None:
+        # single_valid_outfit has exactly one valid combination
+        wardrobe = single_valid_outfit()
+        results = rank(wardrobe, _REQUIRED, random.Random(0), count=25)
+        assert len(results) == 1
+
+    def test_count_many_returns_all_available(self) -> None:
+        # two_valid_outfits has exactly two valid combinations
+        wardrobe = two_valid_outfits()
+        results = rank(wardrobe, _REQUIRED, random.Random(0), count=25)
+        assert len(results) == 2
+
+    def test_count_is_independent_of_cap(self) -> None:
+        # count controls the output size, not the candidate cap
+        wardrobe = two_valid_outfits()
+        r1 = rank(wardrobe, _REQUIRED, random.Random(0), count=1)
+        r2 = rank(wardrobe, _REQUIRED, random.Random(0), count=2)
+        assert len(r1) == 1
+        assert len(r2) == 2
+
+
+# ── FR-41: first-class neutral-based (0.98) ───────────────────────────────────
+
+class TestFirstClassNeutral:
+    """All-neutral outfits are first-class at NEUTRAL_BASED_STRENGTH (FR-41)."""
+
+    def test_neutral_based_is_first_class_not_fallback(self) -> None:
+        # neutral_fallback_only wardrobe: all neutrals → step 1 finds them
+        # as neutral-based (not FR-43(a) fallback)
+        results = rank(neutral_fallback_only(), _REQUIRED, random.Random(0))
+        assert len(results) >= 1
+        result = results[0]
+        assert result.scheme_result is not None
+        assert result.scheme_result.scheme == "neutral-based"
+        assert not result.is_fallback
+
+    def test_neutral_based_strength_is_below_perfect_chromatic(self) -> None:
+        # neutral-based (0.98) ranks below a perfect complementary outfit (1.0)
+        neutral_outfit = _outfit_from(neutral_fallback_only())
+        chromatic_outfit = _outfit_from(single_valid_outfit())
+        r_neutral   = evaluate_outfit(neutral_outfit)
+        r_chromatic = evaluate_outfit(chromatic_outfit)
+        assert r_neutral   is not None
+        assert r_chromatic is not None
+        assert r_neutral.scheme_strength  == pytest.approx(C.NEUTRAL_BASED_STRENGTH)
+        assert r_chromatic.scheme_strength > r_neutral.scheme_strength
+
+
+# ── FR-41.3 / NFR-5: anchor-interleaved enumeration ──────────────────────────
+
+class TestAnchorInterleave:
+    """Diverse anchor garments appear before the MAX_ANCHOR_CANDIDATES cap."""
+
+    def test_first_n_outfits_have_distinct_bases(self) -> None:
+        # 4 bases × 2 lower_bodies = 8 combos (well under the 200 cap).
+        # Anchor-interleaved order: bases cycle fastest, so the first 4 outfits
+        # each use a different base garment.
+        bases = [
+            Garment("t_shirt", (Colour(0.0, s, 50.0, 100),))
+            for s in (80.0, 70.0, 60.0, 50.0)
+        ]
+        lower_bodies = [
+            Garment("trousers", (_teal(100),)),
+            Garment("trousers", (Colour(180.0, 60.0, 45.0, 100),)),
+        ]
+        outfits = _enumerate_outfits(
+            {"base": bases, "lower_body": lower_bodies},
+            frozenset({"base", "lower_body"}),
+            rng=None,
+        )
+        assert len(outfits) == 8
+        first_four_bases = [o["base"] for o in outfits[:4]]
+        assert len({id(b) for b in first_four_bases}) == 4, (
+            "Anchor-interleaved order should cycle bases fastest"
+        )
+
+    def test_no_rng_still_interleaves(self) -> None:
+        # Interleaving applies regardless of rng (even rng=None fallback paths)
+        bases = [Garment("t_shirt", (Colour(0.0, s, 50.0, 100),)) for s in (80.0, 70.0)]
+        lbs   = [Garment("trousers", (Colour(180.0, s, 50.0, 100),)) for s in (70.0, 60.0)]
+        outfits = _enumerate_outfits(
+            {"base": bases, "lower_body": lbs},
+            frozenset({"base", "lower_body"}),
+            rng=None,
+        )
+        # bases[0] and bases[1] both appear before all lower_body combinations are cycled
+        assert outfits[0]["base"] is bases[0]
+        assert outfits[1]["base"] is bases[1]
+
+    def test_single_anchor_slot(self) -> None:
+        # Single-anchor case uses the else branch (no reversal needed for one slot)
+        bases = [
+            Garment("t_shirt", (_red(100),)),
+            Garment("t_shirt", (Colour(0.0, 70.0, 50.0, 100),)),
+        ]
+        outfits = _enumerate_outfits(
+            {"base": bases},
+            frozenset({"base"}),
+            rng=None,
+        )
+        assert len(outfits) == 2
+        assert {id(o["base"]) for o in outfits} == {id(b) for b in bases}
+
+
+# ── FR-42: seedable RNG (NFR-10) ─────────────────────────────────────────────
+
+class TestSeedableRNG:
+    """Injected RNG; no global state; same seed → identical results."""
+
+    def test_same_seed_same_results(self) -> None:
+        wardrobe = two_valid_outfits()
+        r1 = rank(wardrobe, _REQUIRED, random.Random(0))
+        r2 = rank(wardrobe, _REQUIRED, random.Random(0))
+        assert [r.outfit for r in r1] == [r.outfit for r in r2]
+
+    def test_different_seeds_both_valid(self) -> None:
+        wardrobe = two_valid_outfits()
+        r1 = rank(wardrobe, _REQUIRED, random.Random(1))
+        r2 = rank(wardrobe, _REQUIRED, random.Random(2))
+        for r in r1 + r2:
+            assert r.scheme_result is not None
 
 
 # ── FR-41.3: variety factor ───────────────────────────────────────────────────

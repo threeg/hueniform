@@ -75,7 +75,7 @@ def _scheme_strength(result: SchemeResult) -> float:
     """Normalise ``result.deviation`` to a [0, 1] strength score (FR-41.1)."""
     max_dev = _SCHEME_MAX_DEV[result.scheme]
     if max_dev == 0.0:
-        return 1.0   # neutral-based always perfect
+        return C.NEUTRAL_BASED_STRENGTH   # first-class neutral: just below a perfect chromatic
     return 1.0 - result.deviation / max_dev
 
 
@@ -236,9 +236,22 @@ def _enumerate_outfits(
     if rng is not None:
         for lst in anchor_lists:
             rng.shuffle(lst)
-    anchor_combos: list[tuple[Garment, ...]] = list(
-        itertools.islice(itertools.product(*anchor_lists), C.MAX_ANCHOR_CANDIDATES)
-    )
+
+    # Anchor-interleaved: reverse the slot order for the product so the first
+    # anchor slot (e.g. "base") cycles fastest.  This means diverse base garments
+    # appear early in the capped window rather than exhausting all lower_body
+    # pairings for a single base first (FR-41.3, NFR-5).
+    if len(anchor_lists) > 1:
+        anchor_combos: list[tuple[Garment, ...]] = [
+            tuple(reversed(ac))
+            for ac in itertools.islice(
+                itertools.product(*reversed(anchor_lists)), C.MAX_ANCHOR_CANDIDATES
+            )
+        ]
+    else:
+        anchor_combos = list(
+            itertools.islice(itertools.product(*anchor_lists), C.MAX_ANCHOR_CANDIDATES)
+        )
 
     echo_slots_lists = [list(garments_by_slot[t]) for t in echo_types]
     if rng is not None:
@@ -321,12 +334,13 @@ def rank(
     wardrobe: list[Garment],
     requested_slots: frozenset[str],
     rng: random.Random,
+    count: int = C.COUNT_DEFAULT,
 ) -> list[EvaluationResult]:
     """
     Enumerate, evaluate and rank outfit combinations from *wardrobe*.
 
-    Returns up to three ``EvaluationResult`` objects, ranked best-first with
-    variety applied (FR-39, FR-40, FR-41).
+    Returns up to *count* (1–25, default 3) ``EvaluationResult`` objects,
+    ranked best-first with variety applied (FR-39, FR-40, FR-41, FR-48).
 
     Falls back to FR-43 ladder when no harmonious outfits are found:
       (a) neutral-based combinations flagged with ``is_fallback=True``;
@@ -359,7 +373,7 @@ def rank(
     if valid:
         # Sort by score descending, then apply greedy variety (FR-41)
         valid.sort(key=lambda r: r.score, reverse=True)
-        return _greedy_select(valid, 3)
+        return _greedy_select(valid, count)
 
     # Step 2: neutral-based fallback (FR-43(a))
     # Fires in production when the anchor cap caused step 1 to miss neutral outfits;
@@ -368,7 +382,7 @@ def rank(
     fallback = _neutral_fallback(garments_by_slot, requested_slots)
     if fallback:  # pragma: no cover
         fallback.sort(key=lambda r: r.score, reverse=True)  # pragma: no cover
-        return _greedy_select(fallback, 3)  # pragma: no cover
+        return _greedy_select(fallback, count)  # pragma: no cover
 
     # Step 3: zero-result sentinel (FR-43(b))
     constraining = _constraining_slot(garments_by_slot, requested_slots)
