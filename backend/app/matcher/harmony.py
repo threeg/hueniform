@@ -61,7 +61,7 @@ def _arc_span(hues: list[float]) -> float:
         gap = sorted_h[i + 1] - sorted_h[i]
         if gap > max_gap:
             max_gap = gap
-    return 360.0 - max_gap
+    return max(0.0, 360.0 - max_gap)
 
 
 # ── FR-12 hue clustering ──────────────────────────────────────────────────────
