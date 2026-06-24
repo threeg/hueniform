@@ -2,7 +2,7 @@
 id: HUE-070
 title: Confirm-and-correct category picker
 type: story
-status: todo
+status: done
 milestone: 14
 batch: frontend
 layer: frontend
@@ -41,8 +41,9 @@ so that the garment is tagged with the right category for grouping and suggestio
 - Covered end-to-end by E2E journey 1 (HUE-085)
 
 ## QA steps
-- [ ] Upload a garment → open the category picker → expect FR-16 categories grouped by region
-- [ ] Leave category unset → expect Save disabled; choose one → expect Save enabled
+- [ ] Run `make dev`, upload a garment → on the confirm screen, the category picker shows four region headings (Head, Upper body, Lower body, Feet) each with the correct chip buttons beneath
+- [ ] Leave category unset → Save button is disabled; click any category chip → Save button becomes enabled
+- [ ] Click "Trousers", then "T-shirt" — only the last clicked chip shows as selected (aria-pressed=true)
 
 ## Definition of done
 - [ ] Acceptance criteria met
@@ -56,3 +57,5 @@ so that the garment is tagged with the right category for grouping and suggestio
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-24 — implemented. `AddConfirm.tsx` picker rewritten: removed static `GARMENT_TYPES` array; replaced with `taxonomy?.regions?.map(...)` grouping each region under an `<h3>` heading; `REGION_LABELS` maps region keys to "Head / Upper body / Lower body / Feet"; section `aria-label` changed from "Garment type" to "Garment category". CSS updated: `.typePicker` is now a column flex container, new `.regionGroup` (flex-wrap) and `.regionHeading` (small-caps label) classes added. `ConfirmCorrect.test.tsx` updated: all category-button lookups changed from synchronous `getByRole` to async `findByRole`; count test uses `findAllByRole` to wait for taxonomy load; new region-heading test added. 1043 backend + 135 frontend pass, zero warnings.
+- Sanity test: `cd frontend && npx vitest run src/routes/ConfirmCorrect.test.tsx`

@@ -44,7 +44,7 @@ Leaf tickets for v0.2.0 (epics E06–E10). Reading top to bottom is a legal buil
 | 67 | HUE-067 | Frontend API client and MSW handlers — v0.2.0 contract | task | frontend | 14 / frontend | HUE-E08 | done | HUE-032 |
 | 68 | HUE-068 | Suggestion service — slot-selection and per-category constraint rewrite | task | services | 14 / services | HUE-E08 | done | HUE-061, HUE-063, HUE-064, HUE-065, HUE-024 |
 | 69 | HUE-069 | POST /api/suggestions — slot-selection and constraint request/response | task | api | 14 / api | HUE-E08 | done | HUE-068, HUE-066, HUE-031 |
-| 70 | HUE-070 | Confirm-and-correct category picker | story | frontend | 14 / frontend | HUE-E08 | todo | HUE-067, HUE-034 |
+| 70 | HUE-070 | Confirm-and-correct category picker | story | frontend | 14 / frontend | HUE-E08 | done | HUE-067, HUE-034 |
 | 71 | HUE-071 | Outfit-request slot selector and category-constraint checklist | story | frontend | 14 / frontend | HUE-E08 | todo | HUE-067, HUE-037 |
 | 72 | HUE-072 | Garment service — direct category edit | task | services | 14 / services | HUE-E07 | todo | HUE-065, HUE-022 |
 | 73 | HUE-073 | PATCH /api/garments/{id} — edit category | task | api | 14 / api | HUE-E07 | todo | HUE-072, HUE-030 |

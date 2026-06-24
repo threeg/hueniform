@@ -192,12 +192,29 @@
   width: 64px;
 }
 
-/* Type picker */
+/* Category picker */
 
 .typePicker {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.regionGroup {
+  display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  align-items: center;
+}
+
+.regionHeading {
+  width: 100%;
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .typeButton {

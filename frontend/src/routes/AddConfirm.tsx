@@ -2,12 +2,19 @@ import { useState, useMemo } from 'react'
 import { useLocation, useNavigate, Navigate } from 'react-router-dom'
 import type { DetectionResponse, RegenerationProposalResponse } from '../api/types'
 import { useTaxonomy, useCreateGarment, useUpdateGarment } from '../api/queries'
-import { typeLabel, GARMENT_TYPES } from '../utils/typeLabel'
+import { typeLabel } from '../utils/typeLabel'
 import { hslToHex, normaliseProportions } from '../utils/colour'
 import Swatch from '../components/Swatch'
 import Banner from '../components/Banner'
 import styles from './AddConfirm.module.css'
 
+
+const REGION_LABELS: Record<string, string> = {
+  head:       'Head',
+  upper_body: 'Upper body',
+  lower_body: 'Lower body',
+  feet:       'Feet',
+}
 
 interface EditableColour {
   h: number
@@ -260,24 +267,31 @@ export default function AddConfirm() {
             </div>
           )}
 
-          {/* Type picker (FR-31) */}
-          <section aria-label="Garment type" className={styles.typePicker}>
-            {GARMENT_TYPES.map(t => (
-              <button
-                key={t}
-                type="button"
-                aria-pressed={selectedType === t}
-                className={[
-                  styles.typeButton,
-                  selectedType === t ? styles.typeSelected : '',
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
-                onClick={() => setSelectedType(t)}
-                disabled={isPending}
-              >
-                {typeLabel(t)}
-              </button>
+          {/* Category picker (FR-31) */}
+          <section aria-label="Garment category" className={styles.typePicker}>
+            {taxonomy?.regions?.map(region => (
+              <div key={region.region} className={styles.regionGroup}>
+                <h3 className={styles.regionHeading}>
+                  {REGION_LABELS[region.region] ?? region.region}
+                </h3>
+                {region.slots.flatMap(slot => slot.categories).map(cat => (
+                  <button
+                    key={cat}
+                    type="button"
+                    aria-pressed={selectedType === cat}
+                    className={[
+                      styles.typeButton,
+                      selectedType === cat ? styles.typeSelected : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    onClick={() => setSelectedType(cat)}
+                    disabled={isPending}
+                  >
+                    {typeLabel(cat)}
+                  </button>
+                ))}
+              </div>
             ))}
           </section>
 
