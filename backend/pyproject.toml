@@ -125,6 +125,7 @@ ignore_imports = [
     "app.services.garment_service -> app.storage.models",
     "app.services.garment_service -> app.storage.staging",
     "app.services.suggestion_service -> app.matcher.colour",
+    "app.services.suggestion_service -> app.matcher.constants",
     "app.services.suggestion_service -> app.matcher.explain",
     "app.services.suggestion_service -> app.matcher.ranking",
     "app.services.suggestion_service -> app.matcher.roles",

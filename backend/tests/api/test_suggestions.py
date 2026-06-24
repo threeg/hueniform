@@ -93,7 +93,7 @@ class TestEmptySlotsError:
     def test_empty_optional_slot_409(self, api_client):
         """Requesting an include slot with no garments is a 409, not a 200 (FR-36)."""
         _seed(api_client, single_valid_outfit())
-        r = api_client.post("/api/suggestions", json={"include": {"mid": True}})
+        r = api_client.post("/api/suggestions", json={"slots": {"mid": True}})
         assert r.status_code == 409
         assert "mid" in r.json()["error"]["details"]["empty_slots"]
 
@@ -102,18 +102,18 @@ class TestEmptySlotsError:
 
 class TestInvalidRequest:
     def test_unknown_slot_key_422(self, api_client):
-        r = api_client.post("/api/suggestions", json={"include": {"dungarees": True}})
+        r = api_client.post("/api/suggestions", json={"slots": {"dungarees": True}})
         assert r.status_code == 422
         assert r.json()["error"]["code"] == "invalid_request"
 
     def test_multiple_unknown_keys_422(self, api_client):
-        r = api_client.post("/api/suggestions", json={"include": {"dungarees": True, "kilt": True}})
+        r = api_client.post("/api/suggestions", json={"slots": {"dungarees": True, "kilt": True}})
         assert r.status_code == 422
         assert r.json()["error"]["code"] == "invalid_request"
 
-    def test_required_slot_as_include_key_422(self, api_client):
-        """Required slot keys must not appear in include — base is not optional."""
-        r = api_client.post("/api/suggestions", json={"include": {"base": True}})
+    def test_deselect_mandatory_slot_422(self, api_client):
+        """Deselecting the mandatory slot (lower_body) is a 422 invalid_request (FR-51.2)."""
+        r = api_client.post("/api/suggestions", json={"slots": {"lower_body": False}})
         assert r.status_code == 422
         assert r.json()["error"]["code"] == "invalid_request"
 
@@ -281,23 +281,23 @@ class TestOptionalSlots:
             Garment("shoes",    (grey,)),
         ]
 
-    def test_include_false_excludes_optional_slot(self, api_client):
+    def test_slots_false_excludes_optional_slot(self, api_client):
         _seed(api_client, self._mid_wardrobe())
         slots = api_client.post(
-            "/api/suggestions", json={"include": {"mid": False}}
+            "/api/suggestions", json={"slots": {"mid": False}}
         ).json()["combinations"][0]["slots"]
         assert "mid" not in slots
 
-    def test_omitted_include_key_defaults_false(self, api_client):
-        """An include key not in the request body defaults to false (contract §2.12)."""
+    def test_omitted_slots_key_defaults_false(self, api_client):
+        """A slot key not in the request body defaults to false (contract §2.12)."""
         _seed(api_client, self._mid_wardrobe())
         slots = api_client.post("/api/suggestions", json={}).json()["combinations"][0]["slots"]
         assert "mid" not in slots
 
-    def test_include_true_adds_optional_slot(self, api_client):
+    def test_slots_true_adds_optional_slot(self, api_client):
         _seed(api_client, self._mid_wardrobe())
         combos = api_client.post(
-            "/api/suggestions", json={"include": {"mid": True}}
+            "/api/suggestions", json={"slots": {"mid": True}}
         ).json()["combinations"]
         assert len(combos) >= 1
         slots = combos[0]["slots"]

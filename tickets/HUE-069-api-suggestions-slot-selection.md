@@ -2,7 +2,7 @@
 id: HUE-069
 title: POST /api/suggestions — slot-selection and constraint request/response
 type: task
-status: todo
+status: done
 milestone: 14
 batch: api
 layer: api
@@ -40,3 +40,4 @@ validation, one-piece+base contradiction). Perf is HUE-084.
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-24 — completed as part of HUE-068. All deliverables (SuggestionRequest.slots, SlotConstraint, router translation, test_suggestions.py updates) landed in the HUE-068 commit.

@@ -16,11 +16,17 @@ from app.api.errors import EMPTY_SLOTS, INVALID_REQUEST, AppError
 from app.api.schemas import (
     CombinationOut,
     EchoOut,
+    SlotConstraint,
     SuggestionRequest,
     SuggestionResponse,
 )
 from app.services.garment_service import get_garments_by_ids
-from app.services.suggestion_service import EmptySlotsError, InvalidSlotError, suggest
+from app.services.suggestion_service import (
+    EmptySlotsError,
+    InvalidCategoryFilterError,
+    InvalidSlotError,
+    suggest,
+)
 
 router = APIRouter()
 
@@ -30,17 +36,25 @@ def create_suggestion(body: SuggestionRequest, request: Request) -> SuggestionRe
     """
     Return up to three ranked outfit combinations (contract §2.12).
 
-    Required slots (top, bottom, socks, shoes) are always included (FR-17).
-    ``include`` opts in optional slots; unknown keys → ``422 invalid_request``.
+    FR-51 default slots (base, lower_body, socks, shoes) are always the starting
+    point.  ``slots`` adjusts the selection and adds per-category constraints (FR-52).
+    Unknown slot keys or deselecting the mandatory slot → ``422 invalid_request``.
     An empty requested slot → ``409 empty_slots`` (FR-36).
     """
     engine = request.app.state.engine
 
-    include_optional = frozenset(k for k, v in body.include.items() if v)
+    # Translate API request to service format:
+    # bool values pass through; SlotConstraint becomes a list[str].
+    slots_request: dict[str, bool | list[str]] = {}
+    for key, value in body.slots.items():
+        if isinstance(value, bool):
+            slots_request[key] = value
+        else:  # SlotConstraint
+            slots_request[key] = value.categories
 
     try:
-        result = suggest(include_optional, engine, random.Random())
-    except InvalidSlotError as exc:
+        result = suggest(slots_request, engine, random.Random())
+    except (InvalidSlotError, InvalidCategoryFilterError) as exc:
         raise AppError(422, INVALID_REQUEST, str(exc))
     except EmptySlotsError as exc:
         raise AppError(

@@ -180,10 +180,16 @@ class DetectionResponse(BaseModel):
     colours: list[ColourOut]
 
 
+class SlotConstraint(BaseModel):
+    """Per-slot category constraint for POST /api/suggestions (FR-52, contract §2.12)."""
+
+    categories: list[str]
+
+
 class SuggestionRequest(BaseModel):
     """Request body for POST /api/suggestions (contract §2.12)."""
 
-    include: dict[str, bool] = {}
+    slots: dict[str, bool | SlotConstraint] = {}
 
 
 class EchoOut(BaseModel):

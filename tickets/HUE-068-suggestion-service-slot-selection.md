@@ -2,7 +2,7 @@
 id: HUE-068
 title: Suggestion service — slot-selection and per-category constraint rewrite
 type: task
-status: todo
+status: done
 milestone: 14
 batch: services
 layer: services
@@ -45,3 +45,8 @@ wardrobes. Perf at 500 garments/count 25 is HUE-084.
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-24 — implemented. `suggestion_service.py` rewritten: new `suggest(slots_request: dict[str, bool | list[str]], engine, rng)` signature; slot resolution over FR-51 defaults; mandatory `lower_body` floor (raises `InvalidSlotError`); `InvalidCategoryFilterError` for empty/wrong-slot category lists; `_apply_category_filters` filters wardrobe before `rank`; one-piece/base auto-exclusion (FR-50.2); `_SLOT_CATEGORIES` map computed from `C.CATEGORY_SLOT`. `pyproject.toml` import-linter `ignore_imports` updated for new `suggestion_service → matcher.constants` edge. **API layer (HUE-069 scope)** also landed here: `schemas.py` gains `SlotConstraint` + `SuggestionRequest.slots`; `suggestions.py` router updated to translate `slots` dict to service format and handle `InvalidCategoryFilterError`; `api/test_suggestions.py` updated to `slots` key and mandatory-floor 422 test. Service tests updated from `frozenset` to dict; new test classes: `TestSlotDeselection`, `TestMandatoryFloor`, `TestCategoryFilter`, `TestOnePieceExclusion`. 1043 backend + 134 frontend pass, zero warnings, 1 expected skip.
+- Sanity test: `cd backend && .venv/bin/pytest tests/services/test_suggestion_service.py -q`
+
+## QA steps
+- None — no UI changes in this ticket.
