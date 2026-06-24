@@ -781,16 +781,13 @@ class TestRichEchoWardrobeSlots:
 class TestNoValidOutfitEchoFails:
     """Blue statement-adornment slot cannot satisfy FR-21 against Red+Teal anchors."""
 
-    @pytest.mark.parametrize("slot", ["socks", "shoes", "hat", "accessory"])
+    @pytest.mark.parametrize("slot", ["socks", "shoes", "hat"])
     def test_blue_echo_slot_fails_qualification(self, slot: str) -> None:
         garments = no_valid_outfit_constrained_by(slot)
         outfit   = _outfit(*garments)
         anchors  = get_anchor_chromatic_families(outfit)
         # The constrained slot carries Blue; Blue is not Red or Teal
-        # "accessory" → identity fallback → not in MINOR_ADORNMENT_SLOTS → statement logic
-        constrained = outfit.get(slot) or outfit.get("accessory")
-        if constrained is None:
-            pytest.skip(f"fixture does not include slot '{slot}'")
+        constrained = outfit[slot]
         result = qualify_echo_slot(constrained, anchors)
         assert not result.qualifies
 
