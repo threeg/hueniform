@@ -50,20 +50,21 @@ Leaf tickets for v0.2.0 (epics E06–E10). Reading top to bottom is a legal buil
 | 73 | HUE-073 | PATCH /api/garments/{id} — edit category | task | api | 14 / api | HUE-E07 | todo | HUE-072, HUE-030 |
 | 74 | HUE-074 | Garment-detail category edit UI | story | frontend | 14 / frontend | HUE-E07 | todo | HUE-067, HUE-036 |
 | 75 | HUE-075 | Inventory ordering (hue spectrum / date) in the read query | task | services | 14 / services | HUE-E10 | todo | HUE-022, HUE-047 |
-| 76 | HUE-076 | GET /api/garments — order parameter and category filter rename | task | api | 14 / api | HUE-E10 | todo | HUE-075, HUE-029 |
-| 77 | HUE-077 | Grouped inventory view with order toggle | story | frontend | 14 / frontend | HUE-E10 | todo | HUE-067, HUE-035 |
+| 76 | HUE-076 | Garment API — complete type→category field rename | task | api | 14 / api | HUE-E10 | done | HUE-029 |
+| 77 | HUE-077 | Grouped inventory view with order toggle | story | frontend | 14 / frontend | HUE-E10 | todo | HUE-067, HUE-035, HUE-086 |
 | 78 | HUE-078 | Suggestion service — count and refined ranking integration | task | services | 14 / services | HUE-E09 | todo | HUE-068, HUE-063 |
 | 79 | HUE-079 | POST /api/suggestions — count field and neutral/fallback response | task | api | 14 / api | HUE-E09 | todo | HUE-078, HUE-069 |
 | 80 | HUE-080 | Outfit-request count control and neutral/fallback labels | story | frontend | 14 / frontend | HUE-E09 | todo | HUE-071 |
 | 81 | HUE-081 | Suggestion service — pins and colour/scheme anchor | task | services | 14 / services | HUE-E06 | todo | HUE-068, HUE-063 |
 | 82 | HUE-082 | POST /api/suggestions — pins and anchor request and validation | task | api | 14 / api | HUE-E06 | todo | HUE-081, HUE-069 |
 | 83 | HUE-083 | Outfit-request pin picker and anchor controls | story | frontend | 14 / frontend | HUE-E06 | todo | HUE-071 |
-| 84 | HUE-084 | Performance re-baseline at count 25 and wardrobe_500 update | task | tooling | 14 / tooling | HUE-E09 | todo | HUE-079, HUE-076, HUE-039 |
+| 84 | HUE-084 | Performance re-baseline at count 25 and wardrobe_500 update | task | tooling | 14 / tooling | HUE-E09 | todo | HUE-079, HUE-086, HUE-039 |
 | 85 | HUE-085 | End-to-end smoke suite update (v0.2.0 journeys) | task | tooling | 14 / tooling | HUE-E06 | todo | HUE-070, HUE-071, HUE-074, HUE-077, HUE-080, HUE-083, HUE-069, HUE-073, HUE-076, HUE-079, HUE-082, HUE-040 |
+| 86 | HUE-086 | GET /api/garments — order parameter, total and pagination | task | api | 14 / api | HUE-E10 | todo | HUE-075, HUE-076 |
 
 ## Cleanup backlog — v0.2.0
 
-Reactive tickets from `/verify` post-batch reviews of the Milestone 14 work (CONVENTIONS.md §6). Worked between batches or at milestone end; critical tickets are promoted into the v0.2.0 execution order above. Allocated after the current highest number (next is HUE-086), preserving the no-forward-dependency invariant.
+Reactive tickets from `/verify` post-batch reviews of the Milestone 14 work (CONVENTIONS.md §6). Worked between batches or at milestone end; critical tickets are promoted into the v0.2.0 execution order above. Allocated after the current highest number (next is HUE-087), preserving the no-forward-dependency invariant.
 
 | # | id | title | type | layer | source batch | status | depends_on |
 |---|---|---|---|---|---|---|---|
@@ -145,7 +146,7 @@ Reactive tickets from `/verify` post-batch reviews (CONVENTIONS.md §6). Worked 
 |---|---|---|
 | 14 | matcher | HUE-059, HUE-060, HUE-061, HUE-062, HUE-063, HUE-064 |
 | 14 | storage | HUE-065 |
-| 14 | api | HUE-066, HUE-069, HUE-073, HUE-076, HUE-079, HUE-082 |
+| 14 | api | HUE-066, HUE-069, HUE-073, HUE-076, HUE-079, HUE-082, HUE-086 |
 | 14 | services | HUE-068, HUE-072, HUE-075, HUE-078, HUE-081 |
 | 14 | frontend | HUE-067, HUE-070, HUE-071, HUE-074, HUE-077, HUE-080, HUE-083 |
 | 14 | tooling | HUE-084, HUE-085 |

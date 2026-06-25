@@ -1,39 +1,57 @@
 ---
 id: HUE-076
-title: GET /api/garments — order parameter and category filter rename
+title: Garment API — complete type→category field rename (POST/PUT bodies, GET param, response shapes)
 type: task
-status: todo
+status: done
 milestone: 14
 batch: api
 layer: api
-depends_on: [HUE-075, HUE-029]
-implements: [FR-35, FR-47]
+depends_on: [HUE-029]
+implements: [FR-16, FR-35]
 tests_required: true
 estimate: 2
 ---
 
 ## Background
-Expose the FR-47 ordering and complete the `type` → `category` rename on the inventory
-endpoint (contract §2.6). Filters still combine as AND; the response is a flat list already
-ordered by category then the chosen `order` key, plus `total`.
+Complete the v0.2.0 `type` → `category` rename (contract §1.3, §2.5, §2.6, §2.7) across all
+garment API shapes. The DB column stays `type` (architecture §3.1); only the API layer changes.
+Ordering (FR-47) and `total` are deferred to HUE-086, which depends on this ticket.
+
+The rename was done on the frontend in HUE-067 but not on the backend, breaking POST /api/garments
+and causing `g.category` to be `undefined` on the inventory screen.
 
 ## Technical requirements
-- `GET /api/garments` query params (all optional, AND): `category` (one FR-16 category — renamed from `type`), `family`, `order` ∈ `hue` (default) / `date`, `limit`/`offset` (default 500/0)
-- Response `{ "garments": [GarmentSummary], "total": N }`; each `GarmentSummary` carries `category`
-- `family` matches any role; `total` is the full match count before pagination
-- **Errors**: `422 invalid_filter` for an unknown `category`, `family` or `order`
+- `GarmentSummary`: rename field `type` → `category` (contract §1.2); update `converters.py`
+- `GarmentDetail`: rename field `type` → `category` (contract §1.2); update `converters.py`
+- `GarmentCreateRequest`: rename field `type` → `category` (contract §2.5)
+- `GarmentUpdateRequest` (regeneration PUT body): rename field `type` → `category` (contract §2.8)
+- `GET /api/garments` query param `type` → `category` (contract §2.6); filter behaviour unchanged
+- Router (`garments.py`): `body.type` → `body.category` at all call sites
+- Update `garment_service.py` type-filter call site if it passes the raw query param name
+- **Errors**: `422 invalid_category` *(renamed — v0.2.0, was `invalid_type`)* for unknown category on create/update
 
 ## Definition of done (acceptance criteria)
-- [ ] `category`/`family`/`order`/`limit`/`offset` per contract §2.6; `order=hue` default
-- [ ] List ordered by category then `order` key; `GarmentSummary.category` present
-- [ ] `422 invalid_filter` for unknown `category`/`family`/`order`
+- [ ] All garment response shapes carry `category` (not `type`); no `type` key in API output
+- [ ] `POST /api/garments` accepts `category`; rejects unknown value with `422 invalid_category`
+- [ ] `PUT /api/garments/{id}` (regeneration) accepts `category`
+- [ ] `GET /api/garments` filter param is `category`; `type` param rejected with `422 invalid_filter`
 - [ ] Tests added/updated per §12.2 and passing in `make test`; import contracts kept
 - [ ] Ticket status + notes updated in the same commit
 
 ## Tests / verification
-`api/test_garments.py` (§7.2): `category`-only/`family`-only/combined filters; `order=hue`
-(neutrals-last) and `order=date`; `category` rename asserted (no `type`); `422 invalid_filter`
-for each unknown value; `total` under `limit`/`offset`.
+`api/test_garments.py` (§7.2): all response assertions updated to `"category"` (not `"type"`);
+POST/PUT request bodies use `category`; `422 invalid_category` on unknown value; GET filter uses
+`category` param.
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-24 — scope updated: ordering (FR-47) and `total` split to HUE-086; this ticket narrowed
+  to the complete `type`→`category` rename. Dependency on HUE-075 removed (rename is independent
+  of the ordering service work).
+- 2026-06-24 — implemented. Renamed `type` → `category` in `GarmentSummary`, `GarmentDetail`,
+  `GarmentCreateRequest`, `GarmentUpdateRequest` (schemas.py); `INVALID_TYPE` → `INVALID_CATEGORY`
+  (errors.py); `garment_to_summary` converter updated (converters.py); `garments.py` router updated
+  (`body.type` → `body.category`, GET param `type` → `category`, error code updated); all
+  `test_garments.py` and one `test_suggestions.py` assertion updated. 1043 backend + 135 frontend
+  pass, zero warnings.
+- Sanity test: `cd backend && .venv/bin/pytest tests/api/test_garments.py -q`

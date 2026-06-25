@@ -162,7 +162,7 @@ class TestSuggestionFound:
         combo = api_client.post("/api/suggestions", json={}).json()["combinations"][0]
         garment = combo["slots"]["base"]
         assert "id" in garment
-        assert "type" in garment
+        assert "category" in garment
         assert "colours" in garment
         assert "thumbnail_url" in garment
         assert "image_url" not in garment  # GarmentSummary, not detail

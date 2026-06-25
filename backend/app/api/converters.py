@@ -47,7 +47,7 @@ def garment_to_summary(result: GarmentResult) -> GarmentSummary:
     """Convert a GarmentResult to a GarmentSummary (list / suggestion-slot shape)."""
     return GarmentSummary(
         id=result.id,
-        type=result.type,
+        category=result.type,
         colours=[colour_out(c) for c in result.colours],
         thumbnail_url=f"/api/garments/{result.id}/thumbnail",
     )

@@ -49,7 +49,7 @@ def _stage(settings: Settings, data: bytes = b"") -> str:
 def _create_body(token: str, garment_type: str = "t_shirt", colours: list | None = None) -> dict:
     if colours is None:
         colours = [{"h": 210.0, "s": 60.0, "l": 50.0, "proportion": 100}]
-    return {"detection_token": token, "type": garment_type, "colours": colours}
+    return {"detection_token": token, "category": garment_type, "colours": colours}
 
 
 
@@ -67,10 +67,10 @@ class TestCreateGarmentSuccess:
         assert "id" in body
         assert len(body["id"]) == 36  # UUID4 string
 
-    def test_type_matches_request(self, api_client, api_settings):
+    def test_category_matches_request(self, api_client, api_settings):
         token = _stage(api_settings)
         body = api_client.post("/api/garments", json=_create_body(token, "jumper")).json()
-        assert body["type"] == "jumper"
+        assert body["category"] == "jumper"
 
     def test_colours_present(self, api_client, api_settings):
         token = _stage(api_settings)
@@ -168,14 +168,14 @@ class TestPaletteErrors:
         assert r2.status_code == 201
 
 
-# ── POST /api/garments — type validation errors ───────────────────────────────
+# ── POST /api/garments — category validation errors ──────────────────────────
 
-class TestTypeErrors:
-    def test_unknown_type_returns_422(self, api_client, api_settings):
+class TestCategoryErrors:
+    def test_unknown_category_returns_422(self, api_client, api_settings):
         token = _stage(api_settings)
         r = api_client.post("/api/garments", json=_create_body(token, garment_type="onesie"))
         assert r.status_code == 422
-        assert r.json()["error"]["code"] == "invalid_type"
+        assert r.json()["error"]["code"] == "invalid_category"
 
 
 # ── POST /api/garments — token errors ────────────────────────────────────────
@@ -235,15 +235,15 @@ class TestListGarments:
     def test_summary_shape(self, api_client, seeded):
         garment = api_client.get("/api/garments").json()["garments"][0]
         assert "id" in garment
-        assert "type" in garment
+        assert "category" in garment
         assert "colours" in garment
         assert "thumbnail_url" in garment
         assert "image_url" not in garment  # GarmentSummary, not detail
 
-    def test_type_filter(self, api_client, seeded):
-        body = api_client.get("/api/garments", params={"type": "t_shirt"}).json()
+    def test_category_filter(self, api_client, seeded):
+        body = api_client.get("/api/garments", params={"category": "t_shirt"}).json()
         assert body["total"] == 1
-        assert body["garments"][0]["type"] == "t_shirt"
+        assert body["garments"][0]["category"] == "t_shirt"
 
     def test_family_filter_matches_primary_colour(self, api_client, seeded):
         # Blue is primary in the t_shirt.
@@ -266,15 +266,15 @@ class TestListGarments:
         assert seeded["trousers"]["id"] in ids
         assert seeded["jumper"]["id"] in ids
 
-    def test_type_and_family_combined_match(self, api_client, seeded):
-        # jumper type AND Blue family → 1 result
-        body = api_client.get("/api/garments", params={"type": "jumper", "family": "Blue"}).json()
+    def test_category_and_family_combined_match(self, api_client, seeded):
+        # jumper category AND Blue family → 1 result
+        body = api_client.get("/api/garments", params={"category": "jumper", "family": "Blue"}).json()
         assert body["total"] == 1
         assert body["garments"][0]["id"] == seeded["jumper"]["id"]
 
-    def test_type_and_family_combined_no_match(self, api_client, seeded):
-        # trousers type AND Blue family → 0 results (trousers is Red only)
-        body = api_client.get("/api/garments", params={"type": "trousers", "family": "Blue"}).json()
+    def test_category_and_family_combined_no_match(self, api_client, seeded):
+        # trousers category AND Blue family → 0 results (trousers is Red only)
+        body = api_client.get("/api/garments", params={"category": "trousers", "family": "Blue"}).json()
         assert body["total"] == 0
         assert body["garments"] == []
 
@@ -296,8 +296,8 @@ class TestListGarments:
         body = api_client.get("/api/garments", params={"limit": 1, "offset": 2}).json()
         assert body["total"] == 3
 
-    def test_invalid_type_422(self, api_client):
-        r = api_client.get("/api/garments", params={"type": "onesie"})
+    def test_invalid_category_422(self, api_client):
+        r = api_client.get("/api/garments", params={"category": "onesie"})
         assert r.status_code == 422
         assert r.json()["error"]["code"] == "invalid_filter"
 
@@ -314,7 +314,7 @@ class TestGetGarmentDetail:
         garment_id = seeded["t_shirt"]["id"]
         body = api_client.get(f"/api/garments/{garment_id}").json()
         assert body["id"] == garment_id
-        assert body["type"] == "t_shirt"
+        assert body["category"] == "t_shirt"
         assert "image_url" in body
         assert "thumbnail_url" in body
         assert "created_at" in body
@@ -402,7 +402,7 @@ def _stage_regen_token(settings: Settings, garment_id: str) -> str:
 def _put_body(token: str, garment_type: str = "trousers") -> dict:
     return {
         "regeneration_token": token,
-        "type": garment_type,
+        "category": garment_type,
         "colours": [{"h": 120.0, "s": 60.0, "l": 40.0, "proportion": 100}],
     }
 
@@ -464,7 +464,7 @@ class TestRegenerateGarment:
         ):
             api_client.post(f"/api/garments/{garment_id}/regenerate")
         after = api_client.get(f"/api/garments/{garment_id}").json()
-        assert after["type"] == original["type"]
+        assert after["category"] == original["category"]
         assert after["colours"] == original["colours"]
         assert after["regenerated_at"] == original["regenerated_at"]
 
@@ -472,14 +472,14 @@ class TestRegenerateGarment:
 # ── PUT /api/garments/{id} — update ──────────────────────────────────────────
 
 class TestUpdateGarment:
-    def test_put_replaces_type_and_palette(self, api_client, api_settings, seeded):
+    def test_put_replaces_category_and_palette(self, api_client, api_settings, seeded):
         garment_id = seeded["t_shirt"]["id"]
         token = _stage_regen_token(api_settings, garment_id)
         r = api_client.put(f"/api/garments/{garment_id}", json=_put_body(token, "trousers"))
         assert r.status_code == 200
         body = r.json()
         assert body["id"] == garment_id  # id unchanged
-        assert body["type"] == "trousers"
+        assert body["category"] == "trousers"
         assert body["colours"][0]["family"] == "Green"  # h=120 → Green
 
     def test_put_sets_regenerated_at(self, api_client, api_settings, seeded):
@@ -529,20 +529,20 @@ class TestUpdateGarment:
         assert r.status_code == 404
         assert r.json()["error"]["code"] == "garment_not_found"
 
-    def test_put_invalid_type_422(self, api_client, api_settings, seeded):
+    def test_put_invalid_category_422(self, api_client, api_settings, seeded):
         garment_id = seeded["t_shirt"]["id"]
         token = _stage_regen_token(api_settings, garment_id)
-        body = {**_put_body(token), "type": "onesie"}
+        body = {**_put_body(token), "category": "onesie"}
         r = api_client.put(f"/api/garments/{garment_id}", json=body)
         assert r.status_code == 422
-        assert r.json()["error"]["code"] == "invalid_type"
+        assert r.json()["error"]["code"] == "invalid_category"
 
     def test_put_invalid_palette_422(self, api_client, api_settings, seeded):
         garment_id = seeded["t_shirt"]["id"]
         token = _stage_regen_token(api_settings, garment_id)
         body = {
             "regeneration_token": token,
-            "type": "t_shirt",
+            "category": "t_shirt",
             "colours": [
                 {"h": 0.0, "s": 80.0, "l": 50.0, "proportion": 60},
                 {"h": 120.0, "s": 60.0, "l": 40.0, "proportion": 30},

@@ -58,7 +58,7 @@ class GarmentSummary(BaseModel):
     """Garment representation for lists and suggestion slots (contract §1.2)."""
 
     id: str
-    type: str
+    category: str
     colours: list[ColourOut]
     thumbnail_url: str
 
@@ -67,7 +67,7 @@ class GarmentDetail(BaseModel):
     """Full garment representation for detail endpoints (contract §1.2)."""
 
     id: str
-    type: str
+    category: str
     colours: list[ColourOut]
     thumbnail_url: str
     image_url: str
@@ -129,7 +129,7 @@ class GarmentUpdateRequest(BaseModel):
     """Request body for PUT /api/garments/{id} (contract §2.10)."""
 
     regeneration_token: str
-    type: str
+    category: str
     colours: list[ColourIn]
 
 
@@ -158,7 +158,7 @@ class GarmentCreateRequest(BaseModel):
     """Request body for POST /api/garments (contract §2.5)."""
 
     detection_token: str
-    type: str
+    category: str
     colours: list[ColourIn]
 
 

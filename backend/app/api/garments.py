@@ -2,7 +2,7 @@
 Garments endpoints (contract §2.5–§2.11, FR-6, FR-25, FR-29–FR-35).
 
 POST  /api/garments                    — confirm a detection and save the garment.
-GET   /api/garments                    — list with optional type/family/limit/offset filters.
+GET   /api/garments                    — list with optional category/family/limit/offset filters.
 GET   /api/garments/{id}               — full Garment detail.
 GET   /api/garments/{id}/image
 GET   /api/garments/{id}/thumbnail
@@ -24,7 +24,7 @@ from app.api.errors import (
     INVALID_FILTER,
     INVALID_PALETTE,
     INVALID_REGENERATION_TOKEN,
-    INVALID_TYPE,
+    INVALID_CATEGORY,
     THUMBNAIL_NOT_FOUND,
     AppError,
 )
@@ -60,7 +60,7 @@ router = APIRouter()
 def _to_detail(result: GarmentResult) -> GarmentDetail:
     return GarmentDetail(
         id=result.id,
-        type=result.type,
+        category=result.type,
         colours=[colour_out(c) for c in result.colours],
         thumbnail_url=f"/api/garments/{result.id}/thumbnail",
         image_url=f"/api/garments/{result.id}/image",
@@ -90,7 +90,7 @@ def create_garment(body: GarmentCreateRequest, request: Request) -> GarmentDetai
     try:
         result = confirm(
             token=body.detection_token,
-            garment_type=body.type,
+            garment_type=body.category,
             colours=service_colours,
             staging_dir=settings.data_dir / "staging",
             images_dir=settings.data_dir / "images",
@@ -104,7 +104,7 @@ def create_garment(body: GarmentCreateRequest, request: Request) -> GarmentDetai
             "Detection token not found, expired or already consumed.",
         )
     except InvalidTypeError as e:
-        raise AppError(422, INVALID_TYPE, str(e))
+        raise AppError(422, INVALID_CATEGORY, str(e))
     except InvalidPaletteError as e:
         raise AppError(422, INVALID_PALETTE, str(e))
 
@@ -114,7 +114,7 @@ def create_garment(body: GarmentCreateRequest, request: Request) -> GarmentDetai
 @router.get("/garments", response_model=InventoryResponse)
 def list_garments_endpoint(
     request: Request,
-    type: str | None = Query(default=None),
+    category: str | None = Query(default=None),
     family: str | None = Query(default=None),
     limit: int = Query(default=500, ge=0),
     offset: int = Query(default=0, ge=0),
@@ -123,14 +123,14 @@ def list_garments_endpoint(
     Return a paginated inventory list with optional AND filters (contract §2.6, FR-35).
 
     ``family`` matches a garment if **any** of its colours belongs to that family.
-    Unknown ``type`` or ``family`` values → ``422 invalid_filter``.
+    Unknown ``category`` or ``family`` values → ``422 invalid_filter``.
     """
     engine = request.app.state.engine
 
     try:
         page = list_garments(
             engine,
-            type_filter=type,
+            type_filter=category,
             family_filter=family,
             limit=limit,
             offset=offset,
@@ -238,7 +238,7 @@ def update_garment(
         result = confirm_regeneration(
             garment_id=garment_id,
             token=body.regeneration_token,
-            garment_type=body.type,
+            garment_type=body.category,
             colours=service_colours,
             staging_dir=settings.data_dir / "staging",
             images_dir=settings.data_dir / "images",
@@ -253,7 +253,7 @@ def update_garment(
     except GarmentNotFoundError:
         raise AppError(404, GARMENT_NOT_FOUND, "Garment not found.")
     except InvalidTypeError as e:
-        raise AppError(422, INVALID_TYPE, str(e))
+        raise AppError(422, INVALID_CATEGORY, str(e))
     except InvalidPaletteError as e:
         raise AppError(422, INVALID_PALETTE, str(e))
 
