@@ -2,7 +2,7 @@
 id: HUE-071
 title: Outfit-request slot selector and category-constraint checklist
 type: story
-status: todo
+status: done
 milestone: 14
 batch: frontend
 layer: frontend
@@ -51,20 +51,30 @@ so that I can ask for, say, a beach outfit or "lower body = shorts/skirt only".
 - Covered end-to-end by E2E journeys 3/4 (HUE-085)
 
 ## QA steps
-- [ ] Open `/suggest` → expect default slots selected, Lower body locked-on
-- [ ] Constrain Lower body to shorts/skirt → expect `{categories}` sent; untick all → reverts to "any"
-- [ ] Constrain Lower body to dress only → expect Base auto-deselected with the note
-- [ ] Request a slot with no garments → expect verbatim `409` message + "none in wardrobe"
+- [ ] Open `/suggest` → slots grouped by Head / Upper body / Lower body / Feet; base, socks, shoes on (dark); Lower body locked with 🔒; hat, outer off (light)
+- [ ] Click "any ▾" next to Lower body → checklist appears with all 7 categories ticked; untick shorts/skirt → button shows "trousers, jeans, chinos, dress, jumpsuit ▾"; untick all but trousers → untick trousers → button reverts to "any ▾"
+- [ ] Constrain Lower body to dress only → Base chip greys out; note "A dress covers the base layer…" appears
+- [ ] Toggle hat on then click Suggest outfits with empty wardrobe → 409 error message shown verbatim + "— none in wardrobe" on hat chip
 
 ## Definition of done
-- [ ] Acceptance criteria met
-- [ ] Tests added/updated per test strategy §12.2 and passing in `make test`
-- [ ] Matcher-touching work: n/a
-- [ ] Detection-touching work: n/a
-- [ ] Evaluation/inventory-perf-touching work: n/a
+- [x] Acceptance criteria met
+- [x] Tests added/updated per test strategy §12.2 and passing in `make test`
+- [x] Matcher-touching work: n/a
+- [x] Detection-touching work: n/a
+- [x] Evaluation/inventory-perf-touching work: n/a
 - [ ] User-flow-touching work: `make test-e2e` passes (§12.3.6) — deferred to HUE-085
-- [ ] QA steps recorded and repeated in the chat completion report
-- [ ] Ticket status + notes updated in the same commit (§12.3.7)
+- [x] QA steps recorded and repeated in the chat completion report
+- [x] Ticket status + notes updated in the same commit (§12.3.7)
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-28 — implemented. Replaced static `REQUIRED_SLOTS`/`OPTIONAL_SLOTS` with taxonomy-driven
+  region-grouped slot selector. State: `slotOverrides: Record<string, boolean | string[]>` tracking
+  per-slot overrides from FR-51 defaults (`base`, `lower_body`, `socks`, `shoes`). `lower_body` locked
+  as a `<span>` with lock glyph. Multi-category selected slots show "any ▾" constraint control
+  expanding to an inline checklist; un-ticking the last reverts to "any". One-piece auto-deselect:
+  when `lower_body` constraint is exclusively `dress`/`jumpsuit`, `base` is forced off with the note
+  text. Request sends only non-default overrides; `{}` for all-defaults. `409 empty_slots` rendering
+  unchanged. `OutfitSuggest.test.tsx` updated to remove v0.1.0 slot tests; new `Suggest.test.tsx`
+  covers all FR-51/52/50.2/36 scenarios. 1043 backend + 149 frontend pass, zero warnings.
+- Sanity test: `cd frontend && npx vitest run src/routes/Suggest.test.tsx --reporter=verbose`

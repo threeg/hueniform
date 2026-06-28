@@ -1,3 +1,7 @@
+/**
+ * Tests for HUE-037: outfit-suggestion result display.
+ * Request-panel and slot-selector behaviour covered by Suggest.test.tsx (HUE-071).
+ */
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect } from 'vitest'
@@ -36,97 +40,6 @@ function renderScreen() {
 }
 
 const user = userEvent.setup
-
-// ── Request panel — structure (FR-17, FR-36) ──────────────────────────────────
-
-describe('Suggest — request panel', () => {
-  it('shows required slots as non-interactive chips (FR-17)', () => {
-    renderScreen()
-    expect(screen.getByTestId('required-top')).toBeInTheDocument()
-    expect(screen.getByTestId('required-bottom')).toBeInTheDocument()
-    expect(screen.getByTestId('required-socks')).toBeInTheDocument()
-    expect(screen.getByTestId('required-shoes')).toBeInTheDocument()
-    // They must NOT be buttons
-    ;['top','bottom','socks','shoes'].forEach(s => {
-      const el = screen.getByTestId(`required-${s}`)
-      expect(el.tagName).not.toBe('BUTTON')
-    })
-  })
-
-  it('shows all four optional slot toggles (FR-36)', () => {
-    renderScreen()
-    ;['jersey','jacket','hat','accessory'].forEach(s =>
-      expect(screen.getByTestId(`slot-${s}`)).toBeInTheDocument(),
-    )
-  })
-
-  it('optional toggles start off (aria-pressed false)', () => {
-    renderScreen()
-    ;['jersey','jacket','hat','accessory'].forEach(s =>
-      expect(screen.getByTestId(`slot-${s}`)).toHaveAttribute('aria-pressed', 'false'),
-    )
-  })
-
-  it('toggling a slot sets aria-pressed true', async () => {
-    renderScreen()
-    await user().click(screen.getByTestId('slot-jersey'))
-    expect(screen.getByTestId('slot-jersey')).toHaveAttribute('aria-pressed', 'true')
-  })
-
-  it('toggling again turns the slot off', async () => {
-    renderScreen()
-    await user().click(screen.getByTestId('slot-jersey'))
-    await user().click(screen.getByTestId('slot-jersey'))
-    expect(screen.getByTestId('slot-jersey')).toHaveAttribute('aria-pressed', 'false')
-  })
-
-  it('Suggest outfits button is always enabled (valid with no optional slots)', () => {
-    renderScreen()
-    expect(screen.getByTestId('suggest-button')).not.toBeDisabled()
-  })
-})
-
-// ── Request body — slots object (FR-36) ──────────────────────────────────────
-
-describe('Suggest — request body (FR-36)', () => {
-  it('sends all four optional slot keys explicitly', async () => {
-    let capturedBody: unknown
-    server.use(
-      http.post('http://127.0.0.1:8000/api/suggestions', async ({ request }) => {
-        capturedBody = await request.json()
-        return HttpResponse.json(SUGGESTION_RESPONSE)
-      }),
-    )
-    renderScreen()
-    await user().click(screen.getByTestId('suggest-button'))
-    await waitFor(() => expect(capturedBody).toBeDefined())
-    const body = capturedBody as { slots: Record<string, boolean> }
-    expect(body.slots).toHaveProperty('jersey', false)
-    expect(body.slots).toHaveProperty('jacket', false)
-    expect(body.slots).toHaveProperty('hat', false)
-    expect(body.slots).toHaveProperty('accessory', false)
-  })
-
-  it('sets selected slot keys to true in slots', async () => {
-    let capturedBody: unknown
-    server.use(
-      http.post('http://127.0.0.1:8000/api/suggestions', async ({ request }) => {
-        capturedBody = await request.json()
-        return HttpResponse.json(SUGGESTION_RESPONSE)
-      }),
-    )
-    renderScreen()
-    await user().click(screen.getByTestId('slot-jersey'))
-    await user().click(screen.getByTestId('slot-hat'))
-    await user().click(screen.getByTestId('suggest-button'))
-    await waitFor(() => expect(capturedBody).toBeDefined())
-    const body = capturedBody as { slots: Record<string, boolean> }
-    expect(body.slots).toHaveProperty('jersey', true)
-    expect(body.slots).toHaveProperty('hat', true)
-    expect(body.slots).toHaveProperty('jacket', false)
-    expect(body.slots).toHaveProperty('accessory', false)
-  })
-})
 
 // ── Result cards (FR-37, FR-38, FR-39, FR-41) ─────────────────────────────────
 
@@ -198,7 +111,6 @@ describe('Suggest — result cards (FR-37/38/39/41)', () => {
     await user().click(screen.getByTestId('suggest-button'))
     await waitFor(() => screen.getAllByTestId('slot-tile'))
     const tiles = screen.getAllByTestId('slot-tile')
-    // Each tile should be a link to /garments/:id
     tiles.forEach(tile => {
       expect(tile).toHaveAttribute('href', expect.stringContaining('/garments/'))
     })
@@ -259,7 +171,9 @@ describe('Suggest — 409 empty_slots (FR-36)', () => {
       ),
     )
     renderScreen()
-    await user().click(screen.getByTestId('slot-hat'))
+    // Wait for taxonomy before clicking the hat chip
+    const hat = await screen.findByTestId('slot-hat')
+    await user().click(hat)
     await user().click(screen.getByTestId('suggest-button'))
     await waitFor(() => screen.getByRole('alert'))
     expect(screen.getByRole('alert')).toHaveTextContent(ERR_EMPTY_SLOTS.error.message)
@@ -272,7 +186,8 @@ describe('Suggest — 409 empty_slots (FR-36)', () => {
       ),
     )
     renderScreen()
-    await user().click(screen.getByTestId('slot-hat'))
+    const hat = await screen.findByTestId('slot-hat')
+    await user().click(hat)
     await user().click(screen.getByTestId('suggest-button'))
     await waitFor(() => screen.getByRole('alert'))
     expect(screen.getByTestId('slot-hat')).toHaveTextContent('none in wardrobe')

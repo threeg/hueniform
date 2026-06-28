@@ -99,6 +99,106 @@
   font-size: 0.8rem;
 }
 
+/* ── Slot chips (HUE-071) ───────────────────────────────────────────────────── */
+
+.slotWithConstraint {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.slotChip {
+  padding: 0.3rem 0.75rem;
+  border: 1px solid #bbb;
+  border-radius: 999px;
+  background: #fff;
+  color: #333;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+  user-select: none;
+}
+
+.slotChip:hover:not(:disabled) {
+  background: #f0f0f0;
+}
+
+.slotChipOn {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}
+
+.slotChipLocked {
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.slotChipEmpty {
+  background: #c00;
+  color: #fff;
+  border-color: #c00;
+}
+
+.slotChip:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.constraintBtn {
+  font-size: 0.75rem;
+  color: #555;
+  background: none;
+  border: none;
+  padding: 0 0.25rem;
+  cursor: pointer;
+  text-decoration: underline dotted;
+}
+
+.constraintBtn:hover {
+  color: #111;
+}
+
+.checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.5rem 0.75rem;
+  background: #f8f8f8;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.checklistItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.accessoriesLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0.25rem 0 0;
+}
+
+.onePieceNote {
+  font-size: 0.8rem;
+  color: #666;
+  font-style: italic;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
 .panelFooter {
   display: flex;
   align-items: center;
