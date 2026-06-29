@@ -1,5 +1,5 @@
 ---
-name: next-ticket
+name: sfk-next-ticket
 description: Implement the next ready ticket in the queue, one ticket per commit, during the implementation milestone. Picks the lowest-numbered todo ticket whose dependencies are all done, implements it test-first where applicable, and keeps the ticket, board, and tests honest in the same commit. Trigger on "next ticket", "work the next ticket", "implement the next ticket", or "keep building".
 ---
 
@@ -35,7 +35,7 @@ commit. Follow the ticket-workflow rules in `tickets/CLAUDE.md` and the definiti
    `## QA steps`), and update the `BOARD.md` row — all in the same commit as the code and tests. Commit
    message: `<PRJ>-NNN: <short imperative>`. Close the parent epic if this was its last child.
 
-7. **At batch boundaries, run `verify`.** After a batch of related tickets, invoke the `verify` skill to
+7. **At batch boundaries, run `sfk-verify`.** After a batch of related tickets, invoke the `sfk-verify` skill to
    review for reuse/quality/efficiency and propose cleanup tickets; promote any critical finding before
    the gate it would affect.
 

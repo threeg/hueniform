@@ -133,7 +133,7 @@ implementation ticket:
 
 Reactive tickets discovered by post-batch review rather than planned up front.
 
-1. **Creation.** After each batch completes, run the **`verify` skill** (`skills/verify/SKILL.md`),
+1. **Creation.** After each batch completes, run the **`sfk-verify` skill** (`skills/sfk-verify/SKILL.md`),
    which audits the committed code against the spec and reviews it for reuse, quality and efficiency
    issues. Accepted findings become cleanup tickets — ordinary `task` tickets with `batch: cleanup`,
    numbered after the current highest id so the no-forward-dependency invariant (§4.3) holds

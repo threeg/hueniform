@@ -33,7 +33,7 @@ as the milestone's deliverable.
 | 4 | Wireframes | `docs/wireframes/` — key screens as Markdown + images/HTML (omit for non-UI projects) | Cowork | ⬜ |
 | 5 | Test strategy | `docs/test-strategy.md` — frameworks, what is unit/integration/E2E tested | Cowork | ⬜ |
 | 6 | Ticket generation | `tickets/*.md` + conventions + `BOARD.md` index | Cowork | ⬜ |
-| 7 | Repository setup & scaffolding | repo initialised, docs + tickets committed, skeletons, dependency-rule check wired in, `verify` skill filled in for the stack | Code | ⬜ |
+| 7 | Repository setup & scaffolding | repo initialised, docs + tickets committed, skeletons, dependency-rule check wired in, `sfk-verify` skill filled in for the stack | Code | ⬜ |
 | 8 | Implementation, ticket by ticket | working software; tickets updated in the same commits | Code | ⬜ |
 
 <!-- Append a new table per version. Subsequent versions run as a DELTA PASS (see README): a

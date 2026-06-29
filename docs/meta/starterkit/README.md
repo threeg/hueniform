@@ -9,7 +9,7 @@ AI coding agent**.
 
 1. **Drop the kit into a new, empty repository.** Copy everything in this folder to the repo root.
 
-2. **Install the workflow skills** in `skills/` (`init`, `next-milestone`, `next-ticket`, `verify`):
+2. **Install the workflow skills** in `skills/` (`sfk-init`, `sfk-next-milestone`, `sfk-next-ticket`, `sfk-verify`):
    - **Desktop app (Cowork):** skills are **not** picked up automatically. Add them via
      **Settings → Capabilities**, or zip each skill folder as a `.skill` file and use the **Save skill**
      button. (Ask the agent: *"package the folders in `skills/` as installable `.skill` files"* if you
@@ -17,19 +17,19 @@ AI coding agent**.
    - **Claude Code (CLI):** copy the contents of `skills/` into `.claude/skills/` in the repo; they are
      then discovered automatically.
 
-3. **Trigger `init`.** Open the repo with the agent and run the `init` skill (or, if you skipped step 2,
+3. **Trigger `sfk-init`.** Open the repo with the agent and run the `sfk-init` skill (or, if you skipped step 2,
    paste the fallback prompt below). The agent interviews you for the project brief and lays down the
    working structure, then stops for your sign-off.
 
-> **Fallback if you don't install the skills:** paste this instead of `init` —
-> *"Read `README.md` and `skills/init/SKILL.md` in this repository, then run that bootstrap procedure:
+> **Fallback if you don't install the skills:** paste this instead of `sfk-init` —
+> *"Read `README.md` and `skills/sfk-init/SKILL.md` in this repository, then run that bootstrap procedure:
 > interview me for the project brief and lay down the working structure. Do not write application code
 > yet, and do not mark any milestone complete without my sign-off."*
 > The same pattern works for the other skills: point the agent at the relevant `skills/<name>/SKILL.md`.
 
-After `init`, you advance the project by running `next-milestone` (or the fallback prompt) once per
-milestone, signing off each before the next. During implementation you run `next-ticket` repeatedly,
-and `verify` at batch boundaries.
+After `sfk-init`, you advance the project by running `sfk-next-milestone` (or the fallback prompt) once per
+milestone, signing off each before the next. During implementation you run `sfk-next-ticket` repeatedly,
+and `sfk-verify` at batch boundaries.
 
 This kit is the distilled *process* — nothing here is tied to any particular domain, language, or
 framework. It is itself the output of a project that treated its development method as a deliverable
@@ -60,10 +60,10 @@ framework. It is itself the output of a project that treated its development met
 │   ├── TICKET-TEMPLATE.md        ← canonical per-ticket format (shape)
 │   └── BOARD.md                  ← derived topological view of all tickets
 ├── skills/                       ← installable workflow commands (see Quick start)
-│   ├── init/SKILL.md             ← one-time bootstrap + Milestone 1 interview
-│   ├── next-milestone/SKILL.md   ← advance one milestone (authoring or build)
-│   ├── next-ticket/SKILL.md      ← implement one ticket, one commit
-│   └── verify/SKILL.md           ← post-batch spec audit + quality review (TEMPLATE — filled at scaffolding)
+│   ├── sfk-init/SKILL.md          ← one-time bootstrap + Milestone 1 interview
+│   ├── sfk-next-milestone/SKILL.md ← advance one milestone (authoring or build)
+│   ├── sfk-next-ticket/SKILL.md   ← implement one ticket, one commit
+│   └── sfk-verify/SKILL.md        ← post-batch spec audit + quality review (TEMPLATE — filled at scaffolding)
 └── addons/
     └── meta-loop/                ← OPTIONAL — only if your project's goal includes improving the method
         ├── lessons-learned.md
@@ -132,14 +132,14 @@ for each is named, but the durable point is the mode, not the brand.
 
 | # | Step | Deliverable | Mode (recommended tool) | Skill |
 |---|------|-------------|-------------------------|-------|
-| 1 | **Project brief** | `docs/project-brief.md` — scope, goals, users, out-of-scope, success criteria | Authoring (Cowork) | `init` |
-| 2 | **Requirements** | `docs/requirements.md` — numbered `FR-n` / `NFR-n` rules; concrete, testable thresholds | Authoring (Cowork) | `next-milestone` |
-| 3 | **Architecture & interface contract** | `docs/architecture.md`, `docs/api-contract.md`, the data model and dependency rule | Authoring (Cowork) | `next-milestone` |
-| 4 | **Wireframes** | `docs/wireframes/` — screens, states, navigation (skip or trim for non-UI projects) | Authoring (Cowork) | `next-milestone` |
-| 5 | **Test strategy** | `docs/test-strategy.md` — frameworks, the pyramid, gates, the definition of done | Authoring (Cowork) | `next-milestone` |
-| 6 | **Ticket generation** | `tickets/*.md` + `CONVENTIONS.md` + `BOARD.md` — the work queue, in dependency order | Authoring (Cowork) | `next-milestone` |
-| 7 | **Repository setup & scaffolding** | repo initialised, docs + tickets committed, skeletons that compile and test, **the `verify` skill filled in for the stack** | Building (Code) | `next-milestone` |
-| 8 | **Implementation, ticket by ticket** | working software; each ticket updated in the same commit as its code | Building (Code) | `next-ticket` + `verify` |
+| 1 | **Project brief** | `docs/project-brief.md` — scope, goals, users, out-of-scope, success criteria | Authoring (Cowork) | `sfk-init` |
+| 2 | **Requirements** | `docs/requirements.md` — numbered `FR-n` / `NFR-n` rules; concrete, testable thresholds | Authoring (Cowork) | `sfk-next-milestone` |
+| 3 | **Architecture & interface contract** | `docs/architecture.md`, `docs/api-contract.md`, the data model and dependency rule | Authoring (Cowork) | `sfk-next-milestone` |
+| 4 | **Wireframes** | `docs/wireframes/` — screens, states, navigation (skip or trim for non-UI projects) | Authoring (Cowork) | `sfk-next-milestone` |
+| 5 | **Test strategy** | `docs/test-strategy.md` — frameworks, the pyramid, gates, the definition of done | Authoring (Cowork) | `sfk-next-milestone` |
+| 6 | **Ticket generation** | `tickets/*.md` + `CONVENTIONS.md` + `BOARD.md` — the work queue, in dependency order | Authoring (Cowork) | `sfk-next-milestone` |
+| 7 | **Repository setup & scaffolding** | repo initialised, docs + tickets committed, skeletons that compile and test, **the `sfk-verify` skill filled in for the stack** | Building (Code) | `sfk-next-milestone` |
+| 8 | **Implementation, ticket by ticket** | working software; each ticket updated in the same commit as its code | Building (Code) | `sfk-next-ticket` + `sfk-verify` |
 
 > **Why this order.** Steps 1–3 fix *what* and *how*. Step 5 fixes *how you'll know it works* before any
 > code exists, so tests are written to the spec rather than to the implementation. Step 6 turns the spec
@@ -159,10 +159,10 @@ The agent drives the process; you answer questions and sign off. The four skills
 
 | Skill | When | What it does |
 |-------|------|--------------|
-| `init` | once, on a fresh repo | Interview for the brief; lay down `CLAUDE.md`, `docs/milestone-plan.md`, the ticket system; remove consumed scaffolding; stop for sign-off. |
-| `next-milestone` | start of each milestone | Read the milestone plan, mark the next milestone `In progress`, run its authoring interview or build, stop for sign-off. |
-| `next-ticket` | repeatedly, in step 8 | Pick the lowest-numbered `todo` ticket whose dependencies are all `done`, implement it, one ticket per commit. |
-| `verify` | at batch boundaries | Audit the batch against the spec, review code quality, propose cleanup tickets. Filled in for the stack during scaffolding. |
+| `sfk-init` | once, on a fresh repo | Interview for the brief; lay down `CLAUDE.md`, `docs/milestone-plan.md`, the ticket system; remove consumed scaffolding; stop for sign-off. |
+| `sfk-next-milestone` | start of each milestone | Read the milestone plan, mark the next milestone `In progress`, run its authoring interview or build, stop for sign-off. |
+| `sfk-next-ticket` | repeatedly, in step 8 | Pick the lowest-numbered `todo` ticket whose dependencies are all `done`, implement it, one ticket per commit. |
+| `sfk-verify` | at batch boundaries | Audit the batch against the spec, review code quality, propose cleanup tickets. Filled in for the stack during scaffolding. |
 
 Each skill's `SKILL.md` is the unambiguous instruction set — that is what makes the keyword safe to
 trigger in a blank repo. If you have not installed the skills, point the agent at the matching
@@ -177,17 +177,17 @@ A live project should not carry both a blank template and the filled-in document
 everything the kit contains into three buckets:
 
 - **Scaffolding — consumed and removed.** The blank templates in `docs/`, `tickets/`, and the
-  `CLAUDE.md` files, plus the one-time `init` skill. `init` fills each into its real location and then
+  `CLAUDE.md` files, plus the one-time `sfk-init` skill. `sfk-init` fills each into its real location and then
   **deletes the template residue**. A half-filled template is pure context noise; it must not linger.
 - **Living — they stay and evolve.** The filled `docs/*`, the `tickets/*`, the root and per-layer
-  `CLAUDE.md`, and the `next-milestone` / `next-ticket` / `verify` skills (the last filled in for the
+  `CLAUDE.md`, and the `sfk-next-milestone` / `sfk-next-ticket` / `sfk-verify` skills (the last filled in for the
   stack). These *are* the project from here on.
 - **Reference — archivable.** This `README` (the process narrative). Every *enforceable* rule it
   describes — the definition of done, the milestone lifecycle, the dependency rule — lives in
   `CLAUDE.md` / `tickets/CONVENTIONS.md` / the skills as the single source of truth. So once the project
   is running, the README can be archived or removed without losing anything the build relies on.
 
-The net effect: once `init` has run and the spec milestones are signed off, a reader sees the living
+The net effect: once `sfk-init` has run and the spec milestones are signed off, a reader sees the living
 docs, the code, and the workflow skills — not the kit that produced them. The kit is a launch vehicle,
 not cargo.
 
@@ -214,7 +214,7 @@ A new version is scoped by a short **version brief** (`docs/vX.Y.Z-brief.md`) th
 
 Subsequent versions therefore run as a **delta pass** (brief → requirement deltas → architecture/
 contract deltas → wireframe deltas → test-strategy delta + ticket generation → implementation), driven
-by `next-milestone` and `next-ticket` exactly as before. There is no second `init`.
+by `sfk-next-milestone` and `sfk-next-ticket` exactly as before. There is no second `sfk-init`.
 
 ---
 
@@ -269,7 +269,7 @@ Two habits matter most:
 Supporting practices: layered gates (a fast default gate run on every ticket, plus heavier gates —
 performance, end-to-end, real-dependency — run for the ticket types that need them); a coverage gate on
 the pure core; **golden-file snapshots taken *before* any risky refactor** of deterministic code, so a
-behavioural change shows up in the diff; and the **`verify` pass at batch boundaries**, which audits the
+behavioural change shows up in the diff; and the **`sfk-verify` pass at batch boundaries**, which audits the
 batch against the spec and turns findings into cleanup tickets.
 
 The **definition of done** for an implementation ticket lives in the root `CLAUDE.md` and the ticket

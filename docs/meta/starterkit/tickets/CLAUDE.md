@@ -14,7 +14,7 @@ format in `tickets/TICKET-TEMPLATE.md`; the execution order in `tickets/BOARD.md
 - **Commit message:** `<PRJ>-NNN: <short imperative>` (e.g. `<PRJ>-007: core constants`).
 - **Close epics when their last child closes.** If every child in the epic's `Children` list is
   `done`, mark the epic `done` in both its ticket file and the `BOARD.md` epic table in that same commit.
-- **Run `verify` after each batch.** The `verify` skill (`skills/verify/SKILL.md`) audits the batch
+- **Run `sfk-verify` after each batch.** The `sfk-verify` skill (`skills/sfk-verify/SKILL.md`) audits the batch
   against the spec and reviews it for reuse, quality and efficiency, proposing cleanup tickets.
   Accepted tickets go to the cleanup backlog in `BOARD.md` (CONVENTIONS.md §6); critical ones are
   promoted into the main sequence before the gate they affect.

@@ -1,6 +1,6 @@
 ---
-name: verify
-description: Post-batch verification pass — audit completed work against the binding spec and review code quality, then propose cleanup tickets. TEMPLATE — fill the <PLACEHOLDER> commands and stack-specific checks during scaffolding (Milestone 7). Trigger on "verify", "review this batch", "run the verifier", or "spec-audit the recent work".
+name: sfk-verify
+description: Post-batch verification pass — audit completed work against the binding spec and review code quality, then propose cleanup tickets. This is a template — fill the placeholder commands and stack-specific checks during scaffolding (Milestone 7). Trigger on "verify", "review this batch", "run the verifier", or "spec-audit the recent work".
 ---
 
 # verify — post-batch spec audit + quality review

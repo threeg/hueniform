@@ -1,6 +1,6 @@
 ---
-name: next-milestone
-description: Advance the project by one milestone in the spec-first process. Reads docs/milestone-plan.md, marks the next milestone In progress, and runs that step's interview (authoring) or build (implementation). Trigger on "next milestone", "work the next milestone", "continue the project", or "start the <step>" (brief, requirements, architecture, wireframes, test strategy, ticket generation, scaffolding).
+name: sfk-next-milestone
+description: Advance the project by one milestone in the spec-first process. Reads docs/milestone-plan.md, marks the next milestone In progress, and runs that step's interview (authoring) or build (implementation). Trigger on "next milestone", "work the next milestone", "continue the project", or naming a step such as "start the requirements" or "start the test strategy".
 ---
 
 # next-milestone — advance one milestone
@@ -22,8 +22,8 @@ Use after a milestone has been signed off, to pick up the next one. Each milesto
      (or, for ticket generation, derive `tickets/*` and `BOARD.md` from the spec in dependency order).
      Write the document(s) in place.
    - **Building steps** (scaffolding → implementation): scaffolding initialises the repo, wires the
-     dependency-rule check and the `verify` skill against the real stack, and commits skeletons that
-     pass the empty gate. Implementation is handled ticket by ticket — use the `next-ticket` skill.
+     dependency-rule check and the `sfk-verify` skill against the real stack, and commits skeletons that
+     pass the empty gate. Implementation is handled ticket by ticket — use the `sfk-next-ticket` skill.
 
 4. **Respect the dependency order.** Do not begin a milestone whose inputs (the prior milestones)
    are not signed off.
@@ -37,5 +37,5 @@ Use after a milestone has been signed off, to pick up the next one. Each milesto
 - One milestone per session; one sign-off per milestone.
 - The spec is binding: do not reopen settled decisions from earlier milestones — if one is genuinely
   wrong, change the relevant `docs/` file first and note it.
-- For implementation milestones, defer to `next-ticket` and the ticket-workflow rules in
+- For implementation milestones, defer to `sfk-next-ticket` and the ticket-workflow rules in
   `tickets/CLAUDE.md`.

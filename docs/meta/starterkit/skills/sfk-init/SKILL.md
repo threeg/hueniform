@@ -1,5 +1,5 @@
 ---
-name: init
+name: sfk-init
 description: Bootstrap a new spec-first project from the starter kit. Use ONCE, in an otherwise-empty repository that contains this kit, to interview the user for the project brief and lay down the working structure (root CLAUDE.md, milestone plan, ticket system). Trigger on "init", "initialise the project", "bootstrap from the starter kit", or "set up this kit".
 ---
 
@@ -13,7 +13,7 @@ this step produces the brief and the working structure only.
 
 1. **Confirm the situation.** Check that the repo contains the kit (`README.md`, `CLAUDE.md`, `docs/`,
    `tickets/`) and little or no application code. If it looks like an already-bootstrapped project,
-   stop and ask before proceeding — `init` is destructive to the templates.
+   stop and ask before proceeding — `sfk-init` is destructive to the templates.
 
 2. **Interview for the essentials** (one short round of questions, then proceed):
    - project name and one-line purpose;
@@ -33,7 +33,7 @@ this step produces the brief and the working structure only.
      to the chosen prefix and layer names;
    - replace `<PRJ>` / `<PROJECT>` / layer placeholders throughout.
 
-4. **Wire in the verifier.** Fill the `verify` skill template against the chosen stack (the actual
+4. **Wire in the verifier.** Fill the `sfk-verify` skill template against the chosen stack (the actual
    gate commands and the spec-audit checklist) so post-batch review works from the start. This is the
    scaffolding (Milestone 7) responsibility, but record the intent now in the milestone plan.
 
@@ -42,15 +42,15 @@ this step produces the brief and the working structure only.
 
 6. **Remove the consumed scaffolding.** As each template becomes a real document, delete the leftover
    placeholder guidance. Move the optional `addons/` into `docs/meta/` only if the user opted in;
-   otherwise leave it untouched. The `init` skill itself may be deleted once bootstrap is complete —
+   otherwise leave it untouched. The `sfk-init` skill itself may be deleted once bootstrap is complete —
    it is one-time.
 
 7. **Stop for sign-off.** Do **not** mark Milestone 1 complete. Tell the user the brief is ready for
    review and that completion needs their explicit sign-off (see the milestone lifecycle in
-   `CLAUDE.md`). After sign-off, the next step is the `next-milestone` skill.
+   `CLAUDE.md`). After sign-off, the next step is the `sfk-next-milestone` skill.
 
 ## Rules
 
 - Never mark a milestone `Complete` on your own initiative — that is the user's call.
-- Keep `docs/` the binding source of truth; do not start application code during `init`.
+- Keep `docs/` the binding source of truth; do not start application code during `sfk-init`.
 - One round of clarifying questions is enough to start; refine inside the brief interview.
