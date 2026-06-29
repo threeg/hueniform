@@ -12,6 +12,9 @@ tests_required: false
 estimate: 8
 ---
 
+## In plain English
+Rethinks how garments are sorted into types and how an outfit is built up in layers, giving a richer set of garment types, more flexible layering (including dresses and accessories), and the ability to limit any part of an outfit to certain kinds of garment when asking for suggestions.
+
 ## Summary
 Deliver v0.2.0 feature F4: redesign the garment-type taxonomy and the rigid outfit
 structure into the **category ≠ slot ≠ region** model (requirements §5). The garment

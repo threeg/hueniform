@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Builds the outfit ideas: it looks through the wardrobe, puts together candidate combinations, ranks the most colour-coordinated ones, and explains why each works. If nothing matches well it falls back to neutral-based options, and if a needed type of clothing is missing it says so plainly.
+
 ## Background
 The suggestion service drives the outfit flow (architecture §4.3): load the inventory by type, fail fast on an empty requested slot (FR-36), enumerate anchors-first under `MAX_ANCHOR_CANDIDATES` with an injected shuffle (FR-42, NFR-5), evaluate and rank via the pure matcher, apply the fallback ladder, and render explanations from each `EvaluationResult` (FR-38).
 

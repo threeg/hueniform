@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Connects the app's outfit-request screen to the new outfit-building behaviour, so the owner's choices about which roles to include, and any narrowing to certain kinds of clothing, are understood and acted on, with clear messages when a request cannot be fulfilled.
+
 ## Background
 Rewrite the `POST /api/suggestions` request/response to the v0.2.0 shape (contract §2.12) for
 the slot-selection model and the per-category constraint. Pins, anchor and count are added by

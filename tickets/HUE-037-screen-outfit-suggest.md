@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+The screen where you ask the app to put together an outfit, choosing which extra pieces to include, and then see up to three suggested combinations ordered best-first, each with a short explanation of why the colours work together.
+
 ## User story
 As the owner
 I want to request an outfit with chosen optional slots and see ranked suggestions

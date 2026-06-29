@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Lets the owner pick what kind of clothing an item is when adding it, choosing from a tidy list grouped by where it is worn on the body, so each item is labelled correctly.
+
 ## User story
 As the owner
 I want to assign one of the new FR-16 categories when confirming a garment

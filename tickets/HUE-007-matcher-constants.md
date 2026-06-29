@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Pins down all the numeric rules the colour matching relies on — such as how close two colours must be to count as a match — in one place, so they stay consistent and can only be changed deliberately and with care.
+
 ## Background
 Requirements §1.4 makes every numeric threshold contractual and requires it to be a named constant so it can be tuned in one place. This module is the single source of those values; the drift-guard test (§4.1) makes tuning a constant force a recorded requirements change.
 

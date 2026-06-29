@@ -12,6 +12,9 @@ tests_required: false
 estimate: 3
 ---
 
+## In plain English
+Builds the basic layout the user will see — a fixed side menu with the main pages it links to — with placeholder pages for now, so the look and the moving-between-screens work before the real screens are filled in.
+
 ## Background
 The React SPA needs its toolchain, routing and the fixed-sidebar shell (wireframes §2–§3) before any screen can be built. Per the contract, the frontend is built against the API contract independently of the backend, so this skeleton stands alone.
 

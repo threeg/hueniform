@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Teaches the outfit-suggesting part of the app to build looks around a fixed starting point: a specific garment the owner wants to wear, a colour family they like, or a particular style of colour combination, while still only offering combinations that work and saying clearly when nothing fits.
+
 ## Background
 E06 (F1/F2): add **pins** (FR-44) and **colour/scheme anchors** (FR-45) to the suggestion
 service. A pin forces a garment into its slot in every combination; a colour-family anchor

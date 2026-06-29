@@ -12,6 +12,9 @@ tests_required: true
 estimate: 1
 ---
 
+## In plain English
+Keeps the master list of clothing types defined in one place behind the scenes instead of three, with an automatic check to catch any mismatch, so future changes to the categories are safer.
+
 ## Background
 
 `/verify` of the complete MVP identified that the 8 garment type strings are

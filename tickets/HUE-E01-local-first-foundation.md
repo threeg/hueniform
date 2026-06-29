@@ -12,6 +12,9 @@ tests_required: false
 estimate: 8
 ---
 
+## In plain English
+The groundwork that makes the whole app run entirely on the owner's own computer with no internet needed, started and used with a single command, along with the safety checks that keep its building blocks tidy as everything else is added.
+
 ## Summary
 Establish the single repository, the backend and frontend skeletons, the test tooling and quality gates, and the single-command run — everything that makes Hueniform a local-first, offline, single-command application whose process is itself a deliverable (brief meta-goal). This epic delivers the architecture's dependency-rule enforcement and the test harness every other epic relies on.
 

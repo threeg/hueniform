@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Lets the owner correct what kind of clothing a saved item is without having to re-photograph it or redo its colours, changing only the label.
+
 ## Background
 F3: a saved garment's **category** becomes directly editable without re-detection or the
 confirm-and-correct flow (FR-46), narrowing FR-32 so only the type field is editable; the

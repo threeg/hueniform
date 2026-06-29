@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Lets the owner ask for a specific kind of outfit by choosing which roles it should include and, if they wish, narrowing a role to particular kinds of clothing, so they can request something like a beach outfit with shorts-or-skirt only.
+
 ## Background
 Rewrite `suggestion_service` for the v0.2.0 outfit flow (architecture §4.3): resolve the
 **selected slot set** by layering the request over the FR-51 defaults, enforce the **mandatory

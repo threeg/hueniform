@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Lets the screens redo a garment's colour detection, save the redone colours and type in place of the old ones, and remove a garment from the wardrobe along with its pictures. Saving changes is only possible as part of a confirmed redo, so there is no way to hand-edit an item.
+
 ## Background
 Regenerate/replace/delete (contract §2.9–§2.11): `POST …/regenerate` returns a fresh proposal bound to the garment; token-gated `PUT` replaces palette+type in place (the FR-32 enforcement — no field-edit path); `DELETE` removes the record and files.
 

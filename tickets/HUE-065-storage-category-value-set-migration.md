@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Updates the list of clothing kinds the wardrobe recognises to the new, fuller set, and carefully relabels any items already saved under the old names so nothing is lost or mislabelled.
+
 ## Background
 The `garments.type` column keeps its name and shape, but its **allowed value set** changes to
 the FR-16 categories (architecture §3.1). Existing rows carry v0.1.0 values that would fail

@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Joins the colour-detection steps into one flow that takes a garment photo, separates the clothing from the background, and works out its handful of main colours and how much of each there is, falling back to looking at the whole picture when the clothing cannot be picked out cleanly.
+
 ## Background
 The pipeline turns a photograph into a proposed palette (architecture §2.3): decode/validate, segment, sample masked pixels, cluster, merge, convert and classify, assembling 1–4 colours with proportions. It accepts an injectable segmenter and clusterer (a scaffolding requirement, test strategy §6.2) so the default gate tests it deterministically with committed masks and seeded KMeans.
 

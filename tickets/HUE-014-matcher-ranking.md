@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Scores and orders the possible outfits to pick the best few, making sure the suggestions are genuinely different from one another, and falls back gracefully when nothing matches well by either offering safe neutral combinations or explaining what is holding things up.
+
 ## Background
 Ranking composes the score (scheme strength, echo bonus, variety), enforces distinctness and the cap of three, and implements the fallback ladder, producing the `EvaluationResult` that explanation renders from. Enumeration's shuffle takes an injected `random.Random` so unit tests are exactly reproducible (§4.7).
 

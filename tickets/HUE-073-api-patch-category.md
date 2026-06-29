@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Provides the behind-the-scenes way for the app to change just the kind of clothing a saved item is, leaving its photo and colours untouched.
+
 ## Background
 `PATCH /api/garments/{id}` is the direct, single-field category edit (contract §2.10a, FR-46) —
 the only field-edit path permitted by the amended FR-32. It carries no regeneration token and

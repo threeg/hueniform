@@ -12,6 +12,9 @@ tests_required: true
 estimate: 8
 ---
 
+## In plain English
+Overhauls how the app understands the parts of an outfit, so it can properly handle layered tops, one-piece items like dresses, and accessories, leading to far more realistic outfit suggestions.
+
 ## Background
 The heart of E08: rewrite `matcher.slots` from the v0.1.0 fixed 1:1 type-to-slot model to the
 v0.2.0 region/slot/category model (requirements §5; F4 spike). It adds **no new harmony

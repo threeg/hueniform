@@ -12,6 +12,9 @@ tests_required: false
 estimate: 8
 ---
 
+## In plain English
+The colour brain of the app: the self-contained rules that name colours, work out how garments' colours relate, decide which combinations look harmonious, rank them and explain the choices in plain language.
+
 ## Summary
 Build the framework-independent colour matcher (NFR-9): the taxonomy, role derivation, harmony evaluation, slot rules, ranking and explanation — pure functions over frozen dataclasses, standard-library only, mirrored one-to-one by their test files. This is the heart of the product and the bulk of the test suite (test strategy §4).
 

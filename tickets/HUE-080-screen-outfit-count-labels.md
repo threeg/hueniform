@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Gives the owner an on-screen control to choose how many outfit ideas to see and marks which results lean on neutral colours, so they can ask for more options and make sense of them.
+
 ## User story
 As the owner
 I want to choose how many outfits to generate and see which results are neutral-based

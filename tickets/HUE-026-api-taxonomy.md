@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Provides the screens with the full list of colour families the app recognises, along with a representative colour for each, so the owner can pick from them when adding a colour by hand and so the colour legend can be displayed.
+
 ## Background
 The UI needs the palette taxonomy for family pickers (manual colour adds, FR-29) and legend display (FR-5). `GET /api/taxonomy` exposes the matcher's families with canonical HSL and, for chromatic families, the representative hue and arc (contract §2.2).
 

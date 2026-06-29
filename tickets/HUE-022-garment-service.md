@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Saves a garment to the wardrobe once the owner confirms its colours, working out each colour's family itself rather than trusting what is sent, storing the photo and its preview, and doing it all in one go so a part-finished item never gets left behind. It also handles deleting a garment along with its pictures.
+
 ## Background
 Confirming a detection saves a garment in one transaction (architecture §4.1): re-derive every family server-side from submitted HSL (FR-1), validate count and the sum of 100, move the staged image, generate the thumbnail and insert both tables. Delete removes the record (cascade) and its files (FR-34).
 

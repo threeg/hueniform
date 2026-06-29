@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Makes browsing the wardrobe and opening garment photos quicker by only fetching the information actually needed at the time, so the app stays responsive as the collection grows.
+
 ## Background
 
 `/verify` of the API batch identified two efficiency issues in

@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Turns the reasoning behind a suggested outfit into a plain-language explanation — naming the colour combination, each garment's part in it, and any matching accents — written from the real decision rather than a stock phrase.
+
 ## Background
 Explanations must be generated from the actual evaluation, never canned (FR-38). `explain.render` takes an `EvaluationResult` and nothing else — the §5 dependency tests confirm it cannot reach the database, the request or any other source of text.
 

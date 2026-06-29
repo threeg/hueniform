@@ -12,6 +12,9 @@ tests_required: false
 estimate: 8
 ---
 
+## In plain English
+Everything needed to add a piece of clothing to the wardrobe: upload its photo, have the app work out its colours, let the owner confirm or correct them and tag the type, then save it, with the option to redo the colours or remove it later.
+
 ## Summary
 Deliver brief success criterion 1: the owner uploads a garment photo, the app proposes the colours with proportions, the owner confirms or corrects them and saves the garment with a type tag, and can later regenerate or delete it. Spans detection, storage, the relevant services, endpoints and screens.
 

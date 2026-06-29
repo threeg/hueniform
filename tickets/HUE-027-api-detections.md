@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Handles a garment photo being uploaded from a screen: it checks the file is a sensible image and not too big, has its colours worked out, and sends back the suggested result plus the staged image for preview, all without saving anything to the wardrobe yet.
+
 ## Background
 Upload and detect (contract §2.3–§2.4): validate the multipart upload (format, 20 MB), run detection via the service, return the proposal for confirm-and-correct, and serve the staged image for preview — writing nothing to the database (FR-24).
 

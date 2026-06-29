@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Lets the wardrobe be sorted either as a colour spectrum or by when items were added, so the owner can browse it in whichever order they find easiest.
+
 ## Background
 F6: the inventory read gains a within-group **ordering** by hue (a colour spectrum, the
 default) or by date added (newest first) (FR-47). Ordering is applied in the service/query

@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Updates the automated walk-throughs that mimic a real person using the app, so they cover the refreshed screens from start to finish: adding and browsing garments, changing a garment's category, and requesting outfits with all the new choices.
+
 ## Background
 Update the thin Playwright smoke suite for the reworked v0.2.0 screens (test strategy §9):
 the grouped/ordered inventory, the direct category edit, and the rebuilt outfit request

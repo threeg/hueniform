@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Builds a set of carefully designed sample wardrobes — each one set up to test a particular situation, like having two good outfits or none at all — so the outfit-matching rules can be checked against known, predictable cases.
+
 ## Background
 The slot, ranking and suggestion-evaluation tests need engineered wardrobes built from matcher value types (test strategy §11.2). Building them once, after the `Garment`/`Colour` types exist, gives one definition usable as plain values for unit tests and (later) as persisted rows for integration tests.
 

@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Updates the plain-English reasons the app gives for each outfit suggestion so they describe the new layered tops, one-piece items and accessories, and clearly explain when a look is built around neutrals.
+
 ## Background
 `explain.render` must describe the v0.2.0 model: the four-layer vocabulary (`mid`/`outer`
 labels), one-piece garments, the two adornment tiers, and the distinction between a

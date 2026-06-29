@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Removes a lot of copy-pasted set-up code from the app's automated checks, so the checks are easier to maintain and quicker to extend in future.
+
 ## Background
 
 `/verify` of the frontend batch identified ~130 lines of duplicated test

@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Provides the basic colour arithmetic everything else depends on — converting between ways of describing a colour, measuring how far apart two colours are around the colour wheel, and averaging colours together correctly.
+
 ## Background
 All colour mathematics is defined in HSL (requirements §1.3); the matcher owns a pure RGB↔HSL conversion and the circular hue operations the rest of the matcher builds on, keeping the package standard-library-only (NFR-9).
 

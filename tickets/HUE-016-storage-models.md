@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Sets up how the wardrobe is saved on the computer — the structure for storing each garment and its colours, with safeguards that keep the saved information valid and tidy, including removing a garment's colours when the garment itself is deleted.
+
 ## Background
 Persistence is two SQLModel tables (architecture §3.1): `garments` and `garment_colours`, with the CHECK constraints, indices, foreign keys and journal mode the architecture specifies. Storage imports nothing from the matcher (dependency rule, test strategy §5.1 contract 4).
 

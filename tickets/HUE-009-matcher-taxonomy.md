@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Decides, for any given colour, which single named colour family it belongs to — sorting out the neutrals like black, white and grey first, then the brighter colours around the wheel — in a consistent way that the rest of the app relies on.
+
 ## Background
 The taxonomy maps any HSL value to exactly one family, deterministically (FR-1): ordered neutral rules first, then the twelve chromatic 30° arcs with half-open boundaries (FR-2, FR-4). This is the classification every other layer relies on and the most boundary-sensitive module.
 

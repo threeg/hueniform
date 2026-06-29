@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Sets up the tools for automatically checking that the screens work correctly and that a user can click through a whole journey, including testing in more than one web browser, so screens can be tested as soon as they are built.
+
 ## Background
 Frontend component tests and the E2E smoke suite need their toolchain in place before screens are built (test strategy §2, §9, §10), all running offline after `make setup`.
 

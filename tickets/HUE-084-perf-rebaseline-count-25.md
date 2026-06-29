@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Checks that the app stays fast even in the hardest case: a wardrobe of 500 garments while asking for the largest batch of outfit ideas, and updates the test wardrobe to reflect the new way garments are grouped so the speed checks stay realistic.
+
 ## Background
 NFR-5 is re-baselined for v0.2.0: an outfit request must return in under 2 s at 500 garments
 **including at the maximum count of 25** (the cap is count-independent). The `wardrobe_500`

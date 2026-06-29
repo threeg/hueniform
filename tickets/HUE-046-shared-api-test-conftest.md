@@ -12,6 +12,9 @@ tests_required: true
 estimate: 1
 ---
 
+## In plain English
+Pulls the common setup used by the automated checks for the app's main features into one shared place, so the tests are simpler to look after and less repetitive.
+
 ## Background
 
 `/verify` of the API batch identified that every API test file independently

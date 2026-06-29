@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Makes several screens feel snappier by avoiding repeated colour look-ups they don't need to redo, so pages with lots of items respond faster.
+
 ## Background
 
 `/verify` of the frontend batch identified repeated `taxonomy.families.find()`

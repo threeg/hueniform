@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Gives the owner the on-screen controls to choose which parts make up an outfit they ask for and to limit a part to certain kinds of clothing, so they can tailor a request such as a beach outfit.
+
 ## User story
 As the owner
 I want to choose which slots an outfit request includes and constrain a slot to specific categories

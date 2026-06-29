@@ -12,6 +12,9 @@ tests_required: false
 estimate: 8
 ---
 
+## In plain English
+Improves the quality and variety of outfit suggestions and lets the owner choose how many to see at once, including treating all-neutral outfits as proper suggestions in their own right, recognising pale creamy colours, and making sure a bigger batch of ideas stays genuinely varied and quick.
+
 ## Summary
 Deliver v0.2.0 features F5 (suggestion quality) and F7 (configurable count). The diagnostic
 conclusions are already settled in requirements §9.1: add the **Cream** neutral family (FR-2)

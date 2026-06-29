@@ -12,6 +12,9 @@ tests_required: true
 estimate: 1
 ---
 
+## In plain English
+Stops the app from needlessly redrawing every garment tile and colour strip when only part of a screen changes, so long lists of clothes and outfit suggestions stay smooth.
+
 ## Background
 
 `/verify` of the complete MVP identified that `GarmentCard` and

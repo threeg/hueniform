@@ -12,6 +12,9 @@ tests_required: true
 estimate: 1
 ---
 
+## In plain English
+Combines two almost-identical on-screen message bars (one for errors, one for warnings) into a single reusable one, so the app's notices stay consistent and are simpler to maintain.
+
 ## Background
 
 `/verify` of the frontend batch identified that `ErrorBanner.tsx` and

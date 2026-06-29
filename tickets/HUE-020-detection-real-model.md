@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Plugs in the real background-removal tool used on actual photos and arranges for it to be downloaded once during installation so that, from then on, colour detection works entirely on the owner's own machine with no internet needed.
+
 ## Background
 Production detection uses rembg (U²-Net via onnxruntime). The model is fetched once at install into `data/models/`; at runtime inference is fully offline (NFR-1, NFR-8). The real-model suite (marker `model`) verifies the genuine pipeline against committed photographs with tolerance-based assertions (§6.3).
 

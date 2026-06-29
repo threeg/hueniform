@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Speeds up outfit suggestions by gathering all the wardrobe's colour information in one go instead of fetching it piece by piece, which keeps the app fast even with hundreds of garments.
+
 ## Background
 
 `/verify` of the services batch identified an N+1 query pattern in

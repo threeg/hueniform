@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Brings together repeated code that shapes the information the app sends back about garments and colours, so a future change only needs making once and parts of the app cannot drift out of step.
+
 ## Background
 
 `/verify` of the API batch identified `ColourOut` construction logic duplicated

@@ -12,6 +12,9 @@ tests_required: true
 estimate: 1
 ---
 
+## In plain English
+Tidies up the app so the list of clothing types and their labels is kept in one place instead of being repeated, making future changes safer and less error-prone.
+
 ## Background
 
 `/verify` of the frontend batch identified two duplication issues around garment

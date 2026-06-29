@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Lets the screens browse the wardrobe: list the garments with the option to filter by clothing type and by colour family together, look at a single item in detail, and fetch each garment's photo and preview picture.
+
 ## Background
 Inventory browsing (contract §2.6–§2.8): list garments with combinable type AND colour-family filters and pagination, fetch one garment, and serve image/thumbnail bytes. The family filter matches any role; both filter columns are indexed (NFR-6).
 

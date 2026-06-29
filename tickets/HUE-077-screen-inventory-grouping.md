@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Shows the wardrobe neatly grouped by kind of clothing, with each group laid out as a colour spectrum or by date added, and lets the owner filter by kind and colour together.
+
 ## User story
 As the owner
 I want my wardrobe grouped by category and orderable by colour or date

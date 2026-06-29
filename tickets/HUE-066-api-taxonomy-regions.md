@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Tells the app's screens about the full set of clothing kinds, grouped by where they are worn on the body, so it can offer the owner the right choices when labelling items and requesting outfits.
+
 ## Background
 `GET /api/taxonomy` becomes a backward-compatible **superset**: the `families` array gains
 `Cream` (via HUE-062), and a new `regions` array describes the slot/region model the UI needs

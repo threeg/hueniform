@@ -12,6 +12,9 @@ tests_required: false
 estimate: 3
 ---
 
+## In plain English
+Lets the owner change which type a saved garment is filed under directly, without redoing the colour detection, so a mis-tagged item can be corrected and immediately groups and gets suggested correctly.
+
 ## Summary
 Deliver v0.2.0 feature F3: allow the **category** of a saved garment to be edited directly,
 without re-running detection and without the confirm-and-correct flow (FR-46). This narrows

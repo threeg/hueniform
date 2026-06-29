@@ -12,6 +12,9 @@ tests_required: false
 estimate: 3
 ---
 
+## In plain English
+Puts the basic shell of the app's behind-the-scenes engine in place — its folders, settings and start-up routine — so that later work has a tidy, working frame to build features into, without yet doing anything visible.
+
 ## Background
 The backend needs its package skeleton, dependency management and the app-factory + settings seam the test harness depends on (test strategy §7.1) before any layer can be built. This ticket stands up the structure without implementing behaviour.
 

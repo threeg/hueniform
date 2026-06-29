@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Lets the wardrobe list be sorted either by colour or by when each garment was added, and reports how many garments match so the list can be shown in pages.
+
 ## Background
 Expose the FR-47 ordering on the inventory endpoint (contract §2.6), completing the garment list
 API. Ordering in the service layer lands in HUE-075; this ticket wires it through the API layer.

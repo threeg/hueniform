@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Builds the reusable pieces every screen needs before any screen can be made: a tidy way for the app to talk to its own behind-the-scenes services, and shared visual parts such as colour swatches, palette strips, garment cards and warning messages.
+
 ## Background
 Every screen needs a typed API client, TanStack Query hooks and the shared visual components (wireframes §3) before it can be built. Per the contract the frontend is built against the contract and MSW independently of the backend.
 

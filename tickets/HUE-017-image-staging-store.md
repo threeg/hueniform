@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Sets up where the app keeps each garment's photo and a small preview version of it, and a temporary holding area for photos that have been analysed but not yet saved, so unfinished work is tidied away automatically after an hour and never clutters the permanent wardrobe.
+
 ## Background
 Garment photographs, derived thumbnails and unconfirmed detections live on disk under `data/` (architecture §3.2, §3.3). Unconfirmed detections stay out of the database (FR-24) in a token-keyed staging store with a TTL and a startup sweep.
 

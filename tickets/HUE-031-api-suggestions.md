@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Lets a screen ask for outfit ideas, choosing which optional pieces to include, and gives back up to three ranked colour-coordinated combinations with explanations, or a helpful message naming what is missing when no outfit can be put together.
+
 ## Background
 `POST /api/suggestions` (contract §2.12) is the outfit request: required slots always included, optional slots selected via `include`. It returns up to three ranked combinations, the zero-result shape with a hint, or `409 empty_slots`, all driven by the suggestion service.
 

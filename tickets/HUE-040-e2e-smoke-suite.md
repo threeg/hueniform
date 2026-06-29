@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Automatically clicks through the real app from start to finish to prove the main journeys work, adding a garment, asking for an outfit, and handling an empty request, so problems are caught before anyone uses it.
+
 ## Background
 A thin Playwright smoke suite proves the assembled system works against the genuinely built app — especially valuable given AI-driven implementation (test strategy §9). Three journeys, Chromium and Firefox (NFR-7), nothing mocked.
 

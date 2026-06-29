@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Lets an outfit request say "build this around a chosen garment" or "around a particular colour", and makes sure such requests are sensible, sending back a clear message when the choice can't actually be honoured.
+
 ## Background
 Add the `pins` and `anchor` request fields to `POST /api/suggestions` and their `422` validation
 (contract §2.12). Completes the v0.2.0 request `{ slots, pins, anchor, count }` over the

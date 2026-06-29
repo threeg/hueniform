@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Records exactly what outfit and colour suggestions the app produces today, before a big overhaul begins, so that any later change in its recommendations is clearly visible and intentional rather than an accidental slip.
+
 ## Background
 The E08 slot-model rewrite changes the rules of the 100 %-covered, deterministic matcher
 (layer stack 3→4, one-piece, adornment tiers, Cream, all-neutral/diversity ranking). Per

@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Lets the owner correct what kind of clothing an item is straight from the item's own page, without re-running the photo analysis, while its photo and colours stay the same.
+
 ## User story
 As the owner
 I want to change a saved garment's category directly from its detail page

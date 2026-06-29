@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+The screen where you check the colours the app found for a new item, fine-tune them if needed, choose what type of garment it is, and then save it to your wardrobe with colours you trust.
+
 ## User story
 As the owner
 I want to confirm or correct the detected palette and tag the garment's type

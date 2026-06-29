@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Judges whether a set of colours go well together and, if so, names the kind of pleasing combination they form — such as shades of one colour, neighbouring colours, or opposites — while treating neutrals as always fitting in.
+
 ## Background
 Harmony is evaluated over the scheme set by clustering hues (FR-12) and testing schemes in the FR-13 order (neutral-based → monochromatic → analogous → complementary → triadic), first match wins, with neutrals never counting against a scheme (FR-3, FR-14).
 

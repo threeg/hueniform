@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Adds the on-screen controls that let the owner choose one garment to build an outfit around, or pick a colour family and style of colour combination, so they can ask for ideas like "suggest something around this jacket" or "an outfit around teal".
+
 ## User story
 As the owner
 I want to build an outfit around a chosen garment or a colour scheme

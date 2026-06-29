@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Provides the small, reliable building blocks that turn a photo's raw colour readings into a tidy result: rounding the colour shares so they add up to exactly 100, combining shades that belong to the same colour family, deciding how many distinct colours to report, and spotting when a picture has too little clothing in it to trust.
+
 ## Background
 Detection's deterministic helpers — proportion integerisation, same-family cluster merging, k-selection and the minimum-foreground fallback predicate — are pure and belong in the default gate (test strategy §6.1). Detection may import only `matcher.taxonomy`, `matcher.colour` and `matcher.constants` (contract 3).
 

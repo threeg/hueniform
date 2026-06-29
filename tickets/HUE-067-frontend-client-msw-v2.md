@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Brings the app's screens up to date with the new clothing kinds and outfit-request options so that each screen can be built and tested against the agreed behaviour before the visible features are added.
+
 ## Background
 The frontend is built against the contract independently of the backend (CONVENTIONS §4.5).
 Before the v0.2.0 screen tickets, the typed API client and the MSW handlers/contract-examples

@@ -12,6 +12,9 @@ tests_required: false
 estimate: 5
 ---
 
+## In plain English
+Lets the owner steer outfit suggestions by picking one garment the outfit must be built around and/or a colour family or style of colour combination to aim for, with the app offering only looks that honour those choices and saying clearly when none exist.
+
 ## Summary
 Deliver v0.2.0 features F1 (build around a chosen garment) and F2 (build around a colour
 scheme). An outfit request may **pin a specific garment** to its slot (FR-44) and/or **anchor

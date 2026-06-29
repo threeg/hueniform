@@ -12,6 +12,9 @@ tests_required: true
 estimate: 1
 ---
 
+## In plain English
+Loads each screen only when you actually visit it rather than all at once up front, so the app starts up faster.
+
 ## Background
 
 `/verify` of the complete MVP identified that all 5 route components in

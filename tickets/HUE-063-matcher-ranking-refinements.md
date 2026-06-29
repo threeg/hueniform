@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Improves how the app chooses and ranks outfit suggestions: all-neutral looks are treated as genuinely good rather than last resorts, suggestions are more varied, and you get as many ideas as you ask for.
+
 ## Background
 Refine `matcher.ranking` for F5/F7 over the rewritten slot model (HUE-061): make all-neutral
 outfits **first-class** (not fallbacks), strengthen **diversity**, return the user-chosen

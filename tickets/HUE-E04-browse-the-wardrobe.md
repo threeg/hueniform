@@ -12,6 +12,9 @@ tests_required: false
 estimate: 5
 ---
 
+## In plain English
+Everything needed for the owner to browse their wardrobe and narrow it down by type of garment and by colour family, with the two filters working together, and to stay quick even with hundreds of garments.
+
 ## Summary
 Deliver brief success criterion 2: the owner browses the inventory, filtered by garment type and by colour family, with the two filters combinable, responsive at 500 garments.
 

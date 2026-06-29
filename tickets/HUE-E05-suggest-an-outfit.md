@@ -12,6 +12,9 @@ tests_required: false
 estimate: 8
 ---
 
+## In plain English
+Everything needed for the app to propose complete, colour-coordinated outfits from the clothes already in the wardrobe, choosing which optional pieces to include and explaining in plain words why each suggestion works.
+
 ## Summary
 Deliver brief success criterion 3: the owner requests an outfit choosing which optional slots to include and receives up to three ranked, harmonious combinations, each with a plain-language explanation generated from the actual evaluation, with a neutral-based fallback ladder.
 

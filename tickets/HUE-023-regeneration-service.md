@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Lets the owner re-run colour detection on a garment already in the wardrobe and, once they confirm, swap in the freshly detected colours and type while keeping the same item and photo. This redo route is the only way to change a garment's details, so colours can never be edited by hand.
+
 ## Background
 Regeneration re-runs detection on the stored photograph and, on confirmation, replaces the palette and type in place — same id, same image (FR-33). Requiring a garment-bound regeneration token is how FR-32 is enforced: there is no field-edit path (architecture §4.2).
 

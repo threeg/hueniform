@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Creates the shared test material the rest of the project leans on — made-up garment pictures, deliberately broken uploads to check are rejected, and tables of tricky edge-case colours — so the agreed numeric rules are pinned down in one place and the same examples are reused everywhere.
+
 ## Background
 The matcher, detection and API suites share fixtures the test strategy §11 defines: the synthetic image generator, its paired masks, invalid-upload fixtures, the boundary palette tables, and the MSW contract mirror. Building them once here keeps a requirements §1.4 change to a single fixture location. (Real photographs and the wardrobe factories arrive later — they need the model and the matcher value types respectively.)
 

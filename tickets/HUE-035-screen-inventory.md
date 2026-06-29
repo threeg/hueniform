@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+The main screen that shows your whole wardrobe as a grid of clothing items, letting you narrow it down by type and colour so you can find a particular garment quickly.
+
 ## User story
 As the owner
 I want to browse my wardrobe and filter it by type and colour

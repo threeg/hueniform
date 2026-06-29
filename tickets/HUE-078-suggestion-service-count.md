@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Lets the owner decide how many outfit ideas to receive at once, and makes clear which ideas are built around neutral colours, so the suggestions are easier to understand.
+
 ## Background
 F7/F5: thread the user-chosen **count** *N* (1–25, default 3) through the suggestion service and
 surface the refined ranking (first-class neutral-based vs neutral fallback) from HUE-063. Builds

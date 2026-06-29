@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Finishes switching the app over to the new word for an item's kind of clothing everywhere it is used behind the scenes, fixing a mismatch that was stopping items from saving and showing up correctly in the wardrobe.
+
 ## Background
 Complete the v0.2.0 `type` → `category` rename (contract §1.3, §2.5, §2.6, §2.7) across all
 garment API shapes. The DB column stays `type` (architecture §3.1); only the API layer changes.

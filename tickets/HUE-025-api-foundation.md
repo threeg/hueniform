@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Lays the shared groundwork that every part of the app's web interface relies on: the common shapes for sending and receiving data, a consistent plain-language way of reporting errors, a simple health check the start-up routine can use, and the means to serve the web pages themselves.
+
 ## Background
 Every endpoint shares the Pydantic schemas, the error envelope, the status-code mapping and the static SPA mount (API contract §1, architecture §2.4). This foundation lands before the resource endpoints so each adds only its own routing.
 

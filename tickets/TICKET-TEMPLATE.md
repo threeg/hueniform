@@ -10,6 +10,8 @@ This is the canonical format for Hueniform tickets. Every ticket is a single Mar
 
 It adapts the AvoTech Jira templates to this project: a single-developer, local-first, file-based monorepo with no Jira, no RICE/Tier scoring, no OutSystems modules and no feature-flag release machinery. The useful structure is kept — the epic/story/task/spike distinction, Given–When–Then acceptance criteria, explicit dependencies, and a definition of done — expressed as front-matter fields and Markdown rather than Jira fields.
 
+**Every ticket — epic, story, task or spike — opens with an `## In plain English` section.** It is always the first body section, before the type-specific sections below. Write one or two sentences a non-technical reader can follow: what the ticket delivers and why it matters, with no jargon and no implementation steps. The technical sections that follow are unchanged.
+
 ---
 
 ## Frontmatter (mandatory, all ticket types)
@@ -39,6 +41,9 @@ estimate: 3                  # Fibonacci: 1, 2, 3, 5, 8 (rough session-sizing, n
 Container only; groups related stories/tasks toward one capability. No code ships against an epic directly.
 
 ```markdown
+## In plain English
+One or two plain sentences for a non-technical reader: what this group of work delivers and why it matters. No jargon, no implementation steps.
+
 ## Summary
 Why are we building this, and which capability of the MVP does it deliver?
 
@@ -65,6 +70,9 @@ How we know the epic is delivered (usually: all child tickets done and the relev
 A user-facing slice of behaviour (a screen, a flow, an endpoint the user feels). Acceptance criteria are Given–When–Then.
 
 ```markdown
+## In plain English
+One or two plain sentences for a non-technical reader: what this lets someone do and why it matters. No jargon, no implementation steps.
+
 ## User story
 As a [role]
 I want [feature]
@@ -118,6 +126,9 @@ per-screen QA documentation.
 Backend, detection, persistence, tooling, scaffolding or architectural work with no direct UI. (Most matcher, detection, storage, services and tooling tickets are tasks.)
 
 ```markdown
+## In plain English
+One or two plain sentences for a non-technical reader: what this piece of work delivers and why it matters. No jargon, no implementation steps.
+
 ## Background
 What technical work is needed and why; the current limitation or the prerequisite this unblocks.
 
@@ -145,6 +156,9 @@ How completion is verified without a UI: the test names/files, the make target, 
 Strictly time-boxed investigation for a genuinely unknown approach. Produces a finding, not shippable code.
 
 ```markdown
+## In plain English
+One or two plain sentences for a non-technical reader: what question this investigation answers and why it matters. No jargon, no implementation steps.
+
 ## Objective
 The specific unknown to resolve.
 

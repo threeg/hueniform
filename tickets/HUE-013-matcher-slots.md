@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Sets the rules for how an outfit is put together — which kinds of garment can fill which positions, which layer sets the tone when clothes are layered, and which pieces are hidden underneath and so don't need to match.
+
 ## Background
 Slots define which garments can occupy which roles in an outfit: type-to-slot eligibility (FR-16/FR-17), anchor identification with layering dominance (FR-18/FR-19), the covered-layer constraint (FR-20) and echo-slot qualification with echo recording (FR-21/FR-22).
 

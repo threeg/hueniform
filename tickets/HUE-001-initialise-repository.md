@@ -12,6 +12,9 @@ tests_required: false
 estimate: 2
 ---
 
+## In plain English
+Sets up the empty project so work can begin: the folder structure, basic settings and ground rules that everything else is built on, with the agreed planning documents committed as the project's starting point.
+
 ## Background
 There is no version-controlled project yet beyond the approved documents. This ticket establishes the single repository (brief §13) so all later work — code and tickets together — lands in one honest history. It unblocks every other ticket.
 

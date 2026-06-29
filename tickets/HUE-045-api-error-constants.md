@@ -12,6 +12,9 @@ tests_required: true
 estimate: 1
 ---
 
+## In plain English
+Gives the app a single agreed list of names for the things that can go wrong and clears out a leftover piece of unused code, so error handling stays consistent and the app is tidier.
+
 ## Background
 
 `/verify` of the API batch identified two issues: (1) error codes like

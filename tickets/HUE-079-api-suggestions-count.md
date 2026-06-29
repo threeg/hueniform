@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Lets the owner's choice of how many outfit ideas to see reach the part of the app that builds them, and passes back whether each idea relies on neutral colours.
+
 ## Background
 Add the `count` field and the neutral/fallback response semantics to `POST /api/suggestions`
 (contract §2.12). Builds on the slot-selection endpoint (HUE-069); pins/anchor are HUE-082.

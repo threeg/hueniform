@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Lets you start the whole app with a single command on your own computer, with nothing reaching out to the internet, so it is simple to launch and run privately at home.
+
 ## Background
 NFR-2 requires a single command that serves both backend and frontend locally and prints the URL. This ties the skeletons together: `make setup` (online, once) and `make run` (offline) per architecture §5.
 

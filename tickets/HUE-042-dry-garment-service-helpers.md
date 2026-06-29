@@ -12,6 +12,9 @@ tests_required: true
 estimate: 1
 ---
 
+## In plain English
+Tidies up repeated chunks of code that handle saving garments, so the same logic lives in one place, making future changes safer and less error-prone.
+
 ## Background
 
 `/verify` of the services batch identified three copy-paste blocks inside

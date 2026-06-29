@@ -12,6 +12,9 @@ tests_required: true
 estimate: 1
 ---
 
+## In plain English
+Gathers the shared setup used by the automated checks for the garment features into one place, so the tests are easier to maintain and future work is less likely to break.
+
 ## Background
 
 `/verify` of the services batch identified duplicated test fixtures and helpers

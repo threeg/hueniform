@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Puts the automatic checks in place that catch mistakes the moment they appear and make sure each part of the app only relies on the parts it is allowed to, so every later piece of work is kept honest from its very first change.
+
 ## Background
 The test strategy's default gate, coverage policy and the architecture's dependency-rule enforcement must exist before any backend code is written, so every later ticket is gated from its first commit (test strategy §2, §5, §12).
 

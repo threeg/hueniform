@@ -12,6 +12,9 @@ tests_required: true
 estimate: 2
 ---
 
+## In plain English
+Teaches the app to recognise pale warm shades like cream, ivory and off-white as their own neutral group, instead of wrongly calling them yellow, so it judges and matches these colours correctly.
+
 ## Background
 Pale warm near-neutrals (cream, ecru, ivory, off-white) were *measured* correctly but
 mis-classified as chromatic Yellow in v0.1.0 (they fell outside White, Grey and Beige/Tan).

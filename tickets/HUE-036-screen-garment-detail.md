@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+The screen for looking at a single item of clothing close up, where you can ask the app to re-examine its colours if the first attempt was poor, or remove the item entirely if you no longer own it.
+
 ## User story
 As the owner
 I want to view a garment and regenerate or delete it

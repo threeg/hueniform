@@ -12,6 +12,9 @@ tests_required: true
 estimate: 1
 ---
 
+## In plain English
+Replaces four copies of the same routine for grouping a garment's colours with a single shared one, so the code is cleaner and future changes only need to be made once.
+
 ## Background
 
 `/verify` of the complete MVP identified the identical colour-row grouping

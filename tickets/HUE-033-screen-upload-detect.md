@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+The screen where you add a new item of clothing by uploading a photo, which the app then examines to work out its colours automatically. It also handles photos that cannot be used and warns you when the app could not cleanly separate the garment from its background.
+
 ## User story
 As the owner
 I want to upload a garment photograph and have its colours detected automatically

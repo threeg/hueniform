@@ -12,6 +12,9 @@ tests_required: true
 estimate: 1
 ---
 
+## In plain English
+Fixes a label on outfit suggestions so that combinations built around neutral colours are described with a properly capitalised, correctly worded tag.
+
 ## Background
 
 `/verify` of the frontend batch identified that `SCHEME_LABELS` in `Suggest.tsx`

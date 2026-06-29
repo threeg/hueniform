@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Sets up the new settings and category definitions that the upgraded outfit-suggestion engine will rely on, laying the groundwork for smarter, more accurate recommendations in the tickets that follow.
+
 ## Background
 The v0.2.0 model introduces many new contractual constants (requirements §1.4, §2.1, §5, §7).
 They all live in `matcher.constants` so they can be tuned in one place and asserted by the

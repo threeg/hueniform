@@ -12,6 +12,9 @@ tests_required: false
 estimate: 3
 ---
 
+## In plain English
+Reorganises the wardrobe view so garments are gathered into groups by type, and within each group can be ordered either by colour, like a spectrum, or by when they were added, while keeping the existing filters.
+
 ## Summary
 Deliver v0.2.0 feature F6: replace the flat, filter-only inventory with garments **grouped by
 category**, orderable within each group by **hue — as a colour spectrum (the default)** — or

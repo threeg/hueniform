@@ -12,6 +12,9 @@ tests_required: true
 estimate: 1
 ---
 
+## In plain English
+Tightens up the behind-the-scenes handling of colour information so mistakes are caught automatically during development, making the app more reliable as it changes.
+
 ## Background
 
 `/verify` of the complete MVP identified that `colour_out()` in

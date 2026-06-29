@@ -12,6 +12,9 @@ tests_required: true
 estimate: 1
 ---
 
+## In plain English
+Stops the app from needlessly reloading your wardrobe and colour information when you switch back to it, so screens appear faster and feel smoother.
+
 ## Background
 
 `/verify` of the frontend batch identified that `useTaxonomy()` and

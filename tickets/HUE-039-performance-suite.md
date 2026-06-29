@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Builds a large pretend wardrobe of 500 items and checks the app still responds quickly when suggesting outfits and filtering clothes, so it never feels sluggish even for someone with a big collection.
+
 ## Background
 NFR-5 and the server half of NFR-6 are asserted at the 500-garment scale (test strategy §8.2) using a seeded, reproducible wardrobe, in a `perf`-marked suite excluded from the default gate.
 

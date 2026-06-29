@@ -12,6 +12,9 @@ tests_required: true
 estimate: 5
 ---
 
+## In plain English
+Manages the step where someone uploads a garment photo: it puts the photo in the temporary holding area, works out its colours, and hands back the suggested result for the owner to check and correct, all without committing anything to the permanent wardrobe yet.
+
 ## Background
 The detection service orchestrates the upload→detect step (architecture §2.4, §4.1): stage the validated file, run the pipeline, persist the proposal in the sidecar, and expose it for confirm-and-correct — writing nothing to the database (FR-24).
 

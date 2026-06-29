@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Works out the part each colour plays in a garment — the main colour, supporting colours, or just a small accent — based on how much of the garment it covers, so outfit suggestions can treat dominant and minor colours differently.
+
 ## Background
 Colour roles (primary / dual-primary / secondary / minor) are derived from proportions at evaluation time, never persisted (architecture §2.2), so FR-7 has a single source of truth. This module also classifies secondary compatibility (FR-9) and records minor echoes (FR-11).
 

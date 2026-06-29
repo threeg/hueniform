@@ -12,6 +12,9 @@ tests_required: true
 estimate: 3
 ---
 
+## In plain English
+Lets a screen confirm a freshly detected garment and add it to the wardrobe, checking the colours and the type of clothing make sense before the item, its photo and its preview are saved together.
+
 ## Background
 `POST /api/garments` (contract §2.5) confirms a detection: it validates the palette and type, then the garment service moves the image, generates the thumbnail and creates the garment in one transaction, consuming the token.
 
