@@ -19,6 +19,11 @@ frontmatter fields and Markdown. There is no external tracker; these files **are
 > from the ticket plus the spec it references, with no conversational context. If it needs a chat to
 > explain, the ticket is incomplete.
 
+> **Every ticket opens with `## In plain English`.** Before the technical detail, one or two
+> jargon-free sentences a non-technical reader understands — what this delivers and why it matters. The
+> technical sections stay as detailed as they need to be; the plain-English summary sits above them. If
+> you can't state a ticket plainly, its scope is probably unclear.
+
 ---
 
 ## Frontmatter (mandatory, all ticket types)
@@ -50,6 +55,10 @@ reflected in the `depends_on` graph (see `CONVENTIONS.md` §4).
 Container only; groups related stories/tasks toward one capability. No code ships against an epic.
 
 ```markdown
+## In plain English
+One or two sentences a non-technical reader understands: what capability this delivers and why anyone
+would care. No jargon, no steps — the "so what". (Every ticket type starts with this section.)
+
 ## Summary
 Why are we building this, and which capability of the release does it deliver?
 
@@ -78,6 +87,10 @@ A user-facing slice of behaviour (a screen, a flow, an endpoint the user feels).
 are Given–When–Then.
 
 ```markdown
+## In plain English
+One or two sentences a non-technical reader understands: what this lets someone do and why it matters.
+No jargon, no steps — the "so what".
+
 ## User story
 As a [role]
 I want [feature]
@@ -130,6 +143,11 @@ Backend, processing, persistence, tooling, scaffolding or architectural work wit
 (Most core, domain, storage, services and tooling tickets are tasks.)
 
 ```markdown
+## In plain English
+One or two sentences a non-technical reader understands: what this piece of work is for and why it
+matters to the product. No jargon, no steps — the "so what". (Even infrastructure tickets get this:
+e.g. "this makes the app start with one command instead of five.")
+
 ## Background
 What technical work is needed and why; the current limitation or the prerequisite this unblocks.
 
@@ -159,6 +177,10 @@ Strictly time-boxed investigation for a genuinely unknown approach. Produces a f
 shippable code.
 
 ```markdown
+## In plain English
+One or two sentences a non-technical reader understands: what question we're trying to answer and why
+it matters before we commit to building. No jargon — the "so what".
+
 ## Objective
 The specific unknown to resolve.
 

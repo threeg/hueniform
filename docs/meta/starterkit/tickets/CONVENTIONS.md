@@ -133,10 +133,11 @@ implementation ticket:
 
 Reactive tickets discovered by post-batch review rather than planned up front.
 
-1. **Creation.** After each batch completes, review the committed code for reuse, quality and
-   efficiency issues. Accepted findings become cleanup tickets — ordinary `task` tickets with
-   `batch: cleanup`, numbered after the current highest id so the no-forward-dependency invariant
-   (§4.3) holds automatically.
+1. **Creation.** After each batch completes, run the **`verify` skill** (`skills/verify/SKILL.md`),
+   which audits the committed code against the spec and reviews it for reuse, quality and efficiency
+   issues. Accepted findings become cleanup tickets — ordinary `task` tickets with `batch: cleanup`,
+   numbered after the current highest id so the no-forward-dependency invariant (§4.3) holds
+   automatically.
 2. **Board placement.** Cleanup tickets live in a dedicated **Cleanup backlog** table in `BOARD.md`,
    separate from the main execution-order table, so they stay visible without cluttering the critical
    path.
