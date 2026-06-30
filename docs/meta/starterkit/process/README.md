@@ -29,9 +29,11 @@ later improvements into an existing project without disturbing your filled-in do
      or upload the prebuilt `.skill` packages (ask the agent: *"package the skills in `.claude/skills/`
      as installable `.skill` files"*).
 
-3. **Trigger `sfk-init`.** The agent confirms the basics with you (project name, ticket prefix, stack,
-   layers) and lays down the working structure — root `CLAUDE.md`, `process/`, `.gitignore`. It does
-   **not** start any milestones; it only prepares the environment.
+3. **Trigger `sfk-init`, passing your project code** — e.g. `/sfk-init HUE`. That code becomes both
+   the ticket prefix (`HUE-001`) and the thread-name prefix (`HUE init`, `HUE: Architecture`,
+   `HUE Implementation`). The agent confirms the rest of the basics (project name, stack, layers) and
+   lays down the working structure — root `CLAUDE.md`, `process/`, `.gitignore` — recording the code in
+   `process/.sfk/manifest.md`. It does **not** start any milestones; it only prepares the environment.
 
 4. **Trigger `sfk-version`.** Give it a version number and the goals for it. It writes the version
    brief and lays down that version's milestone table in `process/milestone-plan.md`. (For the first
@@ -190,6 +192,22 @@ You answer questions and sign off; the agent does the rest. Seven skills, mapped
 
 The typical loop for an authoring milestone: **`sfk-next-milestone`** (interview → draft → WIP commit)
 → you review → optional feedback rounds (each committed) → **`sfk-signoff`** (complete + advance).
+
+**Naming your threads.** Run each milestone in its own thread. Cowork auto-titles a thread and
+**can't rename it programmatically** — so each skill, as its first action, suggests a thread name built
+from your project code (`PROJCODE`, set via `/sfk-init HUE` and stored as `project_code` in
+`process/.sfk/manifest.md`) and asks you to rename the thread to it (a one-click manual step). The
+convention, shown for code `HUE`:
+
+| Skill | Thread name |
+|-------|-------------|
+| `sfk-init` | `HUE init` |
+| `sfk-version` | `HUE: v0.2.0 Planning` |
+| `sfk-next-milestone` | `HUE: Architecture`, `HUE: Wireframes`, … (one per milestone) |
+| `sfk-signoff` | *(stays in the milestone's own thread)* |
+| `sfk-next-ticket` | `HUE Implementation` |
+| `sfk-verify` | `HUE: Verify (batch)` |
+| `sfk-update-process` | `HUE: Kit Update v1.1.0` |
 
 ---
 

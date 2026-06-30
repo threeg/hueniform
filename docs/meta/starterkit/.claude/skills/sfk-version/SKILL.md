@@ -43,3 +43,13 @@ there; it does **not** work the milestones (that is `sfk-next-milestone`).
 - Do not fork the spec per version: later versions evolve `process/` in place via deltas; the version
   brief and the milestone batch are the only point-in-time artefacts.
 - Run `sfk-version` again only once the current version's milestones are all signed off.
+
+
+## Thread name
+
+Run this in its own thread. Cowork auto-titles a thread and **cannot rename it programmatically** —
+only the user can. As your **first action**, suggest the name below and ask the user to rename this
+thread to it. `PROJCODE` is the project code (the ticket prefix) recorded as `project_code` in
+`process/.sfk/manifest.md`, set when the project was created with `sfk-init` (e.g. `/sfk-init HUE`).
+
+**Suggested name:** `PROJCODE: <version> Planning`  (e.g. `HUE: v0.2.0 Planning`)

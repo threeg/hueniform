@@ -44,3 +44,13 @@ spec *says*?" — a different question that tests alone do not cover.
 - A finding that reveals a genuine spec gap is a specification change (CONVENTIONS §5.5), recorded in
   `process/` first — not a cleanup ticket.
 - Never sign off a milestone here; that is the user's call via `sfk-signoff`.
+
+
+## Thread name
+
+Run this in its own thread. Cowork auto-titles a thread and **cannot rename it programmatically** —
+only the user can. As your **first action**, suggest the name below and ask the user to rename this
+thread to it. `PROJCODE` is the project code (the ticket prefix) recorded as `project_code` in
+`process/.sfk/manifest.md`, set when the project was created with `sfk-init` (e.g. `/sfk-init HUE`).
+
+**Suggested name:** `PROJCODE: Verify (<batch>)`  (e.g. `HUE: Verify (matcher batch)`)
