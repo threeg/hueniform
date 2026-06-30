@@ -2,7 +2,7 @@
 id: HUE-072
 title: Garment service — direct category edit
 type: task
-status: todo
+status: done
 milestone: 14
 batch: services
 layer: services
@@ -29,11 +29,11 @@ the FR-16 allowlist and touches nothing else.
 - No palette path here (regenerate-only, FR-32/FR-33); imports `storage`, not `api`
 
 ## Definition of done (acceptance criteria)
-- [ ] Category edit changes only `garments.type`; everything else unchanged (FR-46)
-- [ ] Validates against the FR-16 allowlist; not-found and invalid-category paths covered
-- [ ] Palette untouched; no re-detection (FR-32/FR-33)
-- [ ] Tests added/updated per §12.2 and passing in `make test`
-- [ ] Ticket status + notes updated in the same commit
+- [x] Category edit changes only `garments.type`; everything else unchanged (FR-46)
+- [x] Validates against the FR-16 allowlist; not-found and invalid-category paths covered
+- [x] Palette untouched; no re-detection (FR-32/FR-33)
+- [x] Tests added/updated per §12.2 and passing in `make test`
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `services/test_garment_service.py` (§7.2/§7.3): edit changes category only (re-read asserts
@@ -42,3 +42,11 @@ follows the new category (cross-checked via a follow-up evaluation).
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-30 — implemented. Added `edit_category(garment_id, category, engine) -> GarmentResult`
+  to `garment_service.py`. Validates against `_GARMENT_TYPES` allowlist (reuses `_validate_type`),
+  raises `GarmentNotFoundError` for unknown IDs, updates only `garments.type`, leaves
+  `regenerated_at`, colour rows and file paths untouched. 10 new tests in `TestEditCategory`
+  covering: DB write, return value, image/thumbnail/colours/regenerated_at/created_at unchanged,
+  invalid category rejection (no DB mutation), not-found. 1053 backend + 149 frontend pass,
+  zero warnings.
+- Sanity test: `cd backend && .venv/bin/pytest tests/services/test_garment_service.py::TestEditCategory -q`

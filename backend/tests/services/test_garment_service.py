@@ -22,6 +22,7 @@ from app.services.garment_service import (
     TokenNotFoundError,
     confirm,
     delete,
+    edit_category,
 )
 from app.storage.models import GarmentColourRow, GarmentRow
 from tests.services.conftest import _make_jpeg_bytes, _stage_image
@@ -336,3 +337,83 @@ class TestDelete:
         delete(saved_garment.id, dirs["images"], dirs["thumbnails"], engine)
         with Session(engine) as s:
             assert s.get(GarmentRow, saved_garment.id) is None
+
+
+# ── Edit category (FR-32, FR-46) ──────────────────────────────────────────────
+
+class TestEditCategory:
+    @pytest.fixture()
+    def saved_garment(self, engine, dirs):
+        token = _stage_image(dirs["staging"])
+        return confirm(
+            token, "t_shirt", _TWO_COLOURS,
+            dirs["staging"], dirs["images"], dirs["thumbnails"], engine,
+        )
+
+    def test_category_updated_in_db(self, engine, dirs, saved_garment):
+        edit_category(saved_garment.id, "trousers", engine)
+        with Session(engine) as s:
+            row = s.get(GarmentRow, saved_garment.id)
+        assert row.type == "trousers"
+
+    def test_returns_result_with_new_category(self, engine, dirs, saved_garment):
+        result = edit_category(saved_garment.id, "trousers", engine)
+        assert isinstance(result, GarmentResult)
+        assert result.type == "trousers"
+        assert result.id == saved_garment.id
+
+    def test_image_file_unchanged(self, engine, dirs, saved_garment):
+        edit_category(saved_garment.id, "trousers", engine)
+        with Session(engine) as s:
+            row = s.get(GarmentRow, saved_garment.id)
+        assert row.image_file == saved_garment.image_file
+
+    def test_thumbnail_file_unchanged(self, engine, dirs, saved_garment):
+        edit_category(saved_garment.id, "trousers", engine)
+        with Session(engine) as s:
+            row = s.get(GarmentRow, saved_garment.id)
+        assert row.thumbnail_file == saved_garment.thumbnail_file
+
+    def test_colour_rows_unchanged(self, engine, dirs, saved_garment):
+        before = saved_garment.colours
+        edit_category(saved_garment.id, "trousers", engine)
+        with Session(engine) as s:
+            rows = s.exec(
+                select(GarmentColourRow)
+                .where(GarmentColourRow.garment_id == saved_garment.id)
+                .order_by(GarmentColourRow.position)
+            ).all()
+        assert len(rows) == len(before)
+        for row, colour in zip(rows, before):
+            assert row.h == colour.h
+            assert row.s == colour.s
+            assert row.l == colour.l
+            assert row.proportion == colour.proportion
+
+    def test_regenerated_at_unchanged(self, engine, dirs, saved_garment):
+        """edit_category must not modify regenerated_at (FR-46)."""
+        edit_category(saved_garment.id, "trousers", engine)
+        with Session(engine) as s:
+            row = s.get(GarmentRow, saved_garment.id)
+        assert row.regenerated_at == saved_garment.regenerated_at
+
+    def test_created_at_unchanged(self, engine, dirs, saved_garment):
+        edit_category(saved_garment.id, "trousers", engine)
+        with Session(engine) as s:
+            row = s.get(GarmentRow, saved_garment.id)
+        assert row.created_at == saved_garment.created_at
+
+    def test_invalid_category_raises(self, engine, dirs, saved_garment):
+        with pytest.raises(InvalidTypeError):
+            edit_category(saved_garment.id, "onesie", engine)
+
+    def test_invalid_category_does_not_mutate_db(self, engine, dirs, saved_garment):
+        with pytest.raises(InvalidTypeError):
+            edit_category(saved_garment.id, "onesie", engine)
+        with Session(engine) as s:
+            row = s.get(GarmentRow, saved_garment.id)
+        assert row.type == "t_shirt"
+
+    def test_not_found_raises(self, engine, dirs):
+        with pytest.raises(GarmentNotFoundError):
+            edit_category("00000000-0000-0000-0000-000000000000", "trousers", engine)

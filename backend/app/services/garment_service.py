@@ -462,6 +462,44 @@ def confirm_regeneration(
     )
 
 
+def edit_category(
+    garment_id: str,
+    category: str,
+    engine: Engine,
+) -> GarmentResult:
+    """
+    Change only the category (``garments.type``) of a saved garment (FR-46).
+
+    Palette, image files and ``regenerated_at`` are not touched (FR-32/FR-33).
+
+    Raises
+    ------
+    GarmentNotFoundError
+        No garment with *garment_id* exists.
+    InvalidTypeError
+        *category* is not in the FR-16 allowlist.
+    """
+    _validate_type(category)
+
+    with Session(engine) as session:
+        row = session.get(GarmentRow, garment_id)
+        if row is None:
+            raise GarmentNotFoundError(f"Garment '{garment_id}' not found.")
+
+        row.type = category
+        session.add(row)
+        session.commit()
+        session.refresh(row)
+
+        colour_rows = session.exec(
+            select(GarmentColourRow)
+            .where(GarmentColourRow.garment_id == garment_id)
+            .order_by(GarmentColourRow.position)
+        ).all()
+
+    return _row_to_result(row, colour_rows)
+
+
 def delete(
     garment_id: str,
     images_dir: Path,
