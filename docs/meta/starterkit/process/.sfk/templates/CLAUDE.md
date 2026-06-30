@@ -12,9 +12,11 @@ at `process/README.md`); layer-specific guidance lives in `<code>/<layer>/CLAUDE
 ## Project & kit
 
 - **Project code:** `<PRJ>` — the ticket prefix (`<PRJ>-001`). Set by `sfk-init`.
-- **Spec-First Kit version applied:** `1.0.0` — raised by `sfk-update-process`. The kit's own
-  version, changelog and pristine templates live in `process/.sfk/` (read-only — never edit it by
-  hand; skills copy templates *out* of it).
+- **Spec-First Kit version applied:** `1.0.0` — the *kit* version this project is on (set by
+  `sfk-init`, raised by `sfk-update-process`). This is **not** your software's release version (that
+  is chosen by the project and tracked in `process/milestone-plan.md`). The kit's own version,
+  changelog and pristine templates live in `process/.sfk/` (read-only — never edit it by hand; skills
+  copy templates *out* of it).
 
 ## What this project is
 
