@@ -11,8 +11,7 @@ at `process/README.md`); layer-specific guidance lives in `<code>/<layer>/CLAUDE
 
 ## Project & kit
 
-- **Project code:** `<PRJ>` — the ticket prefix (`<PRJ>-001`) and the thread-name prefix
-  (`<PRJ> init`, `<PRJ>: Architecture`, `<PRJ> Implementation`). Set by `sfk-init`.
+- **Project code:** `<PRJ>` — the ticket prefix (`<PRJ>-001`). Set by `sfk-init`.
 - **Spec-First Kit version applied:** `1.0.0` — raised by `sfk-update-process`. The kit's own
   version, changelog and pristine templates live in `process/.sfk/` (read-only — never edit it by
   hand; skills copy templates *out* of it).

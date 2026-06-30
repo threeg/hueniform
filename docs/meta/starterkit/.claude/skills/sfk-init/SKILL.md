@@ -15,9 +15,8 @@ You do **not** start any milestones and you do **not** write application code �
 > the copy. Only `sfk-update-process` ever writes inside `.sfk/`.
 
 **Project code.** This skill may be invoked with the project code as an argument, e.g.
-`/sfk-init ACME`. The code is a short uppercase token used as the **ticket prefix** (`ACME-001`) and
-the **thread-name prefix** (`ACME init`, `ACME: Architecture`, `ACME Implementation`). If an argument
-is supplied, use it without asking; otherwise ask in the interview.
+`/sfk-init ACME`. The code is a short uppercase token used as the **ticket prefix** (`ACME-001`). It is
+optional: if an argument is supplied, use it without asking; otherwise ask for it in the interview.
 
 ## Procedure
 
@@ -63,11 +62,3 @@ is supplied, use it without asking; otherwise ask in the interview.
 - Environment only. No milestones, no brief content, no application code.
 - `sfk-init` runs **once** per project and may be deleted afterwards (one-time scaffolding).
 - Never mark a milestone complete (that is `sfk-signoff`).
-
-## Thread name
-
-Cowork auto-titles a new thread and **cannot rename it programmatically** — only the user can. As your
-**first action**, suggest the name below and ask the user to rename this thread to it. Use the project
-code passed as the argument (e.g. `/sfk-init ACME` → `ACME`).
-
-**Suggested name:** `PROJCODE init`  (e.g. `ACME init`)

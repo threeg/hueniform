@@ -30,11 +30,11 @@ later improvements into an existing project without disturbing your filled-in do
      or upload the prebuilt `.skill` packages (ask the agent: *"package the skills in `.claude/skills/`
      as installable `.skill` files"*).
 
-3. **Trigger `sfk-init`, passing your project code** — e.g. `/sfk-init ACME`. That code becomes both
-   the ticket prefix (`ACME-001`) and the thread-name prefix (`ACME init`, `ACME: Architecture`,
-   `ACME Implementation`). The agent confirms the rest of the basics (project name, stack, layers) and
-   lays down the working structure — root `CLAUDE.md`, `process/`, `.gitignore` — recording the code in
-   `process/.sfk/manifest.md`. It does **not** start any milestones; it only prepares the environment.
+3. **Trigger `sfk-init`** (optionally pass your project code, e.g. `/sfk-init ACME`). The code is your
+   ticket prefix (`ACME-001`); omit it and the agent will ask. The agent confirms the basics (project
+   name, stack, layers) and lays down the working structure — root `CLAUDE.md`, `process/`,
+   `.gitignore` — copying templates out of `process/.sfk/templates/` and recording the project code in
+   the root `CLAUDE.md`. It does **not** start any milestones; it only prepares the environment.
 
 4. **Trigger `sfk-version`.** Give it a version number and the goals for it. It writes the version
    brief and lays down that version's milestone table in `process/milestone-plan.md`. (For the first
@@ -199,21 +199,9 @@ You answer questions and sign off; the agent does the rest. Seven skills, mapped
 The typical loop for an authoring milestone: **`sfk-next-milestone`** (interview → draft → WIP commit)
 → you review → optional feedback rounds (each committed) → **`sfk-signoff`** (complete + advance).
 
-**Naming your threads.** Run each milestone in its own thread. Cowork auto-titles a thread and
-**can't rename it programmatically** — so each skill, as its first action, suggests a thread name built
-from your project code (`PROJCODE`, set via `/sfk-init ACME` and stored as `project_code` in
-`process/.sfk/manifest.md`) and asks you to rename the thread to it (a one-click manual step). The
-convention, shown for code `ACME`:
-
-| Skill | Thread name |
-|-------|-------------|
-| `sfk-init` | `ACME init` |
-| `sfk-version` | `ACME: v0.2.0 Planning` |
-| `sfk-next-milestone` | `ACME: Architecture`, `ACME: Wireframes`, … (one per milestone) |
-| `sfk-signoff` | *(stays in the milestone's own thread)* |
-| `sfk-next-ticket` | `ACME Implementation` |
-| `sfk-verify` | `ACME: Verify (batch)` |
-| `sfk-update-process` | `ACME: Kit Update v1.1.0` |
+> **Tip:** run each milestone in its own thread so they stay distinguishable. Cowork can't rename a
+> thread programmatically, so name them however suits you (e.g. by milestone) — the skills don't manage
+> thread names.
 
 ---
 

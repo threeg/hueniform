@@ -50,12 +50,3 @@ off — that is the separate `sfk-signoff` skill, which the user triggers.
 - The spec is binding: do not reopen settled decisions from earlier milestones — if one is genuinely
   wrong, change the relevant `process/` file first and note it.
 - For implementation milestones, defer to `sfk-next-ticket` and `process/tickets/CLAUDE.md`.
-
-
-## Thread name
-
-Run this in its own thread. Cowork auto-titles a thread and **cannot rename it programmatically** —
-only the user can. As your **first action**, suggest the name below and ask the user to rename this
-thread to it. `PROJCODE` is the project code (the ticket prefix) recorded in the root `CLAUDE.md` *Project & kit* section, set when the project was created with `sfk-init` (e.g. `/sfk-init ACME`).
-
-**Suggested name:** `PROJCODE: <Milestone>`  (e.g. `ACME: Architecture`)

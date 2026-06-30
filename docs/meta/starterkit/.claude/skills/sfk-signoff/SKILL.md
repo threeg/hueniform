@@ -40,10 +40,3 @@ records the user's sign-off and advances the project.
 - Sign-off is a status event: it flips the milestone and moves the *Current position*, nothing else.
 - If the milestone isn't actually done (open feedback, failing gates), refuse and return to
   `sfk-next-milestone` or `sfk-next-ticket`.
-
-
-## Thread name
-
-Sign-off runs in the **same thread as the milestone it completes** (`PROJCODE: <Milestone>`, e.g.
-`ACME: Architecture`), so no new thread name is needed. Cowork cannot rename threads programmatically in
-any case — only the user can.
