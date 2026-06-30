@@ -16,7 +16,7 @@ process.
 The ticket system replaces an external tracker: tickets are plain Markdown files living beside the
 code in a single repository, committed and updated in the same commits as the work they describe.
 
-> Replace `<PRJ>` throughout with your project's short prefix (e.g. `HUE`, `ACME`). Replace the layer
+> Replace `<PRJ>` throughout with your project's short prefix (e.g. `ACME`, `WIDGET`). Replace the layer
 > names with your architecture's layers.
 
 ---

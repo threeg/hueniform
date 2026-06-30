@@ -44,5 +44,5 @@ records the user's sign-off and advances the project.
 ## Thread name
 
 Sign-off runs in the **same thread as the milestone it completes** (`PROJCODE: <Milestone>`, e.g.
-`HUE: Architecture`), so no new thread name is needed. Cowork cannot rename threads programmatically in
+`ACME: Architecture`), so no new thread name is needed. Cowork cannot rename threads programmatically in
 any case — only the user can.

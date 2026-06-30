@@ -9,16 +9,16 @@ The single source of truth for project identity and kit versioning. `sfk-init` s
 `sfk-update-process` reads and updates the version fields.
 
 ```yaml
-project_code: ACME        # this project's code / ticket prefix (set by sfk-init, e.g. HUE)
-                          # — also the thread-name prefix: "HUE init", "HUE: Architecture", "HUE Implementation"
+project_code: ACME        # this project's code / ticket prefix (set by sfk-init, e.g. ACME)
+                          # — also the thread-name prefix: "ACME init", "ACME: Architecture", "ACME Implementation"
 kit_name: spec-first-starter-kit
 kit_version: 1.0.0        # the version of the kit these files were shipped from
 author: Gregg Seymour
 applied_version: 1.0.0    # the kit version THIS project has been updated to (sfk-update-process bumps this)
 ```
 
-- **`project_code`** is the short uppercase token passed to `sfk-init` (e.g. `/sfk-init HUE`). It is
-  the ticket prefix (`HUE-001`) and the prefix every skill uses to suggest a thread name.
+- **`project_code`** is the short uppercase token passed to `sfk-init` (e.g. `/sfk-init ACME`). It is
+  the ticket prefix (`ACME-001`) and the prefix every skill uses to suggest a thread name.
 - **`kit_version`** is stamped by the kit when it ships. In a fresh checkout it equals the latest release.
 - **`applied_version`** is what *this project* is on. `sfk-init` sets it equal to `kit_version`;
   `sfk-update-process` raises it as it applies newer changelog entries.

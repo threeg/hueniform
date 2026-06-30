@@ -49,6 +49,6 @@ off — that is the separate `sfk-signoff` skill, which the user triggers.
 Run this in its own thread. Cowork auto-titles a thread and **cannot rename it programmatically** —
 only the user can. As your **first action**, suggest the name below and ask the user to rename this
 thread to it. `PROJCODE` is the project code (the ticket prefix) recorded as `project_code` in
-`process/.sfk/manifest.md`, set when the project was created with `sfk-init` (e.g. `/sfk-init HUE`).
+`process/.sfk/manifest.md`, set when the project was created with `sfk-init` (e.g. `/sfk-init ACME`).
 
-**Suggested name:** `PROJCODE: <Milestone>`  (e.g. `HUE: Architecture`)
+**Suggested name:** `PROJCODE: <Milestone>`  (e.g. `ACME: Architecture`)

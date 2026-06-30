@@ -29,9 +29,9 @@ later improvements into an existing project without disturbing your filled-in do
      or upload the prebuilt `.skill` packages (ask the agent: *"package the skills in `.claude/skills/`
      as installable `.skill` files"*).
 
-3. **Trigger `sfk-init`, passing your project code** — e.g. `/sfk-init HUE`. That code becomes both
-   the ticket prefix (`HUE-001`) and the thread-name prefix (`HUE init`, `HUE: Architecture`,
-   `HUE Implementation`). The agent confirms the rest of the basics (project name, stack, layers) and
+3. **Trigger `sfk-init`, passing your project code** — e.g. `/sfk-init ACME`. That code becomes both
+   the ticket prefix (`ACME-001`) and the thread-name prefix (`ACME init`, `ACME: Architecture`,
+   `ACME Implementation`). The agent confirms the rest of the basics (project name, stack, layers) and
    lays down the working structure — root `CLAUDE.md`, `process/`, `.gitignore` — recording the code in
    `process/.sfk/manifest.md`. It does **not** start any milestones; it only prepares the environment.
 
@@ -195,19 +195,19 @@ The typical loop for an authoring milestone: **`sfk-next-milestone`** (interview
 
 **Naming your threads.** Run each milestone in its own thread. Cowork auto-titles a thread and
 **can't rename it programmatically** — so each skill, as its first action, suggests a thread name built
-from your project code (`PROJCODE`, set via `/sfk-init HUE` and stored as `project_code` in
+from your project code (`PROJCODE`, set via `/sfk-init ACME` and stored as `project_code` in
 `process/.sfk/manifest.md`) and asks you to rename the thread to it (a one-click manual step). The
-convention, shown for code `HUE`:
+convention, shown for code `ACME`:
 
 | Skill | Thread name |
 |-------|-------------|
-| `sfk-init` | `HUE init` |
-| `sfk-version` | `HUE: v0.2.0 Planning` |
-| `sfk-next-milestone` | `HUE: Architecture`, `HUE: Wireframes`, … (one per milestone) |
+| `sfk-init` | `ACME init` |
+| `sfk-version` | `ACME: v0.2.0 Planning` |
+| `sfk-next-milestone` | `ACME: Architecture`, `ACME: Wireframes`, … (one per milestone) |
 | `sfk-signoff` | *(stays in the milestone's own thread)* |
-| `sfk-next-ticket` | `HUE Implementation` |
-| `sfk-verify` | `HUE: Verify (batch)` |
-| `sfk-update-process` | `HUE: Kit Update v1.1.0` |
+| `sfk-next-ticket` | `ACME Implementation` |
+| `sfk-verify` | `ACME: Verify (batch)` |
+| `sfk-update-process` | `ACME: Kit Update v1.1.0` |
 
 ---
 
