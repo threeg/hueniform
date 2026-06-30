@@ -38,6 +38,7 @@ there; it does **not** work the milestones (that is `sfk-next-milestone`).
 
 ## Rules
 
+- **Never edit `process/.sfk/`** — it is the kit's read-only source (templates, changelog, manifest).
 - `sfk-version` defines scope and milestones only — it never authors a milestone's deliverable or
   writes code.
 - Do not fork the spec per version: later versions evolve `process/` in place via deltas; the version
@@ -49,7 +50,6 @@ there; it does **not** work the milestones (that is `sfk-next-milestone`).
 
 Run this in its own thread. Cowork auto-titles a thread and **cannot rename it programmatically** —
 only the user can. As your **first action**, suggest the name below and ask the user to rename this
-thread to it. `PROJCODE` is the project code (the ticket prefix) recorded as `project_code` in
-`process/.sfk/manifest.md`, set when the project was created with `sfk-init` (e.g. `/sfk-init ACME`).
+thread to it. `PROJCODE` is the project code (the ticket prefix) recorded in the root `CLAUDE.md` *Project & kit* section, set when the project was created with `sfk-init` (e.g. `/sfk-init ACME`).
 
 **Suggested name:** `PROJCODE: <version> Planning`  (e.g. `ACME: v0.2.0 Planning`)

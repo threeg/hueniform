@@ -9,6 +9,9 @@ Use to work the next milestone the current version has laid down. Each milestone
 You produce and **commit** the deliverable as a draft and iterate with the user; you do **not** sign it
 off — that is the separate `sfk-signoff` skill, which the user triggers.
 
+> **`process/.sfk/` is read-only.** Copy any template you need *out* of `process/.sfk/templates/` to
+> its working location and edit the copy — never edit inside `.sfk/`.
+
 ## Procedure
 
 1. **Read `process/milestone-plan.md`.** Find the *Current position* and the milestone table. Identify
@@ -19,8 +22,12 @@ off — that is the separate `sfk-signoff` skill, which the user triggers.
 
 3. **Run the step** and write the deliverable into its `process/` folder:
    - **Authoring steps** (brief → requirements → architecture & contract → wireframes → test strategy →
-     ticket generation): interview the user section by section against the relevant master template (or,
-     for ticket generation, derive `process/tickets/*` and `BOARD.md` from the spec in dependency order).
+     ticket generation): first **copy this milestone's template out** of
+     `process/.sfk/templates/process/<folder>/` into its working `process/<folder>/` location (e.g.
+     `architecture/architecture.md` and `architecture/api-contract.md`), then interview the user section
+     by section and fill the **working** copy. For ticket generation the working `process/tickets/*`
+     already exist (copied out at init); derive the tickets and `BOARD.md` from the spec in dependency
+     order.
    - **Building steps** (scaffolding → implementation): scaffolding initialises the repo, wires the
      dependency-rule check and fills in the `sfk-verify` skill for the real stack, and commits skeletons
      that pass the empty gate. Implementation is handled ticket by ticket — defer to `sfk-next-ticket`.
@@ -38,6 +45,7 @@ off — that is the separate `sfk-signoff` skill, which the user triggers.
 
 ## Rules
 
+- **Never edit `process/.sfk/`** — copy a template out to its working location and edit the copy.
 - One milestone per session. You commit drafts and revisions; you never mark a milestone `Complete`.
 - The spec is binding: do not reopen settled decisions from earlier milestones — if one is genuinely
   wrong, change the relevant `process/` file first and note it.
@@ -48,7 +56,6 @@ off — that is the separate `sfk-signoff` skill, which the user triggers.
 
 Run this in its own thread. Cowork auto-titles a thread and **cannot rename it programmatically** —
 only the user can. As your **first action**, suggest the name below and ask the user to rename this
-thread to it. `PROJCODE` is the project code (the ticket prefix) recorded as `project_code` in
-`process/.sfk/manifest.md`, set when the project was created with `sfk-init` (e.g. `/sfk-init ACME`).
+thread to it. `PROJCODE` is the project code (the ticket prefix) recorded in the root `CLAUDE.md` *Project & kit* section, set when the project was created with `sfk-init` (e.g. `/sfk-init ACME`).
 
 **Suggested name:** `PROJCODE: <Milestone>`  (e.g. `ACME: Architecture`)

@@ -35,6 +35,7 @@ records the user's sign-off and advances the project.
 
 ## Rules
 
+- **Never edit `process/.sfk/`** — it is the kit's read-only source (templates, changelog, manifest).
 - Run only on explicit user approval. The agent never self-signs-off a milestone.
 - Sign-off is a status event: it flips the milestone and moves the *Current position*, nothing else.
 - If the milestone isn't actually done (open feedback, failing gates), refuse and return to

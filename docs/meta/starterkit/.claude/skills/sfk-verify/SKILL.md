@@ -40,6 +40,7 @@ spec *says*?" — a different question that tests alone do not cover.
 
 ## Rules
 
+- **Never edit `process/.sfk/`** — it is the kit's read-only source (templates, changelog, manifest).
 - Verification proposes tickets; it does not silently rewrite shipped code.
 - A finding that reveals a genuine spec gap is a specification change (CONVENTIONS §5.5), recorded in
   `process/` first — not a cleanup ticket.
@@ -50,7 +51,6 @@ spec *says*?" — a different question that tests alone do not cover.
 
 Run this in its own thread. Cowork auto-titles a thread and **cannot rename it programmatically** —
 only the user can. As your **first action**, suggest the name below and ask the user to rename this
-thread to it. `PROJCODE` is the project code (the ticket prefix) recorded as `project_code` in
-`process/.sfk/manifest.md`, set when the project was created with `sfk-init` (e.g. `/sfk-init ACME`).
+thread to it. `PROJCODE` is the project code (the ticket prefix) recorded in the root `CLAUDE.md` *Project & kit* section, set when the project was created with `sfk-init` (e.g. `/sfk-init ACME`).
 
 **Suggested name:** `PROJCODE: Verify (<batch>)`  (e.g. `ACME: Verify (core batch)`)

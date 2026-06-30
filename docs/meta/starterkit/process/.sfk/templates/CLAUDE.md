@@ -9,6 +9,14 @@ at `process/README.md`); layer-specific guidance lives in `<code>/<layer>/CLAUDE
 > contains only what *every* session needs. Push layer-specific patterns into per-layer `CLAUDE.md`
 > files (template: `process/templates/layer-CLAUDE.md`). Replace every `<PLACEHOLDER>`.
 
+## Project & kit
+
+- **Project code:** `<PRJ>` — the ticket prefix (`<PRJ>-001`) and the thread-name prefix
+  (`<PRJ> init`, `<PRJ>: Architecture`, `<PRJ> Implementation`). Set by `sfk-init`.
+- **Spec-First Kit version applied:** `1.0.0` — raised by `sfk-update-process`. The kit's own
+  version, changelog and pristine templates live in `process/.sfk/` (read-only — never edit it by
+  hand; skills copy templates *out* of it).
+
 ## What this project is
 
 > One short paragraph: what the product is and its single most important goal. If there is a

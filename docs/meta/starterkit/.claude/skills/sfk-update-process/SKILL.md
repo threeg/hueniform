@@ -12,7 +12,8 @@ docs, because the kit also ships working-named files for fresh inits.
 
 ## Inputs you need
 
-- **This project**, with `process/.sfk/manifest.md` recording its `applied_version`.
+- **This project**, whose *applied* kit version is recorded in the root `CLAUDE.md` (*Project & kit*
+  section). `process/.sfk/manifest.md` here is the kit identity it was last refreshed from.
 - **The newer kit**, available somewhere readable (a clone of the kit repo, or a temp folder the user
   points you at). You will read its `process/.sfk/manifest.md` (its `kit_version`), its
   `process/.sfk/CHANGELOG.md`, its `process/.sfk/templates/` mirror, and its kit-owned files.
@@ -21,12 +22,13 @@ If you cannot see the newer kit, ask the user where it is before proceeding.
 
 ## Procedure
 
-1. **Compare versions.** Read the project's `applied_version` and the newer kit's `kit_version`. If
+1. **Compare versions.** Read the project's applied kit version (root `CLAUDE.md`, *Project & kit*) and
+   the newer kit's `kit_version` (its `process/.sfk/manifest.md`). If
    they are equal, report "already up to date" and stop. If the project's is higher, stop and ask
    (something is off).
 
 2. **Collect the deltas.** From the newer kit's `CHANGELOG.md`, take every entry with a version greater
-   than the project's `applied_version`, oldest-to-newest. The changelog is your migration script:
+   than the project's applied kit version, oldest-to-newest. The changelog is your migration script:
    each entry carries an **Apply** note (*refresh* / *add* / *amend* / *interview*).
 
 3. **Refresh kit-owned files.** Overwrite the files the user does not edit, from the newer kit: the
@@ -53,8 +55,9 @@ If you cannot see the newer kit, ask the user where it is before proceeding.
    carry (e.g. the ticket template gained `## In plain English`), *offer* — do not force — to backfill
    it into the existing instances, interviewing per item for the wording. Skip if the user declines.
 
-7. **Bump and commit.** Set `applied_version` in `process/.sfk/manifest.md` to the newer kit's
-   `kit_version`. Commit the refresh + applied deltas together, e.g.
+7. **Bump and commit.** Set the applied kit version in the root `CLAUDE.md` (*Project & kit*) to the
+   newer kit's `kit_version`; the refreshed `process/.sfk/` now carries that kit's identity. Commit the
+   refresh + applied deltas together, e.g.
    `process: update kit to vX.Y.Z`. Summarise for the user what changed, what you interviewed them
    about, and anything you deliberately left for them.
 
@@ -72,7 +75,6 @@ If you cannot see the newer kit, ask the user where it is before proceeding.
 
 Run this in its own thread. Cowork auto-titles a thread and **cannot rename it programmatically** —
 only the user can. As your **first action**, suggest the name below and ask the user to rename this
-thread to it. `PROJCODE` is the project code (the ticket prefix) recorded as `project_code` in
-`process/.sfk/manifest.md`, set when the project was created with `sfk-init` (e.g. `/sfk-init ACME`).
+thread to it. `PROJCODE` is the project code (the ticket prefix) recorded in the root `CLAUDE.md` *Project & kit* section, set when the project was created with `sfk-init` (e.g. `/sfk-init ACME`).
 
 **Suggested name:** `PROJCODE: Kit Update <version>`  (e.g. `ACME: Kit Update v1.1.0`)

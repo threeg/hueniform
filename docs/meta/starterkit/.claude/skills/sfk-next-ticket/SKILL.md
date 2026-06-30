@@ -44,6 +44,7 @@ the user to sign off with `sfk-signoff`.
 
 ## Rules
 
+- **Never edit `process/.sfk/`** — it is the kit's read-only source (templates, changelog, manifest).
 - One ticket, one commit. Never combine unrelated changes.
 - A ticket is not `done` until committed; "done on my machine" is `in-review`.
 - If implementing reveals the spec is wrong, change the relevant `process/` file first and reference it
@@ -54,7 +55,6 @@ the user to sign off with `sfk-signoff`.
 
 Run this in its own thread. Cowork auto-titles a thread and **cannot rename it programmatically** —
 only the user can. As your **first action**, suggest the name below and ask the user to rename this
-thread to it. `PROJCODE` is the project code (the ticket prefix) recorded as `project_code` in
-`process/.sfk/manifest.md`, set when the project was created with `sfk-init` (e.g. `/sfk-init ACME`).
+thread to it. `PROJCODE` is the project code (the ticket prefix) recorded in the root `CLAUDE.md` *Project & kit* section, set when the project was created with `sfk-init` (e.g. `/sfk-init ACME`).
 
 **Suggested name:** `PROJCODE Implementation`  (e.g. `ACME Implementation`)
