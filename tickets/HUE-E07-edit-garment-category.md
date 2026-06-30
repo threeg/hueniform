@@ -2,7 +2,7 @@
 id: HUE-E07
 title: Edit a garment's category
 type: epic
-status: todo
+status: done
 milestone: 14
 batch: services
 layer: services
@@ -51,3 +51,4 @@ suggests under the new category; the palette remains changeable only via regener
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-30 — all children done (HUE-072, HUE-073, HUE-074); epic closed.

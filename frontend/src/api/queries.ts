@@ -13,6 +13,7 @@ import {
   getGarment,
   postGarmentRegenerate,
   putGarment,
+  patchGarment,
   deleteGarment,
   postSuggestions,
 } from './endpoints'
@@ -133,6 +134,23 @@ export function useDeleteGarment(): UseMutationResult<void, Error, string> {
     onSuccess: (_data, id) => {
       qc.invalidateQueries({ queryKey: ['garments'] })
       qc.removeQueries({ queryKey: ['garment', id] })
+    },
+  })
+}
+
+// ── §2.10a Direct category edit ──────────────────────────────────────────────
+
+export function usePatchGarment(): UseMutationResult<
+  Garment,
+  Error,
+  { id: string; category: string }
+> {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, category }) => patchGarment(id, { category }),
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['garments'] })
+      qc.setQueryData(['garment', data.id], data)
     },
   })
 }

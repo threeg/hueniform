@@ -2,7 +2,7 @@
 id: HUE-074
 title: Garment-detail category edit UI
 type: story
-status: todo
+status: done
 milestone: 14
 batch: frontend
 layer: frontend
@@ -44,18 +44,28 @@ so that I can re-tag a garment without re-running detection.
 - Covered end-to-end by E2E journey 2 (HUE-085)
 
 ## QA steps
-- [ ] Open a garment → change its category → expect it updates in place, palette/photo unchanged
-- [ ] Confirm there is no direct palette edit (only Regenerate)
+- [x] Open a garment → click "Edit" beside the category heading → region-grouped picker opens with current category pre-selected → select a different category → click Save → heading updates in place; palette and photo unchanged
+- [x] Click Edit → click Cancel → picker closes, heading unchanged
+- [x] Confirm there is no direct palette edit (only Regenerate)
 
 ## Definition of done
-- [ ] Acceptance criteria met
-- [ ] Tests added/updated per test strategy §12.2 and passing in `make test`
-- [ ] Matcher-touching work: n/a
-- [ ] Detection-touching work: n/a
-- [ ] Evaluation/inventory-perf-touching work: n/a
+- [x] Acceptance criteria met
+- [x] Tests added/updated per test strategy §12.2 and passing in `make test`
+- [x] Matcher-touching work: n/a
+- [x] Detection-touching work: n/a
+- [x] Evaluation/inventory-perf-touching work: n/a
 - [ ] User-flow-touching work: `make test-e2e` passes (§12.3.6) — deferred to HUE-085
-- [ ] QA steps recorded and repeated in the chat completion report
-- [ ] Ticket status + notes updated in the same commit (§12.3.7)
+- [x] QA steps recorded and repeated in the chat completion report
+- [x] Ticket status + notes updated in the same commit (§12.3.7)
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-30 — implemented. Added inline category editor to `GarmentDetail.tsx`: "Edit" button
+  beside the category heading opens a region-grouped picker (taxonomy from `useTaxonomy()`);
+  current category pre-selected (`aria-pressed`); Save sends `PATCH /api/garments/{id}` via new
+  `usePatchGarment` hook (added to `queries.ts`, `patchGarment` already in `endpoints.ts`);
+  on success cache is updated (`setQueryData`) and picker closes; Cancel closes without network
+  call. Updated action hint caption to match wireframe §04 (category editable / colours
+  regenerate-only). 7 new tests in `GarmentDetail.test.tsx`; 1059 backend + 156 frontend pass,
+  zero warnings.
+- Sanity test: `cd frontend && npx vitest run src/routes/GarmentDetail.test.tsx -t "category edit" 2>&1 | tail -5`

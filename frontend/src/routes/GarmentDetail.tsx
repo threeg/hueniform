@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom'
-import { useGarment, useRegenerateGarment, useDeleteGarment } from '../api/queries'
+import { useGarment, useRegenerateGarment, useDeleteGarment, usePatchGarment, useTaxonomy } from '../api/queries'
 import { ApiRequestError } from '../api/types'
 import PaletteStrip from '../components/PaletteStrip'
 import Swatch from '../components/Swatch'
@@ -8,6 +8,13 @@ import Banner from '../components/Banner'
 import LoadingState from '../components/LoadingState'
 import { typeLabel } from '../utils/typeLabel'
 import styles from './GarmentDetail.module.css'
+
+const REGION_LABELS: Record<string, string> = {
+  head: 'Head',
+  upper_body: 'Upper body',
+  lower_body: 'Lower body',
+  feet: 'Feet',
+}
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-GB', {
@@ -26,8 +33,28 @@ export default function GarmentDetail() {
   const { data: garment, isLoading, isError, error } = useGarment(id!)
   const { mutate: regenerate, isPending: regenPending, error: regenError } = useRegenerateGarment()
   const { mutate: remove,     isPending: deletePending, error: deleteError } = useDeleteGarment()
+  const { mutate: patchCategory, isPending: patchPending, error: patchError } = usePatchGarment()
+  const { data: taxonomy } = useTaxonomy()
 
   const [showConfirm, setShowConfirm] = useState(false)
+  const [editingCategory, setEditingCategory] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState('')
+
+  function handleEditOpen() {
+    setSelectedCategory(garment!.category)
+    setEditingCategory(true)
+  }
+
+  function handleCategoryCancel() {
+    setEditingCategory(false)
+  }
+
+  function handleCategorySave() {
+    patchCategory(
+      { id: id!, category: selectedCategory },
+      { onSuccess: () => setEditingCategory(false) },
+    )
+  }
 
   function handleRegenerate() {
     regenerate(id!, {
@@ -82,7 +109,75 @@ export default function GarmentDetail() {
 
         {/* Right column — detail and actions */}
         <div className={styles.detailCol}>
-          <h1 className={styles.typeHeading}>{typeLabel(garment.category)}</h1>
+          {/* Category heading with inline edit affordance (FR-46) */}
+          <div className={styles.categoryRow}>
+            {editingCategory ? (
+              <div
+                role="group"
+                aria-label="Edit category"
+                className={styles.categoryPicker}
+              >
+                {taxonomy?.regions?.map(region => (
+                  <div key={region.region} className={styles.pickerRegion}>
+                    <p className={styles.pickerRegionLabel}>
+                      {REGION_LABELS[region.region] ?? region.region}
+                    </p>
+                    <div className={styles.pickerSlots}>
+                      {region.slots.flatMap(slot =>
+                        slot.categories.map(cat => (
+                          <button
+                            key={cat}
+                            className={
+                              selectedCategory === cat
+                                ? styles.pickerCatSelected
+                                : styles.pickerCat
+                            }
+                            aria-pressed={selectedCategory === cat}
+                            onClick={() => setSelectedCategory(cat)}
+                            data-testid={`cat-${cat}`}
+                          >
+                            {typeLabel(cat)}
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {patchError && (
+                  <Banner variant="error" message={(patchError as Error).message} />
+                )}
+                <div className={styles.pickerActions}>
+                  <button
+                    className={styles.cancelCatBtn}
+                    onClick={handleCategoryCancel}
+                    data-testid="category-cancel"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className={styles.saveCatBtn}
+                    onClick={handleCategorySave}
+                    disabled={patchPending}
+                    aria-busy={patchPending}
+                    data-testid="category-save"
+                  >
+                    {patchPending ? 'Saving…' : 'Save'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className={styles.headingRow}>
+                <h1 className={styles.typeHeading}>{typeLabel(garment.category)}</h1>
+                <button
+                  className={styles.editCatBtn}
+                  onClick={handleEditOpen}
+                  data-testid="edit-category-button"
+                >
+                  Edit
+                </button>
+              </div>
+            )}
+          </div>
 
           <PaletteStrip colours={garment.colours} height={16} />
 
@@ -107,7 +202,7 @@ export default function GarmentDetail() {
             {actionError && <Banner variant="error" message={(actionError as Error).message} />}
 
             <p className={styles.actionHint}>
-              Wrong colours? Regenerate re-detects them from the photograph.
+              The <strong>category</strong> is editable above. The <strong>colours</strong> are regenerate-only — <em>Regenerate</em> re-detects them from the photograph.
             </p>
 
             <button

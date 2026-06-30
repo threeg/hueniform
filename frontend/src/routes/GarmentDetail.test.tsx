@@ -192,6 +192,86 @@ describe('GarmentDetail — delete (FR-34)', () => {
   })
 })
 
+// ── Category edit (FR-46) ─────────────────────────────────────────────────────
+
+describe('GarmentDetail — category edit (FR-46)', () => {
+  it('shows an Edit button beside the category heading', async () => {
+    renderScreen()
+    await screen.findByRole('heading', { name: 'Jumper' })
+    expect(screen.getByTestId('edit-category-button')).toBeInTheDocument()
+  })
+
+  it('opens the category picker when Edit is clicked', async () => {
+    renderScreen()
+    await user().click(await screen.findByTestId('edit-category-button'))
+    expect(screen.getByRole('group', { name: 'Edit category' })).toBeInTheDocument()
+  })
+
+  it('pre-selects the current category in the picker', async () => {
+    renderScreen()
+    await user().click(await screen.findByTestId('edit-category-button'))
+    expect(screen.getByTestId('cat-jumper')).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('Cancel closes the picker without sending PATCH', async () => {
+    let called = false
+    server.use(
+      http.patch(`http://127.0.0.1:8000/api/garments/${GARMENT_ID}`, () => {
+        called = true
+        return HttpResponse.json(GARMENT_DETAIL)
+      }),
+    )
+    renderScreen()
+    await user().click(await screen.findByTestId('edit-category-button'))
+    await user().click(screen.getByTestId('category-cancel'))
+    expect(screen.queryByRole('group', { name: 'Edit category' })).not.toBeInTheDocument()
+    expect(called).toBe(false)
+  })
+
+  it('sends PATCH with { category } on Save (FR-46)', async () => {
+    let capturedBody: unknown = null
+    server.use(
+      http.patch(`http://127.0.0.1:8000/api/garments/${GARMENT_ID}`, async ({ request }) => {
+        capturedBody = await request.json()
+        return HttpResponse.json({ ...GARMENT_DETAIL, category: 'trousers' })
+      }),
+    )
+    renderScreen()
+    await user().click(await screen.findByTestId('edit-category-button'))
+    await user().click(screen.getByTestId('cat-trousers'))
+    await user().click(screen.getByTestId('category-save'))
+    await waitFor(() => expect(capturedBody).toEqual({ category: 'trousers' }))
+  })
+
+  it('shows the updated category heading after save', async () => {
+    server.use(
+      http.patch(`http://127.0.0.1:8000/api/garments/${GARMENT_ID}`, () =>
+        HttpResponse.json({ ...GARMENT_DETAIL, category: 'trousers' }),
+      ),
+    )
+    renderScreen()
+    await user().click(await screen.findByTestId('edit-category-button'))
+    await user().click(screen.getByTestId('cat-trousers'))
+    await user().click(screen.getByTestId('category-save'))
+    await screen.findByRole('heading', { name: 'Trousers' })
+  })
+
+  it('closes the picker after a successful save', async () => {
+    server.use(
+      http.patch(`http://127.0.0.1:8000/api/garments/${GARMENT_ID}`, () =>
+        HttpResponse.json({ ...GARMENT_DETAIL, category: 'trousers' }),
+      ),
+    )
+    renderScreen()
+    await user().click(await screen.findByTestId('edit-category-button'))
+    await user().click(screen.getByTestId('cat-trousers'))
+    await user().click(screen.getByTestId('category-save'))
+    await waitFor(() =>
+      expect(screen.queryByRole('group', { name: 'Edit category' })).not.toBeInTheDocument(),
+    )
+  })
+})
+
 // ── 404 not-found state ───────────────────────────────────────────────────────
 
 describe('GarmentDetail — not found', () => {
