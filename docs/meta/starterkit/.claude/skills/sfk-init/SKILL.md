@@ -46,3 +46,5 @@ that comes later, via `sfk-version` then `sfk-next-milestone`.
 - Environment only. No milestones, no brief content, no application code in `sfk-init`.
 - `sfk-init` runs **once** per project and may be deleted afterwards (one-time scaffolding).
 - Keep `process/` the binding source of truth; never mark a milestone complete (that is `sfk-signoff`).
+- The pristine templates in `process/.sfk/templates/` are the kit's reference copy for future updates
+  — never edit them; `sfk-update-process` uses them to apply later kit improvements.

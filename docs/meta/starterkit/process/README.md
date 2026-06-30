@@ -1,9 +1,18 @@
 # Spec-First Starter Kit — the method
 
+| | |
+|---|---|
+| **Kit version** | v1.0.0 |
+| **Author** | Gregg Seymour |
+| **Version source of truth** | `process/.sfk/manifest.md` (and the changelog in `process/.sfk/CHANGELOG.md`) |
+
 A project-neutral way to build software **spec-first, ticket-by-ticket, with an AI coding agent**.
 This file is the process guide. The kit lives entirely under `process/` plus a `.claude/skills/`
 folder, so it never squats on the files your project owns at the root (`README.md`, `CLAUDE.md`, your
 code).
+
+The kit is **versioned**: a project records which kit version it is on, and `sfk-update-process` pulls
+later improvements into an existing project without disturbing your filled-in docs (see *Updating*).
 
 ---
 
@@ -13,7 +22,7 @@ code).
    folder, a root `CLAUDE.md`, and a `.gitignore`. Your project keeps its own root `README.md`.
 
 2. **Install the workflow skills** in `.claude/skills/` (`sfk-init`, `sfk-version`,
-   `sfk-next-milestone`, `sfk-signoff`, `sfk-next-ticket`, `sfk-verify`):
+   `sfk-next-milestone`, `sfk-signoff`, `sfk-next-ticket`, `sfk-verify`, `sfk-update-process`):
    - **Claude Code (CLI):** they live in `.claude/skills/` already, so they are discovered
      automatically — nothing to do.
    - **Desktop app (Cowork):** skills are not auto-discovered. Add them via **Settings → Capabilities**,
@@ -35,6 +44,11 @@ code).
 
 6. **Next version:** trigger `sfk-version` again with the new number and goals.
 
+7. **Updating the kit later:** when a newer kit version ships, run `sfk-update-process` to pull its
+   improvements into this project — it refreshes the kit-owned files and the `.sfk/templates/` mirror,
+   then applies the changelog deltas to your living docs, interviewing you where a change needs input.
+   It never overwrites your filled-in content (see *Updating a project to a newer kit version*).
+
 > **No skills installed?** Every skill has a fallback: point the agent at its file, e.g. *"Read
 > `.claude/skills/sfk-init/SKILL.md` and follow it."* The `SKILL.md` body is the full instruction set.
 
@@ -52,13 +66,14 @@ optional meta loop, below).
 ├── README.md                     ← your project's own (the kit does not touch this)
 ├── .gitignore                    ← sensible neutral defaults (provided)
 ├── .claude/
-│   └── skills/                   ← the six workflow skills (auto-discovered by Claude Code)
+│   └── skills/                   ← the seven workflow skills (auto-discovered by Claude Code)
 │       ├── sfk-init/             ← one-time environment bootstrap
 │       ├── sfk-version/          ← start a version: brief + its milestone table
 │       ├── sfk-next-milestone/   ← work one milestone to a committed draft
 │       ├── sfk-signoff/          ← finalise & commit a milestone's completion
 │       ├── sfk-next-ticket/      ← implement one ticket, one commit
-│       └── sfk-verify/           ← post-batch spec audit + quality review (TEMPLATE)
+│       ├── sfk-verify/           ← post-batch spec audit + quality review (TEMPLATE)
+│       └── sfk-update-process/   ← pull a newer kit version into this project
 └── process/                      ← the kit: living spec + workflow, isolated from code
     ├── README.md                 ← this guide (the method)
     ├── milestone-plan.md         ← single source of truth for project status
@@ -69,7 +84,11 @@ optional meta loop, below).
     ├── test-strategy/            ← test-strategy.md (master) + supporting context
     ├── tickets/                  ← BOARD, CONVENTIONS, TICKET-TEMPLATE, CLAUDE.md, the tickets
     ├── templates/                ← layer-CLAUDE.md (copy into each code layer)
-    └── addons/meta-loop/         ← OPTIONAL — only if improving the method is itself a goal
+    ├── addons/meta-loop/         ← OPTIONAL — only if improving the method is itself a goal
+    └── .sfk/                     ← kit machinery (versioning + update)
+        ├── manifest.md           ← kit version + author + the version THIS project is on
+        ├── CHANGELOG.md          ← what changed per kit version (the update skill's migration script)
+        └── templates/            ← pristine copy of every living file, for diffing on update
 ```
 
 **Each authoring milestone is a folder.** The named master file in it (e.g.
@@ -83,8 +102,9 @@ for the material that informed it.
 true. The only numbered files are point-in-time **version briefs** (e.g. `process/v0.2.0-brief.md`).
 
 Every template is **annotated**: real section structure, `<ANGLE_BRACKET>` placeholders, and inline
-guidance that doubles as the agent's interview checklist — consumed and deleted as each section is
-filled in.
+guidance that doubles as the agent's interview checklist — consumed and deleted from the working copy
+as each section is filled in. The pristine copy in `process/.sfk/templates/` is kept untouched so kit
+updates can still be applied later.
 
 ---
 
@@ -156,7 +176,7 @@ the recommended tool is named, but the durable point is the mode, not the brand.
 
 ## The skills (how the agent drives the kit)
 
-You answer questions and sign off; the agent does the rest. Six skills, mapped to the lifecycle:
+You answer questions and sign off; the agent does the rest. Seven skills, mapped to the lifecycle:
 
 | Skill | When | What it does |
 |-------|------|--------------|
@@ -166,6 +186,7 @@ You answer questions and sign off; the agent does the rest. Six skills, mapped t
 | `sfk-signoff` | when you approve a milestone | Flips it to `Complete`, moves the *Current position*, commits the status change. The human gate. |
 | `sfk-next-ticket` | repeatedly, in step 8 | Picks the lowest-numbered `todo` ticket whose dependencies are `done`, implements it, one ticket per commit. |
 | `sfk-verify` | at batch boundaries | Audits the batch against the spec, reviews code quality, proposes cleanup tickets. Filled in for the stack during scaffolding. |
+| `sfk-update-process` | when a newer kit ships | Refreshes the kit-owned files and the `.sfk/templates/` mirror, then applies the changelog deltas to your living docs — interviewing where a change needs input, never overwriting your content. |
 
 The typical loop for an authoring milestone: **`sfk-next-milestone`** (interview → draft → WIP commit)
 → you review → optional feedback rounds (each committed) → **`sfk-signoff`** (complete + advance).
@@ -174,18 +195,20 @@ The typical loop for an authoring milestone: **`sfk-next-milestone`** (interview
 
 ## Lifecycle of the kit (what stays, what goes)
 
-A live project should not carry both a blank template and the filled-in document it became. Three
-buckets:
+A live project should not carry a *visibly* half-filled template, but it should keep a pristine copy
+of each template hidden away so future kit updates can be applied. Three buckets:
 
-- **Scaffolding — consumed and removed.** The blank templates under `process/` and the one-time
-  `sfk-init` skill. `sfk-init` / `sfk-version` fill templates into real documents and delete the
-  leftover guidance. A half-filled template is pure context noise.
-- **Living — stays and evolves.** The filled `process/*`, the root and per-layer `CLAUDE.md`, and the
-  `sfk-version` / `sfk-next-milestone` / `sfk-signoff` / `sfk-next-ticket` / `sfk-verify` skills (the
-  last filled in for the stack). These *are* the project from here on.
-- **Reference — archivable.** This guide. Every *enforceable* rule it states lives in `CLAUDE.md`,
-  `process/tickets/CONVENTIONS.md`, or the skills as the single source of truth, so it can be removed
-  once the project is running without losing anything the build relies on.
+- **Working files — filled in place.** The documents under `process/` (and the root `CLAUDE.md`).
+  `sfk-init` / `sfk-version` / `sfk-next-milestone` fill them and delete the inline placeholder
+  guidance as each section becomes real. These are your living docs; you edit them freely.
+- **Pristine mirror — kept, never edited.** `process/.sfk/templates/` holds an untouched copy of every
+  working file as the kit shipped it. You never edit the mirror; `sfk-update-process` diffs your
+  working files against it to apply kit improvements. This is what replaces the old "delete the
+  template" step — the template is preserved, just out of sight.
+- **Kit-owned — replaced on update.** This guide, the skills, and the `.sfk/` machinery. You don't edit
+  these; `sfk-update-process` refreshes them wholesale. Every *enforceable* rule the guide states also
+  lives in `CLAUDE.md`, `process/tickets/CONVENTIONS.md`, or the skills, so the guide itself is
+  reference you could archive.
 
 Because the whole kit sits under `process/` and `.claude/`, the project's root stays clean: your
 `README.md`, your `CLAUDE.md`, your code.
@@ -210,6 +233,38 @@ drives **requirement deltas** against the living spec:
 So later versions run as a delta pass (brief → requirement deltas → architecture/contract deltas →
 wireframe deltas → test-strategy delta + ticket generation → implementation), driven by the same
 `sfk-next-milestone` / `sfk-signoff` / `sfk-next-ticket` loop. There is no second `sfk-init`.
+
+> Note the two distinct "version" concepts. A **project version** (`v0.1.0`, `v0.2.0`) is *your
+> software's* release, scoped by `sfk-version`. A **kit version** (this kit's `v1.0.0`) is *the
+> method's* release, applied by `sfk-update-process`. They are independent.
+
+---
+
+## Updating a project to a newer kit version
+
+The kit improves over time (this is how the "in plain English" ticket section, the `process/` layout,
+and so on arrived). To pull those improvements into an existing project **without disturbing your
+filled-in docs**, use `sfk-update-process` rather than a blind file copy — a blind copy would clobber
+your living documents, because the kit also ships working-named files for fresh inits.
+
+How it works:
+
+1. Make the newer kit available (clone the kit repo, or drop it in a temp folder). The skill compares
+   its `process/.sfk/manifest.md` (kit version) against the one recorded in your project.
+2. It reads `process/.sfk/CHANGELOG.md` for every entry newer than your project's applied version. The
+   changelog is the migration script: each entry says what changed and how to apply it.
+3. It **refreshes the kit-owned files** (the skills, this guide, the `.sfk/` machinery) and the
+   `process/.sfk/templates/` mirror.
+4. For each living document, it reasons about the change three ways — your file vs the old pristine
+   mirror vs the new one — and applies the delta: a new section is added as an empty heading; a
+   guidance/wording change is applied; a change that needs a decision triggers a short interview. It
+   **never** overwrites your content, and it does not touch generated artefacts such as individual
+   tickets — though it will *offer* to backfill a new template section into them (e.g. "the ticket
+   template gained `## In plain English`; add it to your 14 tickets?").
+5. It updates the **applied version** in `process/.sfk/manifest.md` and commits.
+
+The result: your living spec gains the method's improvements, your content is preserved, and the
+project's recorded kit version moves forward.
 
 ---
 
