@@ -42,7 +42,7 @@ optional: if an argument is supplied, use it without asking; otherwise ask for i
      `kit_version` from `process/.sfk/manifest.md`. (This is where project state lives — not in `.sfk`.)
    - `process/.sfk/templates/process/milestone-plan.md` → `process/milestone-plan.md`. Leave the
      milestone table **empty** with a *Current position* line "Environment bootstrapped; run
-     `sfk-version` to start v0.1.0." — the table is laid down by `sfk-version`.
+     `sfk-version` to start the first version." — the table is laid down by `sfk-version`.
    - `process/.sfk/templates/process/tickets/*` → `process/tickets/*`, and
      `process/.sfk/templates/process/templates/layer-CLAUDE.md` → `process/templates/layer-CLAUDE.md`.
      Adapt the prefix and layer names.

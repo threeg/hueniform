@@ -11,14 +11,14 @@ there; it does **not** work the milestones (that is `sfk-next-milestone`).
 
 ## Procedure
 
-1. **Get the number and goals.** Ask the user for the version number (e.g. `v0.1.0`, `v0.2.0`) and its
+1. **Get the number and goals.** Ask the user for the version number and its
    goals — the capabilities or changes it should deliver. One round of questions to make the goals
    concrete.
 
 2. **Write the version brief.**
-   - **First release (v0.1.0):** the brief is the full project brief — interview-light here; the depth
-     comes in Milestone 1. Record the version's goals and scope in `process/brief/brief.md` (or, if you
-     prefer to keep v0.1.0 goals with the milestone, a short `process/v0.1.0-brief.md`).
+   - **First release (whatever number the user gives):** the brief is the full project brief —
+     interview-light here; the depth comes in Milestone 1. Record the version's goals and scope in
+     `process/brief/brief.md` (or a short `process/<version>-brief.md`).
    - **Later versions:** write `process/vX.Y.Z-brief.md` — a short brief that scopes the version as
      **requirement deltas** against the living spec (new `FR`/`NFR` numbers; amend-in-place for
      superseded ones), per the delta-pass model in `process/README.md`.
@@ -38,6 +38,8 @@ there; it does **not** work the milestones (that is `sfk-next-milestone`).
 
 ## Rules
 
+- **No default version.** The project decides where its versioning starts (e.g. `v0.1.0` or
+  `v1.0.0`). Never suggest or assume a default — use exactly the number the user provides.
 - **Never edit `process/.sfk/`** — it is the kit's read-only source (templates, changelog, manifest).
 - `sfk-version` defines scope and milestones only — it never authors a milestone's deliverable or
   writes code.

@@ -27,7 +27,7 @@ records the user's sign-off and advances the project.
    committed.
 
 5. **For the implementation milestone**, sign-off means the version's tickets are all `done` and the
-   gates pass; on sign-off, note that the version can be tagged (e.g. `v0.1.0`) per
+   gates pass; on sign-off, note that the version can be tagged with its version number per
    `process/README.md`.
 
 6. **Hand off.** Tell the user what is next: `sfk-next-milestone` for the following milestone, or

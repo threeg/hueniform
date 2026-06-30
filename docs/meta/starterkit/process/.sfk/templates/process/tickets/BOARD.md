@@ -29,7 +29,7 @@ Epics are containers and sit outside the execution order.
 
 ---
 
-## v0.1.0 — execution order (Milestone 8)
+## <VERSION> — execution order (Milestone 8)
 
 Leaf tickets, in dependency order. Reading top to bottom is a legal build sequence; no ticket depends
 on a higher-numbered one. Epics close when their children are all `done`.
@@ -49,7 +49,7 @@ on a higher-numbered one. Epics close when their children are all `done`.
 
 ---
 
-## v0.1.0 — cleanup backlog
+## <VERSION> — cleanup backlog
 
 Reactive tickets from post-batch review (CONVENTIONS.md §6). Not on the critical path unless promoted.
 

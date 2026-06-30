@@ -20,5 +20,5 @@ author: Gregg Seymour
 - `sfk-update-process` compares the project's *applied* kit version (in root `CLAUDE.md`) against this
   `kit_version` to decide what changelog deltas to apply (see `CHANGELOG.md`).
 
-> The *kit* version is independent of your software's release version (`v0.1.0`, …), tracked in
+> The *kit* version is independent of your software's release version (which the project chooses), tracked in
 > `process/milestone-plan.md`.
