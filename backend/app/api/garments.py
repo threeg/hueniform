@@ -25,11 +25,13 @@ from app.api.errors import (
     INVALID_PALETTE,
     INVALID_REGENERATION_TOKEN,
     INVALID_CATEGORY,
+    INVALID_REQUEST,
     THUMBNAIL_NOT_FOUND,
     AppError,
 )
 from app.api.schemas import (
     DetectionImageInfo,
+    GarmentCategoryPatchRequest,
     GarmentCreateRequest,
     GarmentDetail,
     GarmentUpdateRequest,
@@ -49,6 +51,7 @@ from app.services.garment_service import (
     confirm,
     confirm_regeneration,
     delete as garment_delete,
+    edit_category,
     list_garments,
 )
 
@@ -256,6 +259,44 @@ def update_garment(
         raise AppError(422, INVALID_CATEGORY, str(e))
     except InvalidPaletteError as e:
         raise AppError(422, INVALID_PALETTE, str(e))
+
+    return _to_detail(result)
+
+
+@router.patch("/garments/{garment_id}", response_model=GarmentDetail)
+def patch_garment_category(
+    garment_id: str,
+    body: dict,
+    request: Request,
+) -> GarmentDetail:
+    """
+    Edit the garment's category without touching its palette or image
+    (contract §2.10a, FR-46).
+
+    The body must have exactly one field: ``category``.  Missing or extra
+    fields → ``422 invalid_request``.
+    """
+    engine = request.app.state.engine
+
+    allowed = {"category"}
+    if set(body.keys()) != allowed:
+        raise AppError(422, INVALID_REQUEST, "Body must contain exactly one field: 'category'.")
+
+    try:
+        validated = GarmentCategoryPatchRequest(**body)
+    except Exception:
+        raise AppError(422, INVALID_REQUEST, "Body must contain exactly one field: 'category'.")
+
+    try:
+        result = edit_category(
+            garment_id=garment_id,
+            category=validated.category,
+            engine=engine,
+        )
+    except GarmentNotFoundError:
+        raise AppError(404, GARMENT_NOT_FOUND, "Garment not found.")
+    except InvalidTypeError as e:
+        raise AppError(422, INVALID_CATEGORY, str(e))
 
     return _to_detail(result)
 

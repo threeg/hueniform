@@ -2,7 +2,7 @@
 id: HUE-073
 title: PATCH /api/garments/{id} — edit category
 type: task
-status: todo
+status: done
 milestone: 14
 batch: api
 layer: api
@@ -28,11 +28,11 @@ path. Thin translation over the HUE-072 service operation.
 - Imports `services` only; never touches the palette (FR-32/FR-33)
 
 ## Definition of done (acceptance criteria)
-- [ ] `PATCH` changes only the category; `id`/image/palette/`regenerated_at` unchanged (FR-46)
-- [ ] `404`/`422 invalid_category`/`422 invalid_request` per contract §2.10a
-- [ ] `PUT` remains the only palette path (FR-32) — asserted that `PATCH` does not alter colours
-- [ ] Tests added/updated per §12.2 and passing in `make test`; import contracts kept
-- [ ] Ticket status + notes updated in the same commit
+- [x] `PATCH` changes only the category; `id`/image/palette/`regenerated_at` unchanged (FR-46)
+- [x] `404`/`422 invalid_category`/`422 invalid_request` per contract §2.10a
+- [x] `PUT` remains the only palette path (FR-32) — asserted that `PATCH` does not alter colours
+- [x] Tests added/updated per §12.2 and passing in `make test`; import contracts kept
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `api/test_garments.py` (§7.2): the one-field PATCH success (re-read asserts palette/image/`regenerated_at`
@@ -41,3 +41,12 @@ follow-up suggestion call shows eligibility follows the new category.
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-30 — implemented. Added `PATCH /api/garments/{id}` to `garments.py`. Body accepted
+  as `dict` and validated manually (keys must equal `{"category"}`) to guarantee `AppError`
+  envelope on bad shape rather than FastAPI's default `{"detail":[...]}` format. `edit_category`
+  imported from the service layer; `INVALID_REQUEST` added to the error imports; schema
+  `GarmentCategoryPatchRequest` (ConfigDict extra='forbid') added for the internal validation
+  step. 6 new tests in `TestPatchCategory`: success (colours/image/regenerated_at unchanged),
+  200 full detail, 404, 422 invalid_category, 422 missing field, 422 extra field.
+  1059 backend + 149 frontend pass, zero warnings.
+- Sanity test: `cd backend && .venv/bin/pytest tests/api/test_garments.py::TestPatchCategory -q`

@@ -593,3 +593,57 @@ class TestDeleteGarment:
         api_client.delete(f"/api/garments/{garment_id}")
         r2 = api_client.delete(f"/api/garments/{garment_id}")
         assert r2.status_code == 404
+
+
+# ── PATCH /api/garments/{id} — edit category ─────────────────────────────────
+
+class TestPatchCategory:
+    def test_patch_changes_only_category(self, api_client, seeded):
+        garment_id = seeded["t_shirt"]["id"]
+        before = api_client.get(f"/api/garments/{garment_id}").json()
+        api_client.patch(f"/api/garments/{garment_id}", json={"category": "jumper"})
+        after = api_client.get(f"/api/garments/{garment_id}").json()
+        assert after["category"] == "jumper"
+        assert after["colours"] == before["colours"]
+        assert after["regenerated_at"] == before["regenerated_at"]
+        assert after["image_url"] == before["image_url"]
+
+    def test_patch_returns_200_with_full_detail(self, api_client, seeded):
+        garment_id = seeded["t_shirt"]["id"]
+        r = api_client.patch(f"/api/garments/{garment_id}", json={"category": "jumper"})
+        assert r.status_code == 200
+        body = r.json()
+        assert body["id"] == garment_id
+        assert body["category"] == "jumper"
+        assert "colours" in body
+        assert "thumbnail_url" in body
+        assert "image_url" in body
+
+    def test_patch_unknown_garment_404(self, api_client):
+        r = api_client.patch(
+            "/api/garments/00000000-0000-0000-0000-000000000000",
+            json={"category": "jumper"},
+        )
+        assert r.status_code == 404
+        assert r.json()["error"]["code"] == "garment_not_found"
+
+    def test_patch_invalid_category_422(self, api_client, seeded):
+        garment_id = seeded["t_shirt"]["id"]
+        r = api_client.patch(f"/api/garments/{garment_id}", json={"category": "onesie"})
+        assert r.status_code == 422
+        assert r.json()["error"]["code"] == "invalid_category"
+
+    def test_patch_missing_category_422(self, api_client, seeded):
+        garment_id = seeded["t_shirt"]["id"]
+        r = api_client.patch(f"/api/garments/{garment_id}", json={})
+        assert r.status_code == 422
+        assert r.json()["error"]["code"] == "invalid_request"
+
+    def test_patch_extra_field_422(self, api_client, seeded):
+        garment_id = seeded["t_shirt"]["id"]
+        r = api_client.patch(
+            f"/api/garments/{garment_id}",
+            json={"category": "jumper", "colours": []},
+        )
+        assert r.status_code == 422
+        assert r.json()["error"]["code"] == "invalid_request"

@@ -7,7 +7,7 @@ Shared Pydantic schemas for the Hueniform API (contract §1.1–§1.2).
 
 from __future__ import annotations
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 
 from app.matcher.slots import GARMENT_TYPES as GARMENT_TYPES  # noqa: F401 — re-export for validators
 
@@ -131,6 +131,14 @@ class GarmentUpdateRequest(BaseModel):
     regeneration_token: str
     category: str
     colours: list[ColourIn]
+
+
+class GarmentCategoryPatchRequest(BaseModel):
+    """Request body for PATCH /api/garments/{id} (contract §2.10a)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    category: str
 
 
 class RegenerationProposalResponse(BaseModel):
