@@ -2,7 +2,7 @@
 id: HUE-078
 title: Suggestion service — count and refined ranking integration
 type: task
-status: todo
+status: done
 milestone: 14
 batch: services
 layer: services
@@ -26,11 +26,11 @@ on the slot-selection rewrite (HUE-068); the cap stays count-independent (NFR-5)
 - Selecting *N* from the capped pool only; the cap does not scale with *N* (NFR-5)
 
 ## Definition of done (acceptance criteria)
-- [ ] Up to *N* (1–25) distinct combinations returned; default 3; fewer when fewer exist (FR-39, FR-48)
-- [ ] First-class neutral-based vs neutral-fallback vs zero-result surfaced correctly (FR-41, FR-43)
-- [ ] Cap count-independent (NFR-5; full perf re-baseline is HUE-084)
-- [ ] Tests added/updated per §12.2 and passing in `make test`
-- [ ] Ticket status + notes updated in the same commit
+- [x] Up to *N* (1–25) distinct combinations returned; default 3; fewer when fewer exist (FR-39, FR-48)
+- [x] First-class neutral-based vs neutral-fallback vs zero-result surfaced correctly (FR-41, FR-43)
+- [x] Cap count-independent (NFR-5; full perf re-baseline is HUE-084)
+- [x] Tests added/updated per §12.2 and passing in `make test`
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `services/test_suggestion_service.py` (§7.4): count at N=1 and 25 and default; fewer-than-N;
@@ -39,3 +39,11 @@ seeded RNG; the §4.9.4 oracle. Perf is HUE-084.
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-07-01 — implemented. Added `count: int = C.COUNT_DEFAULT` parameter to `suggest()` in
+  `suggestion_service.py`; passed through to `rank()`. No change to `_build_combination` or
+  result types — `fallback` and `scheme` fields already correctly surfaced from `EvaluationResult`.
+  Added 7 new tests: `TestCountParameter` (count=1 exactly one, count=2 returns two, default
+  three caps at available, count=25 caps at available) and `TestFallbackFlag` (first-class neutral
+  `fallback=False`, neutral `scheme='neutral-based'`, zero-result empty tuple). 1074 backend +
+  156 frontend pass, zero warnings.
+- Sanity test: `cd backend && .venv/bin/pytest tests/services/test_suggestion_service.py::TestCountParameter tests/services/test_suggestion_service.py::TestFallbackFlag -q`

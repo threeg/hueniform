@@ -241,6 +241,7 @@ def suggest(
     slots_request: dict[str, bool | list[str]],
     engine: Engine,
     rng: random.Random,
+    count: int = C.COUNT_DEFAULT,
 ) -> SuggestionResult:
     """
     Build ranked outfit suggestions from the wardrobe.
@@ -261,6 +262,9 @@ def suggest(
     rng:
         Injected random.Random for deterministic shuffling of anchor candidates
         (FR-42, NFR-5).
+    count:
+        Maximum number of combinations to return (FR-48). Clamped to
+        1–25 at the API boundary; the service trusts the caller.
 
     Raises
     ------
@@ -331,7 +335,7 @@ def suggest(
     if empty:
         raise EmptySlotsError(empty)
 
-    results: list[EvaluationResult] = rank(wardrobe, requested_slots, rng)
+    results: list[EvaluationResult] = rank(wardrobe, requested_slots, rng, count=count)
 
     # Zero-result sentinel: rank always returns at least one element (FR-43(b)).
     if len(results) == 1 and not results[0].outfit:

@@ -380,3 +380,55 @@ class TestOnePieceExclusion:
         for combo in result.combinations:
             assert "base" not in combo.slots
             assert combo.slots["lower_body"].type == "dress"
+
+
+# ── Count parameter (FR-39, FR-48) ───────────────────────────────────────────
+
+class TestCountParameter:
+    def test_count_one_returns_exactly_one(self, engine):
+        """FR-48: count=1 returns exactly 1 combination even when more exist."""
+        _materialise(engine, two_valid_outfits())
+        result = suggest({}, engine, _rng(), count=1)
+        assert len(result.combinations) == 1
+
+    def test_count_two_returns_two(self, engine):
+        """FR-39: count=2 returns 2 combinations when 2 are available."""
+        _materialise(engine, two_valid_outfits())
+        result = suggest({}, engine, _rng(), count=2)
+        assert len(result.combinations) == 2
+
+    def test_count_default_three(self, engine):
+        """FR-48: default count is COUNT_DEFAULT (3); returns up to 3."""
+        _materialise(engine, two_valid_outfits())
+        result = suggest({}, engine, _rng())
+        # two_valid_outfits has 2 distinct combos; default=3 caps at available
+        assert len(result.combinations) <= 3
+
+    def test_count_large_caps_at_available(self, engine):
+        """FR-39: count=25 with only 2 available outfits returns 2."""
+        _materialise(engine, two_valid_outfits())
+        result = suggest({}, engine, _rng(), count=25)
+        assert len(result.combinations) == 2
+
+
+# ── Fallback flag distinction (FR-41, FR-43) ─────────────────────────────────
+
+class TestFallbackFlag:
+    def test_first_class_neutral_is_not_fallback(self, engine):
+        """FR-43: neutral-based found in step 1 sets fallback=False."""
+        _materialise(engine, neutral_fallback_only())
+        result = suggest({}, engine, _rng())
+        assert len(result.combinations) >= 1
+        assert result.combinations[0].fallback is False
+
+    def test_first_class_neutral_scheme_name(self, engine):
+        """FR-41: first-class neutral-based scheme name is 'neutral-based'."""
+        _materialise(engine, neutral_fallback_only())
+        result = suggest({}, engine, _rng())
+        assert result.combinations[0].scheme == "neutral-based"
+
+    def test_zero_result_has_no_fallback_combinations(self, engine):
+        """FR-43(b): zero-result returns empty combinations tuple."""
+        _materialise(engine, no_valid_outfit_constrained_by("top"))
+        result = suggest({}, engine, _rng())
+        assert result.combinations == ()
