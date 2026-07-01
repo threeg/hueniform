@@ -214,6 +214,9 @@ def _row_to_result(row: GarmentRow, colour_rows: list[GarmentColourRow]) -> Garm
 
 # ── Public API ────────────────────────────────────────────────────────────────
 
+_VALID_ORDERS = frozenset({'hue', 'date'})
+
+
 def list_garments(
     engine: Engine,
     *,
@@ -221,17 +224,24 @@ def list_garments(
     family_filter: str | None = None,
     limit: int = 500,
     offset: int = 0,
+    order: str = 'hue',
 ) -> GarmentPage:
     """
-    Return a paginated list of garments matching the optional filters.
+    Return a paginated, ordered list of garments matching the optional filters.
 
-    Raises ``InvalidFilterError`` for unknown type or family values.
+    *order* controls within-category ordering (FR-47):
+    - ``hue`` (default): primary-colour hue spectrum (0→360); neutrals trail.
+    - ``date``: newest first.
+
+    Raises ``InvalidFilterError`` for unknown type, family, or order values.
     ``total`` reflects the full match count before pagination.
     """
     if type_filter is not None and type_filter not in _GARMENT_TYPES:
         raise InvalidFilterError(f"Unknown garment type: '{type_filter}'.")
     if family_filter is not None and family_filter not in _VALID_FAMILIES:
         raise InvalidFilterError(f"Unknown colour family: '{family_filter}'.")
+    if order not in _VALID_ORDERS:
+        raise InvalidFilterError(f"Unknown order '{order}'. Expected 'hue' or 'date'.")
 
     with Session(engine) as session:
         # Build the family subquery: IDs of garments that have at least one
@@ -260,16 +270,41 @@ def list_garments(
         if total == 0:
             return GarmentPage(garments=(), total=total)
 
-        # SQL-level pagination — offset/limit in the query itself.
-        data_stmt = _apply_filters(
-            select(GarmentRow).order_by(GarmentRow.created_at)
-        ).offset(offset).limit(limit)
-        paged = session.exec(data_stmt).all()
+        # Load all matching rows so Python-side ordering covers the full set
+        # before paginating.  At NFR-6's 500-garment scale this is negligible;
+        # the heavier perf gate is in HUE-084.
+        all_rows = session.exec(_apply_filters(select(GarmentRow))).all()
 
+        if order == 'hue':
+            # Load primary colour (position=0) to derive hue for each garment.
+            all_ids = [r.id for r in all_rows]
+            primary_rows = session.exec(
+                select(GarmentColourRow)
+                .where(GarmentColourRow.garment_id.in_(all_ids))
+                .where(GarmentColourRow.position == 0)
+            ).all()
+            primary_by_id = {r.garment_id: r for r in primary_rows}
+
+            def _hue_key(row: GarmentRow) -> tuple:
+                pc = primary_by_id.get(row.id)
+                if pc is None or is_neutral(pc.family):
+                    # Neutral or missing primary → after chromatic; stable by id.
+                    return (row.type, 1, 0.0, row.id)
+                return (row.type, 0, pc.h, row.id)
+
+            sorted_rows = sorted(all_rows, key=_hue_key)
+        else:  # date — newest first within each type group
+            # Two stable passes: date DESC first, then type ASC (stable preserves
+            # the date order within each type group).
+            sorted_rows = sorted(all_rows, key=lambda r: r.created_at, reverse=True)
+            sorted_rows = sorted(sorted_rows, key=lambda r: r.type)
+
+        # Python-side pagination applied after ordering.
+        paged = sorted_rows[offset:offset + limit]
         if not paged:
             return GarmentPage(garments=(), total=total)
 
-        # Bulk-load colours for the page only (not the full match set).
+        # Bulk-load colours for the page only.
         page_ids = [r.id for r in paged]
         colour_rows = session.exec(
             select(GarmentColourRow)

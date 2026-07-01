@@ -2,7 +2,7 @@
 id: HUE-075
 title: Inventory ordering (hue spectrum / date) in the read query
 type: task
-status: todo
+status: done
 milestone: 14
 batch: services
 layer: services
@@ -29,11 +29,11 @@ category is a frontend concern (the list arrives ordered by category, then by th
 - Stays within NFR-6 at 500 garments using existing indices; no schema/index change
 
 ## Definition of done (acceptance criteria)
-- [ ] `hue` orders each category group as a spectrum by primary hue with neutrals trailing in a stable order (FR-47)
-- [ ] `date` orders newest-first; list ordered by category then `order` key
-- [ ] No schema change; NFR-6 server-half holds (perf is HUE-084)
-- [ ] Tests added/updated per §12.2 and passing in `make test`
-- [ ] Ticket status + notes updated in the same commit
+- [x] `hue` orders each category group as a spectrum by primary hue with neutrals trailing in a stable order (FR-47)
+- [x] `date` orders newest-first; list ordered by category then `order` key
+- [x] No schema change; NFR-6 server-half holds (perf is HUE-084)
+- [x] Tests added/updated per §12.2 and passing in `make test`
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `services/test_garment_service.py` (§7.2): ordering asserted as a property over a wardrobe with
@@ -42,3 +42,13 @@ for `date`; category-then-key ordering. NFR-6 server-half perf is HUE-084.
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-06-30 — implemented. Added `order: str = 'hue'` parameter to `list_garments`;
+  validates against `{'hue', 'date'}` (raises `InvalidFilterError` on unknown value).
+  `hue`: loads all matching rows + primary colour rows (position=0), sorts in Python by
+  `(type, is_neutral_primary, primary_h, id)` so neutrals trail chromatic within each
+  category group; `date`: stable two-pass sort — `created_at` DESC then `type` ASC.
+  Python-side pagination applied after ordering. No schema change. 8 new tests in
+  `TestInventoryOrdering` covering default, chromatic spectrum order, neutral trailing,
+  type grouping, date newest-first, date type grouping, unknown-order error, and total
+  independence. 1067 backend + 156 frontend pass, zero warnings.
+- Sanity test: `cd backend && .venv/bin/pytest tests/services/test_garment_service.py::TestInventoryOrdering -q`

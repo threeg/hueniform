@@ -17,12 +17,14 @@ from app.services.garment_service import (
     ColourIn,
     GarmentNotFoundError,
     GarmentResult,
+    InvalidFilterError,
     InvalidPaletteError,
     InvalidTypeError,
     TokenNotFoundError,
     confirm,
     delete,
     edit_category,
+    list_garments,
 )
 from app.storage.models import GarmentColourRow, GarmentRow
 from tests.services.conftest import _make_jpeg_bytes, _stage_image
@@ -417,3 +419,102 @@ class TestEditCategory:
     def test_not_found_raises(self, engine, dirs):
         with pytest.raises(GarmentNotFoundError):
             edit_category("00000000-0000-0000-0000-000000000000", "trousers", engine)
+
+
+# ── Inventory ordering (FR-47) ────────────────────────────────────────────────
+
+class TestInventoryOrdering:
+    """FR-47: hue-spectrum (default) and date ordering in list_garments."""
+
+    # Known-hue single-colour palettes; families derived by classify().
+    _RED    = [ColourIn(h=10.0,  s=80.0, l=40.0, proportion=100)]  # classify → Red
+    _YELLOW = [ColourIn(h=60.0,  s=80.0, l=40.0, proportion=100)]  # classify → Yellow
+    _BLUE   = [ColourIn(h=240.0, s=80.0, l=40.0, proportion=100)]  # classify → Blue
+    _GREY   = [ColourIn(h=0.0,   s=0.0,  l=50.0, proportion=100)]  # classify → Grey (neutral)
+
+    def _save(self, engine, dirs, garment_type: str, colours: list[ColourIn]) -> GarmentResult:
+        token = _stage_image(dirs["staging"])
+        return confirm(
+            token=token,
+            garment_type=garment_type,
+            colours=colours,
+            staging_dir=dirs["staging"],
+            images_dir=dirs["images"],
+            thumbnails_dir=dirs["thumbnails"],
+            engine=engine,
+        )
+
+    def _set_created_at(self, engine, garment_id: str, dt: str) -> None:
+        with Session(engine) as s:
+            row = s.get(GarmentRow, garment_id)
+            row.created_at = dt
+            s.add(row)
+            s.commit()
+
+    def test_hue_is_default(self, engine, dirs):
+        """list_garments without order= defaults to hue ordering."""
+        r_low  = self._save(engine, dirs, "t_shirt", self._RED)    # h=10, created first
+        r_high = self._save(engine, dirs, "t_shirt", self._BLUE)   # h=240, created second
+        # date order would put r_high first (newest); hue order puts r_low first (lower h).
+        date_page = list_garments(engine, order="date")
+        assert [g.id for g in date_page.garments][0] == r_high.id  # confirm date differs
+        hue_page = list_garments(engine)  # default
+        assert [g.id for g in hue_page.garments][0] == r_low.id
+
+    def test_hue_chromatic_ordered_by_raw_hue(self, engine, dirs):
+        """Chromatic garments within a category are ordered by primary hue, low to high."""
+        r_blue   = self._save(engine, dirs, "t_shirt", self._BLUE)   # h=240
+        r_red    = self._save(engine, dirs, "t_shirt", self._RED)    # h=10
+        r_yellow = self._save(engine, dirs, "t_shirt", self._YELLOW) # h=60
+        page = list_garments(engine, order="hue")
+        ids = [g.id for g in page.garments]
+        assert ids == [r_red.id, r_yellow.id, r_blue.id]
+
+    def test_hue_neutral_trails_chromatic(self, engine, dirs):
+        """Neutral-primary garments appear after all chromatic garments in their category."""
+        r_grey = self._save(engine, dirs, "t_shirt", self._GREY)  # neutral
+        r_blue = self._save(engine, dirs, "t_shirt", self._BLUE)  # chromatic, h=240
+        page = list_garments(engine, order="hue")
+        ids = [g.id for g in page.garments]
+        assert ids.index(r_blue.id) < ids.index(r_grey.id)
+
+    def test_hue_groups_by_type_first(self, engine, dirs):
+        """Results are grouped by garment type before applying hue ordering."""
+        r_jumper = self._save(engine, dirs, "jumper",  self._BLUE)  # h=240
+        r_shirt  = self._save(engine, dirs, "t_shirt", self._RED)   # h=10
+        page = list_garments(engine, order="hue")
+        types = [g.type for g in page.garments]
+        # 'jumper' < 't_shirt' alphabetically → jumper group first
+        assert types == ["jumper", "t_shirt"]
+
+    def test_date_newest_first(self, engine, dirs):
+        """date order: newest garment first within each category."""
+        r_first  = self._save(engine, dirs, "t_shirt", self._RED)
+        r_second = self._save(engine, dirs, "t_shirt", self._YELLOW)
+        r_third  = self._save(engine, dirs, "t_shirt", self._BLUE)
+        self._set_created_at(engine, r_first.id,  "2026-06-01T10:00:00+00:00")
+        self._set_created_at(engine, r_second.id, "2026-06-02T10:00:00+00:00")
+        self._set_created_at(engine, r_third.id,  "2026-06-03T10:00:00+00:00")
+        page = list_garments(engine, order="date")
+        ids = [g.id for g in page.garments]
+        assert ids == [r_third.id, r_second.id, r_first.id]
+
+    def test_date_groups_by_type_first(self, engine, dirs):
+        """date order: grouped by type; within each group, newest first."""
+        r_jumper = self._save(engine, dirs, "jumper",  self._BLUE)
+        r_shirt  = self._save(engine, dirs, "t_shirt", self._RED)
+        page = list_garments(engine, order="date")
+        types = [g.type for g in page.garments]
+        assert types == ["jumper", "t_shirt"]
+
+    def test_unknown_order_raises(self, engine):
+        """Unknown order value raises InvalidFilterError."""
+        with pytest.raises(InvalidFilterError, match="Unknown order"):
+            list_garments(engine, order="random")
+
+    def test_total_unaffected_by_order(self, engine, dirs):
+        """Total count is the same regardless of the order parameter."""
+        for _ in range(3):
+            self._save(engine, dirs, "t_shirt", self._RED)
+        assert list_garments(engine, order="hue").total == 3
+        assert list_garments(engine, order="date").total == 3
