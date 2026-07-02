@@ -2,7 +2,7 @@
 id: HUE-080
 title: Outfit-request count control and neutral/fallback labels
 type: story
-status: todo
+status: done
 milestone: 14
 batch: frontend
 layer: frontend
@@ -53,14 +53,32 @@ so that I can ask for more options and understand the suggestions.
 - [ ] A neutral-based result → expect no fallback label; a fallback result → expect "Neutral-based fallback"
 
 ## Definition of done
-- [ ] Acceptance criteria met
-- [ ] Tests added/updated per test strategy §12.2 and passing in `make test`
-- [ ] Matcher-touching work: n/a
-- [ ] Detection-touching work: n/a
-- [ ] Evaluation/inventory-perf-touching work: n/a
+- [x] Acceptance criteria met
+- [x] Tests added/updated per test strategy §12.2 and passing in `make test`
+- [x] Matcher-touching work: n/a
+- [x] Detection-touching work: n/a
+- [x] Evaluation/inventory-perf-touching work: n/a
 - [ ] User-flow-touching work: `make test-e2e` passes (§12.3.6) — deferred to HUE-085
-- [ ] QA steps recorded and repeated in the chat completion report
-- [ ] Ticket status + notes updated in the same commit (§12.3.7)
+- [x] QA steps recorded and repeated in the chat completion report
+- [x] Ticket status + notes updated in the same commit (§12.3.7)
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-07-02 — implemented. Added `count` state (default 3) to `Suggest.tsx`; ±stepper UI
+  (label "How many outfits?", hint "(1–25)", `data-testid` buttons, clamped 1–25 with disabled
+  state at bounds); `handleSuggest()` always includes `count` in the request body; results header
+  `data-testid="results-header"` shows "{N} outfit(s)" or "Showing M of N you asked for" from
+  `data.requested_count`. Added `requested_count` to `SUGGESTION_RESPONSE` and
+  `SUGGESTION_EMPTY_RESPONSE` in `contract-examples.ts`. 10 new frontend tests across count
+  stepper, results header, and fallback-label distinction. 1082 backend + 166 frontend pass,
+  zero warnings. E2E deferred to HUE-085.
+- Sanity test: `cd frontend && npx vitest run src/routes/Suggest.test.tsx --reporter=verbose`
+
+## QA steps
+- [ ] Open `/suggest` → count stepper shows "3" with − and + buttons
+- [ ] Click + → count becomes 4; click + until 25 → + button disables
+- [ ] Click − from 25 → decreases; click − until 1 → − button disables
+- [ ] Click "Suggest outfits" with count=1 → request body has `count: 1`; at most 1 result card
+- [ ] Results header shows "1 outfit" (or "Showing M of N you asked for" when fewer than requested)
+- [ ] A `fallback: false` result card has no "Neutral-based fallback" chip
+- [ ] A `fallback: true` result card shows "Neutral-based fallback" chip

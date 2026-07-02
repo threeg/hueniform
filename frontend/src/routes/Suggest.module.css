@@ -232,6 +232,71 @@
   cursor: default;
 }
 
+/* ── Count stepper ──────────────────────────────────────────────────────────── */
+
+.countRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.countLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.countHint {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.countStepper {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+
+.stepBtn {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.stepBtn:hover:not(:disabled) {
+  background: #f0f0f0;
+}
+
+.stepBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.countDisplay {
+  min-width: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ── Results header ─────────────────────────────────────────────────────────── */
+
+.resultsHeader {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0 0 0.75rem;
+}
+
 /* ── Zero results ───────────────────────────────────────────────────────────── */
 
 .zeroResults {

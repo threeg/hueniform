@@ -50,6 +50,7 @@ type SlotOverride = boolean | string[]
 export default function Suggest() {
   const [slotOverrides, setSlotOverrides] = useState<Record<string, SlotOverride>>({})
   const [expandedSlot, setExpandedSlot] = useState<string | null>(null)
+  const [count, setCount] = useState(3)
 
   const { data: taxonomy } = useTaxonomy()
   const { mutate: suggest, isPending, data, error } = useSuggest()
@@ -132,7 +133,10 @@ export default function Suggest() {
 
   function handleSuggest() {
     const slotsOverride = buildSlotsRequest()
-    suggest(Object.keys(slotsOverride).length > 0 ? { slots: slotsOverride } : {})
+    const req = Object.keys(slotsOverride).length > 0
+      ? { slots: slotsOverride, count }
+      : { count }
+    suggest(req)
   }
 
   const familyHexMap = useMemo(() => {
@@ -262,6 +266,30 @@ export default function Suggest() {
 
         {err && <Banner variant="error" message={err.message} />}
 
+        <div className={styles.countRow}>
+          <span className={styles.countLabel}>How many outfits?</span>
+          <span className={styles.countHint}>(1–25)</span>
+          <div className={styles.countStepper}>
+            <button
+              type="button"
+              className={styles.stepBtn}
+              onClick={() => setCount(c => Math.max(1, c - 1))}
+              disabled={count <= 1 || isPending}
+              aria-label="Decrease count"
+              data-testid="count-decrement"
+            >−</button>
+            <span className={styles.countDisplay} data-testid="count-display">{count}</span>
+            <button
+              type="button"
+              className={styles.stepBtn}
+              onClick={() => setCount(c => Math.min(25, c + 1))}
+              disabled={count >= 25 || isPending}
+              aria-label="Increase count"
+              data-testid="count-increment"
+            >+</button>
+          </div>
+        </div>
+
         <div className={styles.panelFooter}>
           <p className={styles.hint}>
             The lower-body slot is always included; everything else is up to you.
@@ -295,6 +323,11 @@ export default function Suggest() {
 
       {!isPending && data && data.combinations.length > 0 && (
         <section aria-label="Outfit suggestions">
+          <p className={styles.resultsHeader} data-testid="results-header">
+            {data.requested_count && data.combinations.length < data.requested_count
+              ? `Showing ${data.combinations.length} of ${data.requested_count} you asked for`
+              : `${data.combinations.length} ${data.combinations.length === 1 ? 'outfit' : 'outfits'}`}
+          </p>
           <ol className={styles.resultList}>
             {data.combinations.map((combo, i) => {
               const schemeLabel = combo.scheme

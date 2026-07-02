@@ -218,6 +218,7 @@ export const ERR_INVALID_FILTER: ApiError = {
 // ── §2.12 POST /api/suggestions — 200 combinations found ─────────────────────
 
 export const SUGGESTION_RESPONSE = {
+  requested_count: 1,
   combinations: [
     {
       rank: 1,
@@ -239,6 +240,7 @@ export const SUGGESTION_RESPONSE = {
 // ── §2.12 POST /api/suggestions — 200 no combination possible (FR-43b) ────────
 
 export const SUGGESTION_EMPTY_RESPONSE = {
+  requested_count: 3,
   combinations: [],
   explanation:
     'No harmonious outfit was found: no mid-layer garment in the wardrobe is compatible with any lower_body under any scheme.',

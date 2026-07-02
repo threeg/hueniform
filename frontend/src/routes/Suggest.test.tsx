@@ -10,7 +10,7 @@ import { server } from '../test/server'
 import { renderRoute } from '../test/test-utils'
 
 import Suggest from './Suggest'
-import { SUGGESTION_RESPONSE, ERR_EMPTY_SLOTS } from '../test/contract-examples'
+import { SUGGESTION_RESPONSE, SUGGESTION_EMPTY_RESPONSE, ERR_EMPTY_SLOTS } from '../test/contract-examples'
 
 const BASE = 'http://127.0.0.1:8000'
 
@@ -339,5 +339,131 @@ describe('Suggest — 409 empty_slots (FR-36)', () => {
     // ERR_EMPTY_SLOTS.error.details.empty_slots = ['hat']
     const hatChip = await screen.findByTestId('slot-hat')
     expect(hatChip).toHaveTextContent('none in wardrobe')
+  })
+})
+
+// ── FR-48: count stepper ──────────────────────────────────────────────────────
+
+describe('Suggest — count stepper (FR-48)', () => {
+  const user = userEvent.setup
+
+  it('renders count stepper with default value 3', async () => {
+    renderScreen()
+    await waitForPanel()
+    expect(screen.getByTestId('count-display')).toHaveTextContent('3')
+  })
+
+  it('increment button increases count by 1', async () => {
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('count-increment'))
+    expect(screen.getByTestId('count-display')).toHaveTextContent('4')
+  })
+
+  it('decrement button decreases count by 1', async () => {
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('count-decrement'))
+    expect(screen.getByTestId('count-display')).toHaveTextContent('2')
+  })
+
+  it('decrement clamps at 1 and disables the button', async () => {
+    renderScreen()
+    await waitForPanel()
+    // From 3: two decrements reach 1
+    await user().click(screen.getByTestId('count-decrement'))
+    await user().click(screen.getByTestId('count-decrement'))
+    expect(screen.getByTestId('count-display')).toHaveTextContent('1')
+    expect(screen.getByTestId('count-decrement')).toBeDisabled()
+  })
+
+  it('sends count in the request body', async () => {
+    let captured: unknown = null
+    server.use(
+      http.post(`${BASE}/api/suggestions`, async ({ request }) => {
+        captured = await request.json()
+        return HttpResponse.json(SUGGESTION_RESPONSE)
+      }),
+    )
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('suggest-button'))
+    await waitFor(() => expect(captured).not.toBeNull())
+    expect((captured as { count: number }).count).toBe(3)
+  })
+
+  it('sends updated count when incremented before suggesting', async () => {
+    let captured: unknown = null
+    server.use(
+      http.post(`${BASE}/api/suggestions`, async ({ request }) => {
+        captured = await request.json()
+        return HttpResponse.json(SUGGESTION_RESPONSE)
+      }),
+    )
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('count-increment'))
+    await user().click(screen.getByTestId('suggest-button'))
+    await waitFor(() => expect(captured).not.toBeNull())
+    expect((captured as { count: number }).count).toBe(4)
+  })
+})
+
+// ── FR-39/FR-48: results header ───────────────────────────────────────────────
+
+describe('Suggest — results header (FR-39/FR-48)', () => {
+  const user = userEvent.setup
+
+  it('shows "N outfit(s)" when combinations match requested_count', async () => {
+    // SUGGESTION_RESPONSE has requested_count=1 and 1 combination
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('suggest-button'))
+    const header = await screen.findByTestId('results-header')
+    expect(header).toHaveTextContent('1')
+  })
+
+  it('shows "Showing M of N you asked for" when fewer combinations returned', async () => {
+    server.use(
+      http.post(`${BASE}/api/suggestions`, () =>
+        HttpResponse.json({ ...SUGGESTION_RESPONSE, requested_count: 3 }),
+      ),
+    )
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('suggest-button'))
+    const header = await screen.findByTestId('results-header')
+    expect(header).toHaveTextContent('Showing 1 of 3')
+  })
+})
+
+// ── FR-41/FR-43: fallback label distinction ───────────────────────────────────
+
+describe('Suggest — fallback label distinction (FR-41/FR-43)', () => {
+  const user = userEvent.setup
+
+  it('first-class neutral-based (fallback:false) renders without fallback label', async () => {
+    // SUGGESTION_RESPONSE has fallback: false
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('suggest-button'))
+    await screen.findByTestId('result-card')
+    expect(screen.queryByTestId('fallback-label')).not.toBeInTheDocument()
+  })
+
+  it('fallback:true combination shows "Neutral-based fallback" label', async () => {
+    server.use(
+      http.post(`${BASE}/api/suggestions`, () =>
+        HttpResponse.json({
+          requested_count: 1,
+          combinations: [{ ...SUGGESTION_RESPONSE.combinations[0], fallback: true }],
+        }),
+      ),
+    )
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('suggest-button'))
+    const label = await screen.findByTestId('fallback-label')
+    expect(label).toHaveTextContent('Neutral-based fallback')
   })
 })
