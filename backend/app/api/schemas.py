@@ -198,6 +198,7 @@ class SuggestionRequest(BaseModel):
     """Request body for POST /api/suggestions (contract §2.12)."""
 
     slots: dict[str, bool | SlotConstraint] = {}
+    count: int = 3
 
 
 class EchoOut(BaseModel):
@@ -225,8 +226,10 @@ class SuggestionResponse(BaseModel):
 
     On success: ``combinations`` is non-empty, ``explanation`` and ``hint`` absent.
     Zero-result: ``combinations`` is empty, ``explanation`` and ``hint`` are set.
+    ``requested_count`` echoes the effective count from the request (FR-48).
     """
 
+    requested_count: int
     combinations: list[CombinationOut]
     explanation: str | None = None
     hint: str | None = None

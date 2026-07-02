@@ -43,6 +43,15 @@ def create_suggestion(body: SuggestionRequest, request: Request) -> SuggestionRe
     """
     engine = request.app.state.engine
 
+    # Validate count range (FR-48; §2.12 error: 422 with details.count)
+    if not (1 <= body.count <= 25):
+        raise AppError(
+            422,
+            INVALID_REQUEST,
+            f"count must be between 1 and 25, got {body.count}.",
+            details={"count": body.count},
+        )
+
     # Translate API request to service format:
     # bool values pass through; SlotConstraint becomes a list[str].
     slots_request: dict[str, bool | list[str]] = {}
@@ -53,7 +62,7 @@ def create_suggestion(body: SuggestionRequest, request: Request) -> SuggestionRe
             slots_request[key] = value.categories
 
     try:
-        result = suggest(slots_request, engine, random.Random())
+        result = suggest(slots_request, engine, random.Random(), count=body.count)
     except (InvalidSlotError, InvalidCategoryFilterError) as exc:
         raise AppError(422, INVALID_REQUEST, str(exc))
     except EmptySlotsError as exc:
@@ -66,6 +75,7 @@ def create_suggestion(body: SuggestionRequest, request: Request) -> SuggestionRe
 
     if not result.combinations:
         return SuggestionResponse(
+            requested_count=body.count,
             combinations=[],
             explanation=result.zero_explanation,
             hint=result.hint,
@@ -97,4 +107,4 @@ def create_suggestion(body: SuggestionRequest, request: Request) -> SuggestionRe
             explanation=combo.explanation,
         ))
 
-    return SuggestionResponse(combinations=combinations_out)
+    return SuggestionResponse(requested_count=body.count, combinations=combinations_out)

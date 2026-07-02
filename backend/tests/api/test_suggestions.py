@@ -302,3 +302,55 @@ class TestOptionalSlots:
         assert len(combos) >= 1
         slots = combos[0]["slots"]
         assert "mid" in slots
+
+
+# ── POST /api/suggestions — count field (FR-39, FR-48) ───────────────────────
+
+class TestCountField:
+    def test_count_default_requested_count_is_three(self, api_client):
+        """FR-48: omitting count echoes requested_count=3 in the response."""
+        _seed(api_client, single_valid_outfit())
+        body = api_client.post("/api/suggestions", json={}).json()
+        assert body["requested_count"] == 3
+
+    def test_count_echoed_in_requested_count(self, api_client):
+        """FR-48: explicit count is echoed back as requested_count."""
+        _seed(api_client, single_valid_outfit())
+        body = api_client.post("/api/suggestions", json={"count": 1}).json()
+        assert body["requested_count"] == 1
+
+    def test_count_one_limits_combinations_to_one(self, api_client):
+        """FR-39: count=1 returns exactly 1 combination even with two available."""
+        _seed(api_client, two_valid_outfits())
+        body = api_client.post("/api/suggestions", json={"count": 1}).json()
+        assert len(body["combinations"]) == 1
+
+    def test_count_zero_returns_422(self, api_client):
+        """count=0 is out of range (1–25); must return 422 invalid_request."""
+        r = api_client.post("/api/suggestions", json={"count": 0})
+        assert r.status_code == 422
+        assert r.json()["error"]["code"] == "invalid_request"
+
+    def test_count_26_returns_422(self, api_client):
+        """count=26 is out of range (1–25); must return 422 invalid_request."""
+        r = api_client.post("/api/suggestions", json={"count": 26})
+        assert r.status_code == 422
+        assert r.json()["error"]["code"] == "invalid_request"
+
+    def test_count_error_details_include_value(self, api_client):
+        """Error details must include the submitted count value (contract §2.12)."""
+        r = api_client.post("/api/suggestions", json={"count": 26})
+        assert r.json()["error"]["details"]["count"] == 26
+
+    def test_count_25_accepted(self, api_client):
+        """count=25 is in range and must return 200."""
+        _seed(api_client, single_valid_outfit())
+        r = api_client.post("/api/suggestions", json={"count": 25})
+        assert r.status_code == 200
+
+    def test_zero_result_requested_count_echoed(self, api_client):
+        """requested_count is present even in the zero-result response."""
+        _seed(api_client, no_valid_outfit_constrained_by("base"))
+        body = api_client.post("/api/suggestions", json={"count": 2}).json()
+        assert body["combinations"] == []
+        assert body["requested_count"] == 2

@@ -2,7 +2,7 @@
 id: HUE-079
 title: POST /api/suggestions — count field and neutral/fallback response
 type: task
-status: todo
+status: done
 milestone: 14
 batch: api
 layer: api
@@ -25,11 +25,11 @@ Add the `count` field and the neutral/fallback response semantics to `POST /api/
 - **Errors**: `422 invalid_request` for `count` outside 1–25 (`details: { "count": N }`)
 
 ## Definition of done (acceptance criteria)
-- [ ] `count` accepted (default 3); `requested_count` echoed; at most `count` returned (FR-39, FR-48)
-- [ ] First-class `neutral-based` (`fallback:false`) vs `fallback:true` distinguished per §2.12 (FR-41, FR-43)
-- [ ] `422 invalid_request` for `count` out of 1–25 with `details.count`
-- [ ] Tests added/updated per §12.2 and passing in `make test`; import contracts kept
-- [ ] Ticket status + notes updated in the same commit
+- [x] `count` accepted (default 3); `requested_count` echoed; at most `count` returned (FR-39, FR-48)
+- [x] First-class `neutral-based` (`fallback:false`) vs `fallback:true` distinguished per §2.12 (FR-41, FR-43)
+- [x] `422 invalid_request` for `count` out of 1–25 with `details.count`
+- [x] Tests added/updated per §12.2 and passing in `make test`; import contracts kept
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `api/test_suggestions.py` (§7.4): `count` at 1/25/default and out-of-range `422`; `requested_count`
@@ -37,3 +37,12 @@ echo; first-class-neutral vs fallback response shapes; fewer-than-count. Perf is
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-07-02 — implemented. Added `count: int = 3` to `SuggestionRequest` and `requested_count: int`
+  to `SuggestionResponse` in `schemas.py`. In `suggestions.py`: manual bounds check raises
+  `AppError(422, INVALID_REQUEST, ..., details={"count": body.count})` for count outside 1–25;
+  count passed to `suggest()` and echoed as `requested_count` in both success and zero-result
+  responses. `fallback`/`scheme` fields were already correctly surfaced in `CombinationOut`.
+  8 new tests in `TestCountField`: default echo, explicit echo, count=1 limits combinations,
+  count=0 and count=26 each return 422 with correct code and details, count=25 accepted,
+  zero-result includes requested_count. 1082 backend + 156 frontend pass, zero warnings.
+- Sanity test: `cd backend && .venv/bin/pytest tests/api/test_suggestions.py::TestCountField -q`
