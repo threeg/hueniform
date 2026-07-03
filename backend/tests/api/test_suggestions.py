@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.matcher.colour import Colour
 from app.matcher.roles import Garment
@@ -354,3 +354,144 @@ class TestCountField:
         body = api_client.post("/api/suggestions", json={"count": 2}).json()
         assert body["combinations"] == []
         assert body["requested_count"] == 2
+
+
+# ── POST /api/suggestions — pins (FR-44) ─────────────────────────────────────
+
+def _first_id_of_type(engine, garment_type: str) -> str:
+    """Return the DB id of the first garment with the given type."""
+    with Session(engine) as s:
+        row = s.exec(select(GarmentRow).where(GarmentRow.type == garment_type)).first()
+    assert row is not None, f"No garment of type {garment_type!r}"
+    return row.id
+
+
+class TestPinsField:
+    def test_pin_honoured_in_every_combination(self, api_client):
+        """FR-44: the pinned garment appears in its slot in every returned combination."""
+        _seed(api_client, two_valid_outfits())
+        pinned_id = _first_id_of_type(api_client.app.state.engine, "t_shirt")
+        body = api_client.post("/api/suggestions", json={"pins": {"base": pinned_id}}).json()
+        assert body["combinations"], "Expected at least one combination"
+        for combo in body["combinations"]:
+            assert combo["slots"]["base"]["id"] == pinned_id
+
+    def test_pin_unknown_slot_422(self, api_client):
+        """FR-44: unknown slot key in pins → 422 invalid_request."""
+        r = api_client.post("/api/suggestions", json={"pins": {"nonexistent": "some-id"}})
+        assert r.status_code == 422
+        assert r.json()["error"]["code"] == "invalid_request"
+
+    def test_pin_garment_not_found_422(self, api_client):
+        """FR-44: garment ID that does not exist → 422 invalid_request."""
+        _seed(api_client, single_valid_outfit())
+        r = api_client.post(
+            "/api/suggestions",
+            json={"pins": {"base": "00000000-0000-0000-0000-000000000000"}},
+        )
+        assert r.status_code == 422
+        assert r.json()["error"]["code"] == "invalid_request"
+
+    def test_pin_wrong_slot_422(self, api_client):
+        """FR-44: garment category does not map to pinned slot → 422."""
+        _seed(api_client, single_valid_outfit())
+        trousers_id = _first_id_of_type(api_client.app.state.engine, "trousers")
+        r = api_client.post("/api/suggestions", json={"pins": {"base": trousers_id}})
+        assert r.status_code == 422
+        assert r.json()["error"]["code"] == "invalid_request"
+
+    def test_pin_constraint_conflict_422(self, api_client):
+        """FR-44+FR-52: pin's category not in same-slot constraint → 422."""
+        _seed(api_client, [
+            Garment("t_shirt",  (Colour(h=0.0,   s=80.0, l=50.0, proportion=100),)),
+            Garment("trousers", (Colour(h=180.0, s=70.0, l=50.0, proportion=100),)),
+            Garment("jeans",    (Colour(h=180.0, s=70.0, l=50.0, proportion=100),)),
+            Garment("socks",    (Colour(h=0.0,   s=0.0,  l=50.0, proportion=100),)),
+            Garment("shoes",    (Colour(h=0.0,   s=0.0,  l= 6.0, proportion=100),)),
+        ])
+        trousers_id = _first_id_of_type(api_client.app.state.engine, "trousers")
+        r = api_client.post("/api/suggestions", json={
+            "slots": {"lower_body": {"categories": ["jeans"]}},
+            "pins": {"lower_body": trousers_id},
+        })
+        assert r.status_code == 422
+        assert r.json()["error"]["code"] == "invalid_request"
+
+    def test_pin_unsatisfiable_returns_zero_result(self, api_client):
+        """FR-44: pin that makes no valid outfit → 200 zero-result shape."""
+        _seed(api_client, no_valid_outfit_constrained_by("base"))
+        # Pin the t_shirt that makes no valid outfit with the existing wardrobe
+        tshirt_id = _first_id_of_type(api_client.app.state.engine, "t_shirt")
+        r = api_client.post("/api/suggestions", json={"pins": {"base": tshirt_id}})
+        assert r.status_code == 200
+        body = r.json()
+        assert body["combinations"] == []
+        assert body.get("explanation") is not None
+
+
+# ── POST /api/suggestions — anchor (FR-45) ───────────────────────────────────
+
+class TestAnchorField:
+    def test_anchor_scheme_filters_combinations(self, api_client):
+        """FR-45: anchor scheme keeps only combos matching that scheme."""
+        _seed(api_client, single_valid_outfit())
+        body = api_client.post(
+            "/api/suggestions", json={"anchor": {"scheme": "complementary"}}
+        ).json()
+        assert len(body["combinations"]) >= 1
+        for combo in body["combinations"]:
+            assert combo["scheme"] == "complementary"
+
+    def test_anchor_scheme_no_match_zero_result(self, api_client):
+        """FR-45: anchor scheme with no matching combination → 200 zero-result."""
+        _seed(api_client, single_valid_outfit())
+        body = api_client.post(
+            "/api/suggestions", json={"anchor": {"scheme": "monochromatic"}}
+        ).json()
+        assert body["combinations"] == []
+        assert body.get("explanation") is not None
+
+    def test_anchor_family_filters_combinations(self, api_client):
+        """FR-45: anchor family keeps only combos with that family on an anchor garment."""
+        _seed(api_client, single_valid_outfit())
+        body = api_client.post(
+            "/api/suggestions", json={"anchor": {"family": "Red"}}
+        ).json()
+        assert len(body["combinations"]) >= 1
+
+    def test_anchor_family_no_match_zero_result(self, api_client):
+        """FR-45: anchor family absent from all anchor garments → 200 zero-result."""
+        _seed(api_client, single_valid_outfit())
+        body = api_client.post(
+            "/api/suggestions", json={"anchor": {"family": "Blue"}}
+        ).json()
+        assert body["combinations"] == []
+        assert body.get("explanation") is not None
+
+    def test_anchor_unknown_family_422(self, api_client):
+        """FR-45: unknown anchor family name → 422 invalid_request."""
+        r = api_client.post("/api/suggestions", json={"anchor": {"family": "Ultraviolet"}})
+        assert r.status_code == 422
+        assert r.json()["error"]["code"] == "invalid_request"
+
+    def test_anchor_unknown_scheme_422(self, api_client):
+        """FR-45: unknown anchor scheme name → 422 invalid_request."""
+        r = api_client.post("/api/suggestions", json={"anchor": {"scheme": "tetrachromatic"}})
+        assert r.status_code == 422
+        assert r.json()["error"]["code"] == "invalid_request"
+
+    def test_anchor_both_compose(self, api_client):
+        """FR-45: family and scheme anchors both apply when given together."""
+        _seed(api_client, single_valid_outfit())
+        # Both satisfied
+        body = api_client.post(
+            "/api/suggestions",
+            json={"anchor": {"family": "Red", "scheme": "complementary"}},
+        ).json()
+        assert len(body["combinations"]) >= 1
+        # Scheme not satisfied
+        body2 = api_client.post(
+            "/api/suggestions",
+            json={"anchor": {"family": "Red", "scheme": "monochromatic"}},
+        ).json()
+        assert body2["combinations"] == []

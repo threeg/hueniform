@@ -56,7 +56,7 @@ Leaf tickets for v0.2.0 (epics E06–E10). Reading top to bottom is a legal buil
 | 79 | HUE-079 | POST /api/suggestions — count field and neutral/fallback response | task | api | 14 / api | HUE-E09 | done | HUE-078, HUE-069 |
 | 80 | HUE-080 | Outfit-request count control and neutral/fallback labels | story | frontend | 14 / frontend | HUE-E09 | done | HUE-071 |
 | 81 | HUE-081 | Suggestion service — pins and colour/scheme anchor | task | services | 14 / services | HUE-E06 | done | HUE-068, HUE-063 |
-| 82 | HUE-082 | POST /api/suggestions — pins and anchor request and validation | task | api | 14 / api | HUE-E06 | todo | HUE-081, HUE-069 |
+| 82 | HUE-082 | POST /api/suggestions — pins and anchor request and validation | task | api | 14 / api | HUE-E06 | done | HUE-081, HUE-069 |
 | 83 | HUE-083 | Outfit-request pin picker and anchor controls | story | frontend | 14 / frontend | HUE-E06 | todo | HUE-071 |
 | 84 | HUE-084 | Performance re-baseline at count 25 and wardrobe_500 update | task | tooling | 14 / tooling | HUE-E09 | todo | HUE-079, HUE-086, HUE-039 |
 | 85 | HUE-085 | End-to-end smoke suite update (v0.2.0 journeys) | task | tooling | 14 / tooling | HUE-E06 | todo | HUE-070, HUE-071, HUE-074, HUE-077, HUE-080, HUE-083, HUE-069, HUE-073, HUE-076, HUE-079, HUE-082, HUE-040 |

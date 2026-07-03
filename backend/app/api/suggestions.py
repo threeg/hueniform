@@ -23,7 +23,9 @@ from app.api.schemas import (
 from app.services.garment_service import get_garments_by_ids
 from app.services.suggestion_service import (
     EmptySlotsError,
+    InvalidAnchorError,
     InvalidCategoryFilterError,
+    InvalidPinError,
     InvalidSlotError,
     suggest,
 )
@@ -61,9 +63,27 @@ def create_suggestion(body: SuggestionRequest, request: Request) -> SuggestionRe
         else:  # SlotConstraint
             slots_request[key] = value.categories
 
+    anchor_family = body.anchor.family if body.anchor else None
+    anchor_scheme = body.anchor.scheme if body.anchor else None
+
     try:
-        result = suggest(slots_request, engine, random.Random(), count=body.count)
+        result = suggest(
+            slots_request,
+            engine,
+            random.Random(),
+            count=body.count,
+            pins=body.pins if body.pins else None,
+            anchor_family=anchor_family,
+            anchor_scheme=anchor_scheme,
+        )
     except (InvalidSlotError, InvalidCategoryFilterError) as exc:
+        raise AppError(422, INVALID_REQUEST, str(exc))
+    except InvalidPinError as exc:
+        raise AppError(
+            422, INVALID_REQUEST, str(exc),
+            details={"slot": exc.slot, "garment_id": exc.garment_id},
+        )
+    except InvalidAnchorError as exc:
         raise AppError(422, INVALID_REQUEST, str(exc))
     except EmptySlotsError as exc:
         raise AppError(

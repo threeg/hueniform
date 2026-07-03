@@ -194,10 +194,19 @@ class SlotConstraint(BaseModel):
     categories: list[str]
 
 
+class AnchorIn(BaseModel):
+    """Colour/scheme anchor for POST /api/suggestions (FR-45, contract §2.12)."""
+
+    family: str | None = None
+    scheme: str | None = None
+
+
 class SuggestionRequest(BaseModel):
     """Request body for POST /api/suggestions (contract §2.12)."""
 
     slots: dict[str, bool | SlotConstraint] = {}
+    pins: dict[str, str] = {}
+    anchor: AnchorIn | None = None
     count: int = 3
 
 
