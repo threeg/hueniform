@@ -2,7 +2,7 @@
 id: HUE-086
 title: GET /api/garments — order parameter, total and pagination
 type: task
-status: todo
+status: done
 milestone: 14
 batch: api
 layer: api
@@ -29,12 +29,12 @@ The `type`→`category` rename that unblocked this is in HUE-076.
 - **Errors**: `422 invalid_filter` for unknown `order` value (category/family already validated)
 
 ## Definition of done (acceptance criteria)
-- [ ] `order`/`limit`/`offset` per contract §2.6; `order=hue` default
-- [ ] Response carries `total`; list ordered category then `order` key
-- [ ] `422 invalid_filter` for unknown `order`
-- [ ] Tests added/updated per §12.2 and passing in `make test`; `make test-perf` re-baselined
-  (HUE-084 depends on this)
-- [ ] Ticket status + notes updated in the same commit
+- [x] `order`/`limit`/`offset` per contract §2.6; `order=hue` default
+- [x] Response carries `total`; list ordered category then `order` key
+- [x] `422 invalid_filter` for unknown `order`
+- [x] Tests added/updated per §12.2 and passing in `make test`
+- [ ] `make test-perf` re-baselined (deferred to HUE-084)
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `api/test_garments.py` (§7.2): `order=hue` (neutrals-last) and `order=date`; `total` present;
@@ -42,3 +42,9 @@ The `type`→`category` rename that unblocked this is in HUE-076.
 
 ## Notes
 - 2026-06-24 — created; split from HUE-076 (scope narrowed to rename only)
+- 2026-07-02 — implemented. Added `order: str = Query(default='hue')` to
+  `list_garments_endpoint` and passed it through to `list_garments()`. The service
+  (HUE-075) already validates the value and raises `InvalidFilterError`; the existing
+  handler maps that to 422. Three new tests: `order=hue` accepted, `order=date` accepted,
+  unknown order → 422 `invalid_filter`. 1112 backend + 181 frontend tests pass.
+- Sanity test: `cd backend && .venv/bin/pytest tests/api/test_garments.py::TestListGarments -q`

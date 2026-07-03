@@ -119,14 +119,16 @@ def list_garments_endpoint(
     request: Request,
     category: str | None = Query(default=None),
     family: str | None = Query(default=None),
+    order: str = Query(default='hue'),
     limit: int = Query(default=500, ge=0),
     offset: int = Query(default=0, ge=0),
 ) -> InventoryResponse:
     """
-    Return a paginated inventory list with optional AND filters (contract §2.6, FR-35).
+    Return a paginated inventory list with optional AND filters (contract §2.6, FR-35, FR-47).
 
     ``family`` matches a garment if **any** of its colours belongs to that family.
-    Unknown ``category`` or ``family`` values → ``422 invalid_filter``.
+    ``order`` controls within-category sort: ``hue`` (default) or ``date``.
+    Unknown ``category``, ``family``, or ``order`` values → ``422 invalid_filter``.
     """
     engine = request.app.state.engine
 
@@ -135,6 +137,7 @@ def list_garments_endpoint(
             engine,
             type_filter=category,
             family_filter=family,
+            order=order,
             limit=limit,
             offset=offset,
         )

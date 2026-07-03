@@ -306,6 +306,21 @@ class TestListGarments:
         assert r.status_code == 422
         assert r.json()["error"]["code"] == "invalid_filter"
 
+    def test_order_hue_accepted(self, api_client, seeded):
+        r = api_client.get("/api/garments", params={"order": "hue"})
+        assert r.status_code == 200
+        assert len(r.json()["garments"]) == 3
+
+    def test_order_date_accepted(self, api_client, seeded):
+        r = api_client.get("/api/garments", params={"order": "date"})
+        assert r.status_code == 200
+        assert len(r.json()["garments"]) == 3
+
+    def test_invalid_order_422(self, api_client):
+        r = api_client.get("/api/garments", params={"order": "rainbow"})
+        assert r.status_code == 422
+        assert r.json()["error"]["code"] == "invalid_filter"
+
 
 # ── GET /api/garments/{id} — detail ──────────────────────────────────────────
 
