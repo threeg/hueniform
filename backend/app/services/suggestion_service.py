@@ -20,6 +20,7 @@ this service is responsible for:
 from __future__ import annotations
 
 import random
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from sqlalchemy.engine import Engine
@@ -195,25 +196,13 @@ def _load_wardrobe(engine: Engine) -> tuple[list[Garment], dict[int, GarmentRow]
     return garments, index
 
 
-def _apply_category_filters(
+def _filter_wardrobe(
     wardrobe: list[Garment],
-    category_filters: dict[str, list[str]],
+    slots_for: dict[int, str],
+    predicate: Callable[[Garment, str], bool],
 ) -> list[Garment]:
-    """
-    FR-52: retain only garments whose category is in the requested subset for
-    their slot.  Garments in slots without a filter are kept unchanged.
-    """
-    if not category_filters:
-        return wardrobe
-    filtered: list[Garment] = []
-    for g in wardrobe:
-        slot = category_to_slot(g.garment_type)
-        if slot in category_filters:
-            if g.garment_type in category_filters[slot]:
-                filtered.append(g)
-        else:
-            filtered.append(g)
-    return filtered
+    """Keep each garment for which *predicate(garment, slot)* is True."""
+    return [g for g in wardrobe if predicate(g, slots_for[id(g)])]
 
 
 def _anchor_family_map(outfit: dict[str, Garment]) -> dict[str, str]:
@@ -265,46 +254,6 @@ def _build_combination(
     )
 
 
-def _apply_pins(wardrobe: list[Garment], pin_garments: dict[str, Garment]) -> list[Garment]:
-    """
-    FR-44: for each pinned slot, keep only the specific pinned Garment object;
-    garments in unpinned slots are kept unchanged.
-    """
-    if not pin_garments:
-        return wardrobe
-    filtered: list[Garment] = []
-    for g in wardrobe:
-        slot = category_to_slot(g.garment_type)
-        if slot in pin_garments:
-            if g is pin_garments[slot]:
-                filtered.append(g)
-        else:
-            filtered.append(g)
-    return filtered
-
-
-def _apply_anchor_family_filter(
-    wardrobe: list[Garment],
-    anchor_family: str,
-) -> list[Garment]:
-    """
-    FR-45 pre-filter: for anchor-role slots (upper-body layers + lower_body),
-    keep only garments that carry the requested family.  Adornment (echo) slots
-    are kept unconditionally — they never carry the primary anchor colour.
-
-    Mirrors ``_apply_pins``: runs before ``rank()`` so every generated combination
-    satisfies the family condition rather than relying on post-filter luck.
-    """
-    filtered: list[Garment] = []
-    for g in wardrobe:
-        slot = category_to_slot(g.garment_type)
-        if slot in ECHO_SLOTS:
-            filtered.append(g)
-        else:
-            families = {_classify(c.h, c.s, c.l) for c in g.colours}
-            if anchor_family in families:
-                filtered.append(g)
-    return filtered
 
 
 def _matches_anchor(
@@ -446,6 +395,10 @@ def suggest(
     # 5. Load wardrobe
     wardrobe, garment_index = _load_wardrobe(engine)
 
+    # Pre-compute slot for every garment once — reused by all filter passes and
+    # the empty-slot check (avoids ~2 000 redundant category_to_slot calls at 500 garments).
+    slots_for: dict[int, str] = {id(g): category_to_slot(g.garment_type) for g in wardrobe}
+
     # 5b. Validate and resolve pins (FR-44)
     pin_garments: dict[str, Garment] = {}
     if _pins:
@@ -460,7 +413,7 @@ def suggest(
                     garment_id=garment_id,
                 )
             g = row_id_to_garment[garment_id]
-            actual_slot = category_to_slot(g.garment_type)
+            actual_slot = slots_for[id(g)]
             if actual_slot != slot:
                 raise InvalidPinError(
                     f"Garment '{garment_id}' (type '{g.garment_type}') does not map to slot '{slot}'.",
@@ -484,15 +437,26 @@ def suggest(
     requested_slots = frozenset(selected)
 
     # 5c. Apply category filters, pin filters, and family anchor pre-filter (FR-45)
-    wardrobe = _apply_category_filters(wardrobe, category_filters)
-    wardrobe = _apply_pins(wardrobe, pin_garments)
+    if category_filters:
+        wardrobe = _filter_wardrobe(
+            wardrobe, slots_for,
+            lambda g, slot: slot not in category_filters or g.garment_type in category_filters[slot],
+        )
+    if pin_garments:
+        wardrobe = _filter_wardrobe(
+            wardrobe, slots_for,
+            lambda g, slot: slot not in pin_garments or g is pin_garments[slot],
+        )
     if anchor_family is not None:
-        wardrobe = _apply_anchor_family_filter(wardrobe, anchor_family)
+        wardrobe = _filter_wardrobe(
+            wardrobe, slots_for,
+            lambda g, slot: slot in ECHO_SLOTS or anchor_family in {_classify(c.h, c.s, c.l) for c in g.colours},
+        )
 
-    # 6. Fail-fast on empty requested slots (FR-36)
+    # 6. Fail-fast on empty requested slots (FR-36) — reuse cached slots
     by_slot: dict[str, int] = {}
     for g in wardrobe:
-        slot = category_to_slot(g.garment_type)
+        slot = slots_for[id(g)]
         by_slot[slot] = by_slot.get(slot, 0) + 1
 
     empty = [s for s in requested_slots if by_slot.get(s, 0) == 0]

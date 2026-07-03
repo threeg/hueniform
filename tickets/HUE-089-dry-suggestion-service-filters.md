@@ -2,7 +2,7 @@
 id: HUE-089
 title: Unify suggestion_service wardrobe filter functions
 type: task
-status: todo
+status: done
 milestone: 14
 batch: cleanup
 layer: services
@@ -64,3 +64,4 @@ No new tests required — this is a pure refactor. Existing tests cover all path
 ## Notes
 
 - 2026-07-03 — created by `/verify` review of v0.2.0 batch.
+- 2026-07-03 — done. Replaced `_apply_category_filters`, `_apply_pins`, and `_apply_anchor_family_filter` with a single `_filter_wardrobe(wardrobe, slots_for, predicate)` helper. Added a `slots_for: dict[int, str]` pre-pass immediately after `_load_wardrobe()` to call `category_to_slot()` once per garment; all three filter calls and the empty-slot check now read from this dict instead of re-calling the function. Pin validation also uses the cached slot. `make test` passes (1120+188, zero warnings); `make test-perf` passes. Sanity test: `cd backend && .venv/bin/pytest tests/services/test_suggestion_service.py tests/api/test_suggestions.py -q`
