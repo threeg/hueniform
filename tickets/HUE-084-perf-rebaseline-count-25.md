@@ -2,7 +2,7 @@
 id: HUE-084
 title: Performance re-baseline at count 25 and wardrobe_500 update
 type: task
-status: todo
+status: done
 milestone: 14
 batch: tooling
 layer: tooling
@@ -27,12 +27,12 @@ half now covers the `order` values (test strategy §8.2).
 - `make test-perf` runs them; excluded from `make test`
 
 ## Definition of done (acceptance criteria)
-- [ ] `wardrobe_500()` updated to the FR-16 categories, seeded/reproducible
-- [ ] NFR-5 asserted at all-slots/count 25 (median of 3) and count-independence checked (§8.2)
-- [ ] NFR-6 server half asserted across `order` values; both pass on the owner's machine
-- [ ] `make test-perf` runs them; excluded from the default gate
-- [ ] Tests added/updated per §12.2 and passing in `make test`; `make test-perf` green (§12.3.5)
-- [ ] Ticket status + notes updated in the same commit
+- [x] `wardrobe_500()` updated to the FR-16 categories, seeded/reproducible
+- [x] NFR-5 asserted at all-slots/count 25 (median of 3) and count-independence checked (§8.2)
+- [x] NFR-6 server half asserted across `order` values; both pass on the owner's machine
+- [x] `make test-perf` runs them; excluded from the default gate
+- [x] Tests added/updated per §12.2 and passing in `make test`; `make test-perf` green (§12.3.5)
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `perf/test_bounds.py` (§8.2): the count-25 and count-3 suggestion timings and the inventory
@@ -41,3 +41,11 @@ tickets (§12.3.5).
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-07-03 — implemented. `wardrobe_500()` rebuilt with all 40 FR-16 categories (total 500,
+  seeded). `GARMENT_TYPES` in wardrobes.py replaced with an import from `app.matcher.slots` (the
+  authoritative 40-category set). `test_bounds.py` rewritten: v0.2.0 suggestion format with all
+  optional slots + `count=25` (NFR-5 worst case) and a `count=3` count-independence run; inventory
+  bound split into `order=hue` and `order=date` tests (NFR-6 server half). 4 structural fixture
+  tests added to `test_wardrobes.py`. 1116 backend + 188 frontend pass; `make test-perf` green (4
+  perf tests, all ≪ their bounds on this machine).
+- Sanity test: `make test-perf`

@@ -27,6 +27,7 @@ from sqlmodel import Session
 
 from app.matcher.colour import Colour
 from app.matcher.roles import Garment
+from app.matcher.slots import GARMENT_TYPES  # noqa: F401 — re-exported for test_wardrobes validation
 from app.matcher.taxonomy import FAMILIES, classify
 from app.storage.engine import Engine
 from app.storage.models import GarmentColourRow, GarmentRow
@@ -42,8 +43,6 @@ def _black(p: int)       -> Colour: return Colour(h=  0.0, s= 0.0, l= 6.0, propo
 def _white(p: int)       -> Colour: return Colour(h=  0.0, s= 0.0, l=96.0, proportion=p)
 def _navy(p: int)        -> Colour: return Colour(h=230.0, s=40.0, l=18.0, proportion=p)
 
-# Valid garment category strings (FR-16 subset used in these fixtures).
-GARMENT_TYPES = frozenset({"t_shirt", "trousers", "jumper", "jacket", "socks", "shoes", "hat", "glasses"})
 
 
 # ── Scenario factories ────────────────────────────────────────────────────────
@@ -165,16 +164,30 @@ def rich_echo_wardrobe() -> list[Garment]:
 
 # ── 500-garment performance fixture (§11.2, NFR-5/NFR-6) ─────────────────────
 
-# Realistic category distribution across 500 garments.
+# Realistic category distribution across all 40 FR-16 categories, total = 500.
 _SLOT_COUNTS: dict[str, int] = {
-    "t_shirt":  120,
-    "trousers": 100,
-    "socks":     70,
-    "shoes":     70,
-    "jumper":    50,
-    "jacket":    50,
-    "hat":       20,
-    "glasses":   20,
+    # base (upper body, layer 0)
+    "t_shirt":     50, "vest":      6, "long_sleeve": 15,
+    # shirt (upper body, layer 1)
+    "shirt":       15, "blouse":   15, "polo":        10,
+    # mid (upper body, layer 2)
+    "jumper":      25, "hoodie":   20, "cardigan":     8,
+    "sweatshirt":   8, "track_top": 5, "waistcoat":    4,
+    # outer (upper body, layer 3)
+    "jacket":      20, "blazer":    8, "coat":          8,
+    # head
+    "hat":          5, "cap":        4, "beanie":        4,
+    "glasses":      3, "sunglasses": 3, "earrings":      3,
+    # upper-body adornments
+    "tie":          4, "scarf":     10, "necklace":      3,
+    "watch":        3, "ring":       2, "bracelet":      2,
+    # lower body
+    "trousers":    35, "jeans":     40, "chinos":       12,
+    "shorts":      10, "skirt":     10, "dress":        10,
+    "jumpsuit":     5, "belt":       5,
+    # feet
+    "socks":       35, "shoes":     30, "boots":        20,
+    "trainers":    15, "sandals":   10,
 }
 
 # All taxonomy family canonical (h, s, l) values, used as colour anchors.

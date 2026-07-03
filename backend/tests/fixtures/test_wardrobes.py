@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import pytest
 
+from app.matcher.constants import ALL_CATEGORIES
 from app.matcher.roles import Garment
 from tests.fixtures.wardrobes import (
     GARMENT_TYPES,
@@ -19,6 +20,7 @@ from tests.fixtures.wardrobes import (
     rich_echo_wardrobe,
     single_valid_outfit,
     two_valid_outfits,
+    wardrobe_500,
 )
 
 _REQUIRED_SLOTS = {"t_shirt", "trousers", "socks", "shoes"}
@@ -123,6 +125,27 @@ class TestNoValidOutfitConstrainedBy:
         garments = no_valid_outfit_constrained_by(slot)
         types = {g.garment_type for g in garments}
         assert slot in types, f"Constrained slot '{slot}' not present in wardrobe"
+
+
+class TestWardrobe500:
+    def test_total_is_500(self) -> None:
+        assert len(wardrobe_500()) == 500
+
+    def test_covers_all_fr16_categories(self) -> None:
+        covered = {g.garment_type for g in wardrobe_500()}
+        missing = ALL_CATEGORIES - covered
+        assert not missing, f"wardrobe_500 missing FR-16 categories: {sorted(missing)}"
+
+    def test_reproducible(self) -> None:
+        a = [g.garment_type for g in wardrobe_500()]
+        b = [g.garment_type for g in wardrobe_500()]
+        assert a == b
+
+    def test_seeded_differs_from_default(self) -> None:
+        # Different seeds change colours; type sequence is determined by _SLOT_COUNTS.
+        default = [g.colours[0].h for g in wardrobe_500()]
+        seeded  = [g.colours[0].h for g in wardrobe_500(seed=99)]
+        assert default != seeded, "Different seeds should produce different colour distributions"
 
 
 class TestRichEchoWardrobe:
