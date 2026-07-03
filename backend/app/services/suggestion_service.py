@@ -283,21 +283,42 @@ def _apply_pins(wardrobe: list[Garment], pin_garments: dict[str, Garment]) -> li
     return filtered
 
 
+def _apply_anchor_family_filter(
+    wardrobe: list[Garment],
+    anchor_family: str,
+) -> list[Garment]:
+    """
+    FR-45 pre-filter: for anchor-role slots (upper-body layers + lower_body),
+    keep only garments that carry the requested family.  Adornment (echo) slots
+    are kept unconditionally — they never carry the primary anchor colour.
+
+    Mirrors ``_apply_pins``: runs before ``rank()`` so every generated combination
+    satisfies the family condition rather than relying on post-filter luck.
+    """
+    filtered: list[Garment] = []
+    for g in wardrobe:
+        slot = category_to_slot(g.garment_type)
+        if slot in ECHO_SLOTS:
+            filtered.append(g)
+        else:
+            families = {_classify(c.h, c.s, c.l) for c in g.colours}
+            if anchor_family in families:
+                filtered.append(g)
+    return filtered
+
+
 def _matches_anchor(
     result: EvaluationResult,
     anchor_family: str | None,
     anchor_scheme: str | None,
 ) -> bool:
-    """FR-45: True iff the result satisfies both anchor conditions."""
+    """FR-45: True iff the result satisfies the scheme anchor condition.
+
+    Family anchor is now handled entirely by ``_apply_anchor_family_filter``
+    before ``rank()`` runs; pass ``anchor_family=None`` here.
+    """
     if anchor_scheme is not None:
         if result.scheme_result is None or result.scheme_result.scheme != anchor_scheme:
-            return False
-    if anchor_family is not None:
-        families_on_anchors: set[str] = set()
-        for slot in get_anchor_types(result.outfit):
-            for c in result.outfit[slot].colours:
-                families_on_anchors.add(_classify(c.h, c.s, c.l))
-        if anchor_family not in families_on_anchors:
             return False
     return True
 
@@ -462,9 +483,11 @@ def suggest(
 
     requested_slots = frozenset(selected)
 
-    # 5c. Apply category filters and pin filters
+    # 5c. Apply category filters, pin filters, and family anchor pre-filter (FR-45)
     wardrobe = _apply_category_filters(wardrobe, category_filters)
     wardrobe = _apply_pins(wardrobe, pin_garments)
+    if anchor_family is not None:
+        wardrobe = _apply_anchor_family_filter(wardrobe, anchor_family)
 
     # 6. Fail-fast on empty requested slots (FR-36)
     by_slot: dict[str, int] = {}
@@ -476,7 +499,10 @@ def suggest(
     if empty:
         raise EmptySlotsError(empty)
 
-    results: list[EvaluationResult] = rank(wardrobe, requested_slots, rng, count=count)
+    # FR-45 scheme anchor: oversample so the scheme filter has a larger pool to
+    # draw from (scheme is a combination property — cannot be pre-filtered).
+    rank_count = min(count * 10, 100) if anchor_scheme is not None else count
+    results: list[EvaluationResult] = rank(wardrobe, requested_slots, rng, count=rank_count)
 
     # Zero-result sentinel: rank always returns at least one element (FR-43(b)).
     if len(results) == 1 and not results[0].outfit:
@@ -493,9 +519,10 @@ def suggest(
             hint=hint,
         )
 
-    # FR-45: apply anchor filter (family and/or scheme)
-    if anchor_family is not None or anchor_scheme is not None:
-        results = [r for r in results if _matches_anchor(r, anchor_family, anchor_scheme)]
+    # FR-45: apply scheme anchor filter and trim to requested count
+    if anchor_scheme is not None:
+        results = [r for r in results if _matches_anchor(r, None, anchor_scheme)]
+        results = results[:count]
         if not results:
             return SuggestionResult(
                 combinations=(),

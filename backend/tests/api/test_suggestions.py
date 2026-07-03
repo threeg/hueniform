@@ -452,21 +452,27 @@ class TestAnchorField:
         assert body.get("explanation") is not None
 
     def test_anchor_family_filters_combinations(self, api_client):
-        """FR-45: anchor family keeps only combos with that family on an anchor garment."""
-        _seed(api_client, single_valid_outfit())
+        """FR-45: pre-filter keeps anchor garments that carry the family."""
+        # All anchor garments are Red so the pre-filter keeps them.
+        _seed(api_client, [
+            Garment("t_shirt",  (Colour(h=  0.0, s=80.0, l=50.0, proportion=100),)),  # Red
+            Garment("trousers", (Colour(h=  0.0, s=80.0, l=50.0, proportion=100),)),  # Red
+            Garment("socks",    (Colour(h=  0.0, s= 0.0, l=50.0, proportion=100),)),  # Grey
+            Garment("shoes",    (Colour(h=  0.0, s= 0.0, l= 6.0, proportion=100),)),  # Black
+        ])
         body = api_client.post(
             "/api/suggestions", json={"anchor": {"family": "Red"}}
         ).json()
         assert len(body["combinations"]) >= 1
 
-    def test_anchor_family_no_match_zero_result(self, api_client):
-        """FR-45: anchor family absent from all anchor garments → 200 zero-result."""
-        _seed(api_client, single_valid_outfit())
-        body = api_client.post(
+    def test_anchor_family_no_match_409(self, api_client):
+        """FR-45: pre-filter removes all anchor garments → 409 empty_slots."""
+        _seed(api_client, single_valid_outfit())  # Red t_shirt + Teal trousers
+        r = api_client.post(
             "/api/suggestions", json={"anchor": {"family": "Blue"}}
-        ).json()
-        assert body["combinations"] == []
-        assert body.get("explanation") is not None
+        )
+        assert r.status_code == 409
+        assert r.json()["error"]["code"] == "empty_slots"
 
     def test_anchor_unknown_family_422(self, api_client):
         """FR-45: unknown anchor family name → 422 invalid_request."""
@@ -481,17 +487,21 @@ class TestAnchorField:
         assert r.json()["error"]["code"] == "invalid_request"
 
     def test_anchor_both_compose(self, api_client):
-        """FR-45: family and scheme anchors both apply when given together."""
-        _seed(api_client, single_valid_outfit())
-        # Both satisfied
+        """FR-45: family pre-filter + scheme post-filter both apply."""
+        # All-Teal anchors → monochromatic scheme; complementary won't match.
+        _seed(api_client, [
+            Garment("t_shirt",  (Colour(h=180.0, s=70.0, l=50.0, proportion=100),)),  # Teal
+            Garment("trousers", (Colour(h=180.0, s=70.0, l=50.0, proportion=100),)),  # Teal
+            Garment("socks",    (Colour(h=  0.0, s= 0.0, l=50.0, proportion=100),)),  # Grey
+            Garment("shoes",    (Colour(h=  0.0, s= 0.0, l= 6.0, proportion=100),)),  # Black
+        ])
         body = api_client.post(
             "/api/suggestions",
-            json={"anchor": {"family": "Red", "scheme": "complementary"}},
+            json={"anchor": {"family": "Teal", "scheme": "monochromatic"}},
         ).json()
         assert len(body["combinations"]) >= 1
-        # Scheme not satisfied
         body2 = api_client.post(
             "/api/suggestions",
-            json={"anchor": {"family": "Red", "scheme": "monochromatic"}},
+            json={"anchor": {"family": "Teal", "scheme": "complementary"}},
         ).json()
         assert body2["combinations"] == []

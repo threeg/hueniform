@@ -2,7 +2,7 @@
 id: HUE-087
 title: Suggestion service — anchor family pre-filter and scheme oversample
 type: bug
-status: todo
+status: done
 milestone: 14
 batch: services
 layer: services
@@ -89,10 +89,10 @@ oversample + trim handles the scheme.
   mandatory slot is affected).
 
 ## Definition of done
-- [ ] Acceptance criteria met
-- [ ] Tests added per §12.2 and passing in `make test`
-- [ ] `make test-perf` passes (suggestion-touching ticket)
-- [ ] Ticket status + notes updated in the same commit
+- [x] Acceptance criteria met
+- [x] Tests added per §12.2 and passing in `make test`
+- [x] `make test-perf` passes (suggestion-touching ticket)
+- [x] Ticket status + notes updated in the same commit
 
 ## Notes
 - 2026-07-02 — created. Discovered during manual testing of HUE-083 anchor controls.
@@ -100,3 +100,4 @@ oversample + trim handles the scheme.
   explanation. Root cause: `_matches_anchor` post-filters a randomly sampled pool of
   `count` combinations; the fix mirrors `_apply_pins` for family anchors and oversamples
   for scheme anchors.
+- 2026-07-03 — done. Added `_apply_anchor_family_filter()` in `suggestion_service.py` that pre-filters anchor-slot garments (upper-body layers + `lower_body`) to keep only those carrying the requested family, mirroring `_apply_pins`. Adornment/echo slots are kept unchanged. Scheme anchor now oversamples with `min(count * 10, 100)` candidates, then post-filters and trims. Updated `_matches_anchor` to scheme-only. Family anchor no-match now surfaces as `EmptySlotsError` (409) rather than a silent zero result. Existing anchor tests updated to use all-family-matching wardrobes; API tests updated accordingly. `make test` (1120 backend + 188 frontend) and `make test-perf` pass with zero warnings. Sanity test: `cd backend && ../.venv/bin/pytest tests/services/test_suggestion_service.py::TestAnchor -q`

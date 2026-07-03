@@ -519,17 +519,22 @@ class TestPins:
 
 class TestAnchor:
     def test_anchor_family_keeps_matching_combinations(self, engine):
-        """FR-45: anchor_family keeps combos with that family on an anchor garment."""
-        _materialise(engine, single_valid_outfit())
+        """FR-45: pre-filter keeps anchor garments that carry the family."""
+        # All anchor garments (base + lower_body) are Red; pre-filter keeps them.
+        _materialise(engine, [
+            Garment("t_shirt",  (Colour(h=  0.0, s=80.0, l=50.0, proportion=100),)),  # Red
+            Garment("trousers", (Colour(h=  0.0, s=80.0, l=50.0, proportion=100),)),  # Red
+            Garment("socks",    (Colour(h=  0.0, s= 0.0, l=50.0, proportion=100),)),  # Grey
+            Garment("shoes",    (Colour(h=  0.0, s= 0.0, l= 6.0, proportion=100),)),  # Black
+        ])
         result = suggest({}, engine, _rng(), anchor_family="Red")
         assert len(result.combinations) >= 1
 
-    def test_anchor_family_no_match_returns_zero(self, engine):
-        """FR-45: anchor_family with no anchor garment carrying it → zero result."""
-        _materialise(engine, single_valid_outfit())
-        result = suggest({}, engine, _rng(), anchor_family="Blue")
-        assert result.combinations == ()
-        assert result.zero_explanation is not None
+    def test_anchor_family_no_match_raises_empty_slots(self, engine):
+        """FR-45: pre-filter removes all anchor garments → EmptySlotsError."""
+        _materialise(engine, single_valid_outfit())  # Red t_shirt + Teal trousers
+        with pytest.raises(EmptySlotsError):
+            suggest({}, engine, _rng(), anchor_family="Blue")
 
     def test_anchor_scheme_keeps_matching_combinations(self, engine):
         """FR-45: anchor_scheme keeps combos whose matched scheme equals it."""
@@ -547,11 +552,17 @@ class TestAnchor:
         assert result.zero_explanation is not None
 
     def test_anchor_family_and_scheme_compose(self, engine):
-        """FR-45: family and scheme anchors both apply when given together."""
-        _materialise(engine, single_valid_outfit())
-        result = suggest({}, engine, _rng(), anchor_family="Red", anchor_scheme="complementary")
+        """FR-45: family pre-filter + scheme post-filter both apply."""
+        # All-Teal anchor garments → monochromatic scheme; complementary won't match.
+        _materialise(engine, [
+            Garment("t_shirt",  (Colour(h=180.0, s=70.0, l=50.0, proportion=100),)),  # Teal
+            Garment("trousers", (Colour(h=180.0, s=70.0, l=50.0, proportion=100),)),  # Teal
+            Garment("socks",    (Colour(h=  0.0, s= 0.0, l=50.0, proportion=100),)),  # Grey
+            Garment("shoes",    (Colour(h=  0.0, s= 0.0, l= 6.0, proportion=100),)),  # Black
+        ])
+        result = suggest({}, engine, _rng(), anchor_family="Teal", anchor_scheme="monochromatic")
         assert len(result.combinations) >= 1
-        result2 = suggest({}, engine, _rng(), anchor_family="Red", anchor_scheme="monochromatic")
+        result2 = suggest({}, engine, _rng(), anchor_family="Teal", anchor_scheme="complementary")
         assert result2.combinations == ()
 
     def test_anchor_unknown_family_raises(self, engine):
@@ -565,3 +576,59 @@ class TestAnchor:
         _materialise(engine, single_valid_outfit())
         with pytest.raises(InvalidAnchorError):
             suggest({}, engine, _rng(), anchor_scheme="tetrachromatic")
+
+    def test_anchor_family_is_deterministic(self, engine):
+        """HUE-087: same wardrobe + family + different RNG seeds always return results."""
+        # All anchor garments are Black; family pre-filter keeps them on every seed.
+        _materialise(engine, [
+            Garment("t_shirt",  (Colour(h=0.0, s=0.0, l= 6.0, proportion=100),)),  # Black
+            Garment("trousers", (Colour(h=0.0, s=0.0, l= 6.0, proportion=100),)),  # Black
+            Garment("socks",    (Colour(h=0.0, s=0.0, l=50.0, proportion=100),)),  # Grey
+            Garment("shoes",    (Colour(h=0.0, s=0.0, l= 6.0, proportion=100),)),  # Black
+        ])
+        seeds = [0, 1, 7, 42, 99]
+        results = [
+            suggest({}, engine, random.Random(s), anchor_family="Black")
+            for s in seeds
+        ]
+        # Every seed must return combinations (pre-filter guarantees this).
+        for r in results:
+            assert len(r.combinations) >= 1, "anchor_family pre-filter must be deterministic"
+
+    def test_anchor_family_surfaces_matching_garment(self, engine):
+        """HUE-087: pre-filter ensures the anchor-family garment always appears."""
+        # One Black shirt (shirt slot); all required anchor slots also Black.
+        # Request shirt slot so it appears in the combination.
+        _materialise(engine, [
+            Garment("t_shirt",  (Colour(h=0.0, s=0.0, l= 6.0, proportion=100),)),  # Black
+            Garment("trousers", (Colour(h=0.0, s=0.0, l= 6.0, proportion=100),)),  # Black
+            Garment("shirt",    (Colour(h=0.0, s=0.0, l= 6.0, proportion=100),)),  # Black (only shirt)
+            Garment("socks",    (Colour(h=0.0, s=0.0, l=50.0, proportion=100),)),  # Grey
+            Garment("shoes",    (Colour(h=0.0, s=0.0, l= 6.0, proportion=100),)),  # Black
+        ])
+        seeds = [0, 1, 7, 42, 99]
+        for s in seeds:
+            result = suggest({"shirt": True}, engine, random.Random(s), anchor_family="Black")
+            assert len(result.combinations) >= 1
+            for combo in result.combinations:
+                assert "shirt" in combo.slots
+
+    def test_anchor_scheme_is_deterministic(self, engine):
+        """HUE-087: oversampling makes scheme anchor consistent across seeds."""
+        _materialise(engine, single_valid_outfit())  # Red+Teal → complementary
+        seeds = [0, 1, 7, 42, 99]
+        # All seeds must agree: either all return combinations or all return zero.
+        outcomes = [
+            len(suggest({}, engine, random.Random(s), anchor_scheme="complementary").combinations) > 0
+            for s in seeds
+        ]
+        assert all(outcomes) or not any(outcomes), (
+            "anchor_scheme must give consistent results across seeds"
+        )
+
+    def test_empty_slots_when_no_anchor_family_garments(self, engine):
+        """HUE-087: pre-filter removes all anchor garments → EmptySlotsError."""
+        # All anchor garments are Red/Teal; no Black garments in any anchor slot.
+        _materialise(engine, single_valid_outfit())  # Red t_shirt + Teal trousers
+        with pytest.raises(EmptySlotsError):
+            suggest({}, engine, _rng(), anchor_family="Black")
