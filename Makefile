@@ -73,6 +73,7 @@ test-perf:
 	cd backend && $(CURDIR)/$(PYTEST) -m perf
 
 test-e2e:
+	cd frontend && npm run build
 	cd frontend && NODE_PATH=$(CURDIR)/frontend/node_modules \
 	    npx playwright test --config ../e2e/playwright.config.ts
 
