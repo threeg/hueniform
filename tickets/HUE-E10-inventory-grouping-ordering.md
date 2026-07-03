@@ -2,7 +2,7 @@
 id: HUE-E10
 title: Inventory grouping & ordering
 type: epic
-status: todo
+status: done
 milestone: 14
 batch: frontend
 layer: frontend

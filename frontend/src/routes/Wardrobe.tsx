@@ -5,9 +5,21 @@ import GarmentCard from '../components/GarmentCard'
 import Banner from '../components/Banner'
 import LoadingState from '../components/LoadingState'
 import { hslToHex } from '../utils/colour'
-import { typeLabel, GARMENT_TYPES } from '../utils/typeLabel'
+import { typeLabel } from '../utils/typeLabel'
 import styles from './Wardrobe.module.css'
 
+// Static region grouping for the category dropdown — mirrors the taxonomy structure.
+const REGION_GROUPS = [
+  { label: 'Head',       categories: ['hat', 'cap', 'beanie', 'glasses', 'sunglasses', 'earrings'] },
+  { label: 'Upper body', categories: ['t_shirt', 'vest', 'long_sleeve', 'shirt', 'blouse', 'polo', 'jumper', 'hoodie', 'cardigan', 'sweatshirt', 'track_top', 'waistcoat', 'jacket', 'blazer', 'coat', 'tie', 'scarf', 'necklace', 'watch', 'ring', 'bracelet'] },
+  { label: 'Lower body', categories: ['trousers', 'jeans', 'chinos', 'shorts', 'skirt', 'dress', 'jumpsuit', 'belt'] },
+  { label: 'Feet',       categories: ['socks', 'shoes', 'boots', 'trainers', 'sandals'] },
+]
+
+const ORDER_OPTIONS = [
+  { value: 'hue',  label: 'Hue' },
+  { value: 'date', label: 'Date added' },
+] as const
 
 export default function Wardrobe() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -15,11 +27,13 @@ export default function Wardrobe() {
 
   const typeFilter   = searchParams.get('category') ?? undefined
   const familyFilter = searchParams.get('family')   ?? undefined
+  const orderFilter  = searchParams.get('order')    ?? 'hue'
   const hasFilters   = !!(typeFilter || familyFilter)
 
   const { data, isLoading, isError, error, refetch } = useGarments({
     ...(typeFilter   && { category: typeFilter }),
     ...(familyFilter && { family: familyFilter }),
+    order: orderFilter,
     limit: 500,
   })
 
@@ -34,8 +48,21 @@ export default function Wardrobe() {
     })
   }
 
+  function setOrder(value: string) {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      next.set('order', value)
+      return next
+    })
+  }
+
   function clearFilters() {
-    setSearchParams({})
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      next.delete('category')
+      next.delete('family')
+      return next
+    })
   }
 
   const garments = data?.garments ?? []
@@ -45,6 +72,20 @@ export default function Wardrobe() {
     const f = taxonomy?.families.find(fam => fam.name === familyFilter)
     return f ? hslToHex(f.canonical.h, f.canonical.s, f.canonical.l) : null
   }, [taxonomy, familyFilter])
+
+  // Group the flat ordered list by walking it — consecutive same-category items form a group.
+  const groups = useMemo(() => {
+    const result: Array<{ category: string; items: typeof garments }> = []
+    for (const g of garments) {
+      const last = result[result.length - 1]
+      if (last && last.category === g.category) {
+        last.items.push(g)
+      } else {
+        result.push({ category: g.category, items: [g] })
+      }
+    }
+    return result
+  }, [garments])
 
   return (
     <main className={styles.page}>
@@ -59,8 +100,12 @@ export default function Wardrobe() {
             className={styles.filterSelect}
           >
             <option value="">All types</option>
-            {GARMENT_TYPES.map(t => (
-              <option key={t} value={t}>{typeLabel(t)}</option>
+            {REGION_GROUPS.map(rg => (
+              <optgroup key={rg.label} label={rg.label}>
+                {rg.categories.map(cat => (
+                  <option key={cat} value={cat}>{typeLabel(cat)}</option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </div>
@@ -88,6 +133,21 @@ export default function Wardrobe() {
               ))}
             </select>
           </div>
+        </div>
+
+        <div className={styles.orderToggle} role="group" aria-label="Sort order">
+          {ORDER_OPTIONS.map(({ value, label }) => (
+            <button
+              key={value}
+              type="button"
+              className={[styles.orderBtn, orderFilter === value ? styles.orderBtnActive : ''].filter(Boolean).join(' ')}
+              aria-pressed={orderFilter === value}
+              data-testid={`order-${value}`}
+              onClick={() => setOrder(value)}
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
         {hasFilters && (
@@ -130,22 +190,30 @@ export default function Wardrobe() {
         </div>
       )}
 
-      {!isLoading && !isError && garments.length > 0 && (
-        <ul className={styles.grid} aria-label="Garment grid">
-          {garments.map(g => (
-            <li key={g.id} className={styles.gridItem}>
-              <Link
-                to={`/garments/${g.id}`}
-                state={{ from: location.search.replace(/^\?/, '') }}
-                className={styles.cardLink}
-                aria-label={`${typeLabel(g.category)} garment detail`}
-              >
-                <GarmentCard garment={g} />
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      {!isLoading && !isError && groups.length > 0 && groups.map(group => (
+        <section key={group.category} className={styles.group}>
+          <h2
+            className={styles.groupHeader}
+            data-testid={`group-header-${group.category}`}
+          >
+            {typeLabel(group.category)} · {group.items.length}
+          </h2>
+          <ul className={styles.grid} aria-label={`${typeLabel(group.category)} garments`}>
+            {group.items.map(g => (
+              <li key={g.id} className={styles.gridItem}>
+                <Link
+                  to={`/garments/${g.id}`}
+                  state={{ from: location.search.replace(/^\?/, '') }}
+                  className={styles.cardLink}
+                  aria-label={`${typeLabel(g.category)} garment detail`}
+                >
+                  <GarmentCard garment={g} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
     </main>
   )
 }

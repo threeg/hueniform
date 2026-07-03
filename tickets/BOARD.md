@@ -20,7 +20,7 @@ The version sections are ordered **latest first**: v0.2.0 (Milestone 14, in plan
 | HUE-E07 | Edit a garment's category | 14 | done |
 | HUE-E08 | Category & slot-model overhaul | 14 | todo |
 | HUE-E09 | Suggestion quality & count | 14 | todo |
-| HUE-E10 | Inventory grouping & ordering | 14 | todo |
+| HUE-E10 | Inventory grouping & ordering | 14 | done |
 | HUE-E01 | Local-first foundation and meta-goal | 8 | done |
 | HUE-E02 | Pure colour matcher | 8 | done |
 | HUE-E03 | Add a garment | 8 | done |
@@ -51,7 +51,7 @@ Leaf tickets for v0.2.0 (epics E06–E10). Reading top to bottom is a legal buil
 | 74 | HUE-074 | Garment-detail category edit UI | story | frontend | 14 / frontend | HUE-E07 | done | HUE-067, HUE-036 |
 | 75 | HUE-075 | Inventory ordering (hue spectrum / date) in the read query | task | services | 14 / services | HUE-E10 | done | HUE-022, HUE-047 |
 | 76 | HUE-076 | Garment API — complete type→category field rename | task | api | 14 / api | HUE-E10 | done | HUE-029 |
-| 77 | HUE-077 | Grouped inventory view with order toggle | story | frontend | 14 / frontend | HUE-E10 | todo | HUE-067, HUE-035, HUE-086 |
+| 77 | HUE-077 | Grouped inventory view with order toggle | story | frontend | 14 / frontend | HUE-E10 | done | HUE-067, HUE-035, HUE-086 |
 | 78 | HUE-078 | Suggestion service — count and refined ranking integration | task | services | 14 / services | HUE-E09 | done | HUE-068, HUE-063 |
 | 79 | HUE-079 | POST /api/suggestions — count field and neutral/fallback response | task | api | 14 / api | HUE-E09 | done | HUE-078, HUE-069 |
 | 80 | HUE-080 | Outfit-request count control and neutral/fallback labels | story | frontend | 14 / frontend | HUE-E09 | done | HUE-071 |

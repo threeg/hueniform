@@ -267,3 +267,101 @@ describe('Wardrobe — URL filter state', () => {
     await waitFor(() => expect(select.value).toBe('jumper'))
   })
 })
+
+// ── FR-47: order toggle ────────────────────────────────────────────────────────
+
+describe('Wardrobe — order toggle (FR-47)', () => {
+  it('renders Hue and Date added order buttons', async () => {
+    renderScreen()
+    await waitFor(() => expect(screen.getByTestId('order-hue')).toBeInTheDocument())
+    expect(screen.getByTestId('order-date')).toBeInTheDocument()
+  })
+
+  it('Hue is pressed by default', async () => {
+    renderScreen()
+    await waitFor(() =>
+      expect(screen.getByTestId('order-hue')).toHaveAttribute('aria-pressed', 'true'),
+    )
+    expect(screen.getByTestId('order-date')).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  it('switching to Date sends order=date in the API request', async () => {
+    let capturedUrl: string | undefined
+    server.use(
+      http.get('http://127.0.0.1:8000/api/garments', ({ request }) => {
+        capturedUrl = request.url
+        return HttpResponse.json(INVENTORY_RESPONSE)
+      }),
+    )
+    renderScreen()
+    await waitFor(() => expect(screen.getByTestId('order-date')).toBeInTheDocument())
+    await user().click(screen.getByTestId('order-date'))
+    await waitFor(() => {
+      expect(capturedUrl).toBeDefined()
+      expect(capturedUrl).toContain('order=date')
+    })
+  })
+
+  it('order=date in URL pre-selects Date button', async () => {
+    renderScreen({ initialSearch: 'order=date' })
+    await waitFor(() =>
+      expect(screen.getByTestId('order-date')).toHaveAttribute('aria-pressed', 'true'),
+    )
+  })
+})
+
+// ── FR-47: category grouping ──────────────────────────────────────────────────
+
+describe('Wardrobe — category grouping (FR-47)', () => {
+  it('renders a group header for each distinct category', async () => {
+    server.use(
+      http.get('http://127.0.0.1:8000/api/garments', () =>
+        HttpResponse.json({
+          garments: [
+            { ...GARMENT_SUMMARY, id: 'aaa', category: 'jumper' },
+            { ...GARMENT_SUMMARY, id: 'bbb', category: 'jumper' },
+            { ...GARMENT_SUMMARY, id: 'ccc', category: 't_shirt' },
+          ],
+          total: 3,
+        }),
+      ),
+    )
+    renderScreen()
+    await screen.findByTestId('group-header-jumper')
+    expect(screen.getByTestId('group-header-t_shirt')).toBeInTheDocument()
+  })
+
+  it('group header shows category label and item count', async () => {
+    server.use(
+      http.get('http://127.0.0.1:8000/api/garments', () =>
+        HttpResponse.json({
+          garments: [
+            { ...GARMENT_SUMMARY, id: 'aaa', category: 'jumper' },
+            { ...GARMENT_SUMMARY, id: 'bbb', category: 'jumper' },
+          ],
+          total: 2,
+        }),
+      ),
+    )
+    renderScreen()
+    const header = await screen.findByTestId('group-header-jumper')
+    expect(header).toHaveTextContent('Jumper')
+    expect(header).toHaveTextContent('2')
+  })
+})
+
+// ── FR-47: region-grouped category dropdown ───────────────────────────────────
+
+describe('Wardrobe — region-grouped category dropdown (FR-47)', () => {
+  it('category dropdown has optgroup sections for each body region', () => {
+    renderScreen()
+    const select = screen.getByRole('combobox', { name: 'Filter by type' }) as HTMLSelectElement
+    const optgroups = Array.from(select.querySelectorAll('optgroup'))
+    expect(optgroups.length).toBeGreaterThanOrEqual(4)
+    const labels = optgroups.map(og => og.label)
+    expect(labels).toContain('Head')
+    expect(labels).toContain('Upper body')
+    expect(labels).toContain('Lower body')
+    expect(labels).toContain('Feet')
+  })
+})

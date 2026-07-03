@@ -2,7 +2,7 @@
 id: HUE-077
 title: Grouped inventory view with order toggle
 type: story
-status: todo
+status: done
 milestone: 14
 batch: frontend
 layer: frontend
@@ -55,14 +55,36 @@ so that I can browse it as a tidy, scannable spectrum.
 - [ ] Apply category + colour filters → expect AND match and updated count; clear filters works
 
 ## Definition of done
-- [ ] Acceptance criteria met
-- [ ] Tests added/updated per test strategy §12.2 and passing in `make test`
+- [x] Acceptance criteria met
+- [x] Tests added/updated per test strategy §12.2 and passing in `make test`
 - [ ] Matcher-touching work: n/a
 - [ ] Detection-touching work: n/a
 - [ ] Evaluation/inventory-perf-touching work: `make test-perf` passes (§12.3.5) — server half re-baselined in HUE-084
 - [ ] User-flow-touching work: `make test-e2e` passes (§12.3.6) — deferred to HUE-085
-- [ ] QA steps recorded and repeated in the chat completion report
-- [ ] Ticket status + notes updated in the same commit (§12.3.7)
+- [x] QA steps recorded and repeated in the chat completion report
+- [x] Ticket status + notes updated in the same commit (§12.3.7)
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-07-02 — implemented. Added order toggle (Hue / Date added) wired to `?order=` URL param
+  and passed through `useGarments({ order })`. The flat garment list is grouped by walking it and
+  collecting consecutive same-category items into section+header blocks
+  (`data-testid="group-header-{category}"`). Category dropdown changed from a flat list to
+  region-grouped `<optgroup>` elements (Head / Upper body / Lower body / Feet) using a static
+  mapping that mirrors the taxonomy structure. `clearFilters` updated to preserve the `order` param.
+  7 new frontend tests added (order toggle render + state, order URL param, grouping headers,
+  optgroup structure); 1112 backend + 188 frontend tests pass at zero warnings.
+- Sanity test: `cd frontend && npm run test -- Inventory --run`
+
+## QA steps
+- [ ] Load /wardrobe → expect garments grouped by category with "Category · N" headers; Hue
+  button is active (darker); garments within a group form a colour spectrum
+- [ ] Click "Date added" toggle → button becomes active; garments within each group reorder
+  newest-first (verify by checking thumbnails order changes if you have multiple garments
+  of the same category)
+- [ ] Apply category filter (e.g. Jumper) + colour filter (e.g. Teal) → expect only matching
+  garments, updated count, "Clear filters" button; click Clear → both dropdowns reset, all
+  garments return; order toggle state is preserved after clearing filters
+- [ ] Refresh with ?order=date in the URL → Date added button is active on mount
+- [ ] Open the Type dropdown → expect four `<optgroup>` sections labelled Head, Upper body,
+  Lower body, Feet each containing their respective categories
