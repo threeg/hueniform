@@ -2,7 +2,7 @@
 id: HUE-E06
 title: Constrained suggestions
 type: epic
-status: todo
+status: done
 milestone: 14
 batch: services
 layer: services
@@ -53,3 +53,4 @@ reworked e2e journeys pass on Chromium and Firefox (NFR-7).
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-07-03 — done. All children done: HUE-081, HUE-082, HUE-083, HUE-085.

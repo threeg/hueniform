@@ -2,7 +2,7 @@
 id: HUE-E09
 title: Suggestion quality & count
 type: epic
-status: todo
+status: done
 milestone: 14
 batch: matcher
 layer: matcher
@@ -63,3 +63,4 @@ intact.
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-07-03 — done. All children done: HUE-062, HUE-063, HUE-064, HUE-078, HUE-079, HUE-080, HUE-084.

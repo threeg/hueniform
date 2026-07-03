@@ -16,10 +16,10 @@ The version sections are ordered **latest first**: v0.2.0 (Milestone 14, in plan
 
 | id | title | milestone | status |
 |---|---|---|---|
-| HUE-E06 | Constrained suggestions | 14 | todo |
+| HUE-E06 | Constrained suggestions | 14 | done |
 | HUE-E07 | Edit a garment's category | 14 | done |
-| HUE-E08 | Category & slot-model overhaul | 14 | todo |
-| HUE-E09 | Suggestion quality & count | 14 | todo |
+| HUE-E08 | Category & slot-model overhaul | 14 | done |
+| HUE-E09 | Suggestion quality & count | 14 | done |
 | HUE-E10 | Inventory grouping & ordering | 14 | done |
 | HUE-E01 | Local-first foundation and meta-goal | 8 | done |
 | HUE-E02 | Pure colour matcher | 8 | done |

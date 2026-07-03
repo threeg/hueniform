@@ -2,7 +2,7 @@
 id: HUE-E08
 title: Category & slot-model overhaul
 type: epic
-status: todo
+status: done
 milestone: 14
 batch: matcher
 layer: matcher
@@ -69,3 +69,4 @@ slot to chosen categories, within NFR-5.
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-07-03 — done. All children done: HUE-059, HUE-060, HUE-061, HUE-065, HUE-066, HUE-067, HUE-068, HUE-069, HUE-070, HUE-071.
