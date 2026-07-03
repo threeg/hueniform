@@ -13,14 +13,16 @@ import uuid
 from datetime import datetime, timezone
 
 import pytest
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.matcher.colour import Colour
 from app.matcher.ranking import evaluate_outfit
 from app.matcher.roles import Garment
 from app.services.suggestion_service import (
     EmptySlotsError,
+    InvalidAnchorError,
     InvalidCategoryFilterError,
+    InvalidPinError,
     InvalidSlotError,
     SuggestionCombination,
     SuggestionResult,
@@ -432,3 +434,134 @@ class TestFallbackFlag:
         _materialise(engine, no_valid_outfit_constrained_by("top"))
         result = suggest({}, engine, _rng())
         assert result.combinations == ()
+
+
+# ── Pins (FR-44) ──────────────────────────────────────────────────────────────
+
+class TestPins:
+    def test_pin_forces_garment_into_all_combinations(self, engine):
+        """FR-44: a pin forces the pinned garment into every returned combination."""
+        _materialise(engine, two_valid_outfits())
+        with Session(engine) as s:
+            row = s.exec(select(GarmentRow).where(GarmentRow.type == "t_shirt")).first()
+        pinned_id = row.id
+        result = suggest({}, engine, _rng(), pins={"base": pinned_id})
+        assert len(result.combinations) >= 1
+        for combo in result.combinations:
+            assert combo.slots["base"].id == pinned_id
+
+    def test_pin_unknown_slot_raises(self, engine):
+        """FR-44: unknown slot key in pins raises InvalidPinError."""
+        _materialise(engine, single_valid_outfit())
+        with pytest.raises(InvalidPinError):
+            suggest({}, engine, _rng(), pins={"nonexistent_slot": "some-id"})
+
+    def test_pin_garment_not_found_raises(self, engine):
+        """FR-44: a garment ID that does not exist raises InvalidPinError."""
+        _materialise(engine, single_valid_outfit())
+        with pytest.raises(InvalidPinError):
+            suggest({}, engine, _rng(), pins={"base": "00000000-0000-0000-0000-000000000000"})
+
+    def test_pin_category_wrong_slot_raises(self, engine):
+        """FR-44: garment category does not map to pinned slot → InvalidPinError."""
+        _materialise(engine, single_valid_outfit())
+        with Session(engine) as s:
+            row = s.exec(select(GarmentRow).where(GarmentRow.type == "trousers")).first()
+        with pytest.raises(InvalidPinError):
+            # trousers maps to lower_body, not base
+            suggest({}, engine, _rng(), pins={"base": row.id})
+
+    def test_pin_conflicts_with_constraint_raises(self, engine):
+        """FR-44+FR-52: pin's category not in constraint → InvalidPinError."""
+        _materialise(engine, [
+            Garment("t_shirt",  (Colour(h=0.0,   s=80.0, l=50.0, proportion=100),)),
+            Garment("trousers", (Colour(h=180.0, s=70.0, l=50.0, proportion=100),)),
+            Garment("jeans",    (Colour(h=180.0, s=70.0, l=50.0, proportion=100),)),
+            Garment("socks",    (Colour(h=0.0,   s=0.0,  l=50.0, proportion=100),)),
+            Garment("shoes",    (Colour(h=0.0,   s=0.0,  l= 6.0, proportion=100),)),
+        ])
+        with Session(engine) as s:
+            row = s.exec(select(GarmentRow).where(GarmentRow.type == "trousers")).first()
+        with pytest.raises(InvalidPinError):
+            # Constraint is jeans; trousers is not in that set
+            suggest({"lower_body": ["jeans"]}, engine, _rng(), pins={"lower_body": row.id})
+
+    def test_multiple_pins_all_honoured(self, engine):
+        """FR-44: multiple simultaneous pins all appear in every combination."""
+        _materialise(engine, single_valid_outfit())
+        with Session(engine) as s:
+            base_row = s.exec(select(GarmentRow).where(GarmentRow.type == "t_shirt")).first()
+            lb_row   = s.exec(select(GarmentRow).where(GarmentRow.type == "trousers")).first()
+        result = suggest({}, engine, _rng(), pins={"base": base_row.id, "lower_body": lb_row.id})
+        assert len(result.combinations) >= 1
+        for combo in result.combinations:
+            assert combo.slots["base"].id == base_row.id
+            assert combo.slots["lower_body"].id == lb_row.id
+
+    def test_one_piece_pin_excludes_base(self, engine):
+        """FR-44+FR-50.2: pinning a one-piece to lower_body auto-excludes base."""
+        _materialise(engine, [
+            Garment("dress",   (Colour(h=230.0, s=40.0, l=18.0, proportion=100),)),  # Navy
+            Garment("t_shirt", (Colour(h=0.0,   s=80.0, l=50.0, proportion=100),)),  # Red
+            Garment("socks",   (Colour(h=0.0,   s=0.0,  l=50.0, proportion=100),)),  # Grey
+            Garment("shoes",   (Colour(h=0.0,   s=0.0,  l= 6.0, proportion=100),)),  # Black
+        ])
+        with Session(engine) as s:
+            dress_row = s.exec(select(GarmentRow).where(GarmentRow.type == "dress")).first()
+        result = suggest({}, engine, _rng(), pins={"lower_body": dress_row.id})
+        assert isinstance(result, SuggestionResult)
+        for combo in result.combinations:
+            assert "base" not in combo.slots
+            assert combo.slots["lower_body"].id == dress_row.id
+
+
+# ── Anchor (FR-45) ────────────────────────────────────────────────────────────
+
+class TestAnchor:
+    def test_anchor_family_keeps_matching_combinations(self, engine):
+        """FR-45: anchor_family keeps combos with that family on an anchor garment."""
+        _materialise(engine, single_valid_outfit())
+        result = suggest({}, engine, _rng(), anchor_family="Red")
+        assert len(result.combinations) >= 1
+
+    def test_anchor_family_no_match_returns_zero(self, engine):
+        """FR-45: anchor_family with no anchor garment carrying it → zero result."""
+        _materialise(engine, single_valid_outfit())
+        result = suggest({}, engine, _rng(), anchor_family="Blue")
+        assert result.combinations == ()
+        assert result.zero_explanation is not None
+
+    def test_anchor_scheme_keeps_matching_combinations(self, engine):
+        """FR-45: anchor_scheme keeps combos whose matched scheme equals it."""
+        _materialise(engine, single_valid_outfit())
+        result = suggest({}, engine, _rng(), anchor_scheme="complementary")
+        assert len(result.combinations) >= 1
+        for combo in result.combinations:
+            assert combo.scheme == "complementary"
+
+    def test_anchor_scheme_no_match_returns_zero(self, engine):
+        """FR-45: anchor_scheme that matches no result → zero result."""
+        _materialise(engine, single_valid_outfit())
+        result = suggest({}, engine, _rng(), anchor_scheme="monochromatic")
+        assert result.combinations == ()
+        assert result.zero_explanation is not None
+
+    def test_anchor_family_and_scheme_compose(self, engine):
+        """FR-45: family and scheme anchors both apply when given together."""
+        _materialise(engine, single_valid_outfit())
+        result = suggest({}, engine, _rng(), anchor_family="Red", anchor_scheme="complementary")
+        assert len(result.combinations) >= 1
+        result2 = suggest({}, engine, _rng(), anchor_family="Red", anchor_scheme="monochromatic")
+        assert result2.combinations == ()
+
+    def test_anchor_unknown_family_raises(self, engine):
+        """FR-45: unknown family name → InvalidAnchorError."""
+        _materialise(engine, single_valid_outfit())
+        with pytest.raises(InvalidAnchorError):
+            suggest({}, engine, _rng(), anchor_family="Ultraviolet")
+
+    def test_anchor_unknown_scheme_raises(self, engine):
+        """FR-45: unknown scheme name → InvalidAnchorError."""
+        _materialise(engine, single_valid_outfit())
+        with pytest.raises(InvalidAnchorError):
+            suggest({}, engine, _rng(), anchor_scheme="tetrachromatic")

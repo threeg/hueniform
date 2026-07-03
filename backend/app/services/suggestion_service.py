@@ -40,11 +40,19 @@ from app.matcher.slots import (
     get_anchor_types,
     qualify_echo_slot,
 )
+from app.matcher.taxonomy import FAMILIES as _FAMILIES
 from app.matcher.taxonomy import classify as _classify
 from app.matcher.taxonomy import is_neutral as _is_neutral
 from app.storage.helpers import group_colours_by_garment
 from app.storage.models import GarmentColourRow, GarmentRow
 
+
+# ── Module-level constants ────────────────────────────────────────────────────
+
+_FAMILY_NAMES: frozenset[str] = frozenset(f.name for f in _FAMILIES)
+_VALID_SCHEMES: frozenset[str] = frozenset({
+    "neutral-based", "monochromatic", "analogous", "complementary", "triadic",
+})
 
 # ── Module-level slot→categories mapping (from constants, for FR-52 validation) ──
 
@@ -90,6 +98,28 @@ class EmptySlotsError(Exception):
         super().__init__(
             f"You have no garments for the requested slot(s): {slots_str}."
         )
+
+
+class InvalidPinError(Exception):
+    """
+    FR-44: a pin is invalid.
+
+    Covers unknown slot keys, garment IDs that do not exist, garments whose
+    category does not map to the pinned slot, and garments whose category
+    conflicts with a same-slot category constraint (FR-52).
+    """
+
+    def __init__(self, message: str, *, slot: str, garment_id: str) -> None:
+        self.slot = slot
+        self.garment_id = garment_id
+        super().__init__(message)
+
+
+class InvalidAnchorError(Exception):
+    """FR-45: anchor family or scheme name is not recognised."""
+
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
 
 
 # ── Value types ───────────────────────────────────────────────────────────────
@@ -235,6 +265,43 @@ def _build_combination(
     )
 
 
+def _apply_pins(wardrobe: list[Garment], pin_garments: dict[str, Garment]) -> list[Garment]:
+    """
+    FR-44: for each pinned slot, keep only the specific pinned Garment object;
+    garments in unpinned slots are kept unchanged.
+    """
+    if not pin_garments:
+        return wardrobe
+    filtered: list[Garment] = []
+    for g in wardrobe:
+        slot = category_to_slot(g.garment_type)
+        if slot in pin_garments:
+            if g is pin_garments[slot]:
+                filtered.append(g)
+        else:
+            filtered.append(g)
+    return filtered
+
+
+def _matches_anchor(
+    result: EvaluationResult,
+    anchor_family: str | None,
+    anchor_scheme: str | None,
+) -> bool:
+    """FR-45: True iff the result satisfies both anchor conditions."""
+    if anchor_scheme is not None:
+        if result.scheme_result is None or result.scheme_result.scheme != anchor_scheme:
+            return False
+    if anchor_family is not None:
+        families_on_anchors: set[str] = set()
+        for slot in get_anchor_types(result.outfit):
+            for c in result.outfit[slot].colours:
+                families_on_anchors.add(_classify(c.h, c.s, c.l))
+        if anchor_family not in families_on_anchors:
+            return False
+    return True
+
+
 # ── Public API ────────────────────────────────────────────────────────────────
 
 def suggest(
@@ -242,6 +309,9 @@ def suggest(
     engine: Engine,
     rng: random.Random,
     count: int = C.COUNT_DEFAULT,
+    pins: dict[str, str] | None = None,
+    anchor_family: str | None = None,
+    anchor_scheme: str | None = None,
 ) -> SuggestionResult:
     """
     Build ranked outfit suggestions from the wardrobe.
@@ -265,23 +335,54 @@ def suggest(
     count:
         Maximum number of combinations to return (FR-48). Clamped to
         1–25 at the API boundary; the service trusts the caller.
+    pins:
+        Optional FR-44 pin map: slot key → garment UUID.  Each pin forces that
+        exact garment into every returned combination; its slot becomes selected.
+    anchor_family:
+        Optional FR-45 family anchor: the named colour family must appear on
+        an anchor garment in every returned combination.
+    anchor_scheme:
+        Optional FR-45 scheme anchor: every returned combination's matched
+        scheme must equal this FR-13 scheme name.
 
     Raises
     ------
     InvalidSlotError
-        Any key in *slots_request* is not a valid slot name, or the mandatory
-        slot (``lower_body``) is deselected (FR-51.2).
+        Any key in *slots_request* or *pins* is not a valid slot name, or the
+        mandatory slot (``lower_body``) is deselected (FR-51.2).
     InvalidCategoryFilterError
         A list value is empty, or contains a category that does not belong to
         the named slot (FR-52).
+    InvalidPinError
+        A pin's garment ID does not exist, its category does not map to the
+        pinned slot, or it conflicts with a same-slot category constraint (FR-44).
+    InvalidAnchorError
+        *anchor_family* or *anchor_scheme* is not a recognised name (FR-45).
     EmptySlotsError
         Any selected slot — after applying category filters — has no garments
         in the wardrobe (FR-36).
     """
-    # 1. Validate slot keys
+    _pins: dict[str, str] = pins or {}
+
+    # 1. Validate slot keys (slots_request)
     unknown = [k for k in slots_request if k not in ALL_SLOTS]
     if unknown:
         raise InvalidSlotError(unknown)
+
+    # 1a. Validate pin slot keys (raised as InvalidPinError per FR-44)
+    for slot, garment_id in _pins.items():
+        if slot not in ALL_SLOTS:
+            raise InvalidPinError(
+                f"Unknown slot key in pins: '{slot}'.",
+                slot=slot,
+                garment_id=garment_id,
+            )
+
+    # 1b. Validate anchor names early (before any DB access)
+    if anchor_family is not None and anchor_family not in _FAMILY_NAMES:
+        raise InvalidAnchorError(f"Unknown colour family: '{anchor_family}'.")
+    if anchor_scheme is not None and anchor_scheme not in _VALID_SCHEMES:
+        raise InvalidAnchorError(f"Unknown scheme: '{anchor_scheme}'.")
 
     # 2. Resolve selected slots over FR-51 defaults
     selected: set[str] = set(DEFAULT_SLOTS)
@@ -308,22 +409,62 @@ def suggest(
             selected.add(slot)
             category_filters[slot] = cats
 
+    # FR-44: each pin selects its slot
+    for slot in _pins:
+        selected.add(slot)
+
     # 3. Enforce mandatory lower-body floor (FR-51.2)
     if MANDATORY_SLOT not in selected:
         raise InvalidSlotError([MANDATORY_SLOT])
 
-    # 4. One-piece / base auto-exclusion (FR-50.2)
-    # When lower_body is constrained to one-piece categories only, a separately
-    # selected base is implicitly occupied by the one-piece and must be removed.
+    # 4. One-piece / base auto-exclusion (FR-50.2) via category filter
     if "lower_body" in category_filters:
         if all(c in C.ONE_PIECE_CATEGORIES for c in category_filters["lower_body"]):
             selected.discard("base")
 
+    # 5. Load wardrobe
+    wardrobe, garment_index = _load_wardrobe(engine)
+
+    # 5b. Validate and resolve pins (FR-44)
+    pin_garments: dict[str, Garment] = {}
+    if _pins:
+        row_id_to_garment: dict[str, Garment] = {
+            garment_index[id(g)].id: g for g in wardrobe
+        }
+        for slot, garment_id in _pins.items():
+            if garment_id not in row_id_to_garment:
+                raise InvalidPinError(
+                    f"Garment '{garment_id}' not found.",
+                    slot=slot,
+                    garment_id=garment_id,
+                )
+            g = row_id_to_garment[garment_id]
+            actual_slot = category_to_slot(g.garment_type)
+            if actual_slot != slot:
+                raise InvalidPinError(
+                    f"Garment '{garment_id}' (type '{g.garment_type}') does not map to slot '{slot}'.",
+                    slot=slot,
+                    garment_id=garment_id,
+                )
+            if slot in category_filters and g.garment_type not in category_filters[slot]:
+                raise InvalidPinError(
+                    f"Pinned garment's category '{g.garment_type}' is not in the"
+                    f" constraint for slot '{slot}'.",
+                    slot=slot,
+                    garment_id=garment_id,
+                )
+            pin_garments[slot] = g
+
+        # FR-44+FR-50.2: one-piece pin to lower_body excludes base
+        lb_pin = pin_garments.get("lower_body")
+        if lb_pin is not None and lb_pin.garment_type in C.ONE_PIECE_CATEGORIES:
+            selected.discard("base")
+
     requested_slots = frozenset(selected)
 
-    # 5. Load wardrobe and apply category filters
-    wardrobe, garment_index = _load_wardrobe(engine)
+    # 5c. Apply category filters and pin filters
     wardrobe = _apply_category_filters(wardrobe, category_filters)
+    wardrobe = _apply_pins(wardrobe, pin_garments)
 
     # 6. Fail-fast on empty requested slots (FR-36)
     by_slot: dict[str, int] = {}
@@ -351,6 +492,16 @@ def suggest(
             zero_explanation=render(sentinel),
             hint=hint,
         )
+
+    # FR-45: apply anchor filter (family and/or scheme)
+    if anchor_family is not None or anchor_scheme is not None:
+        results = [r for r in results if _matches_anchor(r, anchor_family, anchor_scheme)]
+        if not results:
+            return SuggestionResult(
+                combinations=(),
+                zero_explanation="No outfits matched the requested anchor criteria.",
+                hint="Try removing the anchor and generating again.",
+            )
 
     combinations = tuple(
         _build_combination(i, result, garment_index)

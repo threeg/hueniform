@@ -2,7 +2,7 @@
 id: HUE-081
 title: Suggestion service — pins and colour/scheme anchor
 type: task
-status: todo
+status: done
 milestone: 14
 batch: services
 layer: services
@@ -30,11 +30,11 @@ the HUE-063 ranking/pruning. Unsatisfiable pins/anchors resolve as the FR-43 zer
   - Unsatisfiable pin/anchor → zero result with the reason (FR-43); imports `matcher`/`storage`, not `api`
 
 ## Definition of done (acceptance criteria)
-- [ ] Pins honoured in every combination; multiple pins; category→slot agreement; one-piece/base exclusion (FR-44, FR-50.2)
-- [ ] Colour-family and named-scheme anchors prune correctly; both compose (FR-45)
-- [ ] Pin/constraint agreement enforced; unsatisfiable → zero result with reason (FR-43, FR-52)
-- [ ] Tests added/updated per §12.2 and passing in `make test`
-- [ ] Ticket status + notes updated in the same commit
+- [x] Pins honoured in every combination; multiple pins; category→slot agreement; one-piece/base exclusion (FR-44, FR-50.2)
+- [x] Colour-family and named-scheme anchors prune correctly; both compose (FR-45)
+- [x] Pin/constraint agreement enforced; unsatisfiable → zero result with reason (FR-43, FR-52)
+- [x] Tests added/updated per §12.2 and passing in `make test`
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 `services/test_suggestion_service.py` (§4.7, §7.4) with a seeded RNG: pin honoured / unsatisfiable
@@ -43,3 +43,12 @@ oracle over engineered wardrobes.
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-07-02 — implemented. Added `InvalidPinError` and `InvalidAnchorError` to
+  `suggestion_service.py`. `suggest()` gains `pins: dict[str,str]|None`,
+  `anchor_family: str|None`, `anchor_scheme: str|None`. Pin validation (unknown slot,
+  garment not found, wrong-slot category, constraint conflict) runs eagerly before DB
+  load where possible; one-piece pin auto-excludes base (FR-50.2). Anchor filtering
+  post-filters `rank()` results; empty filtered set returns a zero-result. Two new test
+  classes (14 tests): `TestPins` (7 tests) and `TestAnchor` (7 tests). 1096 backend +
+  166 frontend tests pass, zero warnings.
+- Sanity test: `cd backend && .venv/bin/pytest tests/services/test_suggestion_service.py::TestPins tests/services/test_suggestion_service.py::TestAnchor -v`
