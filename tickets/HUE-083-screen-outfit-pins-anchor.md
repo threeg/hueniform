@@ -2,7 +2,7 @@
 id: HUE-083
 title: Outfit-request pin picker and anchor controls
 type: story
-status: todo
+status: done
 milestone: 14
 batch: frontend
 layer: frontend
@@ -59,14 +59,33 @@ so that I can ask "suggest around this jacket" or "an outfit around teal".
 - [ ] Pin something impossible → expect verbatim zero-result explanation + hint
 
 ## Definition of done
-- [ ] Acceptance criteria met
-- [ ] Tests added/updated per test strategy §12.2 and passing in `make test`
-- [ ] Matcher-touching work: n/a
-- [ ] Detection-touching work: n/a
-- [ ] Evaluation/inventory-perf-touching work: n/a
+- [x] Acceptance criteria met
+- [x] Tests added/updated per test strategy §12.2 and passing in `make test`
+- [x] Matcher-touching work: n/a
+- [x] Detection-touching work: n/a
+- [x] Evaluation/inventory-perf-touching work: n/a
 - [ ] User-flow-touching work: `make test-e2e` passes (§12.3.6) — deferred to HUE-085
-- [ ] QA steps recorded and repeated in the chat completion report
-- [ ] Ticket status + notes updated in the same commit (§12.3.7)
+- [x] QA steps recorded and repeated in the chat completion report
+- [x] Ticket status + notes updated in the same commit (§12.3.7)
 
 ## Notes
 - 2026-06-18 — created (Milestone 13 ticket generation)
+- 2026-07-02 — implemented. Added pin picker modal (inventory garments shown; "Pin to
+  request" and "Suggest outfits around this" actions); removable pin chips (slot →
+  garment id); one-piece pin auto-deselects base via extended `isOnePieceOnly` check.
+  Added anchor section: family swatch chips (single-select + clear) and scheme segmented
+  row (Any + 5 named schemes). `handleSuggest` builds `pins` and `anchor` fields in the
+  request when set. 15 new tests across two suites. 1109 backend + 181 frontend tests
+  pass, zero warnings.
+- Sanity test: `cd frontend && npx vitest run src/routes/Suggest.test.tsx --reporter=verbose 2>&1 | grep -E "pin picker|anchor controls|passed"`
+
+## QA steps
+- [ ] Open /suggest → expect a "Pin a garment" button and "Build around a colour" section with family chips and scheme row
+- [ ] Click "Pin a garment" → picker modal opens; one garment card visible; close with × or backdrop
+- [ ] Click "Pin to request" on a jumper → modal closes; pin chip (thumbnail + "Jumper" label + ×) appears; clicking Suggest outfits includes `pins.mid` in the request
+- [ ] Click × on a pin chip → chip disappears and pin is removed from subsequent requests
+- [ ] Click "Suggest outfits around this" → modal closes, pin chip appears, and request is fired immediately (results appear without clicking Suggest)
+- [ ] Pin a dress → Base chip is disabled and the one-piece note shows
+- [ ] Click a colour family chip (e.g. Teal) → chip highlights; clicking Suggest sends `anchor.family = "Teal"`; clicking the chip again deselects (or use Clear); anchor absent from next request
+- [ ] Click Analogous in the scheme row → button highlights; request includes `anchor.scheme = "analogous"`; clicking Any reverts; anchor absent from next request
+- [ ] Select Teal + Analogous together → request includes both; results show outfits around teal analogous combos

@@ -466,3 +466,286 @@
 .suggestAgainBtn:hover:not(:disabled) {
   background: #f5f5f5;
 }
+
+/* ── Pin section (FR-44) ────────────────────────────────────────────────────── */
+
+.pinSection {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.sectionHeading {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #444;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.pinButton {
+  align-self: flex-start;
+  padding: 0.4rem 0.9rem;
+  border: 1px dashed #999;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.pinButton:hover {
+  border-color: #555;
+  color: #222;
+}
+
+.pinChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pinChip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  background: #f8f8f8;
+  font-size: 0.875rem;
+}
+
+.pinThumb {
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
+.pinLabel {
+  color: #333;
+}
+
+.pinRemove {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #888;
+  padding: 0 0.1rem;
+  line-height: 1;
+}
+
+.pinRemove:hover {
+  color: #d44;
+}
+
+/* ── Anchor section (FR-45) ─────────────────────────────────────────────────── */
+
+.anchorSection {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.anchorRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.anchorLabel {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.familyChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.familyChip {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #444;
+}
+
+.familyChip:hover {
+  border-color: #888;
+}
+
+.familyChipSelected {
+  border-color: #1a56c4;
+  background: #e8f0fe;
+  color: #1a56c4;
+}
+
+.familySwatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.15);
+  flex-shrink: 0;
+}
+
+.anchorClearBtn {
+  padding: 0.25rem 0.55rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #888;
+  text-decoration: underline;
+}
+
+.schemeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.schemeOption {
+  padding: 0.25rem 0.65rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #444;
+}
+
+.schemeOption:hover {
+  border-color: #888;
+}
+
+.schemeOptionSelected {
+  border-color: #1a56c4;
+  background: #e8f0fe;
+  color: #1a56c4;
+}
+
+/* ── Picker modal (FR-44) ───────────────────────────────────────────────────── */
+
+.pickerOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.pickerModal {
+  background: #fff;
+  border-radius: 8px;
+  width: min(480px, 90vw);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pickerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.pickerTitle {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.pickerClose {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  color: #888;
+  padding: 0;
+  line-height: 1;
+}
+
+.pickerList {
+  overflow-y: auto;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pickerCard {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+}
+
+.pickerThumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.pickerCategory {
+  flex: 1;
+  font-size: 0.875rem;
+  color: #333;
+}
+
+.pickerActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pickerPinBtn {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid #1a56c4;
+  border-radius: 4px;
+  background: #fff;
+  color: #1a56c4;
+  cursor: pointer;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.pickerPinBtn:hover {
+  background: #e8f0fe;
+}
+
+.pickerSuggestBtn {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.pickerSuggestBtn:hover {
+  background: #f5f5f5;
+}

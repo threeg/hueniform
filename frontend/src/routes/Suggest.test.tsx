@@ -10,7 +10,13 @@ import { server } from '../test/server'
 import { renderRoute } from '../test/test-utils'
 
 import Suggest from './Suggest'
-import { SUGGESTION_RESPONSE, SUGGESTION_EMPTY_RESPONSE, ERR_EMPTY_SLOTS } from '../test/contract-examples'
+import {
+  SUGGESTION_RESPONSE,
+  SUGGESTION_EMPTY_RESPONSE,
+  ERR_EMPTY_SLOTS,
+  GARMENT_ID,
+  GARMENT_SUMMARY,
+} from '../test/contract-examples'
 
 const BASE = 'http://127.0.0.1:8000'
 
@@ -465,5 +471,215 @@ describe('Suggest — fallback label distinction (FR-41/FR-43)', () => {
     await user().click(screen.getByTestId('suggest-button'))
     const label = await screen.findByTestId('fallback-label')
     expect(label).toHaveTextContent('Neutral-based fallback')
+  })
+})
+
+// ── FR-44: pin picker ─────────────────────────────────────────────────────────
+
+describe('Suggest — pin picker (FR-44)', () => {
+  const user = userEvent.setup
+
+  it('renders "Pin a garment" button', async () => {
+    renderScreen()
+    await waitForPanel()
+    expect(screen.getByTestId('pin-button')).toBeInTheDocument()
+  })
+
+  it('opens picker modal on click', async () => {
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('pin-button'))
+    expect(screen.getByTestId('picker-modal')).toBeInTheDocument()
+  })
+
+  it('picker modal shows inventory garments', async () => {
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('pin-button'))
+    await screen.findAllByTestId('picker-garment')
+    expect(screen.getAllByTestId('picker-garment')).toHaveLength(1)
+  })
+
+  it('pinning a garment adds a chip and closes the modal', async () => {
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('pin-button'))
+    await user().click((await screen.findAllByTestId('picker-pin-action'))[0])
+    expect(screen.queryByTestId('picker-modal')).not.toBeInTheDocument()
+    // GARMENT_SUMMARY.category = 'jumper' → slot = 'mid'
+    expect(screen.getByTestId('pin-chip-mid')).toBeInTheDocument()
+  })
+
+  it('pin chip is removable', async () => {
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('pin-button'))
+    await user().click((await screen.findAllByTestId('picker-pin-action'))[0])
+    const chip = screen.getByTestId('pin-chip-mid')
+    await user().click(within(chip).getByTestId('pin-chip-remove'))
+    expect(screen.queryByTestId('pin-chip-mid')).not.toBeInTheDocument()
+  })
+
+  it('pin composes pins.{slot}=id in the request body', async () => {
+    let captured: unknown = null
+    server.use(
+      http.post(`${BASE}/api/suggestions`, async ({ request }) => {
+        captured = await request.json()
+        return HttpResponse.json(SUGGESTION_RESPONSE)
+      }),
+    )
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('pin-button'))
+    await user().click((await screen.findAllByTestId('picker-pin-action'))[0])
+    await user().click(screen.getByTestId('suggest-button'))
+    await waitFor(() => expect(captured).not.toBeNull())
+    expect((captured as { pins?: Record<string, string> }).pins?.mid).toBe(GARMENT_ID)
+  })
+
+  it('"Suggest outfits around this" pins and generates in one action', async () => {
+    let captured: unknown = null
+    server.use(
+      http.post(`${BASE}/api/suggestions`, async ({ request }) => {
+        captured = await request.json()
+        return HttpResponse.json(SUGGESTION_RESPONSE)
+      }),
+    )
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('pin-button'))
+    await user().click((await screen.findAllByTestId('picker-suggest-around'))[0])
+    await waitFor(() => expect(captured).not.toBeNull())
+    expect((captured as { pins?: Record<string, string> }).pins?.mid).toBe(GARMENT_ID)
+  })
+
+  it('one-piece pin auto-deselects base and shows the note (FR-50.2)', async () => {
+    const DRESS_ID = 'dress-0000-0000-0000-000000000099'
+    server.use(
+      http.get(`${BASE}/api/garments`, () =>
+        HttpResponse.json({
+          garments: [{
+            id: DRESS_ID,
+            category: 'dress',
+            colours: GARMENT_SUMMARY.colours,
+            thumbnail_url: `/api/garments/${DRESS_ID}/thumbnail`,
+          }],
+          total: 1,
+        }),
+      ),
+    )
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('pin-button'))
+    await user().click((await screen.findAllByTestId('picker-pin-action'))[0])
+    expect(screen.getByTestId('slot-base')).toBeDisabled()
+    expect(screen.getByTestId('one-piece-note')).toBeInTheDocument()
+  })
+})
+
+// ── FR-45: anchor controls ────────────────────────────────────────────────────
+
+describe('Suggest — anchor controls (FR-45)', () => {
+  const user = userEvent.setup
+
+  it('renders family swatch chips for all taxonomy families', async () => {
+    renderScreen()
+    await waitForPanel()
+    expect(screen.getByTestId('anchor-family-Red')).toBeInTheDocument()
+    expect(screen.getByTestId('anchor-family-Teal')).toBeInTheDocument()
+  })
+
+  it('renders scheme row: Any plus all five FR-13 scheme names', async () => {
+    renderScreen()
+    await waitForPanel()
+    expect(screen.getByTestId('anchor-scheme-any')).toBeInTheDocument()
+    for (const id of ['neutral-based', 'monochromatic', 'analogous', 'complementary', 'triadic']) {
+      expect(screen.getByTestId(`anchor-scheme-${id}`)).toBeInTheDocument()
+    }
+  })
+
+  it('selecting a family composes anchor.family in the request', async () => {
+    let captured: unknown = null
+    server.use(
+      http.post(`${BASE}/api/suggestions`, async ({ request }) => {
+        captured = await request.json()
+        return HttpResponse.json(SUGGESTION_RESPONSE)
+      }),
+    )
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('anchor-family-Red'))
+    await user().click(screen.getByTestId('suggest-button'))
+    await waitFor(() => expect(captured).not.toBeNull())
+    expect((captured as { anchor?: { family?: string } }).anchor?.family).toBe('Red')
+  })
+
+  it('selecting a scheme composes anchor.scheme in the request', async () => {
+    let captured: unknown = null
+    server.use(
+      http.post(`${BASE}/api/suggestions`, async ({ request }) => {
+        captured = await request.json()
+        return HttpResponse.json(SUGGESTION_RESPONSE)
+      }),
+    )
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('anchor-scheme-analogous'))
+    await user().click(screen.getByTestId('suggest-button'))
+    await waitFor(() => expect(captured).not.toBeNull())
+    expect((captured as { anchor?: { scheme?: string } }).anchor?.scheme).toBe('analogous')
+  })
+
+  it('family and scheme compose in the anchor object', async () => {
+    let captured: unknown = null
+    server.use(
+      http.post(`${BASE}/api/suggestions`, async ({ request }) => {
+        captured = await request.json()
+        return HttpResponse.json(SUGGESTION_RESPONSE)
+      }),
+    )
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('anchor-family-Teal'))
+    await user().click(screen.getByTestId('anchor-scheme-analogous'))
+    await user().click(screen.getByTestId('suggest-button'))
+    await waitFor(() => expect(captured).not.toBeNull())
+    const anchor = (captured as { anchor?: { family?: string; scheme?: string } }).anchor
+    expect(anchor?.family).toBe('Teal')
+    expect(anchor?.scheme).toBe('analogous')
+  })
+
+  it('clearing the family removes anchor from request', async () => {
+    let captured: unknown = null
+    server.use(
+      http.post(`${BASE}/api/suggestions`, async ({ request }) => {
+        captured = await request.json()
+        return HttpResponse.json(SUGGESTION_RESPONSE)
+      }),
+    )
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('anchor-family-Red'))
+    await user().click(screen.getByTestId('anchor-family-clear'))
+    await user().click(screen.getByTestId('suggest-button'))
+    await waitFor(() => expect(captured).not.toBeNull())
+    expect((captured as { anchor?: unknown }).anchor).toBeUndefined()
+  })
+
+  it('selecting "Any" scheme omits scheme from request', async () => {
+    let captured: unknown = null
+    server.use(
+      http.post(`${BASE}/api/suggestions`, async ({ request }) => {
+        captured = await request.json()
+        return HttpResponse.json(SUGGESTION_RESPONSE)
+      }),
+    )
+    renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('anchor-scheme-analogous'))
+    await user().click(screen.getByTestId('anchor-scheme-any'))
+    await user().click(screen.getByTestId('suggest-button'))
+    await waitFor(() => expect(captured).not.toBeNull())
+    expect((captured as { anchor?: unknown }).anchor).toBeUndefined()
   })
 })

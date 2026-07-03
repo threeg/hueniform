@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { useSuggest, useTaxonomy } from '../api/queries'
-import { ApiRequestError, TaxonomySlot } from '../api/types'
+import { useSuggest, useTaxonomy, useGarments } from '../api/queries'
+import { ApiRequestError, GarmentSummary, TaxonomySlot } from '../api/types'
 import PaletteStrip from '../components/PaletteStrip'
 import Banner from '../components/Banner'
 import LoadingState from '../components/LoadingState'
@@ -51,8 +51,13 @@ export default function Suggest() {
   const [slotOverrides, setSlotOverrides] = useState<Record<string, SlotOverride>>({})
   const [expandedSlot, setExpandedSlot] = useState<string | null>(null)
   const [count, setCount] = useState(3)
+  const [pins, setPins] = useState<Record<string, GarmentSummary>>({})
+  const [pickerOpen, setPickerOpen] = useState(false)
+  const [anchorFamily, setAnchorFamily] = useState<string | null>(null)
+  const [anchorScheme, setAnchorScheme] = useState<string | null>(null)
 
   const { data: taxonomy } = useTaxonomy()
+  const { data: inventory } = useGarments()
   const { mutate: suggest, isPending, data, error } = useSuggest()
 
   const err = error as ApiRequestError | null
@@ -60,13 +65,18 @@ export default function Suggest() {
     ? ((err.details?.empty_slots as string[]) ?? [])
     : []
 
-  // FR-50.2: is lower_body constrained exclusively to one-piece categories?
+  // FR-50.2: is lower_body constrained exclusively to one-piece categories,
+  // or is a one-piece garment pinned to lower_body?
   const lbOverride = slotOverrides['lower_body']
-  const isOnePieceOnly = Array.isArray(lbOverride) && lbOverride.length > 0
-    && lbOverride.every(c => ONE_PIECE_CATS.has(c))
+  const lbPin = pins['lower_body']
+  const isOnePieceOnly =
+    (Array.isArray(lbOverride) && lbOverride.length > 0
+      && lbOverride.every(c => ONE_PIECE_CATS.has(c)))
+    || (lbPin != null && ONE_PIECE_CATS.has(lbPin.category))
 
   function isEffectivelySelected(slotKey: string): boolean {
     if (slotKey === 'base' && isOnePieceOnly) return false
+    if (slotKey in pins) return true  // pinned slot is always selected
     const ov = slotOverrides[slotKey]
     if (ov === undefined) return DEFAULT_SELECTED.has(slotKey)
     if (typeof ov === 'boolean') return ov
@@ -131,12 +141,58 @@ export default function Suggest() {
     return req
   }
 
-  function handleSuggest() {
+  function categoryToSlot(category: string): string | null {
+    if (!taxonomy?.regions) return null
+    for (const region of taxonomy.regions) {
+      for (const slot of region.slots) {
+        if (slot.categories.includes(category)) return slot.slot
+      }
+    }
+    return null
+  }
+
+  function buildRequest(pinsOverride?: Record<string, GarmentSummary>) {
+    const allPins = pinsOverride ?? pins
     const slotsOverride = buildSlotsRequest()
-    const req = Object.keys(slotsOverride).length > 0
-      ? { slots: slotsOverride, count }
-      : { count }
-    suggest(req)
+    // Pin-based one-piece: if lower_body pin is a one-piece, also exclude base
+    const lbPinGarment = allPins['lower_body']
+    if (lbPinGarment && ONE_PIECE_CATS.has(lbPinGarment.category)) {
+      slotsOverride['base'] = false
+    }
+    const req: Record<string, unknown> = { count }
+    if (Object.keys(slotsOverride).length > 0) req.slots = slotsOverride
+    if (Object.keys(allPins).length > 0) {
+      req.pins = Object.fromEntries(
+        Object.entries(allPins).map(([s, g]) => [s, g.id]),
+      )
+    }
+    if (anchorFamily || anchorScheme) {
+      const anchor: { family?: string; scheme?: string } = {}
+      if (anchorFamily) anchor.family = anchorFamily
+      if (anchorScheme) anchor.scheme = anchorScheme
+      req.anchor = anchor
+    }
+    return req
+  }
+
+  function handleSuggest() {
+    suggest(buildRequest())
+  }
+
+  function handlePinGarment(garment: GarmentSummary) {
+    const slot = categoryToSlot(garment.category)
+    if (!slot) return
+    setPins(prev => ({ ...prev, [slot]: garment }))
+    setPickerOpen(false)
+  }
+
+  function handleSuggestAround(garment: GarmentSummary) {
+    const slot = categoryToSlot(garment.category)
+    if (!slot) return
+    const newPins = { ...pins, [slot]: garment }
+    setPins(newPins)
+    setPickerOpen(false)
+    suggest(buildRequest(newPins))
   }
 
   const familyHexMap = useMemo(() => {
@@ -264,6 +320,114 @@ export default function Suggest() {
           </p>
         )}
 
+        {/* ── Build around a garment (FR-44) ─────────────────────────────── */}
+        <div className={styles.pinSection}>
+          <p className={styles.sectionHeading}>Build around a garment</p>
+          {Object.keys(pins).length > 0 && (
+            <div className={styles.pinChips}>
+              {Object.entries(pins).map(([slot, garment]) => (
+                <div key={slot} className={styles.pinChip} data-testid={`pin-chip-${slot}`}>
+                  <img
+                    src={garment.thumbnail_url}
+                    alt={typeLabel(garment.category)}
+                    className={styles.pinThumb}
+                  />
+                  <span className={styles.pinLabel}>{typeLabel(garment.category)}</span>
+                  <button
+                    type="button"
+                    aria-label={`Remove ${slot} pin`}
+                    data-testid="pin-chip-remove"
+                    className={styles.pinRemove}
+                    onClick={() => setPins(prev => {
+                      const n = { ...prev }
+                      delete n[slot]
+                      return n
+                    })}
+                  >×</button>
+                </div>
+              ))}
+            </div>
+          )}
+          <button
+            type="button"
+            data-testid="pin-button"
+            className={styles.pinButton}
+            onClick={() => setPickerOpen(true)}
+          >
+            Pin a garment
+          </button>
+        </div>
+
+        {/* ── Build around a colour (FR-45) ──────────────────────────────── */}
+        <div className={styles.anchorSection}>
+          <p className={styles.sectionHeading}>Build around a colour</p>
+          <div className={styles.anchorRow}>
+            <span className={styles.anchorLabel}>Colour family</span>
+            <div className={styles.familyChips}>
+              {taxonomy?.families.map(family => {
+                const hex = hslToHex(family.canonical.h, family.canonical.s, family.canonical.l)
+                return (
+                  <button
+                    key={family.name}
+                    type="button"
+                    className={[
+                      styles.familyChip,
+                      anchorFamily === family.name ? styles.familyChipSelected : '',
+                    ].filter(Boolean).join(' ')}
+                    data-testid={`anchor-family-${family.name}`}
+                    aria-pressed={anchorFamily === family.name}
+                    onClick={() => setAnchorFamily(prev => prev === family.name ? null : family.name)}
+                  >
+                    <span
+                      className={styles.familySwatch}
+                      style={{ backgroundColor: hex }}
+                      aria-hidden="true"
+                    />
+                    {family.name}
+                  </button>
+                )
+              })}
+              {anchorFamily && (
+                <button
+                  type="button"
+                  data-testid="anchor-family-clear"
+                  className={styles.anchorClearBtn}
+                  onClick={() => setAnchorFamily(null)}
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
+          <div className={styles.anchorRow}>
+            <span className={styles.anchorLabel}>Scheme</span>
+            <div className={styles.schemeRow}>
+              {[
+                { key: null,             label: 'Any',            testid: 'anchor-scheme-any' },
+                { key: 'neutral-based',  label: 'Neutral-based',  testid: 'anchor-scheme-neutral-based' },
+                { key: 'monochromatic',  label: 'Monochromatic',  testid: 'anchor-scheme-monochromatic' },
+                { key: 'analogous',      label: 'Analogous',      testid: 'anchor-scheme-analogous' },
+                { key: 'complementary',  label: 'Complementary',  testid: 'anchor-scheme-complementary' },
+                { key: 'triadic',        label: 'Triadic',        testid: 'anchor-scheme-triadic' },
+              ].map(({ key, label, testid }) => (
+                <button
+                  key={testid}
+                  type="button"
+                  data-testid={testid}
+                  className={[
+                    styles.schemeOption,
+                    anchorScheme === key ? styles.schemeOptionSelected : '',
+                  ].filter(Boolean).join(' ')}
+                  aria-pressed={anchorScheme === key}
+                  onClick={() => setAnchorScheme(key)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {err && <Banner variant="error" message={err.message} />}
 
         <div className={styles.countRow}>
@@ -318,6 +482,59 @@ export default function Suggest() {
             <p className={styles.zeroHint} data-testid="zero-hint">{data.hint}</p>
           )}
           <Link to="/add" className={styles.addLink}>Add a garment</Link>
+        </div>
+      )}
+
+      {/* ── Pin picker modal ─────────────────────────────────────────────── */}
+      {pickerOpen && (
+        <div
+          role="dialog"
+          aria-label="Pick a garment to pin"
+          className={styles.pickerOverlay}
+          onClick={e => { if (e.target === e.currentTarget) setPickerOpen(false) }}
+        >
+          <div className={styles.pickerModal} data-testid="picker-modal">
+            <div className={styles.pickerHeader}>
+              <span className={styles.pickerTitle}>Pin a garment</span>
+              <button
+                type="button"
+                aria-label="Close picker"
+                className={styles.pickerClose}
+                onClick={() => setPickerOpen(false)}
+              >×</button>
+            </div>
+            <div className={styles.pickerList}>
+              {inventory?.garments.map(garment => (
+                <div key={garment.id} className={styles.pickerCard} data-testid="picker-garment">
+                  <img
+                    src={garment.thumbnail_url}
+                    alt={typeLabel(garment.category)}
+                    className={styles.pickerThumb}
+                  />
+                  <span className={styles.pickerCategory}>{typeLabel(garment.category)}</span>
+                  <PaletteStrip colours={garment.colours} height={6} />
+                  <div className={styles.pickerActions}>
+                    <button
+                      type="button"
+                      data-testid="picker-pin-action"
+                      className={styles.pickerPinBtn}
+                      onClick={() => handlePinGarment(garment)}
+                    >
+                      Pin to request
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="picker-suggest-around"
+                      className={styles.pickerSuggestBtn}
+                      onClick={() => handleSuggestAround(garment)}
+                    >
+                      Suggest outfits around this
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
