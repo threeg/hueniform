@@ -2,7 +2,7 @@
 id: HUE-088
 title: Shared test helpers for DB materialisation and image staging
 type: task
-status: todo
+status: done
 milestone: 14
 batch: cleanup
 layer: tooling
@@ -61,3 +61,4 @@ No new tests required — this is a pure refactor. Existing tests cover all path
 ## Notes
 
 - 2026-07-03 — created by `/verify` review of v0.2.0 batch.
+- 2026-07-03 — done. Extracted `materialise_garments(engine, garments, *, derive_families=False)`, `make_test_jpeg()`, and `stage_test_image()` into `tests/conftest.py`. Removed duplicate `_materialise()` from both `tests/services/test_suggestion_service.py` and `tests/api/test_suggestions.py`. Removed `_make_jpeg_bytes`/`_stage_image` from `tests/services/conftest.py`; `test_garment_service.py` and `test_regeneration_service.py` updated to import from `tests.conftest`. Replaced `_tiny_jpeg`/`_stage` in `tests/api/test_garments.py` with `make_test_jpeg`/`stage_test_image`. `make test` passes (1120+188, zero warnings). Sanity test: `cd backend && .venv/bin/pytest tests/services/ tests/api/ -q`

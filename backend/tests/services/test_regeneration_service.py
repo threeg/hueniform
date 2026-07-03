@@ -27,7 +27,7 @@ from app.services.garment_service import (
 )
 from app.storage import staging
 from app.storage.models import GarmentColourRow, GarmentRow
-from tests.services.conftest import _make_jpeg_bytes, _stage_image
+from tests.conftest import make_test_jpeg as _make_jpeg_bytes, stage_test_image as _stage_image
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────

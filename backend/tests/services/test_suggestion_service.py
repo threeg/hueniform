@@ -9,8 +9,6 @@ with a seeded RNG for deterministic results, plus the §4.9.4 oracle pattern
 from __future__ import annotations
 
 import random
-import uuid
-from datetime import datetime, timezone
 
 import pytest
 from sqlmodel import Session, select
@@ -29,6 +27,7 @@ from app.services.suggestion_service import (
     suggest,
 )
 from app.storage.models import GarmentColourRow, GarmentRow
+from tests.conftest import materialise_garments as _materialise
 from tests.fixtures.wardrobes import (
     neutral_fallback_only,
     no_valid_outfit_constrained_by,
@@ -38,34 +37,6 @@ from tests.fixtures.wardrobes import (
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
-
-def _materialise(engine, garments: list[Garment]) -> None:
-    """Insert a list of matcher Garment objects into the DB as GarmentRow records."""
-    now = datetime.now(timezone.utc).isoformat()
-    with Session(engine) as s:
-        for g in garments:
-            gid = str(uuid.uuid4())
-            row = GarmentRow(
-                id=gid,
-                type=g.garment_type,
-                image_file=f"{gid}.jpg",
-                thumbnail_file=f"{gid}.webp",
-                created_at=now,
-            )
-            s.add(row)
-            s.flush()
-            for i, c in enumerate(g.colours):
-                s.add(GarmentColourRow(
-                    garment_id=gid,
-                    position=i,
-                    h=c.h,
-                    s=c.s,
-                    l=c.l,
-                    family="Red",  # placeholder; service re-derives via classifier
-                    proportion=c.proportion,
-                ))
-        s.commit()
-
 
 def _rng() -> random.Random:
     return random.Random(42)

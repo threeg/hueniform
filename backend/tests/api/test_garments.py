@@ -12,38 +12,19 @@ with a ``garment_id`` binding, bypassing the detection pipeline.
 
 from __future__ import annotations
 
-from io import BytesIO
-
 import pytest
 from fastapi.testclient import TestClient
-from PIL import Image
-
 from unittest.mock import patch
 
 from app.matcher.taxonomy import classify
 from app.services.detection_service import ColourProposal, DetectionResult
 from app.storage import staging
+from tests.conftest import make_test_jpeg, stage_test_image
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
-
-def _tiny_jpeg() -> bytes:
-    """Return a minimal valid JPEG that Pillow and the thumbnail generator accept."""
-    buf = BytesIO()
-    Image.new("RGB", (8, 8), (180, 90, 45)).save(buf, format="JPEG")
-    return buf.getvalue()
-
-
-def _stage(settings: Settings, data: bytes = b"") -> str:
-    """Stage *data* (defaulting to a tiny JPEG) and return the token."""
-    return staging.stage(
-        data=data or _tiny_jpeg(),
-        ext="jpg",
-        content_type="image/jpeg",
-        fallback_used=False,
-        proposal={"colours": [{"h": 0, "s": 50, "l": 50, "proportion": 100}]},
-        staging_dir=settings.data_dir / "staging",
-    )
+def _stage(settings, data: bytes = b"") -> str:
+    """Stage *data* (defaulting to a test JPEG) and return the token."""
+    return stage_test_image(settings.data_dir / "staging", data or None)
 
 
 def _create_body(token: str, garment_type: str = "t_shirt", colours: list | None = None) -> dict:
@@ -401,10 +382,10 @@ def _fake_regen_result(token: str, garment_id: str) -> DetectionResult:
     )
 
 
-def _stage_regen_token(settings: Settings, garment_id: str) -> str:
+def _stage_regen_token(settings, garment_id: str) -> str:
     """Create a staging token bound to *garment_id* — simulates what run_regeneration does."""
     return staging.stage(
-        data=_tiny_jpeg(),
+        data=make_test_jpeg(),
         ext="jpg",
         content_type="image/jpeg",
         fallback_used=False,

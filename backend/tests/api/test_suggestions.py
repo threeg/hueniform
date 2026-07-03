@@ -14,17 +14,14 @@ Strategy (§7.4 / §8.1):
 
 from __future__ import annotations
 
-import uuid
-from datetime import datetime, timezone
-
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
 from app.matcher.colour import Colour
 from app.matcher.roles import Garment
-from app.storage.engine import init_db, make_engine
-from app.storage.models import GarmentColourRow, GarmentRow
+from app.storage.models import GarmentRow
+from tests.conftest import materialise_garments
 from tests.fixtures.wardrobes import (
     neutral_fallback_only,
     no_valid_outfit_constrained_by,
@@ -34,42 +31,9 @@ from tests.fixtures.wardrobes import (
 )
 
 
-
-# ── Wardrobe materialisation ──────────────────────────────────────────────────
-
-def _materialise(engine, garments: list[Garment]) -> None:
-    """Insert matcher Garment objects into the DB as GarmentRow/GarmentColourRow records."""
-    now = datetime.now(timezone.utc).isoformat()
-    with Session(engine) as s:
-        for g in garments:
-            gid = str(uuid.uuid4())
-            row = GarmentRow(
-                id=gid,
-                type=g.garment_type,
-                image_file=f"{gid}.jpg",
-                thumbnail_file=f"{gid}.webp",
-                created_at=now,
-            )
-            s.add(row)
-            s.flush()
-            for pos, c in enumerate(g.colours):
-                from app.matcher.taxonomy import classify
-                family = classify(c.h, c.s, c.l)
-                s.add(GarmentColourRow(
-                    garment_id=gid,
-                    position=pos,
-                    h=c.h,
-                    s=c.s,
-                    l=c.l,
-                    family=family,
-                    proportion=c.proportion,
-                ))
-        s.commit()
-
-
 def _seed(client: TestClient, garments: list[Garment]) -> None:
-    """Materialise garments into the client's engine."""
-    _materialise(client.app.state.engine, garments)
+    """Materialise garments into the client's engine with accurate family values."""
+    materialise_garments(client.app.state.engine, garments, derive_families=True)
 
 
 # ── POST /api/suggestions — empty wardrobe / missing slot ─────────────────────
