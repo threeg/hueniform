@@ -23,11 +23,12 @@ import sys
 _repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(_repo_root, "backend"))
 
-from app.storage.engine import init_db, make_engine  # noqa: E402
-from tests.fixtures.wardrobes import materialise_wardrobe, wardrobe_500  # noqa: E402
-
-# Need tests/ on the path too so fixtures/ is importable.
+# Need tests/ on the path too so conftest and fixtures/ are importable.
 sys.path.insert(0, os.path.join(_repo_root, "backend", "tests"))
+
+from app.storage.engine import init_db, make_engine  # noqa: E402
+from tests.conftest import materialise_garments  # noqa: E402
+from tests.fixtures.wardrobes import wardrobe_500  # noqa: E402
 
 from pathlib import Path
 
@@ -47,7 +48,7 @@ def main() -> None:
 
     garments = wardrobe_500()
     print(f"Inserting {len(garments)} garments into {db_path} …", flush=True)
-    materialise_wardrobe(engine, garments)
+    materialise_garments(engine, garments, derive_families=True)
     engine.dispose()
     print("Done.")
 
