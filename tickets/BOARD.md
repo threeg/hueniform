@@ -74,7 +74,7 @@ Reactive tickets from `/verify` post-batch reviews of the Milestone 14 work (CON
 | 90 | HUE-090 | Replace hardcoded slot strings with matcher constants | task | services | v0.2.0 | done | HUE-068 |
 | 91 | HUE-091 | Use pre-computed family in anchor family filter | task | services | v0.2.0 | done | HUE-087 |
 | 92 | HUE-092 | Consolidate materialise_wardrobe into shared materialise_garments | task | tooling | v0.2.0 | done | HUE-088 |
-| 93 | HUE-093 | Drop import aliases for shared test helpers | task | tooling | v0.2.0 | todo | HUE-092 |
+| 93 | HUE-093 | Drop import aliases for shared test helpers | task | tooling | v0.2.0 | done | HUE-092 |
 
 ## Implementation tickets — execution order (v0.1.0 — shipped)
 

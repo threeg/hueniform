@@ -27,7 +27,7 @@ from app.services.garment_service import (
     list_garments,
 )
 from app.storage.models import GarmentColourRow, GarmentRow
-from tests.conftest import make_test_jpeg as _make_jpeg_bytes, stage_test_image as _stage_image
+from tests.conftest import make_test_jpeg, stage_test_image
 
 
 _DEFAULT_COLOURS = [ColourIn(h=0.0, s=80.0, l=40.0, proportion=100)]
@@ -41,7 +41,7 @@ _TWO_COLOURS = [
 
 class TestConfirmHappyPath:
     def test_garment_row_inserted(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         result = confirm(
             token, "t_shirt", _DEFAULT_COLOURS,
             dirs["staging"], dirs["images"], dirs["thumbnails"], engine,
@@ -52,7 +52,7 @@ class TestConfirmHappyPath:
         assert row.type == "t_shirt"
 
     def test_colour_rows_inserted(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         result = confirm(
             token, "t_shirt", _TWO_COLOURS,
             dirs["staging"], dirs["images"], dirs["thumbnails"], engine,
@@ -64,7 +64,7 @@ class TestConfirmHappyPath:
         assert len(rows) == 2
 
     def test_image_file_in_images_dir(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         result = confirm(
             token, "t_shirt", _DEFAULT_COLOURS,
             dirs["staging"], dirs["images"], dirs["thumbnails"], engine,
@@ -72,7 +72,7 @@ class TestConfirmHappyPath:
         assert (dirs["images"] / result.image_file).exists()
 
     def test_thumbnail_file_created(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         result = confirm(
             token, "t_shirt", _DEFAULT_COLOURS,
             dirs["staging"], dirs["images"], dirs["thumbnails"], engine,
@@ -80,7 +80,7 @@ class TestConfirmHappyPath:
         assert (dirs["thumbnails"] / result.thumbnail_file).exists()
 
     def test_staged_image_removed_from_staging(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         confirm(
             token, "t_shirt", _DEFAULT_COLOURS,
             dirs["staging"], dirs["images"], dirs["thumbnails"], engine,
@@ -88,7 +88,7 @@ class TestConfirmHappyPath:
         assert list(dirs["staging"].iterdir()) == [], "staging dir should be empty after confirm"
 
     def test_returns_garment_result(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         result = confirm(
             token, "t_shirt", _DEFAULT_COLOURS,
             dirs["staging"], dirs["images"], dirs["thumbnails"], engine,
@@ -98,7 +98,7 @@ class TestConfirmHappyPath:
         assert result.regenerated_at is None
 
     def test_proportions_preserved(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         result = confirm(
             token, "t_shirt", _TWO_COLOURS,
             dirs["staging"], dirs["images"], dirs["thumbnails"], engine,
@@ -112,7 +112,7 @@ class TestConfirmHappyPath:
 class TestFamilyRederivation:
     def test_family_derived_from_hsl_not_client(self, engine, dirs):
         """The service always classifies family from HSL; client cannot override (FR-1)."""
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         # h=0°, s=80%, l=40% should be Red.
         result = confirm(
             token, "t_shirt", [ColourIn(h=0.0, s=80.0, l=40.0, proportion=100)],
@@ -122,7 +122,7 @@ class TestFamilyRederivation:
         assert result.colours[0].family == expected_family
 
     def test_family_stored_in_db(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         result = confirm(
             token, "t_shirt", [ColourIn(h=180.0, s=70.0, l=50.0, proportion=100)],
             dirs["staging"], dirs["images"], dirs["thumbnails"], engine,
@@ -135,7 +135,7 @@ class TestFamilyRederivation:
         assert rows[0].family == expected
 
     def test_hex_field_populated(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         result = confirm(
             token, "t_shirt", _DEFAULT_COLOURS,
             dirs["staging"], dirs["images"], dirs["thumbnails"], engine,
@@ -144,7 +144,7 @@ class TestFamilyRederivation:
         assert len(result.colours[0].hex) == 7
 
     def test_neutral_flag_correct(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         # Black (h=0, s=0, l=5) is neutral.
         result = confirm(
             token, "t_shirt", [ColourIn(h=0.0, s=0.0, l=5.0, proportion=100)],
@@ -160,7 +160,7 @@ class TestTokenLifecycle:
         import json
         from datetime import timedelta
 
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         # Force-expire the sidecar.
         sidecar = dirs["staging"] / f"{token}.json"
         data = json.loads(sidecar.read_text())
@@ -175,13 +175,13 @@ class TestTokenLifecycle:
             )
 
     def test_second_confirm_with_same_token_raises(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         confirm(
             token, "t_shirt", _DEFAULT_COLOURS,
             dirs["staging"], dirs["images"], dirs["thumbnails"], engine,
         )
         with pytest.raises(TokenNotFoundError):
-            _stage_second = _stage_image(dirs["staging"])  # noqa: F841
+            _stage_second = stage_test_image(dirs["staging"])  # noqa: F841
             confirm(
                 token, "t_shirt", _DEFAULT_COLOURS,
                 dirs["staging"], dirs["images"], dirs["thumbnails"], engine,
@@ -200,7 +200,7 @@ class TestTokenLifecycle:
 
 class TestConfirmValidation:
     def test_invalid_garment_type_raises(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         with pytest.raises(InvalidTypeError):
             confirm(
                 token, "onesie", _DEFAULT_COLOURS,
@@ -208,36 +208,36 @@ class TestConfirmValidation:
             )
 
     def test_zero_colours_raises(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         with pytest.raises(InvalidPaletteError):
             confirm(token, "t_shirt", [], dirs["staging"], dirs["images"], dirs["thumbnails"], engine)
 
     def test_five_colours_raises(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         colours = [ColourIn(h=float(i * 60), s=80.0, l=40.0, proportion=20) for i in range(5)]
         with pytest.raises(InvalidPaletteError):
             confirm(token, "t_shirt", colours, dirs["staging"], dirs["images"], dirs["thumbnails"], engine)
 
     def test_proportions_not_summing_to_100_raises(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         colours = [ColourIn(h=0.0, s=80.0, l=40.0, proportion=90)]
         with pytest.raises(InvalidPaletteError, match="100"):
             confirm(token, "t_shirt", colours, dirs["staging"], dirs["images"], dirs["thumbnails"], engine)
 
     def test_h_out_of_range_raises(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         colours = [ColourIn(h=360.0, s=80.0, l=40.0, proportion=100)]
         with pytest.raises(InvalidPaletteError):
             confirm(token, "t_shirt", colours, dirs["staging"], dirs["images"], dirs["thumbnails"], engine)
 
     def test_s_out_of_range_raises(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         colours = [ColourIn(h=0.0, s=101.0, l=40.0, proportion=100)]
         with pytest.raises(InvalidPaletteError):
             confirm(token, "t_shirt", colours, dirs["staging"], dirs["images"], dirs["thumbnails"], engine)
 
     def test_proportion_zero_raises(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         colours = [
             ColourIn(h=0.0, s=80.0, l=40.0, proportion=0),
             ColourIn(h=60.0, s=80.0, l=40.0, proportion=100),
@@ -250,7 +250,7 @@ class TestConfirmValidation:
 
 class TestConfirmAtomicity:
     def test_thumbnail_failure_leaves_no_image_in_images_dir(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         with patch(
             "app.services.garment_service.generate_thumbnail",
             side_effect=RuntimeError("disk full"),
@@ -263,7 +263,7 @@ class TestConfirmAtomicity:
         assert list(dirs["images"].iterdir()) == []
 
     def test_thumbnail_failure_leaves_no_db_rows(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         with patch(
             "app.services.garment_service.generate_thumbnail",
             side_effect=RuntimeError("disk full"),
@@ -278,7 +278,7 @@ class TestConfirmAtomicity:
         assert rows == []
 
     def test_db_failure_cleans_up_files(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         with patch(
             "app.services.garment_service.Session",
             side_effect=RuntimeError("db error"),
@@ -297,7 +297,7 @@ class TestConfirmAtomicity:
 class TestDelete:
     @pytest.fixture()
     def saved_garment(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         return confirm(
             token, "t_shirt", _DEFAULT_COLOURS,
             dirs["staging"], dirs["images"], dirs["thumbnails"], engine,
@@ -346,7 +346,7 @@ class TestDelete:
 class TestEditCategory:
     @pytest.fixture()
     def saved_garment(self, engine, dirs):
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         return confirm(
             token, "t_shirt", _TWO_COLOURS,
             dirs["staging"], dirs["images"], dirs["thumbnails"], engine,
@@ -433,7 +433,7 @@ class TestInventoryOrdering:
     _GREY   = [ColourIn(h=0.0,   s=0.0,  l=50.0, proportion=100)]  # classify → Grey (neutral)
 
     def _save(self, engine, dirs, garment_type: str, colours: list[ColourIn]) -> GarmentResult:
-        token = _stage_image(dirs["staging"])
+        token = stage_test_image(dirs["staging"])
         return confirm(
             token=token,
             garment_type=garment_type,

@@ -27,7 +27,7 @@ from app.services.garment_service import (
 )
 from app.storage import staging
 from app.storage.models import GarmentColourRow, GarmentRow
-from tests.conftest import make_test_jpeg as _make_jpeg_bytes, stage_test_image as _stage_image
+from tests.conftest import make_test_jpeg, stage_test_image
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
@@ -35,7 +35,7 @@ from tests.conftest import make_test_jpeg as _make_jpeg_bytes, stage_test_image 
 def _stage_regen_token(staging_dir: Path, garment_id: str, data: bytes | None = None) -> str:
     """Stage a token bound to *garment_id* (simulating run_regeneration)."""
     return staging.stage(
-        data=data or _make_jpeg_bytes(),
+        data=data or make_test_jpeg(),
         ext="jpg",
         content_type="image/jpeg",
         fallback_used=False,
@@ -55,7 +55,7 @@ _NEW_COLOURS = [
 @pytest.fixture()
 def saved_garment(engine, dirs):
     """A confirmed garment to regenerate against."""
-    token = _stage_image(dirs["staging"])
+    token = stage_test_image(dirs["staging"])
     return confirm(
         token, "t_shirt", _ORIGINAL_COLOURS,
         dirs["staging"], dirs["images"], dirs["thumbnails"], engine,
@@ -201,7 +201,7 @@ class TestRegenerationTokenValidation:
 
     def test_unbound_token_raises(self, engine, dirs, saved_garment):
         """A new-upload token (garment_id=None) is not a valid regeneration token."""
-        upload_token = _stage_image(dirs["staging"])
+        upload_token = stage_test_image(dirs["staging"])
         with pytest.raises(RegenerationTokenError):
             confirm_regeneration(
                 saved_garment.id, upload_token, "jumper", _NEW_COLOURS,

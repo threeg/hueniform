@@ -2,7 +2,7 @@
 id: HUE-093
 title: Drop import aliases for shared test helpers
 type: task
-status: todo
+status: done
 milestone: 14
 batch: cleanup
 layer: tooling
@@ -56,3 +56,4 @@ No new tests required — pure rename. Existing tests cover all paths.
 ## Notes
 
 - 2026-07-03 — created by `/verify` review of cleanup batch HUE-088-091.
+- 2026-07-03 — done. Removed `as _make_jpeg_bytes`, `as _stage_image`, and `as _materialise` aliases from `tests/services/test_garment_service.py`, `test_regeneration_service.py`, and `test_suggestion_service.py`. Renamed all call sites to `make_test_jpeg`, `stage_test_image`, and `materialise_garments` respectively. `make test` (1120+188, zero warnings) passes. Sanity test: `cd backend && .venv/bin/pytest tests/services/ -q`
