@@ -22,7 +22,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import Settings, create_app
-from tests.fixtures.wardrobes import materialise_wardrobe, wardrobe_500
+from tests.conftest import materialise_garments
+from tests.fixtures.wardrobes import wardrobe_500
 
 RUNS = 3
 
@@ -39,7 +40,7 @@ def perf_client(tmp_path_factory):
     settings = Settings(data_dir=tmp / "data", spa_dir=tmp / "no-spa")
     app = create_app(settings)
     with TestClient(app) as client:
-        materialise_wardrobe(client.app.state.engine, wardrobe_500())
+        materialise_garments(client.app.state.engine, wardrobe_500(), derive_families=True)
         yield client
 
 

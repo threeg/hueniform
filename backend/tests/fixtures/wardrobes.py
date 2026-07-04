@@ -20,17 +20,11 @@ Colour choices use canonical HSL values that classify deterministically per §2:
 from __future__ import annotations
 
 import random
-import uuid
-from datetime import datetime, timezone
-
-from sqlmodel import Session
 
 from app.matcher.colour import Colour
 from app.matcher.roles import Garment
 from app.matcher.slots import GARMENT_TYPES  # noqa: F401 — re-exported for test_wardrobes validation
-from app.matcher.taxonomy import FAMILIES, classify
-from app.storage.engine import Engine
-from app.storage.models import GarmentColourRow, GarmentRow
+from app.matcher.taxonomy import FAMILIES
 
 # ── Colour builders (proportion set per call) ─────────────────────────────────
 
@@ -226,33 +220,3 @@ def wardrobe_500(seed: int = 42) -> list[Garment]:
     return garments
 
 
-def materialise_wardrobe(engine: Engine, garments: list[Garment]) -> None:
-    """
-    Persist *garments* into *engine* as GarmentRow/GarmentColourRow records.
-
-    Used by perf tests and the seeding script — inserts everything in a single
-    transaction so the fixture is fast to set up.
-    """
-    now = datetime.now(timezone.utc).isoformat()
-    with Session(engine) as session:
-        for g in garments:
-            gid = str(uuid.uuid4())
-            session.add(GarmentRow(
-                id=gid,
-                type=g.garment_type,
-                image_file=f"{gid}.jpg",
-                thumbnail_file=f"{gid}.webp",
-                created_at=now,
-            ))
-            session.flush()
-            for pos, c in enumerate(g.colours):
-                session.add(GarmentColourRow(
-                    garment_id=gid,
-                    position=pos,
-                    h=c.h,
-                    s=c.s,
-                    l=c.l,
-                    family=classify(c.h, c.s, c.l),
-                    proportion=c.proportion,
-                ))
-        session.commit()

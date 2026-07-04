@@ -2,7 +2,7 @@
 id: HUE-092
 title: Consolidate materialise_wardrobe into shared materialise_garments
 type: task
-status: todo
+status: done
 milestone: 14
 batch: cleanup
 layer: tooling
@@ -55,3 +55,4 @@ cover all paths.
 ## Notes
 
 - 2026-07-03 — created by `/verify` review of cleanup batch HUE-088-091.
+- 2026-07-03 — done. Removed `materialise_wardrobe()` from `tests/fixtures/wardrobes.py` along with its now-unused imports (`uuid`, `datetime`/`timezone`, `Session`, `Engine`, `GarmentColourRow`, `GarmentRow`, `classify`). Updated `tests/perf/test_bounds.py` to import `materialise_garments` from `tests.conftest` and call it with `derive_families=True`. `make test` (1120+188, zero warnings) and `make test-perf` pass. Sanity test: `cd backend && .venv/bin/pytest tests/perf/ tests/services/test_suggestion_service.py tests/api/test_suggestions.py -q`
