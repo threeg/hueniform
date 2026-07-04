@@ -65,7 +65,7 @@ Leaf tickets for v0.2.0 (epics E06–E10). Reading top to bottom is a legal buil
 
 ## Cleanup backlog — v0.2.0
 
-Reactive tickets from `/verify` post-batch reviews of the Milestone 14 work (CONVENTIONS.md §6). Worked between batches or at milestone end; critical tickets are promoted into the v0.2.0 execution order above. Allocated after the current highest number (next is HUE-088), preserving the no-forward-dependency invariant.
+Reactive tickets from `/verify` post-batch reviews of the Milestone 14 work (CONVENTIONS.md §6). Worked between batches or at milestone end; critical tickets are promoted into the v0.2.0 execution order above. Allocated after the current highest number (next is HUE-094), preserving the no-forward-dependency invariant.
 
 | # | id | title | type | layer | source batch | status | depends_on |
 |---|---|---|---|---|---|---|---|
@@ -73,6 +73,8 @@ Reactive tickets from `/verify` post-batch reviews of the Milestone 14 work (CON
 | 89 | HUE-089 | Unify suggestion_service wardrobe filter functions | task | services | v0.2.0 | done | HUE-087 |
 | 90 | HUE-090 | Replace hardcoded slot strings with matcher constants | task | services | v0.2.0 | done | HUE-068 |
 | 91 | HUE-091 | Use pre-computed family in anchor family filter | task | services | v0.2.0 | done | HUE-087 |
+| 92 | HUE-092 | Consolidate materialise_wardrobe into shared materialise_garments | task | tooling | v0.2.0 | todo | HUE-088 |
+| 93 | HUE-093 | Drop import aliases for shared test helpers | task | tooling | v0.2.0 | todo | HUE-092 |
 
 ## Implementation tickets — execution order (v0.1.0 — shipped)
 
