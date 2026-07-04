@@ -2,7 +2,7 @@
 id: HUE-091
 title: Use pre-computed family in anchor family filter
 type: task
-status: todo
+status: done
 milestone: 14
 batch: cleanup
 layer: services
@@ -58,3 +58,4 @@ No new tests required — this is a pure optimisation. Existing tests verify beh
 ## Notes
 
 - 2026-07-03 — created by `/verify` review of v0.2.0 batch.
+- 2026-07-03 — done. Extended `_load_wardrobe()` to return a third value `garment_families: dict[int, frozenset[str]]` built from `GarmentColourRow.family` during the existing DB load pass. The anchor family filter predicate in `_filter_wardrobe` now reads `garment_families[id(g)]` instead of calling `{_classify(c.h, c.s, c.l) for c in g.colours}`, eliminating ~1,500 classify calls per request at 500 garments. Six `TestAnchor` tests updated to use `derive_families=True` so the stored family values match the test's expected families. `make test` passes (1120+188, zero warnings); `make test-perf` passes. Sanity test: `cd backend && .venv/bin/pytest tests/services/test_suggestion_service.py::TestAnchor -q`

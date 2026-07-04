@@ -72,7 +72,7 @@ Reactive tickets from `/verify` post-batch reviews of the Milestone 14 work (CON
 | 88 | HUE-088 | Shared test helpers for DB materialisation and image staging | task | tooling | v0.2.0 | done | HUE-068, HUE-082 |
 | 89 | HUE-089 | Unify suggestion_service wardrobe filter functions | task | services | v0.2.0 | done | HUE-087 |
 | 90 | HUE-090 | Replace hardcoded slot strings with matcher constants | task | services | v0.2.0 | done | HUE-068 |
-| 91 | HUE-091 | Use pre-computed family in anchor family filter | task | services | v0.2.0 | todo | HUE-087 |
+| 91 | HUE-091 | Use pre-computed family in anchor family filter | task | services | v0.2.0 | done | HUE-087 |
 
 ## Implementation tickets — execution order (v0.1.0 — shipped)
 

@@ -162,15 +162,21 @@ class SuggestionResult:
 
 # ── Internal helpers ──────────────────────────────────────────────────────────
 
-def _load_wardrobe(engine: Engine) -> tuple[list[Garment], dict[int, GarmentRow]]:
+def _load_wardrobe(
+    engine: Engine,
+) -> tuple[list[Garment], dict[int, GarmentRow], dict[int, frozenset[str]]]:
     """
     Load all garments from the database in exactly two queries.
 
-    Returns the ``Garment`` list for the matcher and an identity mapping
-    ``id(garment) → GarmentRow`` used to reconstruct DB rows from matcher output.
+    Returns:
+    - the ``Garment`` list for the matcher,
+    - an identity mapping ``id(garment) → GarmentRow`` for row reconstruction, and
+    - a ``garment_families`` mapping ``id(garment) → frozenset[family]`` built from
+      the stored family values (avoids re-classifying HSL in hot paths).
     """
     garments: list[Garment] = []
     index: dict[int, GarmentRow] = {}
+    garment_families: dict[int, frozenset[str]] = {}
 
     with Session(engine) as s:
         rows = s.exec(select(GarmentRow)).all()
@@ -185,15 +191,17 @@ def _load_wardrobe(engine: Engine) -> tuple[list[Garment], dict[int, GarmentRow]
     colours_by_garment = group_colours_by_garment(list(all_colour_rows))
 
     for row in rows:
+        colour_rows = colours_by_garment.get(row.id, [])
         colours = tuple(
             Colour(h=c.h, s=c.s, l=c.l, proportion=c.proportion)
-            for c in colours_by_garment.get(row.id, [])
+            for c in colour_rows
         )
         g = Garment(garment_type=row.type, colours=colours)
         index[id(g)] = row
+        garment_families[id(g)] = frozenset(c.family for c in colour_rows)
         garments.append(g)
 
-    return garments, index
+    return garments, index, garment_families
 
 
 def _filter_wardrobe(
@@ -393,7 +401,7 @@ def suggest(
             selected.discard(C.ONE_PIECE_UPPER_SLOT)
 
     # 5. Load wardrobe
-    wardrobe, garment_index = _load_wardrobe(engine)
+    wardrobe, garment_index, garment_families = _load_wardrobe(engine)
 
     # Pre-compute slot for every garment once — reused by all filter passes and
     # the empty-slot check (avoids ~2 000 redundant category_to_slot calls at 500 garments).
@@ -450,7 +458,7 @@ def suggest(
     if anchor_family is not None:
         wardrobe = _filter_wardrobe(
             wardrobe, slots_for,
-            lambda g, slot: slot in ECHO_SLOTS or anchor_family in {_classify(c.h, c.s, c.l) for c in g.colours},
+            lambda g, slot: slot in ECHO_SLOTS or anchor_family in garment_families[id(g)],
         )
 
     # 6. Fail-fast on empty requested slots (FR-36) — reuse cached slots

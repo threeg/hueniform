@@ -497,13 +497,13 @@ class TestAnchor:
             Garment("trousers", (Colour(h=  0.0, s=80.0, l=50.0, proportion=100),)),  # Red
             Garment("socks",    (Colour(h=  0.0, s= 0.0, l=50.0, proportion=100),)),  # Grey
             Garment("shoes",    (Colour(h=  0.0, s= 0.0, l= 6.0, proportion=100),)),  # Black
-        ])
+        ], derive_families=True)
         result = suggest({}, engine, _rng(), anchor_family="Red")
         assert len(result.combinations) >= 1
 
     def test_anchor_family_no_match_raises_empty_slots(self, engine):
         """FR-45: pre-filter removes all anchor garments → EmptySlotsError."""
-        _materialise(engine, single_valid_outfit())  # Red t_shirt + Teal trousers
+        _materialise(engine, single_valid_outfit(), derive_families=True)  # Red t_shirt + Teal trousers
         with pytest.raises(EmptySlotsError):
             suggest({}, engine, _rng(), anchor_family="Blue")
 
@@ -530,7 +530,7 @@ class TestAnchor:
             Garment("trousers", (Colour(h=180.0, s=70.0, l=50.0, proportion=100),)),  # Teal
             Garment("socks",    (Colour(h=  0.0, s= 0.0, l=50.0, proportion=100),)),  # Grey
             Garment("shoes",    (Colour(h=  0.0, s= 0.0, l= 6.0, proportion=100),)),  # Black
-        ])
+        ], derive_families=True)
         result = suggest({}, engine, _rng(), anchor_family="Teal", anchor_scheme="monochromatic")
         assert len(result.combinations) >= 1
         result2 = suggest({}, engine, _rng(), anchor_family="Teal", anchor_scheme="complementary")
@@ -556,7 +556,7 @@ class TestAnchor:
             Garment("trousers", (Colour(h=0.0, s=0.0, l= 6.0, proportion=100),)),  # Black
             Garment("socks",    (Colour(h=0.0, s=0.0, l=50.0, proportion=100),)),  # Grey
             Garment("shoes",    (Colour(h=0.0, s=0.0, l= 6.0, proportion=100),)),  # Black
-        ])
+        ], derive_families=True)
         seeds = [0, 1, 7, 42, 99]
         results = [
             suggest({}, engine, random.Random(s), anchor_family="Black")
@@ -576,7 +576,7 @@ class TestAnchor:
             Garment("shirt",    (Colour(h=0.0, s=0.0, l= 6.0, proportion=100),)),  # Black (only shirt)
             Garment("socks",    (Colour(h=0.0, s=0.0, l=50.0, proportion=100),)),  # Grey
             Garment("shoes",    (Colour(h=0.0, s=0.0, l= 6.0, proportion=100),)),  # Black
-        ])
+        ], derive_families=True)
         seeds = [0, 1, 7, 42, 99]
         for s in seeds:
             result = suggest({"shirt": True}, engine, random.Random(s), anchor_family="Black")
@@ -600,6 +600,6 @@ class TestAnchor:
     def test_empty_slots_when_no_anchor_family_garments(self, engine):
         """HUE-087: pre-filter removes all anchor garments → EmptySlotsError."""
         # All anchor garments are Red/Teal; no Black garments in any anchor slot.
-        _materialise(engine, single_valid_outfit())  # Red t_shirt + Teal trousers
+        _materialise(engine, single_valid_outfit(), derive_families=True)  # Red t_shirt + Teal trousers
         with pytest.raises(EmptySlotsError):
             suggest({}, engine, _rng(), anchor_family="Black")
