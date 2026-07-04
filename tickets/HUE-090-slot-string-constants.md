@@ -2,7 +2,7 @@
 id: HUE-090
 title: Replace hardcoded slot strings with matcher constants
 type: task
-status: todo
+status: done
 milestone: 14
 batch: cleanup
 layer: services
@@ -51,3 +51,4 @@ No new tests required — this is a pure rename. Existing tests verify behaviour
 ## Notes
 
 - 2026-07-03 — created by `/verify` review of v0.2.0 batch.
+- 2026-07-03 — done. Replaced all five raw slot string literals in `suggestion_service.py`: `"lower_body"` → `C.MANDATORY_SLOT` (two occurrences in the one-piece exclusion block and the pin validation block) and `"base"` → `C.ONE_PIECE_UPPER_SLOT` (two `selected.discard` calls). No raw `"lower_body"` or `"base"` strings remain. `make test` passes (1120+188, zero warnings). Sanity test: `cd backend && .venv/bin/pytest tests/services/test_suggestion_service.py -q`

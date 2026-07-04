@@ -388,9 +388,9 @@ def suggest(
         raise InvalidSlotError([MANDATORY_SLOT])
 
     # 4. One-piece / base auto-exclusion (FR-50.2) via category filter
-    if "lower_body" in category_filters:
-        if all(c in C.ONE_PIECE_CATEGORIES for c in category_filters["lower_body"]):
-            selected.discard("base")
+    if C.MANDATORY_SLOT in category_filters:
+        if all(c in C.ONE_PIECE_CATEGORIES for c in category_filters[C.MANDATORY_SLOT]):
+            selected.discard(C.ONE_PIECE_UPPER_SLOT)
 
     # 5. Load wardrobe
     wardrobe, garment_index = _load_wardrobe(engine)
@@ -430,9 +430,9 @@ def suggest(
             pin_garments[slot] = g
 
         # FR-44+FR-50.2: one-piece pin to lower_body excludes base
-        lb_pin = pin_garments.get("lower_body")
+        lb_pin = pin_garments.get(C.MANDATORY_SLOT)
         if lb_pin is not None and lb_pin.garment_type in C.ONE_PIECE_CATEGORIES:
-            selected.discard("base")
+            selected.discard(C.ONE_PIECE_UPPER_SLOT)
 
     requested_slots = frozenset(selected)
 
