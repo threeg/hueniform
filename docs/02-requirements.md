@@ -20,6 +20,13 @@
 > v0.2.0)* in place; numeric thresholds remain contractual (§1.4). The reasoning
 > behind the FR-16–22 rewrite is recorded in
 > `docs/spikes/2026-06-18-f4-category-slot-model.md`.
+>
+> **v0.3.0 amendment note (5 July 2026).** The v0.3.0 delta pass is a visual redesign
+> (v0.3.0 brief, `docs/10-v0.3.0-brief.md`). Its requirement check (Milestone 16) adds
+> **one** delta — **NFR-11** (accessibility floor: WCAG 2.1 AA contrast + visible focus)
+> — and re-affirms NFR-1/NFR-8 (offline; fonts self-hosted) and NFR-6/NFR-7. No `FR`
+> changes. The design tokens are specified in `docs/06-design-system.md`; the v0.3.0
+> decisions are logged in §9.3.
 
 ---
 
@@ -487,6 +494,8 @@ Weights are named constants per §1.4: `WEIGHT_SCHEME_STRENGTH = 100`, `WEIGHT_E
 
 **NFR-10.** *(New — v0.2.0, F5.)* Suggestion **variety shall be seedable**: the randomness used for candidate enumeration and the variety factor (FR-41.3, FR-42) shall be supplied by an **injected random source**, so a fixed seed produces deterministic, unit-testable matcher output (preserving NFR-9 and supporting the golden-snapshot baseline), while runtime uses an unseeded source to deliver FR-42's permitted non-determinism. The matcher shall hold no global random state.
 
+**NFR-11.** *(New — v0.3.0, design system.)* The user interface shall meet an **accessibility floor of WCAG 2.1 level AA** for the qualities the visual design controls: (a) **contrast** — text and background pairings shall reach **≥ 4.5:1** for body text and **≥ 3:1** for large text (≥ 18.66 px regular / ≥ 14 px bold) and for the boundaries of interactive/graphical UI components; (b) **visible focus** — every interactive element shall present a clearly visible keyboard-focus indicator, never suppressed without an equivalent replacement; and (c) **colour is not the sole carrier of meaning** — any state or category conveyed by colour shall also be conveyed by text, shape or icon. This applies to UI **chrome** (the design tokens in `docs/06-design-system.md` §2–§3), not to the detected garment/family colours, which are content. The floor is verified per the test-strategy delta (Milestone 19). It does not relax NFR-7: desktop-only scope is unchanged.
+
 ---
 
 ## 9. Decisions log (interview outcomes)
@@ -535,10 +544,22 @@ revealed that the single multi-category slots were too coarse to request. Per th
 | Per-category slot constraint | A request may **constrain a selected slot to a subset of its categories** (e.g. shorts only), expressed inside the `slots` map (API contract §2.12). New **FR-52**; composes with pins, anchor and count. |
 | Pin behaviour | A pin opens a **wardrobe picker modal**; selecting also offers a one-click **"Suggest outfits around this"** (pin + generate). Otherwise pinning composes the request and Generate stays explicit (FR-44). |
 
+### 9.3 v0.3.0 decisions (Milestone 16 — design system + requirement check, 5 July 2026)
+
+| Decision | Outcome |
+|---|---|
+| Design captured as spec | New binding `docs/06-design-system.md` extracted from the prototype (`docs/designs/Hueniform App.html`), which is retained as the visual reference. |
+| Token scale | **Normalised** — the prototype's design-tool export values are re-expressed on a 4 px spacing base, a rounded `rem` type scale and a small radius set; colours and font families kept as-is (design system §3). |
+| Fonts offline | Hanken Grotesk / Newsreader / Space Mono **self-hosted and bundled at build time**; the prototype's Google-Fonts fetch is removed. Re-affirms NFR-1/NFR-8; not a new requirement. |
+| Accessibility floor | **New NFR-11** — WCAG 2.1 AA contrast + visible focus + colour-not-sole-cue, binding for UI chrome. This revises the v0.3.0 brief's initial "no requirement deltas" finding. |
+| Styling approach | Native CSS (CSS Modules + custom properties, grid/`clamp()`/media queries); **no CSS framework** introduced (keeps the committed convention). A framework would be an architecture decision, not a silent divergence. |
+| Responsive scope | Fluid across the **desktop** range only; NFR-7's "no mobile layout" is unchanged. Mobile/tablet would require amending NFR-7 first. |
+
 ---
 
 *Approval of the original document closed Milestone 2 (v0.1.0). Approval of the
-v0.2.0 deltas above closes Milestone 10; the §9.2 addendum was settled during the
+v0.2.0 deltas closes Milestone 10; the §9.2 addendum was settled during the
 Milestone 12 session (and re-closes the reopened FR-16/FR-36/FR-49 and new FR-52
-with the same sign-off). This is a living specification; see
+with the same sign-off). The v0.3.0 delta — **NFR-11** (§9.3) — is settled at
+Milestone 16 sign-off. This is a living specification; see
 `docs/00-milestone-plan.md` for current status.*
