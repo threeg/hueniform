@@ -4,7 +4,7 @@
 |---|---|
 | **Document** | Milestone plan and progress tracker |
 | **Repository location** | `docs/00-milestone-plan.md` |
-| **Last updated** | 5 July 2026 (v0.2.0 shipped and tagged `v0.2.0`; v0.3.0 scoped — Milestone 15, the v0.3.0 brief, is the current position and awaits sign-off) |
+| **Last updated** | 5 July 2026 (v0.2.0 shipped and tagged `v0.2.0`; Milestone 15 — the v0.3.0 brief — signed off; Milestone 16, design system + requirement check, is the current position) |
 
 This document is the single source of truth for **where the project is**. It was extracted from the project brief (§14) so the brief stays stable after approval while this tracker is updated as each milestone completes. Update the status column and the *Current position* line in the same commit as the milestone's deliverable.
 
@@ -12,7 +12,7 @@ This document is the single source of truth for **where the project is**. It was
 
 ## Current position
 
-> **v0.3.0 scoped — Milestone 15 (the v0.3.0 brief) is the current position and awaits sign-off.** The brief is in `docs/10-v0.3.0-brief.md`: a **visual + layout redesign** applying the finished design in `docs/designs/Hueniform App.html` to the React SPA, captured as a binding design-system document (`docs/06-design-system.md`) with the prototype retained as the visual reference. It carries **no requirement deltas** — presentation-layer only, all v0.2.0 behaviour and contracts preserved (NFR-1/NFR-8 offline and NFR-6 responsiveness re-affirmed and re-verified, not changed). Proposed epics **HUE-E11** (design-system foundation) and **HUE-E12** (screen restyle & layout); implementation tickets continue from **HUE-094**. Per the scoping intent, each delta-pass milestone (M16–M20) is laid down and run through to confirm what it needs; M17 (architecture/API) is expected to be N/A. Next, on sign-off: Milestone 16 — design system + requirement check (`sfk-next-milestone`).
+> **v0.3.0 scoped; Milestone 15 (the v0.3.0 brief) signed off — Milestone 16 (design system + requirement check) is the current position.** The brief is in `docs/10-v0.3.0-brief.md`: a **visual + layout redesign** applying the finished design in `docs/designs/Hueniform App.html` to the React SPA, captured as a binding design-system document (`docs/06-design-system.md`) with the prototype retained as the visual reference. It carries **no requirement deltas** — presentation-layer only, all v0.2.0 behaviour and contracts preserved (NFR-1/NFR-8 offline and NFR-6 responsiveness re-affirmed and re-verified, not changed). Proposed epics **HUE-E11** (design-system foundation) and **HUE-E12** (screen restyle & layout); implementation tickets continue from **HUE-094**. Per the scoping intent, each delta-pass milestone (M16–M20) is laid down and run through to confirm what it needs; M17 (architecture/API) is expected to be N/A. Next: Milestone 16 — design system + requirement check (`sfk-next-milestone`).
 >
 > **v0.2.0 shipped and tagged `v0.2.0`.** Milestones 9–13 were completed and signed off; Milestone 14 (implementation) delivered epics E06–E10 (leaf tickets HUE-059–HUE-087) plus the v0.2.0 cleanup backlog (HUE-088–093), all `done`, and the release was tagged `v0.2.0`. The milestone table below marks M14 ✅ on the basis of that shipped, tagged release; if formal sign-off of M14 is still wanted, run `sfk-signoff` against it before proceeding.
 >
@@ -52,7 +52,7 @@ Delta pass applying the finished design (`docs/designs/Hueniform App.html`) to t
 
 | # | Milestone | Deliverable | Tool | Status |
 |---|---|---|---|---|
-| 15 | v0.3.0 brief | `docs/10-v0.3.0-brief.md` — visual + layout redesign scope, design-system artefact, epics E11–E12, no requirement deltas | **Cowork** | 🔶 In progress |
+| 15 | v0.3.0 brief | `docs/10-v0.3.0-brief.md` — visual + layout redesign scope, design-system artefact, epics E11–E12, no requirement deltas | **Cowork** | ✅ Complete |
 | 16 | Design system + requirement check | New `docs/06-design-system.md` (tokens, typography, spacing, components) extracted from the prototype; confirm the "no `FR`/`NFR` deltas" finding | **Cowork / Chat** | ⬜ Not started |
 | 17 | Architecture & API deltas | Confirm no API/contract change; note any frontend/CSS-architecture change in `docs/03-architecture.md` if warranted (expected N/A) | **Cowork / Chat** | ⬜ Not started |
 | 18 | Wireframe deltas | `docs/04-wireframes/` updated where the new layout differs materially from the committed wireframes | **Cowork** | ⬜ Not started |
