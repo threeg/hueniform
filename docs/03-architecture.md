@@ -3,10 +3,10 @@
 | | |
 |---|---|
 | **Document** | Architecture (living document) |
-| **Status** | Approved (Milestone 3); amended for v0.2.0 (Milestone 11) |
+| **Status** | Approved (Milestone 3); amended for v0.2.0 (Milestone 11) and v0.3.0 (Milestone 17) |
 | **Originally approved** | 12 June 2026 (Milestone 3, v0.1.0) |
-| **Last amended** | 18 June 2026 — v0.2.0 architecture deltas (Milestone 11) |
-| **Source** | Approved project brief (`docs/01-project-brief.md`) and requirements (`docs/02-requirements.md`); v0.2.0 brief (`docs/09-v0.2.0-brief.md`); F4 spike (`docs/spikes/2026-06-18-f4-category-slot-model.md`) |
+| **Last amended** | 5 July 2026 — v0.3.0 frontend styling-architecture note (Milestone 17) |
+| **Source** | Approved project brief (`docs/01-project-brief.md`) and requirements (`docs/02-requirements.md`); v0.2.0 brief (`docs/09-v0.2.0-brief.md`); F4 spike (`docs/spikes/2026-06-18-f4-category-slot-model.md`); v0.3.0 brief (`docs/10-v0.3.0-brief.md`) and design system (`docs/06-design-system.md`) |
 | **Repository location** | `docs/03-architecture.md` |
 | **Companion document** | `docs/03-api-contract.md` (the HTTP contract; authoritative for all endpoint shapes) |
 
@@ -24,6 +24,15 @@
 > remain contractual and are referenced here, not restated. Superseded text is marked
 > *(superseded — v0.2.0)* in place. The reasoning behind the slot-model rewrite is in
 > the F4 spike note.
+>
+> **v0.3.0 amendment note (5 July 2026).** v0.3.0 is a **presentation-layer** redesign
+> (v0.3.0 brief, `docs/10-v0.3.0-brief.md`). The architecture review (Milestone 17) found
+> **no change to the module layout, the dependency rule, the data model, the flows, or the
+> HTTP contract** (`docs/03-api-contract.md` is unchanged — a visual redesign alters no
+> endpoint shapes). The only delta is a **frontend styling-architecture** note in **§2.5**
+> recording the design-system realisation (a global design-tokens layer, self-hosted fonts,
+> and the decision to introduce **no CSS framework**), plus the new accessibility floor
+> **NFR-11**. Backend architecture (§2.1–§2.4, §3, §4) is untouched.
 
 ## 1. Architectural overview
 
@@ -139,6 +148,24 @@ The pipeline runs **synchronously inside the request** — the 5-second bound (N
 ### 2.5 Frontend
 
 A Vite + TypeScript React SPA with four areas: upload & confirm-and-correct, inventory browser with combinable filters, garment detail (regenerate/delete), and outfit request/results. Server state is cached with TanStack Query so filter changes hit memory or a fast indexed query (NFR-6); routing via React Router; styling via CSS Modules (no heavyweight UI kit for a single-user tool). The proportion editor enforces the sum-to-100 rule with normalise-on-save (FR-29). In production the SPA is static files served by FastAPI; in development Vite's dev server proxies `/api` to Uvicorn.
+
+**Styling architecture *(v0.3.0, Milestone 17)*.** The visual design is specified in
+`docs/06-design-system.md` and realised as follows, without altering any of the above:
+
+- **Design-tokens layer.** The design-system tokens (colour, typography, spacing, radius, elevation)
+  are defined once as **CSS custom properties** at `:root` in a single global stylesheet, imported at
+  the SPA entry point. CSS Modules consume the tokens via `var(--…)`; components never hard-code raw
+  colour/size literals. This is the one shared global-CSS surface — everything else stays module-scoped.
+- **No CSS framework.** The redesign deliberately introduces **no** utility/component CSS framework
+  (e.g. Tailwind, Bootstrap); responsiveness uses native CSS (flexbox, grid, `clamp()`, media/container
+  queries). This keeps the committed CSS-Modules convention. Adopting a framework later would be an
+  architecture decision recorded here first — not a silent divergence.
+- **Self-hosted fonts.** Hanken Grotesk, Newsreader and Space Mono are **vendored into the frontend**
+  (e.g. `frontend/src/assets/fonts/*.woff2`), declared with local `@font-face`, and bundled by Vite at
+  build time. No web-font is fetched at runtime, preserving the offline contract (NFR-1, NFR-8).
+- **Accessibility.** UI chrome meets the **NFR-11** floor (WCAG 2.1 AA contrast, visible focus,
+  colour-not-sole-cue); this is a rendering concern only — no impact on the API, data model or the
+  matcher. Responsive scope stays **desktop-only** per NFR-7.
 
 ---
 
@@ -364,7 +391,7 @@ All choices sit within the brief's binding stack (Python + FastAPI, React SPA, S
 | Colour conversion | Pure-Python RGB↔HSL in `matcher.colour` | Keeps the matcher standard-library-only (NFR-9); the §1.3 maths is small enough to own and unit-test |
 | Frontend build | Vite + TypeScript | Fast builds, typed API client, first-class React support |
 | Server-state cache | TanStack Query | Keeps inventory filter changes under NFR-6's 1 s without bespoke caching |
-| Routing / styling | React Router / CSS Modules | Minimal, boring choices for a single-user image-heavy UI |
+| Routing / styling | React Router / CSS Modules + a global design-tokens layer (CSS custom properties) | Minimal, boring choices for a single-user image-heavy UI; v0.3.0 adds design tokens (`docs/06-design-system.md`) and **no** CSS framework (§2.5) |
 | API style | REST over JSON | One resource model (detections, garments, suggestions); contract in `docs/api-contract.md`, FastAPI's OpenAPI as secondary reference |
 
 Test frameworks are deliberately **not** chosen here; that is Milestone 5 (`docs/test-strategy.md`). The architecture's only commitment is the purity boundary that makes the matcher trivially testable (NFR-9).
