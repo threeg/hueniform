@@ -10,6 +10,12 @@ You apply the *method's* updates to the project's living spec **without overwrit
 content**. This is a semantic migration, not a blind file copy — a blind copy would clobber filled-in
 docs, because the kit also ships working-named files for fresh inits.
 
+> **In Cowork, do not commit.** Where a step below says to "commit" during a planning milestone,
+> author and save the files and leave the changes for the **user** to review and commit — the
+> assistant must not run `git commit`/`git add`/`git tag` in Cowork (see the project root `CLAUDE.md`,
+> *Version control — who commits*). Automated committing applies only to the implementation milestone
+> in Claude Code.
+
 ## Inputs you need
 
 - **This project**, whose *applied* kit version is recorded in the root `CLAUDE.md` (*Project & kit*

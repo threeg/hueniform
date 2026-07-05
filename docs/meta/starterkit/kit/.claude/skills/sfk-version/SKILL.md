@@ -9,6 +9,12 @@ Use to open a version: the first release right after `sfk-init`, and each later 
 previous one has shipped. It defines *what* the version delivers and lays out the milestones to get
 there; it does **not** work the milestones (that is `sfk-next-milestone`).
 
+> **In Cowork, do not commit.** Where a step below says to "commit" during a planning milestone,
+> author and save the files and leave the changes for the **user** to review and commit — the
+> assistant must not run `git commit`/`git add`/`git tag` in Cowork (see the project root `CLAUDE.md`,
+> *Version control — who commits*). Automated committing applies only to the implementation milestone
+> in Claude Code.
+
 ## Procedure
 
 1. **Get the number and goals.** Ask the user for the version number and its

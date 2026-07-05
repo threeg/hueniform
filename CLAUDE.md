@@ -95,4 +95,23 @@ Milestones move `Not started (⬜) → In progress (🔶) → Complete (✅)`.
   milestone stays `In progress`, however done it looks.
 - **When the user signs off,** mark the milestone `Complete` and move the *Current
   position* line to the next milestone — updating the milestone's status **and** the
-  *Current position* line in the same commit as the milestone's deliverable.
+  *Current position* line together with the milestone's deliverable. In Cowork, make
+  these edits but **do not commit them** (see *Version control — who commits* below);
+  leave the commit to the user.
+
+## Version control — who commits
+
+**Git commits during the spec/planning milestones are the user's to make.** When any
+`sfk-*` skill (or any other workflow) runs **in Cowork** — every milestone from the
+brief through sign-off, i.e. **everything up to the implementation milestone** — the
+assistant must **not** run `git commit`, `git add`, `git tag`, `git reset` or any other
+history- or index-changing git command. Author, save and edit the files (the brief, the
+milestone plan, requirements, wireframes, tickets, status flips, the *Current position*
+line, etc.), then **hand off to the user to review and commit**. Read-only git
+(`git status`, `git log`, `git diff`) is fine.
+
+This **overrides** any SFK skill step that says to "commit" — where a skill instructs a
+commit during a planning milestone, treat it as *prepare the change and leave it staged
+for the user*. Automated committing applies **only to the implementation milestone**,
+which runs in **Claude Code** (one ticket per commit, per `tickets/CLAUDE.md`), not in
+Cowork.

@@ -59,8 +59,11 @@ wireframes → test strategy → ticket generation → scaffolding → implement
   shipped. Later versions run as a **delta pass**, not a fresh spec.
 - **`.sfk/` is a read-only source.** Skills copy templates *out* of `process/.sfk/templates/` to their
   working locations and edit the copies; nothing edits inside `.sfk/` except `sfk-update-process`.
-- **Human owns completion.** The agent drafts and commits, but only the user signs off a milestone
-  (`sfk-signoff`).
+- **Human owns completion.** The agent drafts, but only the user signs off a milestone (`sfk-signoff`).
+  **In Cowork the human also owns the commits for the planning milestones** — the agent authors and
+  saves deliverables and status changes but does not `git commit`; the user reviews and commits.
+  Agent commits are confined to the implementation milestone in Claude Code. (This overrides the
+  original "agent commits WIP" rationale below for planning work run in Cowork.)
 - **Mode over brand.** Authoring (spec) vs building (code) is the durable distinction; Cowork/Code are
   just the current recommended tools.
 
@@ -128,8 +131,11 @@ Newest-relevant first. Each entry: the decision, why, and what was rejected.
     milestones belongs to `sfk-version` + `sfk-next-milestone`.
   - `sfk-version` — starts a version: writes the version brief and lays down that version's milestone
     table. Added so the lifecycle is init (once) → version (per version) → milestones.
-  - `sfk-next-milestone` — works one milestone to a **committed draft** and iterates on feedback.
-    *Why commit WIP:* the user shouldn't have to commit; the agent keeps the record honest.
+  - `sfk-next-milestone` — works one milestone to a **draft** and iterates on feedback.
+    *Original rationale (agent commits WIP):* the user shouldn't have to commit; the agent keeps the
+    record honest. **Superseded for Cowork:** when planning milestones run in Cowork the user owns the
+    commits, so the agent saves the draft and leaves committing to the user (see *Human owns
+    completion* above and root `CLAUDE.md`, *Version control — who commits*).
   - `sfk-signoff` — the human gate; the only thing that marks a milestone Complete and advances the
     plan. *Why separate:* mechanises "the agent never self-completes."
   - `sfk-next-ticket` — one ticket, one commit, during implementation.

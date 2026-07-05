@@ -12,6 +12,12 @@ off — that is the separate `sfk-signoff` skill, which the user triggers.
 > **`.sfk/` is read-only.** Copy any template you need *out* of `.sfk/templates/` to
 > its working location and edit the copy — never edit inside `.sfk/`.
 
+> **In Cowork, do not commit.** Where a step below says to "commit" during a planning milestone,
+> author and save the files and leave the changes for the **user** to review and commit — the
+> assistant must not run `git commit`/`git add`/`git tag` in Cowork (see the project root `CLAUDE.md`,
+> *Version control — who commits*). Automated committing applies only to the implementation milestone
+> in Claude Code.
+
 ## Procedure
 
 1. **Read `spec/milestone-plan.md`.** Find the *Current position* and the milestone table. Identify

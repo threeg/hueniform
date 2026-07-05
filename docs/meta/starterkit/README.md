@@ -155,7 +155,11 @@ acme/
 - **Spec first, and binding.** No code until a fresh session could implement any ticket from the docs
   alone.
 - **The ticket is the prompt.** One ticket, one commit; the work record and the code record stay 1:1.
-- **The human owns completion.** The agent drafts and commits; only you sign off a milestone.
+- **The human owns completion.** The agent drafts; only you sign off a milestone. **When the planning
+  milestones run in Cowork, the human also owns the commits** — the agent authors and saves the
+  deliverables and status changes but does not run `git commit`; you review and commit. Automated
+  committing is confined to the implementation milestone in Claude Code (one ticket, one commit). See
+  the project root `CLAUDE.md`, *Version control — who commits*.
 - **`.sfk/` is read-only machinery; `spec/` is yours.** Skills read templates from `.sfk/` and write
   your living docs into `spec/`.
 

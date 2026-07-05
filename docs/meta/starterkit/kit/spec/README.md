@@ -154,8 +154,13 @@ Two rules keep it honest, and they are non-negotiable:
   self-completes a milestone. Finishing the deliverable, passing the gates, and self-verification are
   *not* sufficient — until you sign off, it stays `In progress`, however done it looks.
 
-This is the rhythm: one milestone at a time, each its own session, drafted and committed by the agent,
-completed only by you.
+This is the rhythm: one milestone at a time, each its own session, drafted by the agent, completed only
+by you.
+
+> **In Cowork, the user owns the commits for planning milestones.** During the authoring milestones the
+> agent writes and saves the deliverables and status changes but does **not** run `git commit` — you
+> review and commit. Automated committing is confined to the implementation milestone in Claude Code
+> (one ticket, one commit). See the root `CLAUDE.md`, *Version control — who commits*.
 
 ---
 

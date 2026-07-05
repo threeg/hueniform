@@ -9,6 +9,12 @@ Run this **only when the user explicitly approves** the current milestone's deli
 place a milestone becomes `Complete`. `sfk-next-milestone` produced and committed the draft; this skill
 records the user's sign-off and advances the project.
 
+> **In Cowork, do not commit.** Where a step below says to "commit" during a planning milestone,
+> author and save the files and leave the changes for the **user** to review and commit — the
+> assistant must not run `git commit`/`git add`/`git tag` in Cowork (see the project root `CLAUDE.md`,
+> *Version control — who commits*). Automated committing applies only to the implementation milestone
+> in Claude Code.
+
 ## Procedure
 
 1. **Confirm approval.** Verify the user is signing off the milestone that is currently `In progress`
