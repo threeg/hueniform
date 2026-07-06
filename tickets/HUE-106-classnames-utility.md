@@ -2,7 +2,7 @@
 id: HUE-106
 title: Extract classNames utility and refactor NavLink helpers
 type: task
-status: todo
+status: done
 milestone: 20
 batch: cleanup
 layer: frontend
@@ -31,10 +31,10 @@ Identified by `/verify` post-batch review of the design-system batch.
 
 ## Definition of done (acceptance criteria)
 
-- [ ] `classNames` utility created and used in all four component files
-- [ ] NavLink helpers replaced with factory pattern in `App.tsx`
-- [ ] `make test` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] `classNames` utility created and used in all four component files
+- [x] NavLink helpers replaced with factory pattern in `App.tsx`
+- [x] `make test` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -43,3 +43,4 @@ No new tests required — the utility is exercised transitively through existing
 ## Notes
 
 - 2026-07-05 — created from `/verify` review of design-system batch (HUE-094–098)
+- 2026-07-06 — done. Created `frontend/src/utils/classNames.ts` exporting `classNames(...classes)`. Refactored `Button.tsx`, `Chip.tsx`, `TextInput.tsx`, and `Wardrobe.tsx` to replace inline `.filter(Boolean).join(' ')` calls. In `App.tsx`, replaced the three one-liner `sideClass`/`topClass`/`tabClass` functions with a `createNavClass(base, active)` factory producing three derived constants. No test files changed. `make test-frontend` green: 273 passed (13 suites), zero warnings. Sanity test: `cd frontend && npx vitest run --reporter=verbose 2>&1 | tail -5`.

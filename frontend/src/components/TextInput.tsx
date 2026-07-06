@@ -1,5 +1,6 @@
 import type { InputHTMLAttributes } from 'react'
 import styles from './TextInput.module.css'
+import { classNames } from '../utils/classNames'
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   label?: string
@@ -23,7 +24,7 @@ export default function TextInput({ label, id, className, ...rest }: Props) {
       )}
       <input
         id={id}
-        className={[styles.input, className].filter(Boolean).join(' ')}
+        className={classNames(styles.input, className)}
         {...rest}
       />
     </div>

@@ -5,6 +5,7 @@ import Banner from '../components/Banner'
 import Button from '../components/Button'
 import GarmentCard from '../components/GarmentCard'
 import LoadingState from '../components/LoadingState'
+import { classNames } from '../utils/classNames'
 import { hslToHex } from '../utils/colour'
 import { typeLabel } from '../utils/typeLabel'
 import styles from './Wardrobe.module.css'
@@ -141,7 +142,7 @@ export default function Wardrobe() {
             <button
               key={value}
               type="button"
-              className={[styles.orderBtn, orderFilter === value ? styles.orderBtnActive : ''].filter(Boolean).join(' ')}
+              className={classNames(styles.orderBtn, orderFilter === value && styles.orderBtnActive)}
               aria-pressed={orderFilter === value}
               data-testid={`order-${value}`}
               onClick={() => setOrder(value)}

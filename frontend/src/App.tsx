@@ -1,16 +1,14 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import styles from './App.module.css'
+import { classNames } from './utils/classNames'
 
-// NavLink className helpers — one per navigation tier.
-function sideClass({ isActive }: { isActive: boolean }) {
-  return isActive ? `${styles.sideLink} ${styles.sideLinkActive}` : styles.sideLink
+function createNavClass(base: string, active: string) {
+  return ({ isActive }: { isActive: boolean }) => classNames(base, isActive && active)
 }
-function topClass({ isActive }: { isActive: boolean }) {
-  return isActive ? `${styles.topLink} ${styles.topLinkActive}` : styles.topLink
-}
-function tabClass({ isActive }: { isActive: boolean }) {
-  return isActive ? `${styles.tabLink} ${styles.tabLinkActive}` : styles.tabLink
-}
+
+const sideClass = createNavClass(styles.sideLink, styles.sideLinkActive)
+const topClass  = createNavClass(styles.topLink,  styles.topLinkActive)
+const tabClass  = createNavClass(styles.tabLink,  styles.tabLinkActive)
 
 export default function App() {
   return (
