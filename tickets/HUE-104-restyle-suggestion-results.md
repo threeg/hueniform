@@ -2,7 +2,7 @@
 id: HUE-104
 title: Restyle Suggestion results
 type: story
-status: todo
+status: done
 milestone: 20
 batch: screen
 layer: frontend
@@ -53,9 +53,19 @@ so that it is attractive and usable everywhere.
 - [ ] Confirm each documented state still appears and behaves as before
 
 ## Definition of done
-- [ ] Acceptance criteria met
-- [ ] Tests added/updated per test strategy §10.3 and passing in `make test`
-- [ ] Matcher-touching work: n/a
+- [x] Acceptance criteria met
+- [x] Tests added/updated per test strategy §10.3 and passing in `make test`
+- [x] Matcher-touching work: n/a
 - [ ] User-flow-touching work: `make test-e2e` responsive journeys — HUE-105
-- [ ] QA steps recorded and repeated in the chat completion report
-- [ ] Ticket status + notes updated in the same commit
+- [x] QA steps recorded and repeated in the chat completion report
+- [x] Ticket status + notes updated in the same commit
+
+## Notes
+
+- 2026-07-06 — done. Results section CSS was fully restyled as part of the `Suggest.module.css` token restyle (HUE-103). This ticket adds the mobile responsive rule for result cards: `.slotTiles` switches to `display: grid; grid-template-columns: repeat(2, 1fr)` on mobile (≤ 639 px) with square aspect-ratio thumbnails, giving a 2-column mini-grid per outfit card as specified in 07-responsive §4 Screen 6. Added 2 axe tests to `OutfitSuggest.test.tsx` (ranked results state, zero results state). `make test` (1120 backend + 273 frontend, zero warnings). Sanity test: `cd frontend && npm run test -- OutfitSuggest --run`.
+
+## QA steps
+- [ ] Run a suggestion and view result cards at mobile (~390 px): slot tiles appear in a 2-column grid per card with square thumbnails.
+- [ ] At desktop: slot tiles appear in a horizontal wrap row (unchanged).
+- [ ] Zero-results state: explanation + hint text render in the styled panel; "Add a garment" link is visible.
+- [ ] Tab through result cards: scheme chips, echo list, and "Suggest again" button are focusable with a visible ring.

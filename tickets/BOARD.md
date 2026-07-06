@@ -45,7 +45,7 @@ Leaf tickets for v0.3.0 (epics E11–E12), the visual redesign. Reading top to b
 | 101 | HUE-101 | Restyle Inventory (Wardrobe) | story | frontend | 20 / screen | HUE-E12 | done | HUE-096, HUE-097, HUE-098, HUE-077 |
 | 102 | HUE-102 | Restyle Garment detail | story | frontend | 20 / screen | HUE-E12 | done | HUE-096, HUE-097, HUE-098, HUE-074 |
 | 103 | HUE-103 | Restyle Outfit request | story | frontend | 20 / screen | HUE-E12 | done | HUE-096, HUE-097, HUE-098, HUE-083 |
-| 104 | HUE-104 | Restyle Suggestion results | story | frontend | 20 / screen | HUE-E12 | todo | HUE-096, HUE-097, HUE-098, HUE-080 |
+| 104 | HUE-104 | Restyle Suggestion results | story | frontend | 20 / screen | HUE-E12 | done | HUE-096, HUE-097, HUE-098, HUE-080 |
 | 105 | HUE-105 | Responsive e2e journeys and accessibility audit | task | tooling | 20 / tooling | HUE-E12 | todo | HUE-099, HUE-100, HUE-101, HUE-102, HUE-103, HUE-104, HUE-085 |
 
 ## Cleanup backlog — v0.3.0

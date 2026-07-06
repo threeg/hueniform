@@ -777,4 +777,21 @@
   .hint {
     display: none;
   }
+
+  /* ── Results: slot tiles in a 2-column mini-grid on mobile ─── */
+
+  .slotTiles {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .slotTile {
+    width: auto;
+  }
+
+  .slotThumb {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+  }
 }

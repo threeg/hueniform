@@ -8,6 +8,7 @@ import { describe, it, expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from '../test/server'
 import { renderRoute } from '../test/test-utils'
+import { expectNoAxeViolations } from '../test/a11y'
 
 import Suggest from './Suggest'
 import {
@@ -208,5 +209,28 @@ describe('Suggest — loading state', () => {
     await user().click(screen.getByTestId('suggest-button'))
     expect(screen.getByText('Searching…')).toBeInTheDocument()
     await waitFor(() => screen.getByTestId('result-card'))
+  })
+})
+
+// ── Accessibility (NFR-11) ────────────────────────────────────────────────────
+
+describe('Suggest results — accessibility (NFR-11)', () => {
+  it('ranked results state has no axe violations', async () => {
+    const { container } = renderScreen()
+    await user().click(screen.getByTestId('suggest-button'))
+    await screen.findByTestId('result-card')
+    await expectNoAxeViolations(container)
+  })
+
+  it('zero results state has no axe violations', async () => {
+    server.use(
+      http.post('http://127.0.0.1:8000/api/suggestions', () =>
+        HttpResponse.json(SUGGESTION_EMPTY_RESPONSE),
+      ),
+    )
+    const { container } = renderScreen()
+    await user().click(screen.getByTestId('suggest-button'))
+    await screen.findByTestId('zero-results')
+    await expectNoAxeViolations(container)
   })
 })
