@@ -20,7 +20,7 @@ test('correct navigation tier is visible', async ({ page }) => {
   await page.goto('/')
   const t = tier(page)
 
-  const sidebar = page.locator('aside')
+  const sidebar = page.locator('aside:has(nav[aria-label="Sidebar"])')
   const topNav  = page.locator('nav[aria-label="Top navigation"]')
   const tabBar  = page.locator('nav[aria-label="Tab bar"]')
 

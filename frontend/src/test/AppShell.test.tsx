@@ -63,20 +63,35 @@ describe('sidebar (desktop nav)', () => {
   })
 })
 
-// ── Top nav (tablet tier) ─────────────────────────────────────────────────
+// ── Icon rail (tablet tier) ───────────────────────────────────────────────
 
-describe('top nav (tablet nav)', () => {
+describe('icon rail (tablet nav)', () => {
   it('is present in the DOM labelled "Top navigation"', () => {
     renderShell()
     expect(screen.getByRole('navigation', { name: 'Top navigation' })).toBeInTheDocument()
   })
 
-  it('top nav carries all three destinations', () => {
+  it('icon rail carries all three destinations', () => {
     renderShell()
     const nav = screen.getByRole('navigation', { name: 'Top navigation' })
     expect(nav.querySelector('a[href="/"]')).toBeInTheDocument()
     expect(nav.querySelector('a[href="/add"]')).toBeInTheDocument()
     expect(nav.querySelector('a[href="/suggest"]')).toBeInTheDocument()
+  })
+
+  it('abbreviated "H." wordmark is present in the icon rail', () => {
+    const { container } = renderShell()
+    const rail = container.querySelector('[class*="iconRail"]')
+    expect(rail).toBeInTheDocument()
+    expect(rail!.textContent).toContain('H.')
+  })
+
+  it('each icon rail link has a 44×44 icon container', () => {
+    renderShell()
+    const nav = screen.getByRole('navigation', { name: 'Top navigation' })
+    nav.querySelectorAll('a').forEach(link => {
+      expect(link.querySelector('[class*="navIconContainer"]')).toBeInTheDocument()
+    })
   })
 })
 

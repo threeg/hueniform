@@ -106,6 +106,76 @@
   box-shadow: var(--shadow-nav-active);
 }
 
+/* ── Icon rail (tablet only, shown via media query below) ───────────────── */
+
+.iconRail {
+  display: none;
+}
+
+.iconRailWordmark {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: var(--weight-medium);
+  font-size: var(--text-xl);
+  color: var(--color-ink);
+  text-align: center;
+}
+
+.iconRailDot {
+  color: var(--color-primary);
+  font-weight: var(--weight-bold);
+  font-style: normal;
+}
+
+.iconRailLink,
+.iconRailLinkActive {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  font-size: 9.5px;
+  font-weight: var(--weight-regular);
+  color: var(--color-ink-faint);
+  transition: color 0.1s;
+}
+
+.iconRailLinkActive {
+  color: var(--color-primary);
+  font-weight: var(--weight-semibold);
+}
+
+.navIconContainer {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s, box-shadow 0.1s;
+}
+
+.iconRailLinkActive .navIconContainer {
+  background: var(--color-primary-tint);
+  box-shadow: var(--shadow-nav-active);
+}
+
+/* Larger icons within the rail container */
+.navIconContainer .navIconWardrobe,
+.navIconContainer .navIconAdd,
+.navIconContainer .navIconSuggest {
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
+}
+
+/* Rail active: icon border becomes currentColor (clay) */
+.iconRailLinkActive .navIconWardrobe,
+.iconRailLinkActive .navIconAdd,
+.iconRailLinkActive .navIconSuggest {
+  border-color: currentColor;
+}
+
 /* ── Sidebar (desktop only) ──────────────────────────────────────────────── */
 
 .sidebar {
@@ -201,8 +271,32 @@
 /* ── Tablet (640–1023 px) ────────────────────────────────────────────────── */
 
 @media (min-width: 640px) {
-  .topNav {
+  .topBar {
+    display: none;
+  }
+
+  .iconRail {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-5);
+    width: 88px;
+    flex-shrink: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    background: var(--color-surface);
+    border-right: 1px solid var(--color-border-subtle);
+    padding: var(--space-5) 0;
+    z-index: 20;
+  }
+
+  .iconRail nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    align-items: center;
   }
 
   .bottomBar {
@@ -210,7 +304,8 @@
   }
 
   .main {
-    padding: calc(48px + var(--space-5)) var(--space-5) var(--space-5);
+    margin-left: 88px;
+    padding: var(--space-5);
   }
 }
 
@@ -222,6 +317,10 @@
   }
 
   .topBar {
+    display: none;
+  }
+
+  .iconRail {
     display: none;
   }
 

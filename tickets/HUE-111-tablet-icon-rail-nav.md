@@ -2,7 +2,7 @@
 id: HUE-111
 title: Tablet icon-rail navigation
 type: story
-status: todo
+status: done
 milestone: 20
 batch: cleanup
 layer: frontend
@@ -63,9 +63,17 @@ so that it uses space efficiently on mid-size screens as the design intends.
 - [x] Acceptance criteria met
 - [x] Tests added/updated per test strategy and passing in `make test`
 - [ ] Matcher-touching work: n/a
-- [ ] User-flow-touching work: `make test-e2e` — verify tablet nav
+- [x] User-flow-touching work: `make test-e2e` — verify tablet nav
 - [x] QA steps recorded and repeated in the chat completion report
 - [x] Ticket status + notes updated in the same commit
 
 ## Notes
 - 2026-07-06 — created (visual-fidelity audit of v0.3.0 against prototype)
+- 2026-07-06 — done. Removed `topNav` from the `topBar` (top bar now mobile-only wordmark). Added a new `<aside class="iconRail">` section to `App.tsx` with an abbreviated `H.` wordmark (italic H + clay bold dot), `iconRailClass` factory, and three NavLinks each containing a `navIconContainer` wrapper around the shape icon and a label beneath. Added to `App.module.css`: `.iconRail`, `.iconRailWordmark`, `.iconRailDot`, `.iconRailLink`/`iconRailLinkActive`, `.navIconContainer` (44×44, `border-radius: 13px`); active icon container gets `--color-primary-tint` bg and `--shadow-nav-active`; icons in containers override to 18×18 px, 2px border. At 640px+ breakpoint: hide `topBar`, show and position `iconRail` (88px fixed left), update `main` to `margin-left: 88px; padding: var(--space-5)`. At 1024px+: hide `iconRail`, show full sidebar. Updated `nav.spec.ts` and `responsive.spec.ts` to target `aside:has(nav[aria-label="Sidebar"])` (two `<aside>` elements now coexist in DOM). Updated `AppShell.test.tsx`: renamed describe block, added abbreviated wordmark and icon-container tests. `make test-frontend` 279 passed; `make test-e2e` 27 passed, 2 skipped. Sanity test: `make test-e2e`.
+
+## QA steps
+- [x] Resize to ~768 px: vertical icon rail on the left, "H." wordmark, shape icons in rounded containers, labels below
+- [x] Active route: icon container has tinted background + clay label
+- [x] Navigate via the rail: all three routes reachable
+- [x] Resize narrower (< 640 px): rail disappears, bottom tab bar appears
+- [x] Resize wider (≥ 1024 px): full sidebar appears

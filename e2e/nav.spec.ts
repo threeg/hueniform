@@ -18,7 +18,7 @@ test('correct navigation tier is visible for viewport', async ({ page }) => {
 
   const tier = tierFromPage(page)
 
-  const sidebar = page.locator('aside')
+  const sidebar = page.locator('aside:has(nav[aria-label="Sidebar"])')
   const topNav  = page.locator('nav[aria-label="Top navigation"]')
   const tabBar  = page.locator('nav[aria-label="Tab bar"]')
 

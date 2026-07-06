@@ -6,36 +6,49 @@ function createNavClass(base: string, active: string) {
   return ({ isActive }: { isActive: boolean }) => classNames(base, isActive && active)
 }
 
-const sideClass = createNavClass(styles.sideLink, styles.sideLinkActive)
-const topClass  = createNavClass(styles.topLink,  styles.topLinkActive)
-const tabClass  = createNavClass(styles.tabLink,  styles.tabLinkActive)
+const sideClass     = createNavClass(styles.sideLink,     styles.sideLinkActive)
+const tabClass      = createNavClass(styles.tabLink,      styles.tabLinkActive)
+const iconRailClass = createNavClass(styles.iconRailLink, styles.iconRailLinkActive)
 
 export default function App() {
   return (
     <div className={styles.frame}>
-      {/* Top bar — wordmark on mobile, wordmark + nav on tablet; hidden on desktop */}
+      {/* Top bar — mobile only: wordmark; hidden at tablet+ */}
       <header className={styles.topBar}>
         <span className={styles.topWordmark}>
           Hueniform
           <span className={styles.wordmarkDot} aria-hidden="true" />
         </span>
-        <nav className={styles.topNav} aria-label="Top navigation">
-          <NavLink to="/" end className={topClass}>
-            <span className={styles.navIconWardrobe} aria-hidden="true" />
-            Wardrobe
-          </NavLink>
-          <NavLink to="/add" className={topClass}>
-            <span className={styles.navIconAdd} aria-hidden="true" />
-            Add garment
-          </NavLink>
-          <NavLink to="/suggest" className={topClass}>
-            <span className={styles.navIconSuggest} aria-hidden="true" />
-            Suggest outfit
-          </NavLink>
-        </nav>
       </header>
 
-      {/* Fixed sidebar — desktop only */}
+      {/* Icon rail — tablet only (640–1023 px) */}
+      <aside className={styles.iconRail}>
+        <span className={styles.iconRailWordmark} aria-hidden="true">
+          H<span className={styles.iconRailDot}>.</span>
+        </span>
+        <nav aria-label="Top navigation">
+          <NavLink to="/" end className={iconRailClass}>
+            <span className={styles.navIconContainer}>
+              <span className={styles.navIconWardrobe} aria-hidden="true" />
+            </span>
+            Wardrobe
+          </NavLink>
+          <NavLink to="/add" className={iconRailClass}>
+            <span className={styles.navIconContainer}>
+              <span className={styles.navIconAdd} aria-hidden="true" />
+            </span>
+            Add
+          </NavLink>
+          <NavLink to="/suggest" className={iconRailClass}>
+            <span className={styles.navIconContainer}>
+              <span className={styles.navIconSuggest} aria-hidden="true" />
+            </span>
+            Suggest
+          </NavLink>
+        </nav>
+      </aside>
+
+      {/* Fixed sidebar — desktop only (≥ 1024 px) */}
       <aside className={styles.sidebar}>
         <span className={styles.sideWordmark}>
           Hueniform

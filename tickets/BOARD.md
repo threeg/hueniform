@@ -59,11 +59,12 @@ Reactive tickets from `/verify` post-batch reviews of the Milestone 20 work (CON
 | 108 | HUE-108 | Use classNames utility in Suggest.tsx | task | frontend | screen | done | HUE-106 |
 | 109 | HUE-109 | Extract tier helper and tab-bar-height token | task | frontend | screen | done | HUE-097, HUE-105 |
 | 110 | HUE-110 | App shell navigation visual fidelity | story | frontend | design-system | done | HUE-097 |
-| 111 | HUE-111 | Tablet icon-rail navigation | story | frontend | design-system | todo | HUE-110 |
+| 111 | HUE-111 | Tablet icon-rail navigation | story | frontend | design-system | done | HUE-110 |
 | 112 | HUE-112 | Confirm colours visual fidelity | story | frontend | screen | todo | HUE-100 |
 | 113 | HUE-113 | Wardrobe visual fidelity | story | frontend | screen | todo | HUE-101 |
 | 114 | HUE-114 | Custom pill-select filter dropdowns | story | frontend | screen | todo | HUE-101 |
 | 115 | HUE-115 | Screens 4–6 visual audit and fixes | story | frontend | screen | todo | HUE-102, HUE-103, HUE-104, HUE-110 |
+| 116 | HUE-116 | Nav and secondary-button hover interaction fidelity | task | frontend | visual-fidelity | todo | HUE-110, HUE-096 |
 
 ## v0.2.0 — execution order (Milestone 14)
 
