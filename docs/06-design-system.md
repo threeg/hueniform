@@ -217,19 +217,19 @@ wireframes' job (Milestone 18); this fixes appearance and interaction states.
 
 ## 6. Layout & responsiveness
 
-Content sits in a centred column with a comfortable maximum width; the app shell frames it. Layout is
-**fluid** and uses grid/flex with `clamp()` for gutters and column counts (e.g. the inventory grid
-reflows its columns by available width).
+The app is **responsive across mobile, tablet and desktop** (NFR-7, amended v0.3.0). The same screens
+reflow across three tiers; layout uses native CSS (flexbox, grid, `clamp()`, media/container queries),
+no framework. The per-screen responsive layouts are specified in
+`docs/04-wireframes/07-responsive.md`; the tokens here are shared across all tiers.
 
-Per **NFR-7**, the target is **current desktop browsers (Chrome, Firefox)** and **no mobile layout is
-required**. Responsiveness here therefore means *fluid across the desktop range* (roughly 1024–1920 px,
-degrading gracefully to ~900 px), **not** a phone layout. Suggested breakpoints: a `wide` step for very
-large screens (more inventory columns) and a `compact` step where the shell navigation condenses.
+| Tier | Breakpoint (guide) | Navigation | Content |
+|---|---|---|---|
+| **Mobile** | `< 640px` | **Bottom tab bar** (Wardrobe / Add / Suggest) replaces the sidebar | Single column; garment grid 2 columns; slot regions and request controls stack full-width. |
+| **Tablet** | `640–1023px` | Condensed sidebar or top bar | Multi-column (garment grid ~3–4; up to 6 for compact swatch rows); two-column panels collapse to one where space is tight. |
+| **Desktop** | `≥ 1024px` | Fixed left **sidebar** (wordmark + sections) | The established layout: centred main column, comfortable max-width; inventory grid reflows columns by width. |
 
-> **Open item for Milestone 18 / the requirements check:** if mobile/tablet support is actually wanted,
-> that contradicts NFR-7 ("no mobile layout required") and would be a **requirement change**, not a
-> styling detail — raise and amend NFR-7 first. This document currently assumes desktop-only per the
-> settled spec.
+Touch targets on mobile/tablet are at least 44 × 44 px. Breakpoints are guides — layout is fluid
+between them; components reflow rather than switching abruptly.
 
 ---
 
@@ -259,17 +259,22 @@ The design pass surfaced **one** requirement delta and re-affirmed two existing 
   v0.3.0 brief's initial "no requirement deltas" finding (brief §3 updated accordingly).
 - **Re-affirmed — NFR-1 / NFR-8 (offline).** The prototype's Google-Fonts dependency is removed by
   self-hosting; no new requirement, but an explicit re-verification target at implementation.
-- **Re-affirmed — NFR-6 / NFR-7 (responsiveness, desktop scope).** The re-laid-out inventory must hold
-  NFR-6 at 500 garments; NFR-7's desktop-only scope is retained (see §6's open item).
+- **Amended — NFR-7 (responsive).** Surfaced at Milestone 18: the prototype includes mobile and tablet
+  layouts, so NFR-7 changes from desktop-only to **responsive across mobile / tablet / desktop** (§6).
+  Presentation-only — no behaviour or contract change.
+- **Re-affirmed — NFR-6 (responsiveness at scale).** The re-laid-out inventory must still hold NFR-6 at
+  500 garments, on every tier.
 
-No `FR` changes: v0.3.0 alters presentation only, not behaviour or contracts.
+No `FR` changes: v0.3.0 alters presentation only, not behaviour or contracts. v0.3.0 therefore carries
+two NFR deltas — **NFR-11 (new)** and **NFR-7 (amended)**.
 
 ---
 
 ## 9. Open items (for later v0.3.0 milestones)
 
 1. **Which screens re-lay-out vs pure restyle** — settled while updating the wireframes (Milestone 18).
-2. **Mobile/tablet** — desktop-only per NFR-7 unless the spec is changed first (§6).
+2. **Mobile/tablet** — now **in scope** (NFR-7 amended v0.3.0); layouts specified in
+   `docs/04-wireframes/07-responsive.md` (§6).
 3. **Visual-regression tooling** — whether to adopt a snapshot/visual-diff tool, and how NFR-11 is
    tested — decided in the test-strategy delta (Milestone 19).
 4. **Exact self-hosted font weights/subsets** to vendor (keep the bundle small while covering the used

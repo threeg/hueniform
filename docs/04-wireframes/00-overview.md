@@ -8,7 +8,7 @@
 | **Source** | Approved brief, requirements (`docs/02-requirements.md`), architecture (`docs/03-architecture.md`) and API contract (`docs/03-api-contract.md`) plus interview decisions (§6) |
 | **Repository location** | `docs/04-wireframes/00-overview.md` |
 
-These wireframes are **low-to-mid fidelity**: they specify structure, content and states, not final visual design. Spacing, typography and colour of the chrome are placeholders; only the **swatches and palette elements show real colour**, because colour is the application's subject matter and greyscaling it would hide the content. The API contract (`docs/03-api-contract.md`) is authoritative for every field a screen displays or submits; no screen invents data the contract does not provide. Desktop only — no mobile layout (NFR-7).
+These wireframes are **low-to-mid fidelity**: they specify structure, content and states, not final visual design. Spacing, typography and colour of the chrome are placeholders; only the **swatches and palette elements show real colour**, because colour is the application's subject matter and greyscaling it would hide the content. The API contract (`docs/03-api-contract.md`) is authoritative for every field a screen displays or submits; no screen invents data the contract does not provide. *(v0.3.0: NFR-7 is amended — the app is now **responsive across mobile / tablet / desktop**; the desktop layouts below are the baseline and the reflow is specified in [`07-responsive.md`](07-responsive.md).)*
 
 > **v0.2.0 amendment note (Milestone 12).** Screens **5 (outfit request)** and **6
 > (suggestion results)** are **rewritten** to the new slot model — configurable/removable
@@ -22,6 +22,14 @@ These wireframes are **low-to-mid fidelity**: they specify structure, content an
 > labelled **Base / Shirt / Mid-layer / Outer layer** (keys `base`/`shirt`/`mid`/`outer`).
 > Garments carry **no name** — identity is always thumbnail + palette + category. Superseded
 > v0.1.0 shapes are noted in each screen's own file; this index reflects the v0.2.0 state.
+
+> **v0.3.0 amendment note (Milestone 18).** The design is applied via the **design system**
+> (`docs/06-design-system.md`) — colour, typography, spacing and components — which supersedes the
+> "chrome is placeholder/greyscale" convention below at implementation. **NFR-7 is amended**: the app
+> is **responsive across mobile / tablet / desktop**, so the desktop frames here are the baseline and
+> the mobile/tablet reflow (bottom tab-bar navigation, stacked panels, grid column counts) is specified
+> in [`07-responsive.md`](07-responsive.md). No screen's content, states or contract surface changes —
+> v0.3.0 is presentation-only.
 
 ---
 
@@ -43,11 +51,15 @@ screens, giving Design the states, contract-bound fields, copy, hard constraints
 explicit "must NOT change" list: [`HANDOFF-05-outfit-request.md`](HANDOFF-05-outfit-request.md)
 and [`HANDOFF-03-inventory.md`](HANDOFF-03-inventory.md).
 
+**Responsive layouts** *(v0.3.0)* — how every screen reflows across mobile / tablet / desktop
+(breakpoints, bottom-tab navigation, grid columns): [`07-responsive.md`](07-responsive.md). The
+visual design system is [`docs/06-design-system.md`](../06-design-system.md).
+
 ---
 
 ## 2. Navigation structure
 
-A **fixed left sidebar** is present on every screen (decision §6), containing the wordmark and three top-level sections:
+A **fixed left sidebar** is present on every screen **at desktop** (decision §6), containing the wordmark and three top-level sections. *(v0.3.0, NFR-7: on **tablet** the sidebar condenses; on **mobile** it is replaced by a fixed **bottom tab bar** carrying the same three destinations, with the wordmark in a slim top bar. The routes and rules below are identical at every tier — see [`07-responsive.md`](07-responsive.md) §2.)*
 
 | Sidebar item | Route | Screen(s) |
 |---|---|---|
@@ -67,7 +79,9 @@ Rules:
 
 ## 3. Shared layout
 
-Every screen renders inside the same frame, 1024 px minimum width (desktop only, NFR-7):
+Every screen renders inside the same frame on **desktop** (the baseline; ≥ 1024 px). On tablet and
+mobile the frame reflows — a bottom tab bar replaces the sidebar on mobile — per
+[`07-responsive.md`](07-responsive.md) (NFR-7, amended v0.3.0):
 
 ```
 ┌──────────┬──────────────────────────────────────────────┐
@@ -152,6 +166,15 @@ Garment `category` values are the expanded FR-16 identifiers (contract §1.3). T
 | Category edit (screen 4) | Inline region-grouped picker → `PATCH`; palette stays regenerate-only |
 | Category picker (screen 2) | Region-grouped ~40-category chip picker, none pre-selected; field `category`, error `invalid_category` |
 | No garment names | Identity is thumbnail + palette + category everywhere (F3 defers metadata) |
+
+### 6.2 v0.3.0 decisions (Milestone 18 — visual redesign & responsive)
+
+| Decision | Outcome |
+|---|---|
+| Visual design | Applied via the design system (`docs/06-design-system.md`); supersedes the placeholder/greyscale-chrome convention (§, above) at implementation. Desktop screen *structure* is unchanged — a restyle, not a re-layout. |
+| Responsive scope | **NFR-7 amended**: responsive across **mobile / tablet / desktop**. The prototype's mobile + tablet layouts are in scope; reflow specified in [`07-responsive.md`](07-responsive.md). |
+| Mobile navigation | Left sidebar → **bottom tab bar** (Wardrobe / Add / Suggest); wordmark to a slim top bar. |
+| Presentation-only | No screen's content, states, fields or contract surface changes; behaviour and data are untouched. |
 
 ---
 

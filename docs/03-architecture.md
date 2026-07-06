@@ -32,7 +32,9 @@
 > endpoint shapes). The only delta is a **frontend styling-architecture** note in **§2.5**
 > recording the design-system realisation (a global design-tokens layer, self-hosted fonts,
 > and the decision to introduce **no CSS framework**), plus the new accessibility floor
-> **NFR-11**. Backend architecture (§2.1–§2.4, §3, §4) is untouched.
+> **NFR-11** and the **responsive** layout (**NFR-7 amended** at Milestone 18 — mobile /
+> tablet / desktop; a viewport-only reflow with no new routes, data or contract). Backend
+> architecture (§2.1–§2.4, §3, §4) is untouched.
 
 ## 1. Architectural overview
 
@@ -165,7 +167,11 @@ A Vite + TypeScript React SPA with four areas: upload & confirm-and-correct, inv
   build time. No web-font is fetched at runtime, preserving the offline contract (NFR-1, NFR-8).
 - **Accessibility.** UI chrome meets the **NFR-11** floor (WCAG 2.1 AA contrast, visible focus,
   colour-not-sole-cue); this is a rendering concern only — no impact on the API, data model or the
-  matcher. Responsive scope stays **desktop-only** per NFR-7.
+  matcher.
+- **Responsive.** The SPA is **responsive across mobile / tablet / desktop** (NFR-7, amended v0.3.0):
+  the same routes and components reflow by viewport (mobile uses a bottom tab bar in place of the
+  sidebar), via native CSS media/container queries — no new routes, data or contract. Layouts are
+  specified in `docs/04-wireframes/07-responsive.md`.
 
 ---
 

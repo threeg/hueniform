@@ -22,11 +22,14 @@
 > `docs/spikes/2026-06-18-f4-category-slot-model.md`.
 >
 > **v0.3.0 amendment note (5 July 2026).** The v0.3.0 delta pass is a visual redesign
-> (v0.3.0 brief, `docs/10-v0.3.0-brief.md`). Its requirement check (Milestone 16) adds
-> **one** delta — **NFR-11** (accessibility floor: WCAG 2.1 AA contrast + visible focus)
-> — and re-affirms NFR-1/NFR-8 (offline; fonts self-hosted) and NFR-6/NFR-7. No `FR`
-> changes. The design tokens are specified in `docs/06-design-system.md`; the v0.3.0
-> decisions are logged in §9.3.
+> (v0.3.0 brief, `docs/10-v0.3.0-brief.md`). It carries **two** NFR deltas and no `FR`
+> changes: **NFR-11 (new)** — an accessibility floor (WCAG 2.1 AA contrast + visible
+> focus), added at the Milestone 16 requirement check; and **NFR-7 (amended)** — the app
+> is now **responsive across mobile / tablet / desktop**, surfaced at Milestone 18 when the
+> prototype's mobile/tablet layouts were found. Both are presentation-only (no behaviour or
+> contract change); NFR-1/NFR-8 (offline; fonts self-hosted) are re-affirmed. Design tokens
+> are in `docs/06-design-system.md`; responsive layouts in
+> `docs/04-wireframes/07-responsive.md`; v0.3.0 decisions are logged in §9.3.
 
 ---
 
@@ -486,7 +489,7 @@ Weights are named constants per §1.4: `WEIGHT_SCHEME_STRENGTH = 100`, `WEIGHT_E
 
 **NFR-6.** Inventory browsing shall remain responsive (filter changes reflected in under 1 second) at 500 garments.
 
-**NFR-7.** The frontend shall target current versions of mainstream desktop browsers (Chrome and Firefox at minimum); no mobile layout is required (out of scope).
+**NFR-7.** *(Amended — v0.3.0, design.)* The frontend shall be **responsive across mobile, tablet and desktop**, targeting current versions of mainstream browsers (Chrome and Firefox at minimum, including their mobile builds). Layout adapts at three tiers: **mobile** (single-column, primary navigation as a bottom tab bar), **tablet** (condensed multi-column) and **desktop** (the sidebar layout), per the responsive wireframes (`docs/04-wireframes/07-responsive.md`) and the design system (`docs/06-design-system.md` §6). This does not change any behaviour, data or contract — only how the same screens lay out by viewport. *(Superseded — v0.3.0: the original v0.1.0 rule "desktop only; no mobile layout is required" no longer holds.)*
 
 **NFR-8.** The application shall collect no telemetry and make no outbound network calls at runtime.
 
@@ -553,7 +556,7 @@ revealed that the single multi-category slots were too coarse to request. Per th
 | Fonts offline | Hanken Grotesk / Newsreader / Space Mono **self-hosted and bundled at build time**; the prototype's Google-Fonts fetch is removed. Re-affirms NFR-1/NFR-8; not a new requirement. |
 | Accessibility floor | **New NFR-11** — WCAG 2.1 AA contrast + visible focus + colour-not-sole-cue, binding for UI chrome. This revises the v0.3.0 brief's initial "no requirement deltas" finding. |
 | Styling approach | Native CSS (CSS Modules + custom properties, grid/`clamp()`/media queries); **no CSS framework** introduced (keeps the committed convention). A framework would be an architecture decision, not a silent divergence. |
-| Responsive scope | Fluid across the **desktop** range only; NFR-7's "no mobile layout" is unchanged. Mobile/tablet would require amending NFR-7 first. |
+| Responsive scope | *(Revised at Milestone 18.)* The design prototype includes mobile and tablet layouts; **NFR-7 is amended** to make the app **responsive across mobile / tablet / desktop**. Layouts specified in `docs/04-wireframes/07-responsive.md`. Presentation-only — no behaviour/contract change. |
 
 ---
 
