@@ -2,7 +2,7 @@
 id: HUE-114
 title: Custom pill-select filter dropdowns
 type: story
-status: todo
+status: done
 milestone: 20
 batch: cleanup
 layer: frontend
@@ -78,9 +78,11 @@ so that the filter bar looks cohesive with the rest of the warm-paper aesthetic.
 - [x] Acceptance criteria met
 - [x] Tests added/updated per test strategy and passing in `make test`
 - [ ] Matcher-touching work: n/a
-- [ ] User-flow-touching work: `make test-e2e` — wardrobe filter journeys still pass
+- [x] User-flow-touching work: `make test-e2e` — wardrobe filter journeys still pass
 - [x] QA steps recorded and repeated in the chat completion report
 - [x] Ticket status + notes updated in the same commit
 
 ## Notes
 - 2026-07-06 — created (visual-fidelity audit of v0.3.0 against prototype); separated from HUE-113 because this is a new component with accessibility requirements, not a CSS tweak
+- 2026-07-06 — done. Created `PillSelect` component with roving-tabindex keyboard navigation (not `aria-activedescendant`, which is invalid on `button`), `renderOption` prop for colour swatches, grouped-option support via `PillSelectGroup`. Replaced both native `<select>` elements in `Wardrobe.tsx`. Updated `Inventory.test.tsx` to use pill-click interactions. Updated `e2e/smoke.spec.ts` journey 1 to click the pill then the option. All 307 component tests and 27 e2e tests pass.
+  Sanity test: `cd frontend && npm run test -- --reporter=dot 2>&1 | tail -5`

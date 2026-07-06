@@ -5,6 +5,8 @@ import Banner from '../components/Banner'
 import Button from '../components/Button'
 import GarmentCard from '../components/GarmentCard'
 import LoadingState from '../components/LoadingState'
+import PillSelect from '../components/PillSelect'
+import type { PillSelectGroup, PillSelectOption } from '../components/PillSelect'
 import { classNames } from '../utils/classNames'
 import { hslToHex } from '../utils/colour'
 import { typeLabel } from '../utils/typeLabel'
@@ -17,6 +19,12 @@ const REGION_GROUPS = [
   { label: 'Lower body', categories: ['trousers', 'jeans', 'chinos', 'shorts', 'skirt', 'dress', 'jumpsuit', 'belt'] },
   { label: 'Feet',       categories: ['socks', 'shoes', 'boots', 'trainers', 'sandals'] },
 ]
+
+// Derived once — REGION_GROUPS is module-level constant so this is stable.
+const CATEGORY_GROUPS: PillSelectGroup[] = REGION_GROUPS.map(rg => ({
+  groupLabel: rg.label,
+  options: rg.categories.map(cat => ({ value: cat, label: typeLabel(cat) })),
+}))
 
 const ORDER_OPTIONS = [
   { value: 'hue',  label: 'Hue' },
@@ -70,10 +78,19 @@ export default function Wardrobe() {
   const garments = data?.garments ?? []
   const total    = data?.total ?? 0
 
-  const familySwatchHex = useMemo(() => {
-    const f = taxonomy?.families.find(fam => fam.name === familyFilter)
-    return f ? hslToHex(f.canonical.h, f.canonical.s, f.canonical.l) : null
-  }, [taxonomy, familyFilter])
+  // Map family name → hex for swatch rendering in the Colour dropdown panel
+  const familyHexes = useMemo(() => {
+    const m: Record<string, string> = {}
+    taxonomy?.families.forEach(f => {
+      m[f.name] = hslToHex(f.canonical.h, f.canonical.s, f.canonical.l)
+    })
+    return m
+  }, [taxonomy])
+
+  const familyOptions = useMemo<PillSelectOption[]>(() =>
+    (taxonomy?.families ?? []).map(f => ({ value: f.name, label: f.name })),
+  [taxonomy],
+  )
 
   // Group the flat ordered list by walking it — consecutive same-category items form a group.
   const groups = useMemo(() => {
@@ -101,50 +118,35 @@ export default function Wardrobe() {
       </div>
 
       <div className={styles.filterBar} role="search" aria-label="Filter garments">
-        <div className={styles.filterGroup}>
-          <label htmlFor="type-filter" className={styles.filterLabel}>Type</label>
-          <select
-            id="type-filter"
-            aria-label="Filter by type"
-            value={typeFilter ?? ''}
-            onChange={e => setFilter('category', e.target.value)}
-            className={styles.filterSelect}
-          >
-            <option value="">All types</option>
-            {REGION_GROUPS.map(rg => (
-              <optgroup key={rg.label} label={rg.label}>
-                {rg.categories.map(cat => (
-                  <option key={cat} value={cat}>{typeLabel(cat)}</option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
-        </div>
+        <PillSelect
+          label="Category"
+          value={typeFilter ?? ''}
+          placeholder="All categories"
+          groups={CATEGORY_GROUPS}
+          onChange={val => setFilter('category', val)}
+          data-testid="pill-select-category"
+        />
 
-        <div className={styles.filterGroup}>
-          <label htmlFor="family-filter" className={styles.filterLabel}>Colour</label>
-          <div className={styles.familyControl}>
-            {familySwatchHex && (
-              <span
-                className={styles.familySwatch}
-                style={{ backgroundColor: familySwatchHex }}
-                aria-hidden="true"
-              />
-            )}
-            <select
-              id="family-filter"
-              aria-label="Filter by colour family"
-              value={familyFilter ?? ''}
-              onChange={e => setFilter('family', e.target.value)}
-              className={styles.filterSelect}
-            >
-              <option value="">All colours</option>
-              {taxonomy?.families.map(f => (
-                <option key={f.name} value={f.name}>{f.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <PillSelect
+          label="Colour"
+          value={familyFilter ?? ''}
+          placeholder="All colours"
+          options={familyOptions}
+          onChange={val => setFilter('family', val)}
+          renderOption={opt => (
+            <>
+              {familyHexes[opt.value] && (
+                <span
+                  className={styles.familySwatch}
+                  style={{ backgroundColor: familyHexes[opt.value] }}
+                  aria-hidden="true"
+                />
+              )}
+              {opt.label}
+            </>
+          )}
+          data-testid="pill-select-family"
+        />
 
         <div className={styles.orderToggle} role="group" aria-label="Sort order">
           {ORDER_OPTIONS.map(({ value, label }) => (

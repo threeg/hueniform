@@ -1,0 +1,106 @@
+.container {
+  position: relative;
+  display: inline-block;
+}
+
+/* ── Trigger (pill button) ──────────────────────────────────────────────────── */
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-highest);
+  border: 1px solid var(--color-border-subtle);
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: border-color 0.1s, background 0.1s;
+  white-space: nowrap;
+}
+
+.trigger:hover {
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-raised);
+}
+
+.trigger:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.triggerActive {
+  border-color: var(--color-primary-soft);
+}
+
+.triggerLabel {
+  color: var(--color-ink-muted);
+  font-weight: var(--weight-regular);
+}
+
+.triggerValue {
+  color: var(--color-ink);
+  font-weight: var(--weight-semibold);
+}
+
+.caret {
+  color: var(--color-ink-muted);
+  font-size: 0.7em;
+  line-height: 1;
+  margin-left: var(--space-1);
+}
+
+/* ── Dropdown panel ─────────────────────────────────────────────────────────── */
+
+.panel {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  left: 0;
+  min-width: 100%;
+  background: var(--color-surface-highest);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 50;
+  padding: var(--space-1) 0;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/* ── Option items ────────────────────────────────────────────────────────────── */
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.option:hover,
+.optionFocused {
+  background: var(--color-surface);
+}
+
+.optionSelected {
+  color: var(--color-primary-deep);
+  font-weight: var(--weight-semibold);
+}
+
+/* ── Group separator ─────────────────────────────────────────────────────────── */
+
+.groupSep {
+  display: block;
+  padding: var(--space-2) var(--space-4) var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-faint);
+  pointer-events: none;
+}

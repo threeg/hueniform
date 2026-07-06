@@ -9,8 +9,6 @@ import { expectNoAxeViolations } from '../test/a11y'
 import Wardrobe from './Wardrobe'
 import {
   GARMENT_SUMMARY,
-  GARMENT_ID,
-  TAXONOMY_RESPONSE,
   INVENTORY_RESPONSE,
   ERR_INVALID_FILTER,
 } from '../test/contract-examples'
@@ -67,31 +65,32 @@ describe('Wardrobe — default grid (FR-35)', () => {
 // ── Filter bar — taxonomy (FR-35) ─────────────────────────────────────────────
 
 describe('Wardrobe — filter bar taxonomy', () => {
-  it('populates family dropdown with taxonomy families', async () => {
+  it('populates the Colour dropdown with taxonomy families', async () => {
     renderScreen()
-    const select = screen.getByRole('combobox', { name: 'Filter by colour family' })
-    // Wait for taxonomy to load
-    await waitFor(() => {
-      const options = Array.from((select as HTMLSelectElement).options).map(o => o.value)
-      expect(options).toContain('Teal')
-    })
-    const options = Array.from((select as HTMLSelectElement).options).map(o => o.value)
-    expect(options).toContain('Navy')
-    expect(options).toContain('Red')
+    await user().click(screen.getByTestId('pill-select-family'))
+    await waitFor(() =>
+      expect(screen.getByRole('option', { name: 'Teal' })).toBeInTheDocument(),
+    )
+    expect(screen.getByRole('option', { name: 'Navy' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Red' })).toBeInTheDocument()
   })
 
-  it('includes all 40 garment categories in the type dropdown', () => {
+  it('Category dropdown contains all 40 garment categories', async () => {
     renderScreen()
-    const select = screen.getByRole('combobox', { name: 'Filter by type' })
-    const values = Array.from((select as HTMLSelectElement).options).map(o => o.value)
-    expect(values).toContain('t_shirt')
-    expect(values).toContain('trousers')
-    expect(values).toContain('jumper')
-    expect(values).toContain('jacket')
-    expect(values).toContain('socks')
-    expect(values).toContain('shoes')
-    expect(values).toContain('hat')
-    expect(values).toContain('dress')
+    await user().click(screen.getByTestId('pill-select-category'))
+    await screen.findByRole('option', { name: 'T-shirt' })
+    const opts = screen.getAllByRole('option')
+    // +1 for "All categories" placeholder option
+    expect(opts.length).toBeGreaterThanOrEqual(41)
+    const labels = opts.map(o => o.textContent?.trim())
+    expect(labels).toContain('T-shirt')
+    expect(labels).toContain('Trousers')
+    expect(labels).toContain('Jumper')
+    expect(labels).toContain('Jacket')
+    expect(labels).toContain('Socks')
+    expect(labels).toContain('Shoes')
+    expect(labels).toContain('Hat')
+    expect(labels).toContain('Dress')
   })
 })
 
@@ -107,8 +106,8 @@ describe('Wardrobe — filtering (FR-35)', () => {
       }),
     )
     renderScreen()
-    const select = screen.getByRole('combobox', { name: 'Filter by type' })
-    await user().selectOptions(select, 'jumper')
+    await user().click(screen.getByTestId('pill-select-category'))
+    await user().click(await screen.findByRole('option', { name: 'Jumper' }))
     await waitFor(() => {
       expect(capturedUrl).toBeDefined()
       expect(capturedUrl).toContain('category=jumper')
@@ -124,13 +123,8 @@ describe('Wardrobe — filtering (FR-35)', () => {
       }),
     )
     renderScreen()
-    const select = screen.getByRole('combobox', { name: 'Filter by colour family' })
-    // Wait for taxonomy options to load
-    await waitFor(() => {
-      const options = Array.from((select as HTMLSelectElement).options).map(o => o.value)
-      expect(options).toContain('Teal')
-    })
-    await user().selectOptions(select, 'Teal')
+    await user().click(screen.getByTestId('pill-select-family'))
+    await user().click(await screen.findByRole('option', { name: 'Teal' }))
     await waitFor(() => {
       expect(capturedUrl).toBeDefined()
       expect(capturedUrl).toContain('family=Teal')
@@ -146,15 +140,10 @@ describe('Wardrobe — filtering (FR-35)', () => {
       }),
     )
     renderScreen()
-    const typeSelect   = screen.getByRole('combobox', { name: 'Filter by type' })
-    const familySelect = screen.getByRole('combobox', { name: 'Filter by colour family' })
-    // Wait for taxonomy
-    await waitFor(() => {
-      const opts = Array.from((familySelect as HTMLSelectElement).options).map(o => o.value)
-      expect(opts).toContain('Teal')
-    })
-    await user().selectOptions(typeSelect,   'jumper')
-    await user().selectOptions(familySelect, 'Teal')
+    await user().click(screen.getByTestId('pill-select-category'))
+    await user().click(await screen.findByRole('option', { name: 'Jumper' }))
+    await user().click(screen.getByTestId('pill-select-family'))
+    await user().click(await screen.findByRole('option', { name: 'Teal' }))
     await waitFor(() => {
       expect(capturedUrl).toContain('category=jumper')
       expect(capturedUrl).toContain('family=Teal')
@@ -163,8 +152,8 @@ describe('Wardrobe — filtering (FR-35)', () => {
 
   it('shows the clear-filters button when a filter is active', async () => {
     renderScreen()
-    const typeSelect = screen.getByRole('combobox', { name: 'Filter by type' })
-    await user().selectOptions(typeSelect, 't_shirt')
+    await user().click(screen.getByTestId('pill-select-category'))
+    await user().click(await screen.findByRole('option', { name: 'T-shirt' }))
     await waitFor(() =>
       expect(screen.getByTestId('clear-filters')).toBeInTheDocument(),
     )
@@ -175,10 +164,10 @@ describe('Wardrobe — filtering (FR-35)', () => {
     expect(screen.queryByTestId('clear-filters')).not.toBeInTheDocument()
   })
 
-  it('clears filters and resets the dropdowns when Clear is clicked', async () => {
+  it('clears filters and resets the pills when Clear is clicked', async () => {
     renderScreen()
-    const typeSelect = screen.getByRole('combobox', { name: 'Filter by type' })
-    await user().selectOptions(typeSelect, 't_shirt')
+    await user().click(screen.getByTestId('pill-select-category'))
+    await user().click(await screen.findByRole('option', { name: 'T-shirt' }))
     await waitFor(() =>
       expect(screen.getByTestId('clear-filters')).toBeInTheDocument(),
     )
@@ -186,7 +175,9 @@ describe('Wardrobe — filtering (FR-35)', () => {
     await waitFor(() =>
       expect(screen.queryByTestId('clear-filters')).not.toBeInTheDocument(),
     )
-    expect((typeSelect as HTMLSelectElement).value).toBe('')
+    expect(screen.getByTestId('pill-select-category')).toHaveAttribute(
+      'aria-label', 'Category: All categories',
+    )
   })
 })
 
@@ -217,7 +208,6 @@ describe('Wardrobe — empty wardrobe (FR-35)', () => {
       expect(screen.getByTestId('empty-filter')).toBeInTheDocument(),
     )
     expect(screen.queryByTestId('empty-wardrobe')).not.toBeInTheDocument()
-    // Offers to clear from within the empty-filter block
     const clearBtn = screen.getAllByTestId('clear-filters')
     expect(clearBtn.length).toBeGreaterThan(0)
   })
@@ -261,11 +251,13 @@ describe('Wardrobe — error state', () => {
 // ── URL state preservation ─────────────────────────────────────────────────────
 
 describe('Wardrobe — URL filter state', () => {
-  it('pre-selects type from URL search params on mount', async () => {
+  it('pre-selects category from URL search params on mount', async () => {
     renderScreen({ initialSearch: 'category=jumper' })
-    const select = screen.getByRole('combobox', { name: 'Filter by type' }) as HTMLSelectElement
-    // The select value is set from URL immediately
-    await waitFor(() => expect(select.value).toBe('jumper'))
+    await waitFor(() =>
+      expect(screen.getByTestId('pill-select-category')).toHaveAttribute(
+        'aria-label', 'Category: Jumper',
+      ),
+    )
   })
 })
 
@@ -354,12 +346,12 @@ describe('Wardrobe — category grouping (FR-47)', () => {
 // ── FR-47: region-grouped category dropdown ───────────────────────────────────
 
 describe('Wardrobe — region-grouped category dropdown (FR-47)', () => {
-  it('category dropdown has optgroup sections for each body region', () => {
-    renderScreen()
-    const select = screen.getByRole('combobox', { name: 'Filter by type' }) as HTMLSelectElement
-    const optgroups = Array.from(select.querySelectorAll('optgroup'))
-    expect(optgroups.length).toBeGreaterThanOrEqual(4)
-    const labels = optgroups.map(og => og.label)
+  it('Category dropdown has group separators for all four body regions', async () => {
+    const { container } = renderScreen()
+    await user().click(screen.getByTestId('pill-select-category'))
+    await screen.findByRole('option', { name: 'T-shirt' })
+    const seps = container.querySelectorAll('[class*="groupSep"]')
+    const labels = Array.from(seps).map(el => el.textContent)
     expect(labels).toContain('Head')
     expect(labels).toContain('Upper body')
     expect(labels).toContain('Lower body')

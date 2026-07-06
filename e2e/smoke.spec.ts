@@ -101,8 +101,9 @@ test.describe('smoke journeys', () => {
     await expect(page.getByTestId('order-date')).toHaveAttribute('aria-pressed', 'true')
     await expect(page.getByTestId('order-hue')).toHaveAttribute('aria-pressed', 'false')
 
-    // Category filter narrows to the added garment
-    await page.getByLabel('Filter by type').selectOption('t_shirt')
+    // Category filter narrows to the added garment (PillSelect — HUE-114)
+    await page.getByTestId('pill-select-category').click()
+    await page.getByRole('option', { name: 'T-shirt' }).click()
     await expect(page.getByTestId('result-count')).toContainText(/[1-9]/)
   })
 
