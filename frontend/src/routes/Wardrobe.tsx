@@ -91,6 +91,15 @@ export default function Wardrobe() {
 
   return (
     <main className={styles.page}>
+      <div className={styles.titleRow}>
+        <h1 className={styles.title}>Wardrobe</h1>
+        {data && (
+          <span className={styles.count} data-testid="result-count">
+            {total} {total === 1 ? 'garment' : 'garments'}
+          </span>
+        )}
+      </div>
+
       <div className={styles.filterBar} role="search" aria-label="Filter garments">
         <div className={styles.filterGroup}>
           <label htmlFor="type-filter" className={styles.filterLabel}>Type</label>
@@ -161,12 +170,6 @@ export default function Wardrobe() {
             Clear filters
           </button>
         )}
-
-        {data && (
-          <span className={styles.count} data-testid="result-count">
-            {total} {total === 1 ? 'garment' : 'garments'}
-          </span>
-        )}
       </div>
 
       {isLoading && <LoadingState label="Loading wardrobe…" />}
@@ -195,10 +198,11 @@ export default function Wardrobe() {
       {!isLoading && !isError && groups.length > 0 && groups.map(group => (
         <section key={group.category} className={styles.group}>
           <h2
-            className={styles.groupHeader}
+            className={styles.groupBadge}
             data-testid={`group-header-${group.category}`}
           >
-            {typeLabel(group.category)} · {group.items.length}
+            {typeLabel(group.category)}
+            <span className={styles.groupCount}>{group.items.length}</span>
           </h2>
           <ul className={styles.grid} aria-label={`${typeLabel(group.category)} garments`}>
             {group.items.map(g => (

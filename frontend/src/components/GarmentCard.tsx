@@ -21,7 +21,7 @@ function GarmentCard({ garment, slot }: Props) {
       />
       <div className={styles.meta}>
         <span className={styles.typeLabel}>{typeLabel(garment.category)}</span>
-        <PaletteStrip colours={garment.colours} />
+        <PaletteStrip colours={garment.colours} height={8} />
       </div>
     </div>
   )

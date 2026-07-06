@@ -4,6 +4,23 @@
   gap: var(--space-5);
 }
 
+/* ── Title row ──────────────────────────────────────────────────────────────── */
+
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  color: var(--color-ink);
+}
+
 /* ── Filter bar ─────────────────────────────────────────────────────────────── */
 
 .filterBar {
@@ -76,7 +93,6 @@
 }
 
 .count {
-  margin-left: auto;
   font-size: var(--text-sm);
   color: var(--color-ink-muted);
 }
@@ -85,26 +101,25 @@
 
 .orderToggle {
   display: flex;
+  align-items: center;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-raised);
+  padding: var(--space-0-5);
+  gap: var(--space-0-5);
 }
 
 .orderBtn {
-  background: var(--color-surface-raised);
+  background: transparent;
   border: none;
-  border-right: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
   cursor: pointer;
   font-family: var(--font-sans);
   font-size: var(--text-sm);
   padding: var(--space-1) var(--space-3);
-  color: var(--color-ink-secondary);
+  color: var(--color-ink-muted);
   transition: background 0.1s, color 0.1s;
   min-height: 32px;
-}
-
-.orderBtn:last-child {
-  border-right: none;
 }
 
 .orderBtn:hover:not(.orderBtnActive) {
@@ -113,7 +128,8 @@
 
 .orderBtnActive {
   background: var(--color-primary);
-  color: var(--color-surface-highest);
+  color: white;
+  font-weight: var(--weight-semibold);
 }
 
 /* ── Category group ─────────────────────────────────────────────────────────── */
@@ -124,14 +140,30 @@
   gap: var(--space-3);
 }
 
-.groupHeader {
+.groupBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  align-self: flex-start;
+  background: var(--color-primary-tint);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
   font-family: var(--font-sans);
   font-size: var(--text-base);
   font-weight: var(--weight-semibold);
   color: var(--color-ink);
   margin: 0;
-  padding-bottom: var(--space-2);
-  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.groupCount {
+  background: var(--color-surface-highest);
+  border-radius: var(--radius-pill);
+  padding: 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink-secondary);
+  line-height: 1.6;
 }
 
 /* ── Card grid ──────────────────────────────────────────────────────────────── */
@@ -155,7 +187,7 @@
   color: inherit;
   border-radius: var(--radius-md);
   outline-offset: 2px;
-  transition: opacity 0.1s;
+  transition: opacity 0.15s;
 }
 
 .cardLink:hover {
@@ -225,5 +257,12 @@
 @media (min-width: 640px) and (max-width: 1023px) {
   .grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
   }
 }

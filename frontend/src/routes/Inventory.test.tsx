@@ -367,6 +367,53 @@ describe('Wardrobe — region-grouped category dropdown (FR-47)', () => {
   })
 })
 
+// ── Visual structure (HUE-113) ────────────────────────────────────────────────
+
+describe('Wardrobe — visual structure (HUE-113)', () => {
+  it('result count is inside the title row, not the filter bar', async () => {
+    const { container } = renderScreen()
+    await waitFor(() =>
+      expect(screen.getByTestId('result-count')).toBeInTheDocument(),
+    )
+    const titleRow = container.querySelector('[class*="titleRow"]')
+    expect(titleRow).toBeInTheDocument()
+    expect(titleRow).toContainElement(screen.getByTestId('result-count'))
+  })
+
+  it('group header has pill-badge class', async () => {
+    server.use(
+      http.get('http://127.0.0.1:8000/api/garments', () =>
+        HttpResponse.json({
+          garments: [{ ...GARMENT_SUMMARY, id: 'aaa', category: 'jumper' }],
+          total: 1,
+        }),
+      ),
+    )
+    const { container } = renderScreen()
+    await screen.findByTestId('group-header-jumper')
+    expect(container.querySelector('[class*="groupBadge"]')).toBeInTheDocument()
+  })
+
+  it('group header contains count sub-pill', async () => {
+    server.use(
+      http.get('http://127.0.0.1:8000/api/garments', () =>
+        HttpResponse.json({
+          garments: [
+            { ...GARMENT_SUMMARY, id: 'aaa', category: 'jumper' },
+            { ...GARMENT_SUMMARY, id: 'bbb', category: 'jumper' },
+          ],
+          total: 2,
+        }),
+      ),
+    )
+    const { container } = renderScreen()
+    await screen.findByTestId('group-header-jumper')
+    const badge = container.querySelector('[class*="groupBadge"]')
+    expect(badge?.querySelector('[class*="groupCount"]')).toBeInTheDocument()
+    expect(badge?.querySelector('[class*="groupCount"]')?.textContent).toBe('2')
+  })
+})
+
 // ── Accessibility (NFR-11) ────────────────────────────────────────────────────
 
 describe('Wardrobe — accessibility (NFR-11)', () => {
