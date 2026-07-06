@@ -3,9 +3,9 @@
 | | |
 |---|---|
 | **Document** | Test strategy (living document) |
-| **Status** | Approved (Milestone 5); amended for v0.2.0 (Milestone 13) |
+| **Status** | Approved (Milestone 5); amended for v0.2.0 (Milestone 13) and v0.3.0 (Milestone 19) |
 | **Originally approved** | 12 June 2026 (Milestone 5, v0.1.0) |
-| **Last amended** | 18 June 2026 — v0.2.0 test-strategy delta (Milestone 13) |
+| **Last amended** | 5 July 2026 — v0.3.0 test-strategy delta (Milestone 19) |
 | **Source** | Approved requirements (`docs/02-requirements.md`), architecture (`docs/03-architecture.md`), API contract (`docs/03-api-contract.md`) and wireframes (`docs/04-wireframes/`), plus interview decisions (§13); v0.2.0 brief (`docs/09-v0.2.0-brief.md`) §6; F4 spike (`docs/spikes/2026-06-18-f4-category-slot-model.md`) |
 | **Repository location** | `docs/05-test-strategy.md` |
 
@@ -29,6 +29,19 @@ This document defines how Hueniform is tested: the frameworks, the shape of the 
 > (NFR-9). Superseded text is marked *(superseded — v0.2.0)* in place; requirements §1.4
 > numeric thresholds remain contractual. The reasoning behind the slot-model rewrite is in
 > the F4 spike note.
+
+> **v0.3.0 amendment note (5 July 2026).** The v0.3.0 delta pass is a **visual redesign**
+> (v0.3.0 brief, `docs/10-v0.3.0-brief.md`). It changes presentation, not behaviour or
+> contracts, so the matcher, detection, API-conformance, migration and performance suites are
+> **unchanged**. The delta adds a **frontend visual-fidelity, accessibility and responsive**
+> approach (new **§10.3**) covering the two new NFRs — **NFR-11** (accessibility: contrast,
+> visible focus, colour-not-sole-cue) and **NFR-7 (amended)** (responsive across mobile /
+> tablet / desktop) — and re-verifies the offline contract now that fonts are self-hosted
+> (NFR-1/NFR-8). The decision is **no screenshot/visual-diff tooling**: accessibility is
+> asserted with `jest-axe` in the component gate, responsiveness with Playwright at set
+> viewports, and pixel-level fidelity to the prototype stays a human review (consistent with
+> §3's existing "visual design is not automated"). `make test` remains the default gate;
+> §10.3 additions run within it (component + a11y) or in `make test-e2e` (responsive journeys).
 
 ---
 
@@ -99,7 +112,7 @@ Test invocation follows the architecture's Makefile pattern (`make setup` / `mak
 
 **Deliberately not automated**, with reasoning:
 
-- **Visual design and layout.** The wireframes are low-to-mid fidelity; chrome styling is placeholder. Component tests assert content and behaviour, not pixels.
+- **Visual design and layout — pixels.** Chrome styling is applied from the design system (`docs/06-design-system.md`). Component tests assert content and behaviour, not pixels; **pixel-level fidelity to the prototype is reviewed by a human**, and there is deliberately **no screenshot/visual-diff tooling** (§10.3, v0.3.0). *(What v0.3.0 **does** automate: accessibility (NFR-11) via `jest-axe`, and responsive behaviour (NFR-7) via Playwright at set viewports — see §10.3.)*
 - **The browser half of NFR-6** (filter changes *reflected* in under 1 s). The server half is asserted (§8.2); the remaining budget is TanStack Query cache behaviour plus render time, which is checked manually at the 500-garment fixture scale when inventory tickets close.
 - **Detection *accuracy* at large scale.** A statistical accuracy benchmark over hundreds of photos would be its own project. The product's stated safety net is the confirm-and-correct flow (brief §12); automated detection tests verify the pipeline's *mechanics* and a small set of known photographs (§6.3), not a recall percentage.
 - **Subjective explanation prose quality.** Tests assert that explanations are structurally faithful to the evaluation (FR-38, §4.9); whether a sentence reads elegantly is reviewed by a human.
@@ -399,6 +412,26 @@ MSW handlers live in one shared module (`frontend/src/test/handlers.ts`) built f
 ### 10.2 What component tests do not cover
 
 Routing across screens, real file-upload mechanics, and frontend↔backend integration belong to the E2E journeys (§9). Visual styling is not automated (§3). Pure frontend utilities (e.g. HSL→hex display helpers, if any exist beyond the API's `hex`) get plain Vitest unit tests.
+
+### 10.3 Visual redesign, accessibility and responsive *(new — v0.3.0; NFR-11, NFR-7)*
+
+The v0.3.0 redesign is guarded by three additions to the frontend suite — no new backend tests, no screenshot diffing.
+
+- **Accessibility (NFR-11) — in the default gate.** `jest-axe` (axe-core) runs against each screen's key states in the Vitest + RTL component tests, asserting **zero violations** for the WCAG 2.1 AA rules covering **colour contrast** and name/role/value; a focused check asserts a **visible focus indicator** on interactive elements (focus lands and the focus-visible style is applied) and that state conveyed by colour also carries a text/shape/icon cue (colour-not-sole-cue). axe runs in-process, so this stays offline and deterministic. Contrast is additionally pinned at the **token** level: a small unit test checks the design-system foreground/background token pairings (design system §2) meet the AA ratio, so a token change that breaks contrast fails fast in one place.
+- **Responsive (NFR-7) — Playwright, `make test-e2e`.** The smoke journeys (§9) run at three viewports — **mobile (~390 px), tablet (~834 px), desktop (~1280 px)** — asserting the tier's navigation is present (bottom tab bar on mobile, sidebar on desktop), the primary action is reachable, and the garment grid renders the expected structure. These assert **structure and reachability, not pixels**, per `docs/04-wireframes/07-responsive.md`.
+- **Design tokens & self-hosted fonts — offline re-verification.** A build/asset test asserts the app ships **no runtime web-font fetch** (no `fonts.googleapis.com` / `fonts.gstatic.com` reference in the built output; `@font-face` sources resolve to bundled local files), re-verifying NFR-1/NFR-8 for the new fonts. Component tests reference tokens via CSS variables, not literals, so a token rename surfaces in the component gate.
+
+Component tests updated for the restyle assert on **roles, text and `data-testid`s**, not on brittle class names or DOM shape, so a restyle that preserves behaviour does not churn the tests. Existing e2e journeys stay green throughout the restyle (behaviour is unchanged).
+
+**v0.3.0 testing decisions (Milestone 19):**
+
+| Decision | Outcome |
+|---|---|
+| Visual regression | **No screenshot/visual-diff tooling.** Pixel fidelity is human-reviewed; the automated bar is NFR-11 + responsive structure (§3, §10.3). |
+| Accessibility tool | `jest-axe` in the component gate; token-contrast unit test as the single source of truth for AA ratios. |
+| Responsive tool | Playwright at mobile/tablet/desktop viewports in `make test-e2e`; structure/reachability, not pixels. |
+| Offline fonts | Asset test asserts no runtime web-font fetch; fonts bundled by Vite (NFR-1/NFR-8). |
+| Backend/contract | Unchanged — no new matcher/detection/API/migration/perf tests; v0.3.0 is presentation-only. |
 
 ---
 

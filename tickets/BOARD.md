@@ -8,7 +8,7 @@
 
 This board is the single topological view of the implementation order. Implementation tickets are listed by their execution number (`HUE-NNN`); reading top to bottom is a legal build sequence because no ticket depends on a higher-numbered one (CONVENTIONS.md §4.3). It is a *derived* view of the ticket files' `depends_on` edges and is regenerated, never hand-edited for status (CONVENTIONS.md §5.4). Epics are containers and sit outside the execution order.
 
-The version sections are ordered **latest first**: v0.2.0 (Milestone 14, in planning) above v0.1.0 (Milestones 7–8, shipped). Each version's execution order is followed by its own cleanup backlog.
+The version sections are ordered **latest first**: v0.3.0 (Milestone 20, in planning) above v0.2.0 (Milestone 14, shipped) above v0.1.0 (Milestones 7–8, shipped). Each version's execution order is followed by its own cleanup backlog.
 
 **Status legend:** `todo` · `in-progress` · `blocked` · `in-review` · `done`
 
@@ -16,6 +16,8 @@ The version sections are ordered **latest first**: v0.2.0 (Milestone 14, in plan
 
 | id | title | milestone | status |
 |---|---|---|---|
+| HUE-E11 | Design-system foundation | 20 | todo |
+| HUE-E12 | Screen restyle & responsive | 20 | todo |
 | HUE-E06 | Constrained suggestions | 14 | done |
 | HUE-E07 | Edit a garment's category | 14 | done |
 | HUE-E08 | Category & slot-model overhaul | 14 | done |
@@ -26,6 +28,25 @@ The version sections are ordered **latest first**: v0.2.0 (Milestone 14, in plan
 | HUE-E03 | Add a garment | 8 | done |
 | HUE-E04 | Browse the wardrobe | 8 | done |
 | HUE-E05 | Suggest an outfit | 8 | done |
+
+## v0.3.0 — execution order (Milestone 20)
+
+Leaf tickets for v0.3.0 (epics E11–E12), the visual redesign. Reading top to bottom is a legal build sequence; no ticket depends on a higher-numbered one. The design-system foundation (E11: tokens → fonts → components → shell → test tooling) is sequenced first; the per-screen restyles (E12) follow, closing with the responsive/accessibility e2e audit. Presentation-only — no `FR`/contract change (v0.3.0 brief; design system `docs/06-design-system.md`).
+
+| # | id | title | type | layer | M / batch | epic | status | depends_on |
+|---|---|---|---|---|---|---|---|---|
+| 94 | HUE-094 | Design tokens and global stylesheet | task | frontend | 20 / design-system | HUE-E11 | todo | HUE-032 |
+| 95 | HUE-095 | Self-hosted fonts (offline) | task | frontend | 20 / design-system | HUE-E11 | todo | HUE-094 |
+| 96 | HUE-096 | Shared component styles | task | frontend | 20 / design-system | HUE-E11 | todo | HUE-094 |
+| 97 | HUE-097 | App shell and responsive navigation | story | frontend | 20 / design-system | HUE-E11 | todo | HUE-094, HUE-096 |
+| 98 | HUE-098 | Frontend accessibility and responsive test tooling | task | tooling | 20 / tooling | HUE-E11 | todo | HUE-005 |
+| 99 | HUE-099 | Restyle Upload & detect | story | frontend | 20 / screen | HUE-E12 | todo | HUE-096, HUE-097, HUE-098, HUE-033 |
+| 100 | HUE-100 | Restyle Confirm-and-correct | story | frontend | 20 / screen | HUE-E12 | todo | HUE-096, HUE-097, HUE-098, HUE-034 |
+| 101 | HUE-101 | Restyle Inventory (Wardrobe) | story | frontend | 20 / screen | HUE-E12 | todo | HUE-096, HUE-097, HUE-098, HUE-077 |
+| 102 | HUE-102 | Restyle Garment detail | story | frontend | 20 / screen | HUE-E12 | todo | HUE-096, HUE-097, HUE-098, HUE-074 |
+| 103 | HUE-103 | Restyle Outfit request | story | frontend | 20 / screen | HUE-E12 | todo | HUE-096, HUE-097, HUE-098, HUE-083 |
+| 104 | HUE-104 | Restyle Suggestion results | story | frontend | 20 / screen | HUE-E12 | todo | HUE-096, HUE-097, HUE-098, HUE-080 |
+| 105 | HUE-105 | Responsive e2e journeys and accessibility audit | task | tooling | 20 / tooling | HUE-E12 | todo | HUE-099, HUE-100, HUE-101, HUE-102, HUE-103, HUE-104, HUE-085 |
 
 ## v0.2.0 — execution order (Milestone 14)
 
