@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#e9dfce;font-family:'Hanken Grotesk',system-ui,sans-serif}
+  .dv-turn{padding:44px 48px 40px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+  .dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 24px}
+  .dv-tid{font:700 10px 'Space Mono',monospace;padding:3px 7px;background:#2a2622;color:#fff;border-radius:4px;text-decoration:none}
+  .dv-tname{font:600 13px/1.2 'Hanken Grotesk',sans-serif;color:#2a2622}
+  .dv-opts{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start}
+  .dv-opt{flex:none;display:flex;flex-direction:column;gap:11px;scroll-margin-top:16px}
+  .dv-oid{font:700 10.5px 'Space Mono',monospace;padding:3px 7px;background:rgba(0,0,0,.09);color:#2a2622;border-radius:5px;text-decoration:none}
+  .dv-olabel{display:flex;align-items:baseline;gap:9px;font:400 12px/1.3 'Hanken Grotesk',sans-serif;color:rgba(42,38,34,.6)}
+  .dv-olabel b{font-weight:600;color:#2a2622}
+  .dv-opt:target .dv-oid{background:#c25f45;color:#fff}
+  .dv-next{margin:26px 0 0;font:13px/1.6 'Hanken Grotesk',sans-serif;color:rgba(42,38,34,.6)}
+  .dv-next .dv-oid{padding:2px 6px}
+</style>
+</helmet>
+
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Hueniform — Inventory (home), three warm/tactile directions</span></div>
+  <div class="dv-opts">
+
+    <!-- ============ 1a — WARM ATELIER ============ -->
+    <div class="dv-opt" id="1a">
+      <div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a><b>Warm Atelier</b> — cream canvas, editorial serif, coral accent, generous air</div>
+      <div style="width:1040px;background:#faf6ee;border:1px solid #e7dcc9;border-radius:16px;overflow:hidden;box-shadow:0 22px 50px -28px rgba(90,60,30,.45);display:flex;font-size:14px;color:#3a352d">
+        <!-- sidebar -->
+        <div style="width:212px;flex-shrink:0;background:#f3ece0;border-right:1px solid #e7dcc9;padding:26px 0 30px">
+          <div style="padding:0 24px 30px;display:flex;align-items:baseline;gap:6px">
+            <span style="font:500 23px/1 'Newsreader',serif;font-style:italic;color:#2a2622">Hueniform</span>
+            <span style="width:7px;height:7px;border-radius:50%;background:#d8785f;display:inline-block"></span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:3px;padding:0 14px">
+            <div style="display:flex;align-items:center;gap:11px;padding:10px 14px;border-radius:10px;background:#f7e6de;color:#c25f45;font-weight:600"><span style="width:16px;height:16px;border:1.6px solid currentColor;border-radius:4px;display:inline-block"></span>Wardrobe</div>
+            <div style="display:flex;align-items:center;gap:11px;padding:10px 14px;border-radius:10px;color:#6b6355"><span style="width:16px;height:16px;border:1.6px solid #b3a892;border-radius:50%;display:inline-block"></span>Add garment</div>
+            <div style="display:flex;align-items:center;gap:11px;padding:10px 14px;border-radius:10px;color:#6b6355"><span style="width:16px;height:16px;border:1.6px solid #b3a892;border-radius:3px;display:inline-block;transform:rotate(45deg)"></span>Suggest outfit</div>
+          </div>
+        </div>
+        <!-- main -->
+        <div style="flex:1;min-width:0;padding:30px 36px 40px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:22px">
+            <h1 style="margin:0;font:400 32px/1 'Newsreader',serif;color:#2a2622">Wardrobe</h1>
+            <span style="font:400 13px 'Newsreader',serif;font-style:italic;color:#8a8071">137 garments</span>
+          </div>
+          <!-- filter bar -->
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:30px;flex-wrap:wrap">
+            <span style="display:inline-flex;align-items:center;gap:9px;padding:9px 14px;border:1px solid #e2d6c1;border-radius:10px;background:#fffdf8;color:#57503f;font-size:13px">Category <b style="color:#2a2622">All categories</b><span style="color:#b3a892">▾</span></span>
+            <span style="display:inline-flex;align-items:center;gap:9px;padding:9px 14px;border:1px solid #e2d6c1;border-radius:10px;background:#fffdf8;color:#57503f;font-size:13px">Colour <b style="color:#2a2622">All colours</b><span style="color:#b3a892">▾</span></span>
+            <span style="display:inline-flex;border:1px solid #e2d6c1;border-radius:10px;overflow:hidden;font-size:13px;margin-left:auto">
+              <span style="padding:9px 16px;background:#f7e6de;color:#c25f45;font-weight:600">Hue</span>
+              <span style="padding:9px 16px;background:#fffdf8;color:#8a8071;border-left:1px solid #e2d6c1">Date added</span>
+            </span>
+          </div>
+          <!-- group: Shirt -->
+          <div style="margin-bottom:34px">
+            <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:16px">
+              <h2 style="margin:0;font:500 19px/1 'Newsreader',serif;color:#2a2622">Shirt</h2>
+              <span style="font:400 12px 'Space Mono',monospace;color:#a89c86">·04</span>
+              <span style="flex:1;height:1px;background:#ece2d0"></span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px">
+              <!-- card -->
+              <div style="background:#fffdf8;border:1px solid #ece2d0;border-radius:13px;overflow:hidden;box-shadow:0 4px 12px -8px rgba(90,60,30,.3)">
+                <div style="height:118px;background:repeating-linear-gradient(135deg,#f0e8d9,#f0e8d9 9px,#eae1ce 9px,#eae1ce 18px);display:flex;align-items:center;justify-content:center;color:#c4b79e;font:400 9.5px 'Space Mono',monospace;letter-spacing:.12em">PHOTO</div>
+                <div style="display:flex;height:8px"><div style="width:100%;background:#c23b2e"></div></div>
+                <div style="padding:10px 13px;font:500 13px 'Hanken Grotesk';color:#3a352d">Shirt</div>
+              </div>
+              <div style="background:#fffdf8;border:1px solid #ece2d0;border-radius:13px;overflow:hidden;box-shadow:0 4px 12px -8px rgba(90,60,30,.3)">
+                <div style="height:118px;background:repeating-linear-gradient(135deg,#f0e8d9,#f0e8d9 9px,#eae1ce 9px,#eae1ce 18px);display:flex;align-items:center;justify-content:center;color:#c4b79e;font:400 9.5px 'Space Mono',monospace;letter-spacing:.12em">PHOTO</div>
+                <div style="display:flex;height:8px"><div style="width:100%;background:#EE8225"></div></div>
+                <div style="padding:10px 13px;font:500 13px 'Hanken Grotesk';color:#3a352d">Shirt</div>
+              </div>
+              <div style="background:#fffdf8;border:1px solid #ece2d0;border-radius:13px;overflow:hidden;box-shadow:0 4px 12px -8px rgba(90,60,30,.3)">
+                <div style="height:118px;background:repeating-linear-gradient(135deg,#f0e8d9,#f0e8d9 9px,#eae1ce 9px,#eae1ce 18px);display:flex;align-items:center;justify-content:center;color:#c4b79e;font:400 9.5px 'Space Mono',monospace;letter-spacing:.12em">PHOTO</div>
+                <div style="display:flex;height:8px"><div style="width:100%;background:#2B7FC4"></div></div>
+                <div style="padding:10px 13px;font:500 13px 'Hanken Grotesk';color:#3a352d">Shirt</div>
+              </div>
+              <div style="background:#fffdf8;border:1px solid #ece2d0;border-radius:13px;overflow:hidden;box-shadow:0 4px 12px -8px rgba(90,60,30,.3)">
+                <div style="height:118px;background:repeating-linear-gradient(135deg,#f0e8d9,#f0e8d9 9px,#eae1ce 9px,#eae1ce 18px);display:flex;align-items:center;justify-content:center;color:#c4b79e;font:400 9.5px 'Space Mono',monospace;letter-spacing:.12em">PHOTO</div>
+                <div style="display:flex;height:8px"><div style="width:100%;background:#fbf9f4;box-shadow:inset 0 0 0 1px #e4dccb"></div></div>
+                <div style="padding:10px 13px;font:500 13px 'Hanken Grotesk';color:#3a352d">Shirt</div>
+              </div>
+            </div>
+          </div>
+          <!-- group: Jumper -->
+          <div>
+            <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:16px">
+              <h2 style="margin:0;font:500 19px/1 'Newsreader',serif;color:#2a2622">Jumper</h2>
+              <span style="font:400 12px 'Space Mono',monospace;color:#a89c86">·03</span>
+              <span style="flex:1;height:1px;background:#ece2d0"></span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px">
+              <div style="background:#fffdf8;border:1px solid #ece2d0;border-radius:13px;overflow:hidden;box-shadow:0 4px 12px -8px rgba(90,60,30,.3)">
+                <div style="height:118px;background:repeating-linear-gradient(135deg,#f0e8d9,#f0e8d9 9px,#eae1ce 9px,#eae1ce 18px);display:flex;align-items:center;justify-content:center;color:#c4b79e;font:400 9.5px 'Space Mono',monospace;letter-spacing:.12em">PHOTO</div>
+                <div style="display:flex;height:8px"><div style="width:80%;background:#2CADA0"></div><div style="width:20%;background:#EE8225"></div></div>
+                <div style="padding:10px 13px;font:500 13px 'Hanken Grotesk';color:#3a352d">Jumper</div>
+              </div>
+              <div style="background:#fffdf8;border:1px solid #ece2d0;border-radius:13px;overflow:hidden;box-shadow:0 4px 12px -8px rgba(90,60,30,.3)">
+                <div style="height:118px;background:repeating-linear-gradient(135deg,#f0e8d9,#f0e8d9 9px,#eae1ce 9px,#eae1ce 18px);display:flex;align-items:center;justify-content:center;color:#c4b79e;font:400 9.5px 'Space Mono',monospace;letter-spacing:.12em">PHOTO</div>
+                <div style="display:flex;height:8px"><div style="width:100%;background:#3D6B35"></div></div>
+                <div style="padding:10px 13px;font:500 13px 'Hanken Grotesk';color:#3a352d">Jumper</div>
+              </div>
+              <div style="background:#fffdf8;border:1px solid #ece2d0;border-radius:13px;overflow:hidden;box-shadow:0 4px 12px -8px rgba(90,60,30,.3)">
+                <div style="height:118px;background:repeating-linear-gradient(135deg,#f0e8d9,#f0e8d9 9px,#eae1ce 9px,#eae1ce 18px);display:flex;align-items:center;justify-content:center;color:#c4b79e;font:400 9.5px 'Space Mono',monospace;letter-spacing:.12em">PHOTO</div>
+                <div style="display:flex;height:8px"><div style="width:100%;background:#B8B6B2"></div></div>
+                <div style="padding:10px 13px;font:500 13px 'Hanken Grotesk';color:#3a352d">Jumper</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 1b — SOFT PAPER ============ -->
+    <div class="dv-opt" id="1b">
+      <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a><b>Soft Paper</b> — peachy tint, extra-rounded, pill controls, chip headers, terracotta</div>
+      <div style="width:1040px;background:#fbf4ea;border:1px solid #ecdcc7;border-radius:24px;overflow:hidden;box-shadow:0 24px 55px -28px rgba(120,70,40,.5);display:flex;font-size:14px;color:#40382f">
+        <!-- sidebar -->
+        <div style="width:212px;flex-shrink:0;background:#f6ebdc;border-right:1px solid #eeddc8;padding:26px 0 30px">
+          <div style="padding:0 22px 30px;display:flex;align-items:baseline;gap:6px">
+            <span style="font:500 22px/1 'Newsreader',serif;font-style:italic;color:#3a3128">Hueniform</span>
+            <span style="width:8px;height:8px;border-radius:50%;background:#c66a4a;display:inline-block"></span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;padding:0 14px">
+            <div style="display:flex;align-items:center;gap:11px;padding:11px 15px;border-radius:16px;background:#c66a4a;color:#fff;font-weight:600;box-shadow:0 6px 14px -6px rgba(198,106,74,.7)"><span style="width:16px;height:16px;border:1.7px solid currentColor;border-radius:5px;display:inline-block"></span>Wardrobe</div>
+            <div style="display:flex;align-items:center;gap:11px;padding:11px 15px;border-radius:16px;color:#736858"><span style="width:16px;height:16px;border:1.7px solid #c1b39c;border-radius:50%;display:inline-block"></span>Add garment</div>
+            <div style="display:flex;align-items:center;gap:11px;padding:11px 15px;border-radius:16px;color:#736858"><span style="width:16px;height:16px;border:1.7px solid #c1b39c;border-radius:4px;display:inline-block;transform:rotate(45deg)"></span>Suggest outfit</div>
+          </div>
+        </div>
+        <!-- main -->
+        <div style="flex:1;min-width:0;padding:30px 34px 40px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:22px">
+            <h1 style="margin:0;font:400 30px/1 'Newsreader',serif;color:#3a3128">Wardrobe</h1>
+            <span style="font-size:13px;color:#a08a72;font-weight:500">137 garments</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:30px;flex-wrap:wrap">
+            <span style="display:inline-flex;align-items:center;gap:9px;padding:10px 16px;border:1px solid #ecdcc7;border-radius:999px;background:#fff;color:#5f5646;font-size:13px">Category <b style="color:#3a3128">All</b><span style="color:#c1b39c">▾</span></span>
+            <span style="display:inline-flex;align-items:center;gap:9px;padding:10px 16px;border:1px solid #ecdcc7;border-radius:999px;background:#fff;color:#5f5646;font-size:13px">Colour <b style="color:#3a3128">All</b><span style="color:#c1b39c">▾</span></span>
+            <span style="display:inline-flex;border:1px solid #ecdcc7;border-radius:999px;overflow:hidden;font-size:13px;margin-left:auto;background:#fff">
+              <span style="padding:10px 18px;background:#c66a4a;color:#fff;font-weight:600;border-radius:999px">Hue</span>
+              <span style="padding:10px 18px;color:#a08a72">Date added</span>
+            </span>
+          </div>
+          <!-- group Shirt -->
+          <div style="margin-bottom:30px">
+            <div style="display:inline-flex;align-items:center;gap:8px;background:#f3e6d4;border-radius:999px;padding:7px 16px;margin-bottom:16px">
+              <span style="font:600 14px 'Hanken Grotesk';color:#3a3128">Shirt</span>
+              <span style="background:#fff;border-radius:999px;padding:1px 9px;font:600 11px 'Space Mono',monospace;color:#a08a72">4</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+              <div style="background:#fdf6ee;border:1px solid #f0e2d0;border-radius:18px;overflow:hidden;box-shadow:0 6px 16px -10px rgba(120,70,40,.4)">
+                <div style="height:118px;margin:8px 8px 0;border-radius:12px;background:repeating-linear-gradient(135deg,#f3e9da,#f3e9da 9px,#ede1cd 9px,#ede1cd 18px);display:flex;align-items:center;justify-content:center;color:#c8b99f;font:400 9.5px 'Space Mono',monospace;letter-spacing:.12em">PHOTO</div>
+                <div style="display:flex;height:9px;margin:10px 12px 0;border-radius:999px;overflow:hidden"><div style="width:100%;background:#c23b2e"></div></div>
+                <div style="padding:9px 14px 13px;font:600 13px 'Hanken Grotesk';color:#40382f">Shirt</div>
+              </div>
+              <div style="background:#fdf6ee;border:1px solid #f0e2d0;border-radius:18px;overflow:hidden;box-shadow:0 6px 16px -10px rgba(120,70,40,.4)">
+                <div style="height:118px;margin:8px 8px 0;border-radius:12px;background:repeating-linear-gradient(135deg,#f3e9da,#f3e9da 9px,#ede1cd 9px,#ede1cd 18px);display:flex;align-items:center;justify-content:center;color:#c8b99f;font:400 9.5px 'Space Mono',monospace;letter-spacing:.12em">PHOTO</div>
+                <div style="display:flex;height:9px;margin:10px 12px 0;border-radius:999px;overflow:hidden"><div style="width:100%;background:#EE8225"></div></div>
+                <div style="padding:9px 14px 13px;font:600 13px 'Hanken Grotesk';color:#40382f">Shirt</div>
+              </div>
+              <div style="background:#fdf6ee;border:1px solid #f0e2d0;border-radius:18px;overflow:hidden;box-shadow:0 6px 16px -10px rgba(120,70,40,.4)">
+                <div style="height:118px;margin:8px 8px 0;border-radius:12px;background:repeating-linear-gradient(135deg,#f3e9da,#f3e9da 9px,#ede1cd 9px,#ede1cd 18px);display:flex;align-items:center;justify-content:center;color:#c8b99f;font:400 9.5px 'Space Mono',monospace;letter-spacing:.12em">PHOTO</div>
+                <div style="display:flex;height:9px;margin:10px 12px 0;border-radius:999px;overflow:hidden"><div style="width:100%;background:#2B7FC4"></div></div>
+                <div style="padding:9px 14px 13px;font:600 13px 'Hanken Grotesk';color:#40382f">Shirt</div>
+              </div>
+              <div style="background:#fdf6ee;border:1px solid #f0e2d0;border-radius:18px;overflow:hidden;box-shadow:0 6px 16px -10px rgba(120,70,40,.4)">
+                <div style="height:118px;margin:8px 8px 0;border-radius:12px;background:repeating-linear-gradient(135deg,#f3e9da,#f3e9da 9px,#ede1cd 9px,#ede1cd 18px);display:flex;align-items:center;justify-content:center;color:#c8b99f;font:400 9.5px 'Space Mono',monospace;letter-spacing:.12em">PHOTO</div>
+                <div style="display:flex;height:9px;margin:10px 12px 0;border-radius:999px;overflow:hidden"><div style="width:100%;background:#fbf9f4;box-shadow:inset 0 0 0 1px #e4dccb"></div></div>
+                <div style="padding:9px 14px 13px;font:600 13px 'Hanken Grotesk';color:#40382f">Shirt</div>
+              </div>
+            </div>
+          </div>
+          <!-- group Jumper -->
+          <div>
+            <div style="display:inline-flex;align-items:center;gap:8px;background:#f3e6d4;border-radius:999px;padding:7px 16px;margin-bottom:16px">
+              <span style="font:600 14px 'Hanken Grotesk';color:#3a3128">Jumper</span>
+              <span style="background:#fff;border-radius:999px;padding:1px 9px;font:600 11px 'Space Mono',monospace;color:#a08a72">3</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+              <div style="background:#fdf6ee;border:1px solid #f0e2d0;border-radius:18px;overflow:hidden;box-shadow:0 6px 16px -10px rgba(120,70,40,.4)">
+                <div style="height:118px;margin:8px 8px 0;border-radius:12px;background:repeating-linear-gradient(135deg,#f3e9da,#f3e9da 9px,#ede1cd 9px,#ede1cd 18px);display:flex;align-items:center;justify-content:center;color:#c8b99f;font:400 9.5px 'Space Mono',monospace;letter-spacing:.12em">PHOTO</div>
+                <div style="display:flex;height:9px;margin:10px 12px 0;border-radius:999px;overflow:hidden"><div style="width:80%;background:#2CADA0"></div><div style="width:20%;background:#EE8225"></div></div>
+                <div style="padding:9px 14px 13px;font:600 13px 'Hanken Grotesk';color:#40382f">Jumper</div>
+              </div>
+              <div style="background:#fdf6ee;border:1px solid #f0e2d0;border-radius:18px;overflow:hidden;box-shadow:0 6px 16px -10px rgba(120,70,40,.4)">
+                <div style="height:118px;margin:8px 8px 0;border-radius:12px;background:repeating-linear-gradient(135deg,#f3e9da,#f3e9da 9px,#ede1cd 9px,#ede1cd 18px);display:flex;align-items:center;justify-content:center;color:#c8b99f;font:400 9.5px 'Space Mono',monospace;letter-spacing:.12em">PHOTO</div>
+                <div style="display:flex;height:9px;margin:10px 12px 0;border-radius:999px;overflow:hidden"><div style="width:100%;background:#3D6B35"></div></div>
+                <div style="padding:9px 14px 13px;font:600 13px 'Hanken Grotesk';color:#40382f">Jumper</div>
+              </div>
+              <div style="background:#fdf6ee;border:1px solid #f0e2d0;border-radius:18px;overflow:hidden;box-shadow:0 6px 16px -10px rgba(120,70,40,.4)">
+                <div style="height:118px;margin:8px 8px 0;border-radius:12px;background:repeating-linear-gradient(135deg,#f3e9da,#f3e9da 9px,#ede1cd 9px,#ede1cd 18px);display:flex;align-items:center;justify-content:center;color:#c8b99f;font:400 9.5px 'Space Mono',monospace;letter-spacing:.12em">PHOTO</div>
+                <div style="display:flex;height:9px;margin:10px 12px 0;border-radius:999px;overflow:hidden"><div style="width:100%;background:#B8B6B2"></div></div>
+                <div style="padding:9px 14px 13px;font:600 13px 'Hanken Grotesk';color:#40382f">Jumper</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 1c — GALLERY ============ -->
+    <div class="dv-opt" id="1c">
+      <div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a><b>Gallery</b> — near-white, hairlines, small-caps labels, informational swatch rows, sage accent</div>
+      <div style="width:1040px;background:#fffefb;border:1px solid #e8e2d5;border-radius:12px;overflow:hidden;box-shadow:0 20px 46px -30px rgba(80,70,45,.4);display:flex;font-size:14px;color:#38352d">
+        <!-- sidebar -->
+        <div style="width:212px;flex-shrink:0;background:#f7f4ec;border-right:1px solid #e8e2d5;padding:28px 0 30px">
+          <div style="padding:0 24px 32px">
+            <span style="font:500 21px/1 'Spectral',serif;color:#2c2a24;letter-spacing:.01em">Hueniform</span>
+          </div>
+          <div style="padding:0 24px 8px;font:400 10px 'Space Mono',monospace;letter-spacing:.18em;color:#b0a993;text-transform:uppercase">Menu</div>
+          <div style="display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 24px;color:#4f7d54;font-weight:600;border-left:2.5px solid #7d9f6f;background:#f0f2e8"><span style="width:15px;height:15px;border:1.6px solid currentColor;border-radius:3px;display:inline-block"></span>Wardrobe</div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 24px;color:#6f685a;border-left:2.5px solid transparent"><span style="width:15px;height:15px;border:1.6px solid #bcb39c;border-radius:50%;display:inline-block"></span>Add garment</div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 24px;color:#6f685a;border-left:2.5px solid transparent"><span style="width:15px;height:15px;border:1.6px solid #bcb39c;border-radius:3px;display:inline-block;transform:rotate(45deg)"></span>Suggest outfit</div>
+          </div>
+        </div>
+        <!-- main -->
+        <div style="flex:1;min-width:0;padding:32px 40px 42px">
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:26px;padding-bottom:18px;border-bottom:1px solid #ece6d9">
+            <h1 style="margin:0;font:400 34px/1 'Spectral',serif;color:#2c2a24">Wardrobe</h1>
+            <span style="font:400 11px 'Space Mono',monospace;letter-spacing:.1em;color:#a89f88;text-transform:uppercase">137 garments</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:32px;flex-wrap:wrap">
+            <span style="display:inline-flex;align-items:center;gap:8px;padding:8px 2px;border-bottom:1.5px solid #ddd4c1;color:#6f685a;font-size:13px">Category:<b style="color:#2c2a24">All categories</b><span style="color:#bcb39c">▾</span></span>
+            <span style="display:inline-flex;align-items:center;gap:8px;padding:8px 2px;border-bottom:1.5px solid #ddd4c1;color:#6f685a;font-size:13px">Colour:<b style="color:#2c2a24">All colours</b><span style="color:#bcb39c">▾</span></span>
+            <span style="display:inline-flex;align-items:center;gap:2px;margin-left:auto;font:400 11px 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase">
+              <span style="padding:6px 12px;color:#4f7d54;border-bottom:1.5px solid #7d9f6f;font-weight:700">Hue</span>
+              <span style="padding:6px 12px;color:#a89f88">Date</span>
+            </span>
+          </div>
+          <!-- group Shirt -->
+          <div style="margin-bottom:36px">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+              <h2 style="margin:0;font:500 16px/1 'Spectral',serif;color:#2c2a24">Shirt</h2>
+              <span style="font:400 10.5px 'Space Mono',monospace;color:#a89f88">04</span>
+              <span style="flex:1;height:1px;background:#ece6d9"></span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:22px">
+              <div>
+                <div style="height:126px;background:repeating-linear-gradient(135deg,#f1ece0,#f1ece0 9px,#eae3d4 9px,#eae3d4 18px);border:1px solid #ece6d9;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#c3b9a1;font:400 9px 'Space Mono',monospace;letter-spacing:.14em">PHOTO</div>
+                <div style="display:flex;align-items:center;gap:7px;margin-top:11px"><span style="width:13px;height:13px;border-radius:3px;background:#c23b2e;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)"></span><span style="font:500 13px 'Hanken Grotesk';color:#38352d">Shirt</span></div>
+                <div style="font:400 11px 'Space Mono',monospace;color:#a89f88;margin-top:3px">Red · 100%</div>
+              </div>
+              <div>
+                <div style="height:126px;background:repeating-linear-gradient(135deg,#f1ece0,#f1ece0 9px,#eae3d4 9px,#eae3d4 18px);border:1px solid #ece6d9;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#c3b9a1;font:400 9px 'Space Mono',monospace;letter-spacing:.14em">PHOTO</div>
+                <div style="display:flex;align-items:center;gap:7px;margin-top:11px"><span style="width:13px;height:13px;border-radius:3px;background:#EE8225;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)"></span><span style="font:500 13px 'Hanken Grotesk';color:#38352d">Shirt</span></div>
+                <div style="font:400 11px 'Space Mono',monospace;color:#a89f88;margin-top:3px">Orange · 100%</div>
+              </div>
+              <div>
+                <div style="height:126px;background:repeating-linear-gradient(135deg,#f1ece0,#f1ece0 9px,#eae3d4 9px,#eae3d4 18px);border:1px solid #ece6d9;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#c3b9a1;font:400 9px 'Space Mono',monospace;letter-spacing:.14em">PHOTO</div>
+                <div style="display:flex;align-items:center;gap:7px;margin-top:11px"><span style="width:13px;height:13px;border-radius:3px;background:#2B7FC4;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)"></span><span style="font:500 13px 'Hanken Grotesk';color:#38352d">Shirt</span></div>
+                <div style="font:400 11px 'Space Mono',monospace;color:#a89f88;margin-top:3px">Azure · 100%</div>
+              </div>
+              <div>
+                <div style="height:126px;background:repeating-linear-gradient(135deg,#f1ece0,#f1ece0 9px,#eae3d4 9px,#eae3d4 18px);border:1px solid #ece6d9;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#c3b9a1;font:400 9px 'Space Mono',monospace;letter-spacing:.14em">PHOTO</div>
+                <div style="display:flex;align-items:center;gap:7px;margin-top:11px"><span style="width:13px;height:13px;border-radius:3px;background:#fbf9f4;box-shadow:inset 0 0 0 1px #ddd4c1"></span><span style="font:500 13px 'Hanken Grotesk';color:#38352d">Shirt</span></div>
+                <div style="font:400 11px 'Space Mono',monospace;color:#a89f88;margin-top:3px">White · 100%</div>
+              </div>
+            </div>
+          </div>
+          <!-- group Jumper -->
+          <div>
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+              <h2 style="margin:0;font:500 16px/1 'Spectral',serif;color:#2c2a24">Jumper</h2>
+              <span style="font:400 10.5px 'Space Mono',monospace;color:#a89f88">03</span>
+              <span style="flex:1;height:1px;background:#ece6d9"></span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:22px">
+              <div>
+                <div style="height:126px;background:repeating-linear-gradient(135deg,#f1ece0,#f1ece0 9px,#eae3d4 9px,#eae3d4 18px);border:1px solid #ece6d9;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#c3b9a1;font:400 9px 'Space Mono',monospace;letter-spacing:.14em">PHOTO</div>
+                <div style="display:flex;align-items:center;gap:7px;margin-top:11px"><span style="width:13px;height:13px;border-radius:3px;background:#2CADA0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)"></span><span style="width:13px;height:13px;border-radius:3px;background:#EE8225;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)"></span><span style="font:500 13px 'Hanken Grotesk';color:#38352d">Jumper</span></div>
+                <div style="font:400 11px 'Space Mono',monospace;color:#a89f88;margin-top:3px">Teal 80 · Orange 20</div>
+              </div>
+              <div>
+                <div style="height:126px;background:repeating-linear-gradient(135deg,#f1ece0,#f1ece0 9px,#eae3d4 9px,#eae3d4 18px);border:1px solid #ece6d9;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#c3b9a1;font:400 9px 'Space Mono',monospace;letter-spacing:.14em">PHOTO</div>
+                <div style="display:flex;align-items:center;gap:7px;margin-top:11px"><span style="width:13px;height:13px;border-radius:3px;background:#3D6B35;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)"></span><span style="font:500 13px 'Hanken Grotesk';color:#38352d">Jumper</span></div>
+                <div style="font:400 11px 'Space Mono',monospace;color:#a89f88;margin-top:3px">Green · 100%</div>
+              </div>
+              <div>
+                <div style="height:126px;background:repeating-linear-gradient(135deg,#f1ece0,#f1ece0 9px,#eae3d4 9px,#eae3d4 18px);border:1px solid #ece6d9;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#c3b9a1;font:400 9px 'Space Mono',monospace;letter-spacing:.14em">PHOTO</div>
+                <div style="display:flex;align-items:center;gap:7px;margin-top:11px"><span style="width:13px;height:13px;border-radius:3px;background:#B8B6B2;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)"></span><span style="font:500 13px 'Hanken Grotesk';color:#38352d">Jumper</span></div>
+                <div style="font:400 11px 'Space Mono',monospace;color:#a89f88;margin-top:3px">Grey · 100%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Tell me which to build out across all 6 screens + states: e.g. "build out <a class="dv-oid" href="#1a">1a</a>" · "<a class="dv-oid" href="#1b">1b</a> but with <a class="dv-oid" href="#1c">1c</a>'s informational swatches" · "warmer / more coral" · "new directions"</p>
+</section>
+</x-dc>
+</body>
+</html>
