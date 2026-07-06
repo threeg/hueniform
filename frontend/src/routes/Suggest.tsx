@@ -6,6 +6,7 @@ import Banner from '../components/Banner'
 import Button from '../components/Button'
 import LoadingState from '../components/LoadingState'
 import PaletteStrip from '../components/PaletteStrip'
+import { classNames } from '../utils/classNames'
 import { hslToHex } from '../utils/colour'
 import { typeLabel } from '../utils/typeLabel'
 import styles from './Suggest.module.css'
@@ -227,11 +228,11 @@ export default function Suggest() {
     ) : (
       <button
         type="button"
-        className={[
+        className={classNames(
           styles.slotChip,
-          isOn ? styles.slotChipOn : '',
-          isEmpty && isOn ? styles.slotChipEmpty : '',
-        ].filter(Boolean).join(' ')}
+          isOn && styles.slotChipOn,
+          isEmpty && isOn && styles.slotChipEmpty,
+        )}
         aria-pressed={isOn}
         onClick={() => toggleSlot(key)}
         disabled={isPending || isAutoOff}
@@ -372,10 +373,10 @@ export default function Suggest() {
                   <button
                     key={family.name}
                     type="button"
-                    className={[
+                    className={classNames(
                       styles.familyChip,
-                      anchorFamily === family.name ? styles.familyChipSelected : '',
-                    ].filter(Boolean).join(' ')}
+                      anchorFamily === family.name && styles.familyChipSelected,
+                    )}
                     data-testid={`anchor-family-${family.name}`}
                     aria-pressed={anchorFamily === family.name}
                     onClick={() => setAnchorFamily(prev => prev === family.name ? null : family.name)}
@@ -416,10 +417,10 @@ export default function Suggest() {
                   key={testid}
                   type="button"
                   data-testid={testid}
-                  className={[
+                  className={classNames(
                     styles.schemeOption,
-                    anchorScheme === key ? styles.schemeOptionSelected : '',
-                  ].filter(Boolean).join(' ')}
+                    anchorScheme === key && styles.schemeOptionSelected,
+                  )}
                   aria-pressed={anchorScheme === key}
                   onClick={() => setAnchorScheme(key)}
                 >

@@ -2,7 +2,7 @@
 id: HUE-108
 title: Use classNames utility in Suggest.tsx
 type: task
-status: todo
+status: done
 milestone: 20
 batch: cleanup
 layer: frontend
@@ -28,10 +28,10 @@ HUE-106 created `frontend/src/utils/classNames.ts` and refactored Button, Chip, 
 
 ## Definition of done (acceptance criteria)
 
-- [ ] All `.filter(Boolean).join(' ')` instances removed from `Suggest.tsx`
-- [ ] `classNames` imported and used instead
-- [ ] `make test` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] All `.filter(Boolean).join(' ')` instances removed from `Suggest.tsx`
+- [x] `classNames` imported and used instead
+- [x] `make test` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -40,3 +40,4 @@ No new tests required — the utility is exercised transitively through existing
 ## Notes
 
 - 2026-07-06 — created from `/verify` review of screen batch (HUE-098–105)
+- 2026-07-06 — done. Imported `classNames` in `Suggest.tsx` and replaced all three inline `.filter(Boolean).join(' ')` expressions (slot chip, family chip, scheme option) with `classNames(…)` calls. No test files changed. `make test-frontend` green: 273 passed (13 suites), zero warnings. Sanity test: `cd frontend && npx vitest run --reporter=verbose src/routes/Suggest.test.tsx 2>&1 | tail -5`.
