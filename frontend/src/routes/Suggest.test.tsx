@@ -704,3 +704,37 @@ describe('Suggest — accessibility (NFR-11)', () => {
     await expectNoAxeViolations(container)
   })
 })
+
+// ── Visual structure (HUE-115) ────────────────────────────────────────────────
+
+describe('Suggest — visual structure (HUE-115)', () => {
+  it('scheme selector is a joined pill control (single container)', async () => {
+    const { container } = renderScreen()
+    await waitForPanel()
+    const row = container.querySelector('[class*="schemeRow"]')
+    expect(row).toBeInTheDocument()
+    const opts = row!.querySelectorAll('[class*="schemeOption"]')
+    expect(opts.length).toBe(6)
+  })
+
+  it('result cards have a distinct header region', async () => {
+    const { container } = renderScreen()
+    await waitForPanel()
+    await userEvent.setup().click(screen.getByTestId('suggest-button'))
+    await screen.findByTestId('result-card')
+    const header = container.querySelector('[class*="cardHeader"]')
+    expect(header).toBeInTheDocument()
+    expect(header!.closest('[data-testid="result-card"]')).toBeInTheDocument()
+  })
+
+  it('result card body content is inside a cardBody wrapper', async () => {
+    const { container } = renderScreen()
+    await waitForPanel()
+    await userEvent.setup().click(screen.getByTestId('suggest-button'))
+    await screen.findByTestId('result-card')
+    const body = container.querySelector('[class*="cardBody"]')
+    expect(body).toBeInTheDocument()
+    expect(body).toContainElement(screen.getAllByTestId('slot-tile')[0])
+    expect(body).toContainElement(screen.getAllByTestId('explanation')[0])
+  })
+})

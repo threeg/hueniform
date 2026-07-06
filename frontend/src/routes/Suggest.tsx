@@ -574,48 +574,50 @@ export default function Suggest() {
                     )}
                   </div>
 
-                  <div className={styles.slotTiles}>
-                    {slotEntries.map(([slot, garment]) => (
-                      <Link
-                        key={slot}
-                        to={`/garments/${garment.id}`}
-                        className={styles.slotTile}
-                        data-testid="slot-tile"
-                      >
-                        <span className={styles.slotCaption}>{typeLabel(slot)}</span>
-                        <img
-                          src={garment.thumbnail_url}
-                          alt={`${typeLabel(slot)} thumbnail`}
-                          className={styles.slotThumb}
-                        />
-                        <PaletteStrip colours={garment.colours} height={8} />
-                      </Link>
-                    ))}
+                  <div className={styles.cardBody}>
+                    <div className={styles.slotTiles}>
+                      {slotEntries.map(([slot, garment]) => (
+                        <Link
+                          key={slot}
+                          to={`/garments/${garment.id}`}
+                          className={styles.slotTile}
+                          data-testid="slot-tile"
+                        >
+                          <span className={styles.slotCaption}>{typeLabel(slot)}</span>
+                          <img
+                            src={garment.thumbnail_url}
+                            alt={`${typeLabel(slot)} thumbnail`}
+                            className={styles.slotThumb}
+                          />
+                          <PaletteStrip colours={garment.colours} height={10} />
+                        </Link>
+                      ))}
+                    </div>
+
+                    <p className={styles.explanation} data-testid="explanation">
+                      {combo.explanation}
+                    </p>
+
+                    {combo.echoes.length > 0 && (
+                      <ul className={styles.echoes}>
+                        {combo.echoes.map((echo, j) => {
+                          const hex = familyHexMap.get(echo.family)
+                          return (
+                            <li key={j} className={styles.echoLine} data-testid="echo-line">
+                              {hex && (
+                                <span
+                                  className={styles.echoSwatch}
+                                  style={{ backgroundColor: hex }}
+                                  aria-hidden="true"
+                                />
+                              )}
+                              Echo: {echo.family} — {echo.from_slot} ↔ {echo.to_slot}
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    )}
                   </div>
-
-                  <p className={styles.explanation} data-testid="explanation">
-                    {combo.explanation}
-                  </p>
-
-                  {combo.echoes.length > 0 && (
-                    <ul className={styles.echoes}>
-                      {combo.echoes.map((echo, j) => {
-                        const hex = familyHexMap.get(echo.family)
-                        return (
-                          <li key={j} className={styles.echoLine} data-testid="echo-line">
-                            {hex && (
-                              <span
-                                className={styles.echoSwatch}
-                                style={{ backgroundColor: hex }}
-                                aria-hidden="true"
-                              />
-                            )}
-                            Echo: {echo.family} — {echo.from_slot} ↔ {echo.to_slot}
-                          </li>
-                        )
-                      })}
-                    </ul>
-                  )}
                 </li>
               )
             })}

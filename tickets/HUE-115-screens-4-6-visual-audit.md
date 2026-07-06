@@ -2,7 +2,7 @@
 id: HUE-115
 title: Screens 4–6 visual audit and fixes
 type: story
-status: todo
+status: done
 milestone: 20
 batch: cleanup
 layer: frontend
@@ -66,9 +66,11 @@ so that the entire app is visually consistent with the design.
 - [x] Acceptance criteria met
 - [x] Tests added/updated per test strategy and passing in `make test`
 - [ ] Matcher-touching work: n/a
-- [ ] User-flow-touching work: `make test-e2e` — all journeys still pass
+- [x] User-flow-touching work: `make test-e2e` — all journeys still pass
 - [x] QA steps recorded and repeated in the chat completion report
 - [x] Ticket status + notes updated in the same commit
 
 ## Notes
 - 2026-07-06 — created (visual-fidelity audit of v0.3.0 against prototype); depends on HUE-110 so the nav fixes are in place before auditing their appearance on these screens
+- 2026-07-06 — done. Audited screens 4–6 against `Hueniform App.dc.html`. Fixes applied: (1) Scheme selector on Screen 5 — changed from individual square buttons to a joined pill segmented-control (border-radius:pill, overflow:hidden, border-left dividers, active option gets clay fill); (2) Result cards on Screen 6 — separated header (surface-raised tinted background + border-bottom) from body (new `.cardBody` wrapper with its own padding), card itself now has no padding and `overflow:hidden` for correct corner clipping; (3) Slot tile width increased 80→100px with 5:4 thumb aspect ratio and rounded top corners only; (4) PaletteStrip height on slot tiles increased 8→10; (5) Echo swatch changed from circle (`border-radius:50%`) to rounded-square (`var(--radius-sm)`); (6) Anchor/scheme label given mono uppercase treatment; (7) GarmentDetail `editCatBtn` border-radius upgraded from radius-sm (6px) to radius-md (12px).
+  Sanity test: `cd frontend && npm run test -- --reporter=dot 2>&1 | tail -5`

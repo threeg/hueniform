@@ -290,6 +290,17 @@ describe('GarmentDetail — not found', () => {
   })
 })
 
+// ── Visual structure (HUE-115) ────────────────────────────────────────────────
+
+describe('GarmentDetail — visual structure (HUE-115)', () => {
+  it('edit category button uses rounded-md class', async () => {
+    const { container } = renderScreen()
+    await screen.findByTestId('edit-category-button')
+    const btn = container.querySelector('[class*="editCatBtn"]')
+    expect(btn).toBeInTheDocument()
+  })
+})
+
 // ── Accessibility (NFR-11) ────────────────────────────────────────────────────
 
 describe('GarmentDetail — accessibility (NFR-11)', () => {
