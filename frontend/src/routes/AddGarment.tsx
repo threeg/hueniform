@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDetect } from '../api/queries'
 import Banner from '../components/Banner'
+import Button from '../components/Button'
 import LoadingState from '../components/LoadingState'
 import styles from './AddGarment.module.css'
 
@@ -85,13 +86,13 @@ export default function AddGarment() {
           <>
             <p className={styles.headline}>Drag a garment photograph here</p>
             <p className={styles.or}>or</p>
-            <button
+            <Button
+              variant="secondary"
               type="button"
-              className={styles.pickButton}
               onClick={() => inputRef.current?.click()}
             >
               Choose a file…
-            </button>
+            </Button>
             <p className={styles.hint}>JPEG, PNG or WebP, up to 20 MB</p>
             <p className={styles.tip}>
               Tip: a plain, contrasting background helps the colour detector
@@ -109,6 +110,7 @@ export default function AddGarment() {
         onChange={handleChange}
         data-testid="file-input"
         tabIndex={-1}
+        aria-hidden="true"
       />
     </div>
   )

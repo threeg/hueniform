@@ -2,7 +2,7 @@
 id: HUE-099
 title: Restyle Upload & detect
 type: story
-status: todo
+status: done
 milestone: 20
 batch: screen
 layer: frontend
@@ -53,9 +53,21 @@ so that it is attractive and usable everywhere.
 - [ ] Confirm each documented state still appears and behaves as before
 
 ## Definition of done
-- [ ] Acceptance criteria met
-- [ ] Tests added/updated per test strategy §10.3 and passing in `make test`
-- [ ] Matcher-touching work: n/a
+- [x] Acceptance criteria met
+- [x] Tests added/updated per test strategy §10.3 and passing in `make test`
+- [x] Matcher-touching work: n/a
 - [ ] User-flow-touching work: `make test-e2e` responsive journeys — HUE-105
-- [ ] QA steps recorded and repeated in the chat completion report
-- [ ] Ticket status + notes updated in the same commit
+- [x] QA steps recorded and repeated in the chat completion report
+- [x] Ticket status + notes updated in the same commit
+
+## Notes
+
+- 2026-07-06 — done. Restyled `AddGarment.module.css` — all hardcoded hex/px values replaced with design-system tokens (`var(--color-*)`, `var(--space-*)`, `var(--text-*)`, `var(--radius-*)`, `var(--font-display)`, `var(--weight-*)`, `var(--leading-*)`). Drag-over state: `--color-primary` border + `--color-primary-tint` background. Responsive: `@media (max-width: 639px)` removes `max-width` constraint and tightens padding so the drop zone fills the mobile viewport. Updated `AddGarment.tsx` to import and use the shared `Button` (variant `secondary`) instead of the inline `pickButton` style. Added `aria-hidden="true"` to the hidden file input — axe correctly flagged it as unlabelled since it is zero-size and `tabIndex={-1}` (not keyboard-reachable); the visible "Choose a file…" button is the sole interactive path. Added 2 axe tests to `UploadDetect.test.tsx` (default state + error state) using `expectNoAxeViolations`. `make test` (1120 backend + 263 frontend, zero warnings). Sanity test: `cd frontend && npm run test -- UploadDetect --run`.
+
+## QA steps
+- [ ] Run `make dev` and open `/add` at desktop width (≥ 1024 px): drop zone renders with warm cream background, clay/terracotta drag-over highlight, Newsreader display heading, secondary button style matching the design system.
+- [ ] Resize to tablet (~768 px): layout unchanged (single column), drop zone full-width within the content area.
+- [ ] Resize to mobile (~390 px): `max-width` removed, drop zone fills the viewport; button and text remain readable.
+- [ ] Tab through the page: visible clay focus ring on the "Choose a file…" button (no focus on the hidden input).
+- [ ] Drop an invalid file: error banner appears above the drop zone; drop zone remains interactive.
+- [ ] Drop a valid image: loading state ("Detecting colours…") replaces zone content while request is in flight; on success, navigates to `/add/confirm`.

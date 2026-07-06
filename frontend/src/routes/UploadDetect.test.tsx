@@ -6,6 +6,7 @@ import { describe, it, expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from '../test/server'
 import { renderRoute, createTestQueryClient } from '../test/test-utils'
+import { expectNoAxeViolations } from '../test/a11y'
 
 import AddGarment from './AddGarment'
 import {
@@ -238,6 +239,32 @@ describe('AddGarment — drag-over', () => {
     fireEvent.dragOver(zone, { dataTransfer: { files: [] } })
     fireEvent.dragLeave(zone, { relatedTarget: document.body })
     expect(zone).toBeInTheDocument()
+  })
+})
+
+// ── Accessibility (NFR-11) ────────────────────────────────────────────────────
+
+describe('AddGarment — accessibility (NFR-11)', () => {
+  it('default state has no axe violations', async () => {
+    const { container } = renderScreen()
+    await expectNoAxeViolations(container)
+  })
+
+  it('error state has no axe violations', async () => {
+    server.use(
+      http.post('http://127.0.0.1:8000/api/detections', () =>
+        HttpResponse.json(ERR_UNSUPPORTED_FORMAT, { status: 400 }),
+      ),
+    )
+    const user = userEvent.setup()
+    const { container } = renderScreen()
+    await user.upload(screen.getByTestId('file-input'), garmentFile())
+    await waitFor(() =>
+      expect(
+        screen.getByText(ERR_UNSUPPORTED_FORMAT.error.message),
+      ).toBeInTheDocument(),
+    )
+    await expectNoAxeViolations(container)
   })
 })
 

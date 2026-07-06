@@ -40,7 +40,7 @@ Leaf tickets for v0.3.0 (epics E11–E12), the visual redesign. Reading top to b
 | 96 | HUE-096 | Shared component styles | task | frontend | 20 / design-system | HUE-E11 | done | HUE-094 |
 | 97 | HUE-097 | App shell and responsive navigation | story | frontend | 20 / design-system | HUE-E11 | done | HUE-094, HUE-096 |
 | 98 | HUE-098 | Frontend accessibility and responsive test tooling | task | tooling | 20 / tooling | HUE-E11 | done | HUE-005 |
-| 99 | HUE-099 | Restyle Upload & detect | story | frontend | 20 / screen | HUE-E12 | todo | HUE-096, HUE-097, HUE-098, HUE-033 |
+| 99 | HUE-099 | Restyle Upload & detect | story | frontend | 20 / screen | HUE-E12 | done | HUE-096, HUE-097, HUE-098, HUE-033 |
 | 100 | HUE-100 | Restyle Confirm-and-correct | story | frontend | 20 / screen | HUE-E12 | todo | HUE-096, HUE-097, HUE-098, HUE-034 |
 | 101 | HUE-101 | Restyle Inventory (Wardrobe) | story | frontend | 20 / screen | HUE-E12 | todo | HUE-096, HUE-097, HUE-098, HUE-077 |
 | 102 | HUE-102 | Restyle Garment detail | story | frontend | 20 / screen | HUE-E12 | todo | HUE-096, HUE-097, HUE-098, HUE-074 |
