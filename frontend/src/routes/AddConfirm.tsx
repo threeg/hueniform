@@ -270,24 +270,28 @@ export default function AddConfirm() {
           )}
 
           {/* Category picker (FR-31) */}
+          <p className={styles.categoryLabel}>Garment category — required</p>
           <section aria-label="Garment category" className={styles.typePicker}>
-            {taxonomy?.regions?.map(region => (
-              <div key={region.region} className={styles.regionGroup}>
-                <h3 className={styles.regionHeading}>
-                  {REGION_LABELS[region.region] ?? region.region}
-                </h3>
-                {region.slots.flatMap(slot => slot.categories).map(cat => (
-                  <Chip
-                    key={cat}
-                    selected={selectedType === cat}
-                    onClick={() => setSelectedType(cat)}
-                    disabled={isPending}
-                  >
-                    {typeLabel(cat)}
-                  </Chip>
-                ))}
-              </div>
-            ))}
+            <div className={styles.categoryContainer}>
+              {taxonomy?.regions?.map(region => (
+                <div key={region.region} className={styles.regionGroup}>
+                  <h3 className={styles.regionHeading}>
+                    {REGION_LABELS[region.region] ?? region.region}
+                  </h3>
+                  {region.slots.flatMap(slot => slot.categories).map(cat => (
+                    <Chip
+                      key={cat}
+                      selected={selectedType === cat}
+                      onClick={() => setSelectedType(cat)}
+                      disabled={isPending}
+                      className={styles.categoryChip}
+                    >
+                      {typeLabel(cat)}
+                    </Chip>
+                  ))}
+                </div>
+              ))}
+            </div>
           </section>
 
           {/* Save / Cancel (FR-30) */}

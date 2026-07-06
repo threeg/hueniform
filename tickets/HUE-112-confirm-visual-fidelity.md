@@ -2,7 +2,7 @@
 id: HUE-112
 title: Confirm colours visual fidelity
 type: story
-status: todo
+status: done
 milestone: 20
 batch: cleanup
 layer: frontend
@@ -56,20 +56,21 @@ so that the visual hierarchy (label → container → grouped chips) is clear an
 - Chip selected state: verify the correct visual treatment is applied (class or inline check)
 
 ## QA steps
-- [ ] Navigate to `/add/confirm` via the upload flow
-- [ ] "Garment category — required" label: mono font, uppercase, muted colour
-- [ ] Category chips sit inside a white bordered panel with rounded corners
-- [ ] Region headings (Head, Upper body, etc.) in mono uppercase
-- [ ] Select a category: chip turns solid clay with white text and shadow
-- [ ] Resize to mobile: container still visible, chips wrap properly
+- [x] Navigate to `/add/confirm` via the upload flow
+- [x] "Garment category — required" label: mono font, uppercase, muted colour
+- [x] Category chips sit inside a white bordered panel with rounded corners
+- [x] Region headings (Head, Upper body, etc.) in mono uppercase
+- [x] Select a category: chip turns solid clay with white text and shadow
+- [x] Resize to mobile: container still visible, chips wrap properly
 
 ## Definition of done
 - [x] Acceptance criteria met
 - [x] Tests added/updated per test strategy and passing in `make test`
-- [ ] Matcher-touching work: n/a
-- [ ] User-flow-touching work: `make test-e2e` — confirm flow still passes
+- [x] Matcher-touching work: n/a
+- [x] User-flow-touching work: `make test-e2e` — 27 passed, 2 skipped, zero failures
 - [x] QA steps recorded and repeated in the chat completion report
 - [x] Ticket status + notes updated in the same commit
 
 ## Notes
 - 2026-07-06 — created (visual-fidelity audit of v0.3.0 against prototype)
+- 2026-07-06 — done. Added `<p class="categoryLabel">Garment category — required</p>` above the category section (Space Mono, `--text-xs`, uppercase, `letter-spacing: .14em`, `--color-ink-faint`). Wrapped region groups in `<div class="categoryContainer">` (`--color-surface-highest` background, `1px solid --color-border-subtle` border, `--radius-lg` corners, `--space-3 --space-4` padding). Updated `.regionHeading` to use `--font-mono`, `--text-xs`, uppercase with `.14em` letter-spacing, `--color-ink-faint`. Added `.categoryChip[aria-pressed='true']` override on each Chip in the picker: `--color-primary` background+border, white text, `--weight-semibold`, `--shadow-chip-selected` (new token). Added `--shadow-chip-selected` token to `tokens.css`. Tests: 282 passed; e2e: 27 passed, 2 skipped. Sanity test: `cd frontend && npx vitest run src/routes/ConfirmCorrect.test.tsx`.

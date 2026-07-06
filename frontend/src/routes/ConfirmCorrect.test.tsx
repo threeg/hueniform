@@ -329,6 +329,29 @@ describe('AddConfirm — regeneration variant (FR-33)', () => {
   })
 })
 
+// ── Category section visual structure (HUE-112) ───────────────────────────────
+
+describe('AddConfirm — category section visual structure (HUE-112)', () => {
+  it('renders the "Garment category — required" label', () => {
+    renderScreen()
+    expect(screen.getByText('Garment category — required')).toBeInTheDocument()
+  })
+
+  it('renders a category container element inside the garment category region', async () => {
+    const { container } = renderScreen()
+    const section = screen.getByRole('region', { name: 'Garment category' })
+    await within(section).findByText('Head')
+    expect(section.querySelector('[class*="categoryContainer"]')).toBeInTheDocument()
+  })
+
+  it('selected chip has aria-pressed="true" (solid clay state)', async () => {
+    renderScreen()
+    const btn = await screen.findByRole('button', { name: 'T-shirt' })
+    await user().click(btn)
+    expect(btn).toHaveAttribute('aria-pressed', 'true')
+  })
+})
+
 // ── Accessibility (NFR-11) ────────────────────────────────────────────────────
 
 describe('AddConfirm — accessibility (NFR-11)', () => {
