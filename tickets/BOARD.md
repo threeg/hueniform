@@ -48,6 +48,15 @@ Leaf tickets for v0.3.0 (epics E11–E12), the visual redesign. Reading top to b
 | 104 | HUE-104 | Restyle Suggestion results | story | frontend | 20 / screen | HUE-E12 | todo | HUE-096, HUE-097, HUE-098, HUE-080 |
 | 105 | HUE-105 | Responsive e2e journeys and accessibility audit | task | tooling | 20 / tooling | HUE-E12 | todo | HUE-099, HUE-100, HUE-101, HUE-102, HUE-103, HUE-104, HUE-085 |
 
+## Cleanup backlog — v0.3.0
+
+Reactive tickets from `/verify` post-batch reviews of the Milestone 20 work (CONVENTIONS.md §6). Worked between batches or at milestone end; critical tickets are promoted into the v0.3.0 execution order above.
+
+| # | id | title | type | layer | source batch | status | depends_on |
+|---|---|---|---|---|---|---|---|
+| 106 | HUE-106 | Extract classNames utility and refactor NavLink helpers | task | frontend | design-system | todo | HUE-096, HUE-097 |
+| 107 | HUE-107 | Move TextInput label styles to CSS Module | task | frontend | design-system | todo | HUE-096 |
+
 ## v0.2.0 — execution order (Milestone 14)
 
 Leaf tickets for v0.2.0 (epics E06–E10). Reading top to bottom is a legal build sequence; no ticket depends on a higher-numbered one. The snapshot baseline (HUE-059) is sequenced first among the E08 slot-model work (test strategy §4.10; architecture §2.2). Epics close when their children are all `done`.
