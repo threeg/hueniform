@@ -9,9 +9,9 @@
 
 .title {
   font-family: var(--font-display);
-  font-size: var(--text-2xl);
-  font-weight: var(--weight-semibold);
-  line-height: var(--leading-tight);
+  font-size: 1.875rem;
+  font-weight: 400;
+  line-height: 1;
   color: var(--color-ink);
   margin: 0;
 }

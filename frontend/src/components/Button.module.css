@@ -11,7 +11,7 @@
   line-height: var(--leading-tight);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
   text-decoration: none;
   white-space: nowrap;
 }
@@ -22,11 +22,14 @@
   background: var(--color-primary);
   color: var(--color-surface-highest);
   border-color: var(--color-primary);
+  box-shadow: 0 10px 20px -10px rgba(198, 106, 74, 0.8);
 }
 
 .primary:hover:not(:disabled) {
   background: var(--color-primary-strong);
   border-color: var(--color-primary-strong);
+  transform: translateY(-1px);
+  box-shadow: 0 15px 28px -10px rgba(198, 106, 74, 0.95);
 }
 
 .secondary {

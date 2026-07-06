@@ -192,6 +192,7 @@
   display: flex;
   align-items: baseline;
   gap: 6px;
+  padding: 0 22px 30px;
 }
 
 .sideLink,
@@ -280,6 +281,17 @@
     display: none;
   }
 
+  .frame {
+    flex-direction: row;
+    max-width: 834px;
+    margin: 0 auto;
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    overflow: clip;
+    box-shadow: 0 24px 55px -30px rgba(120, 70, 40, 0.5);
+  }
+
   .iconRail {
     display: flex;
     flex-direction: column;
@@ -287,14 +299,13 @@
     gap: var(--space-5);
     width: 88px;
     flex-shrink: 0;
-    position: fixed;
+    position: sticky;
     top: 0;
-    left: 0;
     height: 100vh;
+    align-self: flex-start;
     background: var(--color-surface);
-    border-right: 1px solid var(--color-border-subtle);
-    padding: var(--space-5) 0;
-    z-index: 20;
+    border-right: 1px solid #eeddc8;
+    padding: 22px 0;
   }
 
   .iconRail nav {
@@ -309,8 +320,10 @@
   }
 
   .main {
-    margin-left: 88px;
-    padding: var(--space-5);
+    flex: 1;
+    min-width: 0;
+    margin-left: 0;
+    padding: 26px 28px 32px;
   }
 }
 
@@ -318,7 +331,8 @@
 
 @media (min-width: 1024px) {
   .frame {
-    flex-direction: row;
+    max-width: 1080px;
+    border-radius: 24px;
   }
 
   .topBar {
@@ -332,22 +346,22 @@
   .sidebar {
     display: flex;
     flex-direction: column;
-    gap: var(--space-5);
-    width: 190px;
+    width: 212px;
     flex-shrink: 0;
-    position: fixed;
+    position: sticky;
     top: 0;
-    left: 0;
     height: 100vh;
+    align-self: flex-start;
     background: var(--color-surface);
-    border-right: 1px solid var(--color-border);
-    padding: var(--space-5) var(--space-4);
+    border-right: 1px solid #eeddc8;
+    padding: 26px 0 30px;
   }
 
   .sidebar nav {
     display: flex;
     flex-direction: column;
-    gap: var(--space-0-5);
+    gap: 6px;
+    padding: 0 14px;
   }
 
   .bottomBar {
@@ -355,8 +369,9 @@
   }
 
   .main {
-    margin-left: 190px;
-    padding: var(--space-7) var(--space-6);
-    max-width: 1290px;
+    flex: 1;
+    min-width: 0;
+    margin-left: 0;
+    padding: 30px 36px 40px;
   }
 }

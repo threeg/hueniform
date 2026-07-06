@@ -292,30 +292,33 @@ export default function Suggest() {
       <section className={styles.panel} aria-label="Outfit request">
         <h1 className={styles.heading}>Suggest an outfit</h1>
 
-        {taxonomy?.regions?.map(region => {
-          const anchors = region.slots.filter(s => s.role === 'anchor')
-          const accessories = region.slots.filter(s => s.role !== 'anchor')
-          return (
-            <div key={region.region} className={styles.slotGroup}>
-              <p className={styles.slotLabel}>
-                {REGION_LABELS[region.region] ?? region.region}
-              </p>
-              <div className={styles.chips}>
-                {anchors.map(slot => renderSlotChip(slot))}
+        <p className={styles.sectionLabel}>Slots</p>
+        <div className={styles.slotsGrid}>
+          {taxonomy?.regions?.map(region => {
+            const anchors = region.slots.filter(s => s.role === 'anchor')
+            const accessories = region.slots.filter(s => s.role !== 'anchor')
+            return (
+              <div key={region.region} className={styles.slotGroup}>
+                <p className={styles.slotLabel}>
+                  {REGION_LABELS[region.region] ?? region.region}
+                </p>
+                <div className={styles.chips}>
+                  {anchors.map(slot => renderSlotChip(slot))}
+                </div>
+                {accessories.length > 0 && (
+                  <>
+                    {anchors.length > 0 && (
+                      <p className={styles.accessoriesLabel}>Accessories</p>
+                    )}
+                    <div className={styles.chips}>
+                      {accessories.map(slot => renderSlotChip(slot))}
+                    </div>
+                  </>
+                )}
               </div>
-              {accessories.length > 0 && (
-                <>
-                  {anchors.length > 0 && (
-                    <p className={styles.accessoriesLabel}>Accessories</p>
-                  )}
-                  <div className={styles.chips}>
-                    {accessories.map(slot => renderSlotChip(slot))}
-                  </div>
-                </>
-              )}
-            </div>
-          )
-        })}
+            )
+          })}
+        </div>
 
         {isOnePieceOnly && (
           <p className={styles.onePieceNote} data-testid="one-piece-note">

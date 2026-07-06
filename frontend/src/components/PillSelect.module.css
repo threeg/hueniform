@@ -31,7 +31,16 @@
 }
 
 .triggerActive {
-  border-color: var(--color-primary-soft);
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+}
+
+.triggerActive .triggerLabel {
+  color: var(--color-primary);
+}
+
+.triggerActive .triggerValue {
+  color: var(--color-primary);
 }
 
 .triggerLabel {

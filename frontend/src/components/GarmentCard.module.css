@@ -1,12 +1,19 @@
 .card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  gap: 0;
+  border: 1px solid #ece2d0;
+  border-radius: 13px;
   overflow: hidden;
-  background: var(--color-surface-raised);
-  box-shadow: var(--shadow-md);
+  background: var(--color-surface-highest);
+  box-shadow: 0 4px 12px -8px rgba(120, 70, 40, 0.3);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 30px -12px rgba(120, 70, 40, 0.5);
+  border-color: #e0cfb4;
 }
 
 .slot {
@@ -22,21 +29,33 @@
 
 .thumbnail {
   width: 100%;
-  aspect-ratio: 3 / 4;
+  height: 118px;
   object-fit: cover;
   display: block;
   background: var(--color-surface);
 }
 
 .meta {
-  padding: var(--space-1) var(--space-2) var(--space-2);
+  padding: 10px 13px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 6px;
 }
 
 .typeLabel {
-  font-size: var(--text-sm);
+  font-size: 13px;
   font-weight: var(--weight-medium);
-  color: var(--color-ink-secondary);
+  color: #3a352d;
+}
+
+@media (max-width: 639px) {
+  .thumbnail {
+    height: 124px;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .thumbnail {
+    height: 120px;
+  }
 }
