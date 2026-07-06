@@ -2,7 +2,7 @@
 id: HUE-E11
 title: Design-system foundation
 type: epic
-status: todo
+status: done
 milestone: 20
 layer: frontend
 depends_on: []
@@ -36,3 +36,4 @@ All children `done`; tokens/fonts/components/shell in place; `make test` green w
 
 ## Notes
 - 2026-07-05 — created (Milestone 19 ticket generation)
+- 2026-07-05 — done. All five children done: HUE-094 (tokens), HUE-095 (fonts), HUE-096 (shared components), HUE-097 (app shell + responsive nav), HUE-098 (jest-axe + Playwright viewport tooling).

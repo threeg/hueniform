@@ -9,12 +9,10 @@
 
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { axe, toHaveNoViolations } from 'jest-axe'
 import { describe, it, expect } from 'vitest'
 
 import App from '../App'
-
-expect.extend(toHaveNoViolations)
+import { expectNoAxeViolations } from './a11y'
 
 function renderShell(initialPath = '/') {
   return render(
@@ -166,19 +164,16 @@ describe('main landmark', () => {
 describe('accessibility (jest-axe)', () => {
   it('shell at / has no axe violations', async () => {
     const { container } = renderShell('/')
-    const results = await axe(container)
-    expect(results).toHaveNoViolations()
+    await expectNoAxeViolations(container)
   })
 
   it('shell at /add has no axe violations', async () => {
     const { container } = renderShell('/add')
-    const results = await axe(container)
-    expect(results).toHaveNoViolations()
+    await expectNoAxeViolations(container)
   })
 
   it('shell at /suggest has no axe violations', async () => {
     const { container } = renderShell('/suggest')
-    const results = await axe(container)
-    expect(results).toHaveNoViolations()
+    await expectNoAxeViolations(container)
   })
 })

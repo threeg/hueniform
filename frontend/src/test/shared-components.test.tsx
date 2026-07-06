@@ -13,14 +13,12 @@
  */
 
 import { render, screen } from '@testing-library/react'
-import { axe, toHaveNoViolations } from 'jest-axe'
 import { describe, it, expect } from 'vitest'
 
 import Button from '../components/Button'
 import Chip from '../components/Chip'
 import TextInput from '../components/TextInput'
-
-expect.extend(toHaveNoViolations)
+import { expectNoAxeViolations } from './a11y'
 
 // ── Button ────────────────────────────────────────────────────────────────────
 
@@ -65,32 +63,27 @@ describe('Button', () => {
 
   it('primary button has no axe violations', async () => {
     const { container } = render(<Button>Save</Button>)
-    const results = await axe(container)
-    expect(results).toHaveNoViolations()
+    await expectNoAxeViolations(container)
   })
 
   it('secondary button has no axe violations', async () => {
     const { container } = render(<Button variant="secondary">Cancel</Button>)
-    const results = await axe(container)
-    expect(results).toHaveNoViolations()
+    await expectNoAxeViolations(container)
   })
 
   it('ghost button has no axe violations', async () => {
     const { container } = render(<Button variant="ghost">Skip</Button>)
-    const results = await axe(container)
-    expect(results).toHaveNoViolations()
+    await expectNoAxeViolations(container)
   })
 
   it('destructive button has no axe violations', async () => {
     const { container } = render(<Button variant="destructive">Delete</Button>)
-    const results = await axe(container)
-    expect(results).toHaveNoViolations()
+    await expectNoAxeViolations(container)
   })
 
   it('disabled button has no axe violations', async () => {
     const { container } = render(<Button disabled>Save</Button>)
-    const results = await axe(container)
-    expect(results).toHaveNoViolations()
+    await expectNoAxeViolations(container)
   })
 })
 
@@ -119,20 +112,17 @@ describe('Chip', () => {
 
   it('default chip has no axe violations', async () => {
     const { container } = render(<Chip>Teal</Chip>)
-    const results = await axe(container)
-    expect(results).toHaveNoViolations()
+    await expectNoAxeViolations(container)
   })
 
   it('selected chip has no axe violations', async () => {
     const { container } = render(<Chip selected>Navy</Chip>)
-    const results = await axe(container)
-    expect(results).toHaveNoViolations()
+    await expectNoAxeViolations(container)
   })
 
   it('disabled chip has no axe violations', async () => {
     const { container } = render(<Chip disabled>Muted</Chip>)
-    const results = await axe(container)
-    expect(results).toHaveNoViolations()
+    await expectNoAxeViolations(container)
   })
 })
 
@@ -161,19 +151,16 @@ describe('TextInput', () => {
 
   it('unlabelled input has no axe violations', async () => {
     const { container } = render(<TextInput aria-label="Search garments" />)
-    const results = await axe(container)
-    expect(results).toHaveNoViolations()
+    await expectNoAxeViolations(container)
   })
 
   it('labelled input has no axe violations', async () => {
     const { container } = render(<TextInput id="q" label="Search" />)
-    const results = await axe(container)
-    expect(results).toHaveNoViolations()
+    await expectNoAxeViolations(container)
   })
 
   it('disabled labelled input has no axe violations', async () => {
     const { container } = render(<TextInput id="q2" label="Search" disabled />)
-    const results = await axe(container)
-    expect(results).toHaveNoViolations()
+    await expectNoAxeViolations(container)
   })
 })

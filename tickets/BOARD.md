@@ -16,7 +16,7 @@ The version sections are ordered **latest first**: v0.3.0 (Milestone 20, in plan
 
 | id | title | milestone | status |
 |---|---|---|---|
-| HUE-E11 | Design-system foundation | 20 | todo |
+| HUE-E11 | Design-system foundation | 20 | done |
 | HUE-E12 | Screen restyle & responsive | 20 | todo |
 | HUE-E06 | Constrained suggestions | 14 | done |
 | HUE-E07 | Edit a garment's category | 14 | done |
@@ -39,7 +39,7 @@ Leaf tickets for v0.3.0 (epics E11–E12), the visual redesign. Reading top to b
 | 95 | HUE-095 | Self-hosted fonts (offline) | task | frontend | 20 / design-system | HUE-E11 | done | HUE-094 |
 | 96 | HUE-096 | Shared component styles | task | frontend | 20 / design-system | HUE-E11 | done | HUE-094 |
 | 97 | HUE-097 | App shell and responsive navigation | story | frontend | 20 / design-system | HUE-E11 | done | HUE-094, HUE-096 |
-| 98 | HUE-098 | Frontend accessibility and responsive test tooling | task | tooling | 20 / tooling | HUE-E11 | todo | HUE-005 |
+| 98 | HUE-098 | Frontend accessibility and responsive test tooling | task | tooling | 20 / tooling | HUE-E11 | done | HUE-005 |
 | 99 | HUE-099 | Restyle Upload & detect | story | frontend | 20 / screen | HUE-E12 | todo | HUE-096, HUE-097, HUE-098, HUE-033 |
 | 100 | HUE-100 | Restyle Confirm-and-correct | story | frontend | 20 / screen | HUE-E12 | todo | HUE-096, HUE-097, HUE-098, HUE-034 |
 | 101 | HUE-101 | Restyle Inventory (Wardrobe) | story | frontend | 20 / screen | HUE-E12 | todo | HUE-096, HUE-097, HUE-098, HUE-077 |
