@@ -35,7 +35,7 @@ Leaf tickets for v0.3.0 (epics E11–E12), the visual redesign. Reading top to b
 
 | # | id | title | type | layer | M / batch | epic | status | depends_on |
 |---|---|---|---|---|---|---|---|---|
-| 94 | HUE-094 | Design tokens and global stylesheet | task | frontend | 20 / design-system | HUE-E11 | todo | HUE-032 |
+| 94 | HUE-094 | Design tokens and global stylesheet | task | frontend | 20 / design-system | HUE-E11 | done | HUE-032 |
 | 95 | HUE-095 | Self-hosted fonts (offline) | task | frontend | 20 / design-system | HUE-E11 | todo | HUE-094 |
 | 96 | HUE-096 | Shared component styles | task | frontend | 20 / design-system | HUE-E11 | todo | HUE-094 |
 | 97 | HUE-097 | App shell and responsive navigation | story | frontend | 20 / design-system | HUE-E11 | todo | HUE-094, HUE-096 |

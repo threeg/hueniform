@@ -2,7 +2,7 @@
 id: HUE-094
 title: Design tokens and global stylesheet
 type: task
-status: todo
+status: done
 milestone: 20
 batch: design-system
 layer: frontend
@@ -32,3 +32,7 @@ The redesign is realised as a single global **design-tokens layer** (architectur
 
 ## Tests / verification
 - `tokens.test.ts` (§10.3): parse the token values and assert AA contrast ratios for the documented ink/paper and text-on-accent pairings. `cd frontend && npm run test -- tokens --run`.
+
+## Notes
+
+- 2026-07-05 — done. Created `src/tokens.css` defining all CSS custom properties from design system §2–§3 (colours, typography, spacing, radius, elevation); imported globally in `main.tsx` before `index.css`. Added `src/test/tokens.test.ts` (15 contrast tests, §10.3): parses the live CSS file via `fs.readFileSync`, asserts WCAG AA ratios for ink/paper pairings (≥ 4.5:1) and accent/large-text pairings (≥ 3:1). All 15 pass. Button-text constraint documented in test: `--color-surface-highest` on `--color-primary` gives ≈ 3.8:1 (passes UI-component boundary, not body-text AA; button labels must be large/bold or use `--color-primary-deep` — enforced in HUE-096). `make test` (1120+203, zero warnings). Sanity test: `cd frontend && npm run test -- tokens --run`.

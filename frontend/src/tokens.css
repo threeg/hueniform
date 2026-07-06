@@ -1,0 +1,81 @@
+/*
+ * Design tokens — Hueniform design system §2–§3
+ *
+ * All components consume these via var(--…); no raw colour/size literals
+ * elsewhere. Values per docs/06-design-system.md (colours are prototype
+ * exact hexes; numeric scales are normalised per §3).
+ */
+
+:root {
+
+  /* ── §2.1 Neutrals — paper (surfaces, light → structural) ─────────────── */
+  --color-ground:           #eae0d0;  /* App background ("paper"). */
+  --color-surface:          #f6ebdc;  /* Panels, grouped sections. */
+  --color-surface-raised:   #fbf4ea;  /* Cards, primary content surface. */
+  --color-surface-highest:  #fffdf8;  /* Inputs, popovers, menus. */
+  --color-border-subtle:    #ecdcc7;  /* Hairline dividers within a surface. */
+  --color-border:           #e4d5be;  /* Default border for cards, inputs, chips. */
+  --color-border-strong:    #d8c3a6;  /* Emphasised or hovered borders. */
+
+  /* ── §2.2 Neutrals — ink (text, dark → faint) ─────────────────────────── */
+  --color-ink:              #3a3128;  /* Primary text, headings. */
+  --color-ink-secondary:    #5f5646;  /* Secondary text, labels. */
+  --color-ink-muted:        #8a7c66;  /* Tertiary text, captions, icons (large text only). */
+  --color-ink-faint:        #a89b86;  /* Placeholder and disabled text (WCAG-exempt). */
+
+  /* ── §2.3 Accents ──────────────────────────────────────────────────────── */
+  --color-primary:          #c66a4a;  /* Clay — primary actions, active state, links. */
+  --color-primary-strong:   #c24b38;  /* Hover/pressed primary; emphasis. */
+  --color-primary-deep:     #8a3a28;  /* Text/icon on light clay tints; deepest clay. */
+  --color-primary-soft:     #e0a08c;  /* Soft clay for subtle fills/borders. */
+  --color-primary-tint:     #f7e6de;  /* Lightest clay wash — selected-row/backing tint. */
+  --color-teal:             #2cada0;  /* Secondary accent — highlights, informational. */
+  --color-orange:           #ee8225;  /* Secondary accent — attention, warm callouts. */
+  --color-green:            #4f7d54;  /* Secondary accent — positive/confirmation. */
+
+  /* ── §3.1 Font families ────────────────────────────────────────────────── */
+  --font-display: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --font-sans:    'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  --font-mono:    'Space Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* ── §3.2 Type scale (normalised rem, 16 px root) ──────────────────────── */
+  --text-xs:   0.75rem;    /* 12 px — mono labels, meta, chip text. */
+  --text-sm:   0.8125rem;  /* 13 px — secondary/supporting text. */
+  --text-base: 0.875rem;   /* 14 px — interface default. */
+  --text-md:   1rem;       /* 16 px — comfortable body, dialog copy. */
+  --text-lg:   1.125rem;   /* 18 px — sub-headings. */
+  --text-xl:   1.375rem;   /* 22 px — section headings. */
+  --text-2xl:  1.625rem;   /* 26 px — page title / display. */
+
+  /* ── §3.2 Weights ──────────────────────────────────────────────────────── */
+  --weight-regular:   400;
+  --weight-medium:    500;
+  --weight-semibold:  600;
+  --weight-bold:      700;
+
+  /* ── §3.2 Line-heights ─────────────────────────────────────────────────── */
+  --leading-tight:  1.2;  /* Display, headings. */
+  --leading-normal: 1.5;  /* Body. */
+
+  /* ── §3.3 Spacing (4 px base) ──────────────────────────────────────────── */
+  --space-0-5: 2px;   /* Hairline insets only. */
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   24px;
+  --space-6:   32px;
+  --space-7:   48px;
+  --space-8:   64px;
+
+  /* ── §3.4 Radius ───────────────────────────────────────────────────────── */
+  --radius-sm:   6px;     /* Inputs, small controls. */
+  --radius-md:   12px;    /* Chips, buttons, small cards. */
+  --radius-lg:   16px;    /* Cards, panels, dialogs. */
+  --radius-pill: 999px;   /* Tags, toggles, avatars, colour-swatch chips. */
+
+  /* ── §3.5 Elevation (warm shadows tinted with ink) ─────────────────────── */
+  --shadow-sm: 0 1px 2px rgba(58, 49, 40, 0.06);   /* Chips, inputs on focus. */
+  --shadow-md: 0 2px 8px rgba(58, 49, 40, 0.08);   /* Cards, popovers. */
+  --shadow-lg: 0 8px 24px rgba(58, 49, 40, 0.12);  /* Dialogs, menus. */
+}
