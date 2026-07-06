@@ -2,7 +2,7 @@
 id: HUE-096
 title: Shared component styles
 type: task
-status: todo
+status: done
 milestone: 20
 batch: design-system
 layer: frontend
@@ -24,11 +24,22 @@ Design system §5 defines the shared component vocabulary and its states. These 
 - Assert on roles/text/`data-testid`, not class names.
 
 ## Definition of done (acceptance criteria)
-- [ ] Shared components restyled per design system §5; states covered
-- [ ] Visible focus indicator on all interactive components; `jest-axe` zero violations on the component set (test strategy §10.3)
-- [ ] Swatch fill remains data-driven; chrome tokens never applied to swatch fills (design system §2.5)
-- [ ] Tests added/updated and passing in `make test`
-- [ ] Ticket status + notes updated in the same commit
+- [x] Shared components restyled per design system §5; states covered
+- [x] Visible focus indicator on all interactive components; `jest-axe` zero violations on the component set (test strategy §10.3)
+- [x] Swatch fill remains data-driven; chrome tokens never applied to swatch fills (design system §2.5)
+- [x] Tests added/updated and passing in `make test`
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 - Component tests (§10.1, §10.3) with `jest-axe` over the shared components' states; `cd frontend && npm run test -- components --run`.
+
+## Notes
+
+- 2026-07-05 — done. Restyled Banner, GarmentCard, Swatch, LoadingState, PaletteStrip CSS modules to use `var(--...)` tokens exclusively (no hardcoded hex/px values except animation keyframe position offsets). Updated `index.css` base styles (body → `--font-sans`/`--text-base`/`--color-ink`/`--color-ground`; global `focus-visible` clay ring for NFR-11). Created three new shared components: `Button` (primary/secondary/ghost/destructive + disabled; all states token-driven), `Chip` (default/selected/disabled, `aria-pressed`, `--radius-pill`), `TextInput` (surface-highest bg, focus ring, label association via `htmlFor`). Added `src/test/shared-components.test.tsx` (26 tests): role/text/aria-pressed assertions plus `jest-axe` zero-violation checks on every variant and state. `make test` (1120 backend + 239 frontend, zero warnings). Sanity test: `cd frontend && npm run test -- shared-components --run`.
+
+## QA steps
+
+1. Open the app (`make run`, navigate to `http://localhost:8000`).
+2. Check the page background is warm cream (`--color-ground` #eae0d0) and body text is warm dark brown, not pure black.
+3. Tab through any interactive controls — a visible clay-coloured focus ring should appear on every focusable element.
+4. (No Button/Chip UI is visible yet until screen tickets wire them in; the components are available for HUE-097 onwards.)

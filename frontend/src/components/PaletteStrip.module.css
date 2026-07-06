@@ -1,9 +1,9 @@
 .strip {
   display: flex;
   width: 100%;
-  border-radius: 2px;
+  border-radius: var(--space-0-5);
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-border-subtle);
 }
 
 .segment {

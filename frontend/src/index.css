@@ -5,13 +5,19 @@
 }
 
 body {
-  font-family: system-ui, -apple-system, sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
-  color: #1a1a1a;
-  background: #fff;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-ink);
+  background: var(--color-ground);
 }
 
 a {
   color: inherit;
+}
+
+/* Global focus ring — clay accent, replaces browser default (NFR-11). */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }

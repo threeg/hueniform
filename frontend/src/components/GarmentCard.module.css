@@ -1,22 +1,23 @@
 .card {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  gap: var(--space-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  background: #fff;
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-md);
 }
 
 .slot {
-  padding: 4px 8px;
-  font-size: 0.7rem;
-  font-weight: 600;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #666;
-  background: #f5f5f5;
-  border-bottom: 1px solid #eee;
+  color: var(--color-ink-muted);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .thumbnail {
@@ -24,18 +25,18 @@
   aspect-ratio: 3 / 4;
   object-fit: cover;
   display: block;
-  background: #eee;
+  background: var(--color-surface);
 }
 
 .meta {
-  padding: 6px 8px 8px;
+  padding: var(--space-1) var(--space-2) var(--space-2);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .typeLabel {
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: #333;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink-secondary);
 }

@@ -1,17 +1,19 @@
 .banner {
-  padding: 10px 14px;
-  border-radius: 4px;
-  font-size: 0.875rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  border: 1px solid;
 }
 
 .error {
-  background: #fef2f2;
-  border: 1px solid #fca5a5;
-  color: #991b1b;
+  background: var(--color-primary-tint);
+  border-color: var(--color-primary-soft);
+  color: var(--color-primary-deep);
 }
 
 .warning {
-  background: #fffbeb;
-  border: 1px solid #fcd34d;
-  color: #92400e;
+  background: var(--color-surface);
+  border-color: var(--color-orange);
+  color: var(--color-ink-secondary);
 }
