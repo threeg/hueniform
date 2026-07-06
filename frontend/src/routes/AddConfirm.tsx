@@ -4,8 +4,10 @@ import type { DetectionResponse, RegenerationProposalResponse } from '../api/typ
 import { useTaxonomy, useCreateGarment, useUpdateGarment } from '../api/queries'
 import { typeLabel } from '../utils/typeLabel'
 import { hslToHex, normaliseProportions } from '../utils/colour'
-import Swatch from '../components/Swatch'
 import Banner from '../components/Banner'
+import Button from '../components/Button'
+import Chip from '../components/Chip'
+import Swatch from '../components/Swatch'
 import styles from './AddConfirm.module.css'
 
 
@@ -190,7 +192,7 @@ export default function AddConfirm() {
 
           {/* Stacked preview bar */}
           {total > 0 && (
-            <div className={styles.bar} aria-label="Proportion preview">
+            <div className={styles.bar} aria-hidden="true">
               {colours.map((c, idx) => (
                 <span
                   key={idx}
@@ -275,21 +277,14 @@ export default function AddConfirm() {
                   {REGION_LABELS[region.region] ?? region.region}
                 </h3>
                 {region.slots.flatMap(slot => slot.categories).map(cat => (
-                  <button
+                  <Chip
                     key={cat}
-                    type="button"
-                    aria-pressed={selectedType === cat}
-                    className={[
-                      styles.typeButton,
-                      selectedType === cat ? styles.typeSelected : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
+                    selected={selectedType === cat}
                     onClick={() => setSelectedType(cat)}
                     disabled={isPending}
                   >
                     {typeLabel(cat)}
-                  </button>
+                  </Chip>
                 ))}
               </div>
             ))}
@@ -297,24 +292,22 @@ export default function AddConfirm() {
 
           {/* Save / Cancel (FR-30) */}
           <div className={styles.actions}>
-            <button
-              type="button"
-              className={styles.saveButton}
+            <Button
+              variant="primary"
               onClick={handleSave}
               disabled={!canSave}
               data-testid="save-button"
             >
               {isPending ? 'Saving…' : 'Save garment'}
-            </button>
-            <button
-              type="button"
-              className={styles.cancelButton}
+            </Button>
+            <Button
+              variant="secondary"
               onClick={() =>
                 navigate(isRegeneration && garmentId ? `/garments/${garmentId}` : '/add')
               }
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </div>
       </div>

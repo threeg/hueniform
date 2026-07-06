@@ -2,7 +2,7 @@
 id: HUE-100
 title: Restyle Confirm-and-correct
 type: story
-status: todo
+status: done
 milestone: 20
 batch: screen
 layer: frontend
@@ -53,9 +53,21 @@ so that it is attractive and usable everywhere.
 - [ ] Confirm each documented state still appears and behaves as before
 
 ## Definition of done
-- [ ] Acceptance criteria met
-- [ ] Tests added/updated per test strategy §10.3 and passing in `make test`
-- [ ] Matcher-touching work: n/a
+- [x] Acceptance criteria met
+- [x] Tests added/updated per test strategy §10.3 and passing in `make test`
+- [x] Matcher-touching work: n/a
 - [ ] User-flow-touching work: `make test-e2e` responsive journeys — HUE-105
-- [ ] QA steps recorded and repeated in the chat completion report
-- [ ] Ticket status + notes updated in the same commit
+- [x] QA steps recorded and repeated in the chat completion report
+- [x] Ticket status + notes updated in the same commit
+
+## Notes
+
+- 2026-07-06 — done. Restyled `AddConfirm.module.css` — all hardcoded hex/px replaced with design-system tokens. Two-pane desktop grid preserved; mobile `@media (max-width: 639px)` stacks to single column and makes `.actions` a `position: fixed` sticky footer above the 56px bottom tab bar (wireframe 07-responsive §4). Updated `AddConfirm.tsx`: category picker buttons replaced with shared `Chip` (carries `aria-pressed` and selected styling); Save/Cancel replaced with shared `Button` (primary/secondary). Proportion preview bar changed from `aria-label` on `<div>` to `aria-hidden="true"` — the bar is decorative; proportions are already communicated by the live total text and stepper inputs. Added 2 axe tests to `ConfirmCorrect.test.tsx` (default state after taxonomy load + fallback warning state). `make test` (1120 backend + 265 frontend, zero warnings). Sanity test: `cd frontend && npm run test -- ConfirmCorrect --run`.
+
+## QA steps
+- [ ] Run `make dev` and open `/add/confirm` (navigate via the upload flow): two-pane layout at desktop, image left / editor right; warm cream card styling throughout.
+- [ ] Resize to mobile (~390 px): panes stack (image above, editor below); Save + Cancel appear as a sticky bar above the bottom tab bar.
+- [ ] Tab through: visible clay focus ring on all interactive elements — stepper buttons, remove buttons, category chips, save/cancel.
+- [ ] Select a garment category — chip highlights with clay tint; Save button becomes active.
+- [ ] Drop/stepper a proportion — live total updates; normalisation notice appears when ≠ 100%.
+- [ ] Click Save → navigates to Wardrobe on success.

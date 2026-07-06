@@ -4,6 +4,7 @@ import { describe, it, expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from '../test/server'
 import { renderRoute } from '../test/test-utils'
+import { expectNoAxeViolations } from '../test/a11y'
 
 import AddConfirm from './AddConfirm'
 import {
@@ -325,5 +326,22 @@ describe('AddConfirm — regeneration variant (FR-33)', () => {
         screen.getByText(ERR_INVALID_REGENERATION_TOKEN.error.message),
       ).toBeInTheDocument(),
     )
+  })
+})
+
+// ── Accessibility (NFR-11) ────────────────────────────────────────────────────
+
+describe('AddConfirm — accessibility (NFR-11)', () => {
+  it('default state (taxonomy loaded) has no axe violations', async () => {
+    const { container } = renderScreen()
+    // Wait for taxonomy to render the category picker before running axe
+    await screen.findByRole('button', { name: 'T-shirt' })
+    await expectNoAxeViolations(container)
+  })
+
+  it('fallback warning state has no axe violations', async () => {
+    const { container } = renderScreen({ detection: DETECTION_FALLBACK_RESPONSE })
+    await screen.findByRole('button', { name: 'T-shirt' })
+    await expectNoAxeViolations(container)
   })
 })
