@@ -11,13 +11,12 @@
  */
 
 import { test, expect } from '@playwright/test'
+import { tierFromPage } from './viewports'
 
 test('correct navigation tier is visible for viewport', async ({ page }) => {
   await page.goto('/')
 
-  const vp = page.viewportSize()
-  if (!vp) throw new Error('no viewport')
-  const tier = vp.width < 640 ? 'mobile' : vp.width < 1024 ? 'tablet' : 'desktop'
+  const tier = tierFromPage(page)
 
   const sidebar = page.locator('aside')
   const topNav  = page.locator('nav[aria-label="Top navigation"]')
@@ -39,9 +38,7 @@ test('correct navigation tier is visible for viewport', async ({ page }) => {
 })
 
 test('all three destinations are reachable from the active nav', async ({ page }) => {
-  const vp = page.viewportSize()
-  if (!vp) throw new Error('no viewport')
-  const tier = vp.width < 640 ? 'mobile' : vp.width < 1024 ? 'tablet' : 'desktop'
+  const tier = tierFromPage(page)
 
   const nav =
     tier === 'mobile'  ? page.locator('nav[aria-label="Tab bar"]') :

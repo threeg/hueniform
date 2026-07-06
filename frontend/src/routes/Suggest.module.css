@@ -758,12 +758,12 @@
 
 @media (max-width: 639px) {
   .page {
-    padding-bottom: calc(56px + var(--space-7) + var(--space-4));
+    padding-bottom: calc(var(--tab-bar-height) + var(--space-7) + var(--space-4));
   }
 
   .panelFooter {
     position: fixed;
-    bottom: 56px;
+    bottom: var(--tab-bar-height);
     left: 0;
     right: 0;
     padding: var(--space-3) var(--space-4);

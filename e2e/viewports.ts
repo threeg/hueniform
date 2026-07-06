@@ -28,6 +28,16 @@ export type ViewportTier = keyof typeof VIEWPORTS
  *   })
  * })
  */
+/**
+ * Return the responsive tier for the current page viewport.
+ * Breakpoints match `07-responsive §1`: < 640 mobile, < 1024 tablet, else desktop.
+ */
+export function tierFromPage(page: Page): ViewportTier {
+  const vp = page.viewportSize()
+  if (!vp) throw new Error('no viewport')
+  return vp.width < 640 ? 'mobile' : vp.width < 1024 ? 'tablet' : 'desktop'
+}
+
 export async function forEachViewport(
   page: Page,
   fn: (tier: ViewportTier) => Promise<void>,

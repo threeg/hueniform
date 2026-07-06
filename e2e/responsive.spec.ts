@@ -12,12 +12,7 @@
  */
 
 import { test, expect } from '@playwright/test'
-
-function tier(page: import('@playwright/test').Page): 'mobile' | 'tablet' | 'desktop' {
-  const vp = page.viewportSize()
-  if (!vp) throw new Error('no viewport')
-  return vp.width < 640 ? 'mobile' : vp.width < 1024 ? 'tablet' : 'desktop'
-}
+import { tierFromPage as tier } from './viewports'
 
 // ── Navigation tier ────────────────────────────────────────────────────────────
 
