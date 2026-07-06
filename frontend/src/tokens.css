@@ -29,6 +29,7 @@
   --color-primary-deep:     #8a3a28;  /* Text/icon on light clay tints; deepest clay. */
   --color-primary-soft:     #e0a08c;  /* Soft clay for subtle fills/borders. */
   --color-primary-tint:     #f7e6de;  /* Lightest clay wash — selected-row/backing tint. */
+  --color-nav-icon:         #c1b39c;  /* Nav shape icon border — inactive state. */
   --color-teal:             #2cada0;  /* Secondary accent — highlights, informational. */
   --color-orange:           #ee8225;  /* Secondary accent — attention, warm callouts. */
   --color-green:            #4f7d54;  /* Secondary accent — positive/confirmation. */
@@ -75,9 +76,10 @@
   --radius-pill: 999px;   /* Tags, toggles, avatars, colour-swatch chips. */
 
   /* ── §3.5 Elevation (warm shadows tinted with ink) ─────────────────────── */
-  --shadow-sm: 0 1px 2px rgba(58, 49, 40, 0.06);   /* Chips, inputs on focus. */
-  --shadow-md: 0 2px 8px rgba(58, 49, 40, 0.08);   /* Cards, popovers. */
-  --shadow-lg: 0 8px 24px rgba(58, 49, 40, 0.12);  /* Dialogs, menus. */
+  --shadow-sm: 0 1px 2px rgba(58, 49, 40, 0.06);       /* Chips, inputs on focus. */
+  --shadow-md: 0 2px 8px rgba(58, 49, 40, 0.08);       /* Cards, popovers. */
+  --shadow-lg: 0 8px 24px rgba(58, 49, 40, 0.12);      /* Dialogs, menus. */
+  --shadow-nav-active: 0 6px 14px -6px rgba(198, 106, 74, 0.7);  /* Active nav item — clay glow. */
 
   /* ── §3.6 Layout ────────────────────────────────────────────────────────── */
   --tab-bar-height: 56px;  /* Mobile bottom tab bar; sticky footer offset. */

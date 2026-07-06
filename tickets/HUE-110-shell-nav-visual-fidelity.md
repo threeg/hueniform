@@ -2,7 +2,7 @@
 id: HUE-110
 title: App shell navigation visual fidelity
 type: story
-status: todo
+status: done
 milestone: 20
 batch: cleanup
 layer: frontend
@@ -72,9 +72,16 @@ so that the app looks polished and complete.
 - [x] Acceptance criteria met
 - [x] Tests added/updated per test strategy and passing in `make test`
 - [ ] Matcher-touching work: n/a
-- [ ] User-flow-touching work: `make test-e2e` — verify nav still passes
+- [x] User-flow-touching work: `make test-e2e` — verify nav still passes
 - [x] QA steps recorded and repeated in the chat completion report
 - [x] Ticket status + notes updated in the same commit
 
 ## Notes
 - 2026-07-06 — created (visual-fidelity audit of v0.3.0 against prototype)
+- 2026-07-06 — done. Added `--color-nav-icon: #c1b39c` and `--shadow-nav-active` tokens to `tokens.css`. In `App.tsx`: wrapped each wordmark text with a sibling `<span class="wordmarkDot" aria-hidden>` clay dot; added a shape icon `<span aria-hidden>` inside every NavLink in all three nav tiers (9 spans total). In `App.module.css`: `.wordmarkDot` (8×8 px clay circle); `.navIconWardrobe` (5 px border-radius), `.navIconAdd` (50% = circle), `.navIconSuggest` (4 px + rotate 45°) — all 16×16 px with 1.7 px border; `.sideLink`/`.topLink`/`.tabLink` changed to flex with 11 px gap, `padding: 11px 15px`, `border-radius: var(--radius-lg)`; active states changed from light tint to solid clay (`var(--color-primary)`), white text, semibold weight, `var(--shadow-nav-active)`; tab bar links changed to flex-column (icon above label). Updated `AppShell.test.tsx`: added shape icon presence tests for all three nav tiers and a wordmark dot test. `make test-frontend` 277 passed (13 suites); `make test-e2e` 27 passed, 2 skipped. Sanity test: `make test-e2e`.
+
+## QA steps
+- [x] Desktop sidebar: each nav item shows a shape icon (square/circle/diamond) left of label; clay dot visible after "Hueniform"
+- [x] Click each nav item: active = solid clay fill, white text, shadow; inactive = muted text, border-only icon
+- [x] Mobile (< 640 px): bottom tab bar shows shape icons above abbreviated labels; top bar wordmark has dot
+- [x] Tab through: visible focus ring on all nav items

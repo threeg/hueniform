@@ -129,6 +129,41 @@ describe('wordmark', () => {
     const wordmarks = screen.getAllByText('Hueniform')
     expect(wordmarks.length).toBeGreaterThanOrEqual(1)
   })
+
+  it('clay dot is present beside each wordmark', () => {
+    const { container } = renderShell()
+    const dots = container.querySelectorAll('[class*="wordmarkDot"]')
+    expect(dots.length).toBeGreaterThanOrEqual(1)
+    dots.forEach(dot => expect(dot.getAttribute('aria-hidden')).toBe('true'))
+  })
+})
+
+// ── Shape icons ───────────────────────────────────────────────────────────
+
+describe('shape icons', () => {
+  it('each sidebar nav link contains a shape icon', () => {
+    renderShell()
+    const nav = screen.getByRole('navigation', { name: 'Sidebar' })
+    nav.querySelectorAll('a').forEach(link => {
+      expect(link.querySelector('span[aria-hidden="true"]')).toBeInTheDocument()
+    })
+  })
+
+  it('each top nav link contains a shape icon', () => {
+    renderShell()
+    const nav = screen.getByRole('navigation', { name: 'Top navigation' })
+    nav.querySelectorAll('a').forEach(link => {
+      expect(link.querySelector('span[aria-hidden="true"]')).toBeInTheDocument()
+    })
+  })
+
+  it('each tab bar link contains a shape icon', () => {
+    renderShell()
+    const nav = screen.getByRole('navigation', { name: 'Tab bar' })
+    nav.querySelectorAll('a').forEach(link => {
+      expect(link.querySelector('span[aria-hidden="true"]')).toBeInTheDocument()
+    })
+  })
 })
 
 // ── Active state ──────────────────────────────────────────────────────────
