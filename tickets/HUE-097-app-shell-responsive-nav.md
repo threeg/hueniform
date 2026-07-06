@@ -2,7 +2,7 @@
 id: HUE-097
 title: App shell and responsive navigation
 type: story
-status: todo
+status: done
 milestone: 20
 batch: design-system
 layer: frontend
@@ -48,13 +48,17 @@ so that the tool is comfortable on a phone, tablet or desktop.
 - Responsive journeys added in HUE-105
 
 ## QA steps
-- [ ] Resize to desktop → expect sidebar; to phone width → expect bottom tab bar + top wordmark; to tablet → condensed nav
-- [ ] Navigate Wardrobe / Add / Suggest at each width → routes unchanged
+- [x] Resize to desktop → expect sidebar; to phone width → expect bottom tab bar + top wordmark; to tablet → condensed nav
+- [x] Navigate Wardrobe / Add / Suggest at each width → routes unchanged
+
+## Notes
+
+- 2026-07-05 — done. Rewrote `App.tsx` and `App.module.css` with a three-tier responsive shell (mobile-first). Mobile (<640px): slim top bar carrying the Newsreader italic wordmark + fixed bottom tab bar with Wardrobe / Add (aria-label "Add garment") / Suggest (aria-label "Suggest outfit"), 44 px touch targets. Tablet (640–1023px): top bar extends to include the three nav links inline; bottom tab bar hidden. Desktop (≥1024px): top bar hidden; fixed 190 px left sidebar with wordmark and nav links; main column margin-left 190 px, max-width 1290 px. All colours, spacing and radii via tokens. Updated `App.test.tsx` for the duplicate-text DOM (multiple wordmarks). Created `src/test/AppShell.test.tsx` (19 tests): sidebar/top-nav/tab-bar structure, `aria-current="page"` active state, accessible names on abbreviated tab labels, and jest-axe zero violations at /, /add, /suggest. `make test` (1120 backend + 258 frontend, zero warnings). Sanity test: `cd frontend && npm run test -- AppShell --run`.
 
 ## Definition of done
-- [ ] Acceptance criteria met
-- [ ] Tests added/updated per test strategy §10.3 and passing in `make test`
-- [ ] Matcher-touching work: n/a
-- [ ] User-flow-touching work: `make test-e2e` responsive journeys — added in HUE-105
-- [ ] QA steps recorded and repeated in the chat completion report
-- [ ] Ticket status + notes updated in the same commit
+- [x] Acceptance criteria met
+- [x] Tests added/updated per test strategy §10.3 and passing in `make test`
+- [x] Matcher-touching work: n/a
+- [x] User-flow-touching work: `make test-e2e` responsive journeys — added in HUE-105
+- [x] QA steps recorded and repeated in the chat completion report
+- [x] Ticket status + notes updated in the same commit
