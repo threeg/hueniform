@@ -56,6 +56,8 @@ Reactive tickets from `/verify` post-batch reviews of the Milestone 20 work (CON
 |---|---|---|---|---|---|---|---|
 | 106 | HUE-106 | Extract classNames utility and refactor NavLink helpers | task | frontend | design-system | done | HUE-096, HUE-097 |
 | 107 | HUE-107 | Move TextInput label styles to CSS Module | task | frontend | design-system | done | HUE-096 |
+| 108 | HUE-108 | Use classNames utility in Suggest.tsx | task | frontend | screen | todo | HUE-106 |
+| 109 | HUE-109 | Extract tier helper and tab-bar-height token | task | frontend | screen | todo | HUE-097, HUE-105 |
 
 ## v0.2.0 — execution order (Milestone 14)
 
