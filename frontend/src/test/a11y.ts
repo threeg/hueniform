@@ -16,8 +16,17 @@ import { expect } from 'vitest'
 
 export { toHaveNoViolations }
 
-/** Axe instance scoped to WCAG 2.1 A + AA tags (NFR-11). */
+/** Axe instance scoped to WCAG 2.1 A + AA tags (NFR-11).
+ *
+ * color-contrast is disabled: axe-core uses HTMLCanvasElement.getContext to
+ * detect icon ligatures, which jsdom does not implement and emits stderr noise.
+ * AA contrast ratios are verified at the token level in tokens.test.ts instead
+ * (design system §2.6, test strategy §10.3).
+ */
 export const axe = configureAxe({
+  rules: {
+    'color-contrast': { enabled: false },
+  },
   runOnly: {
     type: 'tag',
     values: ['wcag2a', 'wcag2aa'],
