@@ -2,7 +2,7 @@
 id: HUE-107
 title: Move TextInput label styles to CSS Module
 type: task
-status: todo
+status: done
 milestone: 20
 batch: cleanup
 layer: frontend
@@ -30,10 +30,10 @@ Identified by `/verify` post-batch review of the design-system batch.
 
 ## Definition of done (acceptance criteria)
 
-- [ ] Label styles defined in `TextInput.module.css` as a `.label` class
-- [ ] Inline `style` object removed from `TextInput.tsx`
-- [ ] `make test` passes with zero warnings
-- [ ] Ticket status + notes updated in the same commit
+- [x] Label styles defined in `TextInput.module.css` as a `.label` class
+- [x] Inline `style` object removed from `TextInput.tsx`
+- [x] `make test` passes with zero warnings
+- [x] Ticket status + notes updated in the same commit
 
 ## Tests / verification
 
@@ -42,3 +42,4 @@ No new tests required — existing `shared-components.test.tsx` tests (including
 ## Notes
 
 - 2026-07-05 — created from `/verify` review of design-system batch (HUE-094–098)
+- 2026-07-06 — done. Added `.label` class to `TextInput.module.css` (display block, margin-bottom var(--space-1), font-size var(--text-sm), color var(--color-ink-secondary)). Removed inline `style` object from `TextInput.tsx` `<label>` element; replaced with `className={styles.label}`. No test files changed. `make test-frontend` green: 273 passed (13 suites), zero warnings. Sanity test: `cd frontend && npx vitest run --reporter=verbose 2>&1 | tail -5`.

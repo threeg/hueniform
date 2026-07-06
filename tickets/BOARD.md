@@ -55,7 +55,7 @@ Reactive tickets from `/verify` post-batch reviews of the Milestone 20 work (CON
 | # | id | title | type | layer | source batch | status | depends_on |
 |---|---|---|---|---|---|---|---|
 | 106 | HUE-106 | Extract classNames utility and refactor NavLink helpers | task | frontend | design-system | done | HUE-096, HUE-097 |
-| 107 | HUE-107 | Move TextInput label styles to CSS Module | task | frontend | design-system | todo | HUE-096 |
+| 107 | HUE-107 | Move TextInput label styles to CSS Module | task | frontend | design-system | done | HUE-096 |
 
 ## v0.2.0 — execution order (Milestone 14)
 

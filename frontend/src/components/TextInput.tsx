@@ -10,15 +10,7 @@ export default function TextInput({ label, id, className, ...rest }: Props) {
   return (
     <div>
       {label && (
-        <label
-          htmlFor={id}
-          style={{
-            display: 'block',
-            marginBottom: 'var(--space-1)',
-            fontSize: 'var(--text-sm)',
-            color: 'var(--color-ink-secondary)',
-          }}
-        >
+        <label htmlFor={id} className={styles.label}>
           {label}
         </label>
       )}

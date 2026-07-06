@@ -1,3 +1,10 @@
+.label {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
+}
+
 .input {
   display: block;
   width: 100%;
