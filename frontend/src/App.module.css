@@ -95,7 +95,7 @@
 }
 
 .topLink:hover {
-  background: var(--color-border-subtle);
+  background: var(--color-ground);
   color: var(--color-ink);
 }
 
@@ -209,7 +209,7 @@
 }
 
 .sideLink:hover {
-  background: var(--color-border-subtle);
+  background: var(--color-ground);
   color: var(--color-ink);
 }
 
@@ -259,6 +259,11 @@
   color: var(--color-ink-muted);
   min-height: 44px; /* touch target (NFR-7) */
   transition: background 0.1s, color 0.1s, box-shadow 0.1s;
+}
+
+.tabLink:hover {
+  background: var(--color-ground);
+  color: var(--color-ink);
 }
 
 .tabLinkActive {

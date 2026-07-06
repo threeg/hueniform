@@ -38,6 +38,7 @@
 .secondary:hover:not(:disabled) {
   background: var(--color-surface);
   border-color: var(--color-border-strong);
+  color: var(--color-ink);
 }
 
 .ghost {
