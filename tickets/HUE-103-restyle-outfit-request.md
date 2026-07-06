@@ -2,7 +2,7 @@
 id: HUE-103
 title: Restyle Outfit request
 type: story
-status: todo
+status: done
 milestone: 20
 batch: screen
 layer: frontend
@@ -53,9 +53,22 @@ so that it is attractive and usable everywhere.
 - [ ] Confirm each documented state still appears and behaves as before
 
 ## Definition of done
-- [ ] Acceptance criteria met
-- [ ] Tests added/updated per test strategy §10.3 and passing in `make test`
-- [ ] Matcher-touching work: n/a
+- [x] Acceptance criteria met
+- [x] Tests added/updated per test strategy §10.3 and passing in `make test`
+- [x] Matcher-touching work: n/a
 - [ ] User-flow-touching work: `make test-e2e` responsive journeys — HUE-105
-- [ ] QA steps recorded and repeated in the chat completion report
-- [ ] Ticket status + notes updated in the same commit
+- [x] QA steps recorded and repeated in the chat completion report
+- [x] Ticket status + notes updated in the same commit
+
+## Notes
+
+- 2026-07-06 — done. Restyled `Suggest.module.css` — all hardcoded hex/px replaced with design-system tokens. Heading uses `--font-display`; chip on-state uses `--color-primary`; empty-slot state uses `--color-orange` (attention); anchor/scheme selected state uses `--color-primary-tint`/`--color-primary-deep`; picker modal uses `--shadow-lg` and `--radius-lg`; result cards use `--shadow-sm`. Mobile `@media (max-width: 639px)` makes `.panelFooter` a sticky fixed footer above the 56px tab bar (hides hint text on mobile); `.page` gets extra `padding-bottom`. Updated `Suggest.tsx`: added `Button` import; main CTA ("Suggest outfits") replaced with `<Button variant="primary">`; "Suggest again" replaced with `<Button variant="secondary">`; locked chip span gains `role="note"` to satisfy axe `aria-prohibited-attr` (aria-label on generic span); picker dialog gains `aria-modal="true"`. Added 2 axe tests (request panel loaded state, picker modal open state). `make test` (1120 backend + 271 frontend, zero warnings). Sanity test: `cd frontend && npm run test -- Suggest.test --run`.
+
+## QA steps
+- [ ] Open `/suggest` at desktop: warm cream panel, Newsreader heading, slot chips styled with clay on-state.
+- [ ] Resize to mobile (~390 px): "Suggest outfits" button becomes sticky footer above bottom tab bar; hint text hidden.
+- [ ] Tab through interactive elements: visible focus ring on all slot chips, stepper buttons, family/scheme toggles, Pin button.
+- [ ] Click a slot chip on/off: clay fill when on, plain outline when off.
+- [ ] Click a family chip: clay-tint selected state; "Clear" button appears.
+- [ ] Click "Pin a garment": picker modal opens with warm backdrop and shadow; close (×) dismisses it.
+- [ ] Confirm all documented states (empty slots note, one-piece note, zero results, result cards) still appear correctly.

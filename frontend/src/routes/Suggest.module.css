@@ -1,8 +1,8 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  padding: 1.5rem;
+  gap: var(--space-6);
+  padding: var(--space-5);
   max-width: 900px;
 }
 
@@ -11,83 +11,86 @@
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  padding: 1.5rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  background: #fafafa;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
 }
 
 .heading {
-  font-size: 1.4rem;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
   margin: 0;
+  color: var(--color-ink);
+  line-height: var(--leading-tight);
 }
 
 .slotGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .slotLabel {
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #777;
+  color: var(--color-ink-muted);
   margin: 0;
 }
 
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .requiredChip {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.3rem 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 999px;
-  background: #f0f0f0;
-  color: #555;
-  font-size: 0.875rem;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-ink-secondary);
+  font-size: var(--text-sm);
   user-select: none;
 }
 
 .optionalChip {
-  padding: 0.3rem 0.75rem;
-  border: 1px solid #bbb;
-  border-radius: 999px;
-  background: #fff;
-  color: #333;
-  font-size: 0.875rem;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-raised);
+  color: var(--color-ink);
+  font-size: var(--text-sm);
   cursor: pointer;
   transition: background 0.1s, border-color 0.1s;
 }
 
 .optionalChip:hover:not(:disabled) {
-  background: #f0f0f0;
+  background: var(--color-surface);
 }
 
 .optionalChip.chipOn {
-  background: #1a1a1a;
-  color: #fff;
-  border-color: #1a1a1a;
+  background: var(--color-primary);
+  color: var(--color-surface-raised);
+  border-color: var(--color-primary);
 }
 
 .optionalChip.chipEmpty {
-  border-color: #c00;
-  color: #c00;
+  border-color: var(--color-orange);
+  color: var(--color-orange);
 }
 
 .optionalChip.chipOn.chipEmpty {
-  background: #c00;
-  color: #fff;
-  border-color: #c00;
+  background: var(--color-orange);
+  color: var(--color-surface-raised);
+  border-color: var(--color-orange);
 }
 
 .optionalChip:disabled {
@@ -96,7 +99,7 @@
 }
 
 .emptyMarker {
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
 }
 
 /* ── Slot chips (HUE-071) ───────────────────────────────────────────────────── */
@@ -105,42 +108,42 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .slotChip {
-  padding: 0.3rem 0.75rem;
-  border: 1px solid #bbb;
-  border-radius: 999px;
-  background: #fff;
-  color: #333;
-  font-size: 0.875rem;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-raised);
+  color: var(--color-ink);
+  font-size: var(--text-sm);
   cursor: pointer;
   transition: background 0.1s, border-color 0.1s;
   user-select: none;
 }
 
 .slotChip:hover:not(:disabled) {
-  background: #f0f0f0;
+  background: var(--color-surface);
 }
 
 .slotChipOn {
-  background: #1a1a1a;
-  color: #fff;
-  border-color: #1a1a1a;
+  background: var(--color-primary);
+  color: var(--color-surface-raised);
+  border-color: var(--color-primary);
 }
 
 .slotChipLocked {
   cursor: default;
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .slotChipEmpty {
-  background: #c00;
-  color: #fff;
-  border-color: #c00;
+  background: var(--color-orange);
+  color: var(--color-surface-raised);
+  border-color: var(--color-orange);
 }
 
 .slotChip:disabled {
@@ -149,87 +152,69 @@
 }
 
 .constraintBtn {
-  font-size: 0.75rem;
-  color: #555;
+  font-size: var(--text-xs);
+  color: var(--color-ink-secondary);
   background: none;
   border: none;
-  padding: 0 0.25rem;
+  padding: 0 var(--space-1);
   cursor: pointer;
   text-decoration: underline dotted;
 }
 
 .constraintBtn:hover {
-  color: #111;
+  color: var(--color-ink);
 }
 
 .checklist {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  padding: 0.5rem 0.75rem;
-  background: #f8f8f8;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 0.85rem;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
 }
 
 .checklistItem {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: var(--space-2);
   cursor: pointer;
 }
 
 .accessoriesLabel {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #aaa;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink-faint);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin: 0.25rem 0 0;
+  margin: var(--space-1) 0 0;
 }
 
 .onePieceNote {
-  font-size: 0.8rem;
-  color: #666;
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
   font-style: italic;
   margin: 0;
-  padding: 0.5rem 0.75rem;
-  background: #f5f5f5;
-  border-radius: 4px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
 }
 
 .panelFooter {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-4);
   flex-wrap: wrap;
 }
 
 .hint {
-  font-size: 0.8rem;
-  color: #888;
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
   margin: 0;
-}
-
-.suggestBtn {
-  padding: 0.5rem 1.25rem;
-  background: #1a1a1a;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.suggestBtn:hover:not(:disabled) {
-  background: #333;
-}
-
-.suggestBtn:disabled {
-  opacity: 0.6;
-  cursor: default;
 }
 
 /* ── Count stepper ──────────────────────────────────────────────────────────── */
@@ -237,44 +222,45 @@
 .countRow {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
 .countLabel {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #333;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
 }
 
 .countHint {
-  font-size: 0.75rem;
-  color: #888;
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
 }
 
 .countStepper {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: var(--space-2);
   margin-left: auto;
 }
 
 .stepBtn {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #bbb;
-  border-radius: 4px;
-  background: #fff;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-raised);
   cursor: pointer;
-  font-size: 1rem;
+  font-size: var(--text-md);
   line-height: 1;
+  color: var(--color-ink);
 }
 
 .stepBtn:hover:not(:disabled) {
-  background: #f0f0f0;
+  background: var(--color-surface);
 }
 
 .stepBtn:disabled {
@@ -283,18 +269,19 @@
 }
 
 .countDisplay {
-  min-width: 1.5rem;
+  min-width: var(--space-4);
   text-align: center;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
 }
 
 /* ── Results header ─────────────────────────────────────────────────────────── */
 
 .resultsHeader {
-  font-size: 0.85rem;
-  color: #666;
-  margin: 0 0 0.75rem;
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
+  margin: 0 0 var(--space-3);
 }
 
 /* ── Zero results ───────────────────────────────────────────────────────────── */
@@ -302,28 +289,35 @@
 .zeroResults {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 1.5rem;
-  background: #fff9e6;
-  border: 1px solid #e8d96a;
-  border-radius: 8px;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
 .zeroExplanation {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: var(--text-base);
+  color: var(--color-ink);
 }
 
 .zeroHint {
   margin: 0;
-  font-size: 0.875rem;
-  color: #666;
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
 }
 
 .addLink {
   align-self: flex-start;
-  font-size: 0.875rem;
-  color: #0066cc;
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.addLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 /* ── Result cards ───────────────────────────────────────────────────────────── */
@@ -334,46 +328,49 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--space-5);
 }
 
 .resultCard {
-  padding: 1.25rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-raised);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-4);
+  box-shadow: var(--shadow-sm);
 }
 
 .cardHeader {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: var(--space-3);
   flex-wrap: wrap;
 }
 
 .rank {
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-base);
+  color: var(--color-ink);
 }
 
 .schemeChip {
-  padding: 0.2rem 0.6rem;
-  background: #e8f0fe;
-  color: #1a56c4;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  padding: var(--space-0-5) var(--space-2);
+  background: var(--color-primary-tint);
+  color: var(--color-primary-deep);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
 }
 
 .fallbackChip {
-  padding: 0.2rem 0.6rem;
-  background: #f5f5f5;
-  color: #666;
-  border: 1px solid #ccc;
-  border-radius: 999px;
-  font-size: 0.8rem;
+  padding: var(--space-0-5) var(--space-2);
+  background: var(--color-surface);
+  color: var(--color-ink-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
 }
 
 /* ── Slot tiles ─────────────────────────────────────────────────────────────── */
@@ -381,13 +378,13 @@
 .slotTiles {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--space-3);
 }
 
 .slotTile {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: var(--space-1);
   align-items: center;
   text-decoration: none;
   color: inherit;
@@ -399,8 +396,8 @@
 }
 
 .slotCaption {
-  font-size: 0.75rem;
-  color: #666;
+  font-size: var(--text-xs);
+  color: var(--color-ink-secondary);
   text-align: center;
 }
 
@@ -408,16 +405,17 @@
   width: 80px;
   height: 80px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
 }
 
 /* ── Explanation and echoes ─────────────────────────────────────────────────── */
 
 .explanation {
-  font-size: 0.9rem;
-  color: #333;
+  font-size: var(--text-base);
+  color: var(--color-ink);
   margin: 0;
-  line-height: 1.5;
+  line-height: var(--leading-normal);
 }
 
 .echoes {
@@ -426,15 +424,15 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: var(--space-1);
 }
 
 .echoLine {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.85rem;
-  color: #555;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
 }
 
 .echoSwatch {
@@ -442,155 +440,144 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 1px solid rgba(0,0,0,0.12);
+  border: 1px solid rgba(58, 49, 40, 0.12);
   flex-shrink: 0;
 }
 
 /* ── Suggest again ──────────────────────────────────────────────────────────── */
 
 .suggestAgain {
-  margin-top: 1rem;
+  margin-top: var(--space-4);
   display: flex;
   justify-content: center;
-}
-
-.suggestAgainBtn {
-  padding: 0.45rem 1.1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
-  cursor: pointer;
-  font-size: 0.875rem;
-}
-
-.suggestAgainBtn:hover:not(:disabled) {
-  background: #f5f5f5;
 }
 
 /* ── Pin section (FR-44) ────────────────────────────────────────────────────── */
 
 .pinSection {
-  margin-top: 1.25rem;
+  margin-top: var(--space-5);
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: var(--space-3);
 }
 
 .sectionHeading {
   margin: 0;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #444;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink-secondary);
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
 
 .pinButton {
   align-self: flex-start;
-  padding: 0.4rem 0.9rem;
-  border: 1px dashed #999;
-  border-radius: 4px;
+  padding: var(--space-1) var(--space-3);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-sm);
   background: transparent;
   cursor: pointer;
-  font-size: 0.875rem;
-  color: #555;
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
+  transition: border-color 0.1s, color 0.1s;
 }
 
 .pinButton:hover {
-  border-color: #555;
-  color: #222;
+  border-color: var(--color-ink-secondary);
+  color: var(--color-ink);
 }
 
 .pinChips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .pinChip {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.3rem 0.5rem;
-  border: 1px solid #d0d0d0;
-  border-radius: 6px;
-  background: #f8f8f8;
-  font-size: 0.875rem;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-size: var(--text-sm);
 }
 
 .pinThumb {
   width: 28px;
   height: 28px;
   object-fit: cover;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 
 .pinLabel {
-  color: #333;
+  color: var(--color-ink);
 }
 
 .pinRemove {
   border: none;
   background: none;
   cursor: pointer;
-  font-size: 1rem;
-  color: #888;
-  padding: 0 0.1rem;
+  font-size: var(--text-base);
+  color: var(--color-ink-muted);
+  padding: 0 var(--space-0-5);
   line-height: 1;
 }
 
 .pinRemove:hover {
-  color: #d44;
+  color: var(--color-primary-strong);
 }
 
 /* ── Anchor section (FR-45) ─────────────────────────────────────────────────── */
 
 .anchorSection {
-  margin-top: 1rem;
+  margin-top: var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-3);
 }
 
 .anchorRow {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: var(--space-2);
 }
 
 .anchorLabel {
-  font-size: 0.8rem;
-  color: #666;
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
 }
 
 .familyChips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  gap: var(--space-1);
   align-items: center;
 }
 
 .familyChip {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.25rem 0.55rem;
-  border: 1px solid #d0d0d0;
-  border-radius: 999px;
-  background: #fff;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-raised);
   cursor: pointer;
-  font-size: 0.8rem;
-  color: #444;
+  font-size: var(--text-xs);
+  color: var(--color-ink);
+  transition: border-color 0.1s, background 0.1s;
 }
 
 .familyChip:hover {
-  border-color: #888;
+  border-color: var(--color-border-strong);
 }
 
 .familyChipSelected {
-  border-color: #1a56c4;
-  background: #e8f0fe;
-  color: #1a56c4;
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+  color: var(--color-primary-deep);
 }
 
 .familySwatch {
@@ -598,44 +585,49 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  border: 1px solid rgba(0,0,0,0.15);
+  border: 1px solid rgba(58, 49, 40, 0.15);
   flex-shrink: 0;
 }
 
 .anchorClearBtn {
-  padding: 0.25rem 0.55rem;
+  padding: var(--space-1) var(--space-2);
   border: none;
   background: none;
   cursor: pointer;
-  font-size: 0.8rem;
-  color: #888;
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
   text-decoration: underline;
+}
+
+.anchorClearBtn:hover {
+  color: var(--color-ink);
 }
 
 .schemeRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .schemeOption {
-  padding: 0.25rem 0.65rem;
-  border: 1px solid #d0d0d0;
-  border-radius: 4px;
-  background: #fff;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-raised);
   cursor: pointer;
-  font-size: 0.8rem;
-  color: #444;
+  font-size: var(--text-xs);
+  color: var(--color-ink);
+  transition: border-color 0.1s, background 0.1s;
 }
 
 .schemeOption:hover {
-  border-color: #888;
+  border-color: var(--color-border-strong);
 }
 
 .schemeOptionSelected {
-  border-color: #1a56c4;
-  background: #e8f0fe;
-  color: #1a56c4;
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+  color: var(--color-primary-deep);
 }
 
 /* ── Picker modal (FR-44) ───────────────────────────────────────────────────── */
@@ -643,7 +635,7 @@
 .pickerOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(58, 49, 40, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -651,101 +643,138 @@
 }
 
 .pickerModal {
-  background: #fff;
-  border-radius: 8px;
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
   width: min(480px, 90vw);
   max-height: 80vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  box-shadow: var(--shadow-lg);
 }
 
 .pickerHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.9rem 1.1rem;
-  border-bottom: 1px solid #e0e0e0;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .pickerTitle {
-  font-weight: 600;
-  font-size: 1rem;
+  font-family: var(--font-display);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-base);
+  color: var(--color-ink);
 }
 
 .pickerClose {
   border: none;
   background: none;
   cursor: pointer;
-  font-size: 1.3rem;
-  color: #888;
+  font-size: var(--text-lg);
+  color: var(--color-ink-muted);
   padding: 0;
   line-height: 1;
 }
 
+.pickerClose:hover {
+  color: var(--color-ink);
+}
+
 .pickerList {
   overflow-y: auto;
-  padding: 0.75rem;
+  padding: var(--space-3);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-3);
 }
 
 .pickerCard {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.6rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
 }
 
 .pickerThumb {
   width: 48px;
   height: 48px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
   flex-shrink: 0;
 }
 
 .pickerCategory {
   flex: 1;
-  font-size: 0.875rem;
-  color: #333;
+  font-size: var(--text-sm);
+  color: var(--color-ink);
 }
 
 .pickerActions {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: var(--space-2);
 }
 
 .pickerPinBtn {
-  padding: 0.3rem 0.7rem;
-  border: 1px solid #1a56c4;
-  border-radius: 4px;
-  background: #fff;
-  color: #1a56c4;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-raised);
+  color: var(--color-primary);
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   white-space: nowrap;
+  transition: background 0.1s;
 }
 
 .pickerPinBtn:hover {
-  background: #e8f0fe;
+  background: var(--color-primary-tint);
 }
 
 .pickerSuggestBtn {
-  padding: 0.3rem 0.7rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
-  color: #555;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-raised);
+  color: var(--color-ink-secondary);
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   white-space: nowrap;
+  transition: background 0.1s;
 }
 
 .pickerSuggestBtn:hover {
-  background: #f5f5f5;
+  background: var(--color-surface);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+
+@media (max-width: 639px) {
+  .page {
+    padding-bottom: calc(56px + var(--space-7) + var(--space-4));
+  }
+
+  .panelFooter {
+    position: fixed;
+    bottom: 56px;
+    left: 0;
+    right: 0;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface-raised);
+    border-top: 1px solid var(--color-border);
+    flex-direction: column;
+    align-items: stretch;
+    z-index: 10;
+  }
+
+  .hint {
+    display: none;
+  }
 }

@@ -8,6 +8,7 @@ import { describe, it, expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from '../test/server'
 import { renderRoute } from '../test/test-utils'
+import { expectNoAxeViolations } from '../test/a11y'
 
 import Suggest from './Suggest'
 import {
@@ -681,5 +682,25 @@ describe('Suggest — anchor controls (FR-45)', () => {
     await user().click(screen.getByTestId('suggest-button'))
     await waitFor(() => expect(captured).not.toBeNull())
     expect((captured as { anchor?: unknown }).anchor).toBeUndefined()
+  })
+})
+
+// ── Accessibility (NFR-11) ────────────────────────────────────────────────────
+
+describe('Suggest — accessibility (NFR-11)', () => {
+  const user = userEvent.setup
+
+  it('request panel (after taxonomy loads) has no axe violations', async () => {
+    const { container } = renderScreen()
+    await waitForPanel()
+    await expectNoAxeViolations(container)
+  })
+
+  it('picker modal open state has no axe violations', async () => {
+    const { container } = renderScreen()
+    await waitForPanel()
+    await user().click(screen.getByTestId('pin-button'))
+    await screen.findByTestId('picker-modal')
+    await expectNoAxeViolations(container)
   })
 })

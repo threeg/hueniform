@@ -2,9 +2,10 @@ import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useSuggest, useTaxonomy, useGarments } from '../api/queries'
 import { ApiRequestError, GarmentSummary, TaxonomySlot } from '../api/types'
-import PaletteStrip from '../components/PaletteStrip'
 import Banner from '../components/Banner'
+import Button from '../components/Button'
 import LoadingState from '../components/LoadingState'
+import PaletteStrip from '../components/PaletteStrip'
 import { hslToHex } from '../utils/colour'
 import { typeLabel } from '../utils/typeLabel'
 import styles from './Suggest.module.css'
@@ -216,6 +217,7 @@ export default function Suggest() {
 
     const chipEl = isLocked ? (
       <span
+        role="note"
         className={`${styles.slotChip} ${styles.slotChipOn} ${styles.slotChipLocked}`}
         data-testid={`slot-${key}`}
         aria-label={`${label} (required)`}
@@ -458,15 +460,15 @@ export default function Suggest() {
           <p className={styles.hint}>
             The lower-body slot is always included; everything else is up to you.
           </p>
-          <button
-            className={styles.suggestBtn}
+          <Button
+            variant="primary"
             onClick={handleSuggest}
             disabled={isPending}
             aria-busy={isPending}
             data-testid="suggest-button"
           >
             {isPending ? 'Searching…' : 'Suggest outfits'}
-          </button>
+          </Button>
         </div>
       </section>
 
@@ -489,6 +491,7 @@ export default function Suggest() {
       {pickerOpen && (
         <div
           role="dialog"
+          aria-modal="true"
           aria-label="Pick a garment to pin"
           className={styles.pickerOverlay}
           onClick={e => { if (e.target === e.currentTarget) setPickerOpen(false) }}
@@ -618,14 +621,14 @@ export default function Suggest() {
           </ol>
 
           <div className={styles.suggestAgain}>
-            <button
-              className={styles.suggestAgainBtn}
+            <Button
+              variant="secondary"
               onClick={handleSuggest}
               disabled={isPending}
               data-testid="suggest-again"
             >
               Suggest again
-            </button>
+            </Button>
           </div>
         </section>
       )}
