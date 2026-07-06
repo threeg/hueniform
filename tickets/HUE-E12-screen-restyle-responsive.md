@@ -2,7 +2,7 @@
 id: HUE-E12
 title: Screen restyle and responsive
 type: epic
-status: todo
+status: done
 milestone: 20
 layer: frontend
 depends_on: [HUE-E11]
@@ -38,3 +38,4 @@ All children `done`; every screen matches the design system and reflows per `07-
 
 ## Notes
 - 2026-07-05 — created (Milestone 19 ticket generation)
+- 2026-07-06 — done. All children (HUE-099–HUE-105) done. `make test` (1120 backend + 273 frontend) and `make test-e2e` (27 passed, 2 skipped) green with zero warnings.

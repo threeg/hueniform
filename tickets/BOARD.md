@@ -17,7 +17,7 @@ The version sections are ordered **latest first**: v0.3.0 (Milestone 20, in plan
 | id | title | milestone | status |
 |---|---|---|---|
 | HUE-E11 | Design-system foundation | 20 | done |
-| HUE-E12 | Screen restyle & responsive | 20 | todo |
+| HUE-E12 | Screen restyle & responsive | 20 | done |
 | HUE-E06 | Constrained suggestions | 14 | done |
 | HUE-E07 | Edit a garment's category | 14 | done |
 | HUE-E08 | Category & slot-model overhaul | 14 | done |
@@ -46,7 +46,7 @@ Leaf tickets for v0.3.0 (epics E11–E12), the visual redesign. Reading top to b
 | 102 | HUE-102 | Restyle Garment detail | story | frontend | 20 / screen | HUE-E12 | done | HUE-096, HUE-097, HUE-098, HUE-074 |
 | 103 | HUE-103 | Restyle Outfit request | story | frontend | 20 / screen | HUE-E12 | done | HUE-096, HUE-097, HUE-098, HUE-083 |
 | 104 | HUE-104 | Restyle Suggestion results | story | frontend | 20 / screen | HUE-E12 | done | HUE-096, HUE-097, HUE-098, HUE-080 |
-| 105 | HUE-105 | Responsive e2e journeys and accessibility audit | task | tooling | 20 / tooling | HUE-E12 | todo | HUE-099, HUE-100, HUE-101, HUE-102, HUE-103, HUE-104, HUE-085 |
+| 105 | HUE-105 | Responsive e2e journeys and accessibility audit | task | tooling | 20 / tooling | HUE-E12 | done | HUE-099, HUE-100, HUE-101, HUE-102, HUE-103, HUE-104, HUE-085 |
 
 ## Cleanup backlog — v0.3.0
 

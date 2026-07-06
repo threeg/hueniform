@@ -26,10 +26,12 @@ export default defineConfig({
     // Full smoke suite — desktop Chromium and Firefox (NFR-7).
     { name: 'chromium', use: { ...devices['Desktop Chrome'] }, testMatch: '**/smoke.spec.ts' },
     { name: 'firefox',  use: { ...devices['Desktop Firefox'] }, testMatch: '**/smoke.spec.ts' },
-    // Responsive nav smoke — three viewport tiers (07-responsive §1, §10.3).
-    { name: 'mobile',   use: { ...devices['Pixel 5'] },                                    testMatch: '**/nav.spec.ts' },
-    { name: 'tablet',   use: { viewport: { width: 834,  height: 1194 } },                  testMatch: '**/nav.spec.ts' },
-    { name: 'desktop',  use: { ...devices['Desktop Chrome'] },                             testMatch: '**/nav.spec.ts' },
+    // Responsive smoke — three viewport tiers (07-responsive §1, §10.3, HUE-105).
+    // Matches both the nav check (nav.spec.ts) and the layout/action checks
+    // (responsive.spec.ts) added in HUE-105.
+    { name: 'mobile',   use: { ...devices['Pixel 5'] },                                    testMatch: '**/{nav,responsive}.spec.ts' },
+    { name: 'tablet',   use: { viewport: { width: 834,  height: 1194 } },                  testMatch: '**/{nav,responsive}.spec.ts' },
+    { name: 'desktop',  use: { ...devices['Desktop Chrome'] },                             testMatch: '**/{nav,responsive}.spec.ts' },
   ],
   webServer: {
     // Clean and recreate the data dir as part of server startup so this
