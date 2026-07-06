@@ -1,8 +1,9 @@
 import { useMemo } from 'react'
 import { Link, useSearchParams, useLocation } from 'react-router-dom'
 import { useGarments, useTaxonomy } from '../api/queries'
-import GarmentCard from '../components/GarmentCard'
 import Banner from '../components/Banner'
+import Button from '../components/Button'
+import GarmentCard from '../components/GarmentCard'
 import LoadingState from '../components/LoadingState'
 import { hslToHex } from '../utils/colour'
 import { typeLabel } from '../utils/typeLabel'
@@ -172,7 +173,7 @@ export default function Wardrobe() {
       {isError && (
         <div className={styles.errorBlock}>
           <Banner variant="error" message={(error as Error).message} />
-          <button className={styles.retryBtn} onClick={() => refetch()}>Retry</button>
+          <Button variant="secondary" onClick={() => refetch()}>Retry</Button>
         </div>
       )}
 

@@ -4,6 +4,7 @@ import { describe, it, expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from '../test/server'
 import { renderRoute } from '../test/test-utils'
+import { expectNoAxeViolations } from '../test/a11y'
 
 import Wardrobe from './Wardrobe'
 import {
@@ -363,5 +364,30 @@ describe('Wardrobe — region-grouped category dropdown (FR-47)', () => {
     expect(labels).toContain('Upper body')
     expect(labels).toContain('Lower body')
     expect(labels).toContain('Feet')
+  })
+})
+
+// ── Accessibility (NFR-11) ────────────────────────────────────────────────────
+
+describe('Wardrobe — accessibility (NFR-11)', () => {
+  it('loaded grid state has no axe violations', async () => {
+    const { container } = renderScreen()
+    await waitFor(() =>
+      expect(screen.getAllByRole('listitem').length).toBeGreaterThan(0),
+    )
+    await expectNoAxeViolations(container)
+  })
+
+  it('empty wardrobe state has no axe violations', async () => {
+    server.use(
+      http.get('http://127.0.0.1:8000/api/garments', () =>
+        HttpResponse.json({ garments: [], total: 0 }),
+      ),
+    )
+    const { container } = renderScreen()
+    await waitFor(() =>
+      expect(screen.getByTestId('empty-wardrobe')).toBeInTheDocument(),
+    )
+    await expectNoAxeViolations(container)
   })
 })

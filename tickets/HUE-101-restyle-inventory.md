@@ -2,7 +2,7 @@
 id: HUE-101
 title: Restyle Inventory (Wardrobe)
 type: story
-status: todo
+status: done
 milestone: 20
 batch: screen
 layer: frontend
@@ -53,9 +53,21 @@ so that it is attractive and usable everywhere.
 - [ ] Confirm each documented state still appears and behaves as before
 
 ## Definition of done
-- [ ] Acceptance criteria met
-- [ ] Tests added/updated per test strategy §10.3 and passing in `make test`
-- [ ] Matcher-touching work: n/a
+- [x] Acceptance criteria met
+- [x] Tests added/updated per test strategy §10.3 and passing in `make test`
+- [x] Matcher-touching work: n/a
 - [ ] User-flow-touching work: `make test-e2e` responsive journeys — HUE-105
-- [ ] QA steps recorded and repeated in the chat completion report
-- [ ] Ticket status + notes updated in the same commit
+- [x] QA steps recorded and repeated in the chat completion report
+- [x] Ticket status + notes updated in the same commit
+
+## Notes
+
+- 2026-07-06 — done. Restyled `Wardrobe.module.css` — all hardcoded hex/px replaced with design-system tokens. Card grid uses `auto-fill minmax(180px, 1fr)` on desktop; `@media (max-width: 639px)` forces 2 columns and makes the filter bar horizontally scrollable (wireframe §4); `@media (640–1023px)` forces 3 columns for tablet. Order toggle active state uses `--color-primary`/`--color-surface-highest` instead of hard-coded dark. `addLink` empty-state CTA restyled with primary button token set. Retry button replaced with shared `Button` (secondary variant). Added 2 axe tests to `Inventory.test.tsx` (loaded grid + empty wardrobe). `make test` (1120 backend + 267 frontend, zero warnings). Sanity test: `cd frontend && npm run test -- Inventory --run`.
+
+## QA steps
+- [ ] Open `/` at desktop: warm cream page, category group headers with dividers, card grid fills the width.
+- [ ] Resize to tablet (~768 px): grid shows 3 columns.
+- [ ] Resize to mobile (~390 px): grid shows 2 columns; filter bar scrolls horizontally without wrapping.
+- [ ] Tab through: clay focus ring visible on all controls (selects, order buttons, card links).
+- [ ] Select a filter: result count updates; Clear filters appears as an underlined clay link.
+- [ ] Empty wardrobe: "Add your first garment" CTA appears as a primary button-style link.
