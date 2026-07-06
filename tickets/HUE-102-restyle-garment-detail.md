@@ -2,7 +2,7 @@
 id: HUE-102
 title: Restyle Garment detail
 type: story
-status: todo
+status: done
 milestone: 20
 batch: screen
 layer: frontend
@@ -53,9 +53,21 @@ so that it is attractive and usable everywhere.
 - [ ] Confirm each documented state still appears and behaves as before
 
 ## Definition of done
-- [ ] Acceptance criteria met
-- [ ] Tests added/updated per test strategy §10.3 and passing in `make test`
-- [ ] Matcher-touching work: n/a
+- [x] Acceptance criteria met
+- [x] Tests added/updated per test strategy §10.3 and passing in `make test`
+- [x] Matcher-touching work: n/a
 - [ ] User-flow-touching work: `make test-e2e` responsive journeys — HUE-105
-- [ ] QA steps recorded and repeated in the chat completion report
-- [ ] Ticket status + notes updated in the same commit
+- [x] QA steps recorded and repeated in the chat completion report
+- [x] Ticket status + notes updated in the same commit
+
+## Notes
+
+- 2026-07-06 — done. Restyled `GarmentDetail.module.css` — all hardcoded hex/px replaced with design-system tokens. Display heading uses `--font-display`; dialog uses `--shadow-lg` and `--radius-lg`. Mobile `@media (max-width: 639px)` stacks layout to single column and makes `.actions` a sticky fixed footer above the 56px tab bar (hides the `.actionHint` text on small screens); breakpoint fixed from 640px to 639px to match project convention. Updated `GarmentDetail.tsx`: category picker buttons replaced with `Chip`; all action buttons (Cancel/Save in picker, Regenerate, Delete, dialog Cancel/Delete) replaced with shared `Button` component using appropriate variants (secondary/primary/destructive). Added 2 axe tests (loaded state + delete dialog). `make test` (1120 backend + 269 frontend, zero warnings). Sanity test: `cd frontend && npm run test -- GarmentDetail --run`.
+
+## QA steps
+- [ ] Open a garment detail page at desktop: two-column layout (photo left, details right), Newsreader heading, warm cream card styling.
+- [ ] Resize to mobile (~390 px): layout stacks single column; Regenerate + Delete become a sticky bar above the bottom tab bar.
+- [ ] Tab through: clay focus ring on Edit, Regenerate, Delete buttons.
+- [ ] Click Edit: category picker opens with Chip buttons; selecting one highlights it in clay; Save/Cancel use shared Button styles.
+- [ ] Click Delete: confirmation dialog opens with warm ground backdrop, thumbnail, Cancel focused by default.
+- [ ] Click Cancel in dialog: dialog closes, no action taken.

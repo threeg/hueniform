@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom'
 import { useGarment, useRegenerateGarment, useDeleteGarment, usePatchGarment, useTaxonomy } from '../api/queries'
 import { ApiRequestError } from '../api/types'
+import Banner from '../components/Banner'
+import Button from '../components/Button'
+import Chip from '../components/Chip'
+import LoadingState from '../components/LoadingState'
 import PaletteStrip from '../components/PaletteStrip'
 import Swatch from '../components/Swatch'
-import Banner from '../components/Banner'
-import LoadingState from '../components/LoadingState'
 import { typeLabel } from '../utils/typeLabel'
 import styles from './GarmentDetail.module.css'
 
@@ -125,19 +127,14 @@ export default function GarmentDetail() {
                     <div className={styles.pickerSlots}>
                       {region.slots.flatMap(slot =>
                         slot.categories.map(cat => (
-                          <button
+                          <Chip
                             key={cat}
-                            className={
-                              selectedCategory === cat
-                                ? styles.pickerCatSelected
-                                : styles.pickerCat
-                            }
-                            aria-pressed={selectedCategory === cat}
+                            selected={selectedCategory === cat}
                             onClick={() => setSelectedCategory(cat)}
                             data-testid={`cat-${cat}`}
                           >
                             {typeLabel(cat)}
-                          </button>
+                          </Chip>
                         ))
                       )}
                     </div>
@@ -147,22 +144,22 @@ export default function GarmentDetail() {
                   <Banner variant="error" message={(patchError as Error).message} />
                 )}
                 <div className={styles.pickerActions}>
-                  <button
-                    className={styles.cancelCatBtn}
+                  <Button
+                    variant="secondary"
                     onClick={handleCategoryCancel}
                     data-testid="category-cancel"
                   >
                     Cancel
-                  </button>
-                  <button
-                    className={styles.saveCatBtn}
+                  </Button>
+                  <Button
+                    variant="primary"
                     onClick={handleCategorySave}
                     disabled={patchPending}
                     aria-busy={patchPending}
                     data-testid="category-save"
                   >
                     {patchPending ? 'Saving…' : 'Save'}
-                  </button>
+                  </Button>
                 </div>
               </div>
             ) : (
@@ -205,24 +202,24 @@ export default function GarmentDetail() {
               The <strong>category</strong> is editable above. The <strong>colours</strong> are regenerate-only — <em>Regenerate</em> re-detects them from the photograph.
             </p>
 
-            <button
-              className={styles.regenBtn}
+            <Button
+              variant="secondary"
               onClick={handleRegenerate}
               disabled={regenPending || deletePending}
               aria-busy={regenPending}
               data-testid="regen-button"
             >
               {regenPending ? 'Detecting…' : 'Regenerate colours'}
-            </button>
+            </Button>
 
-            <button
-              className={styles.deleteBtn}
+            <Button
+              variant="destructive"
               onClick={() => setShowConfirm(true)}
               disabled={regenPending || deletePending}
               data-testid="delete-button"
             >
               Delete garment
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -250,24 +247,24 @@ export default function GarmentDetail() {
             </p>
             <div className={styles.dialogActions}>
               {/* Cancel is first in DOM — receives default focus (FR-34) */}
-              <button
-                className={styles.cancelBtn}
+              <Button
+                variant="secondary"
                 onClick={() => setShowConfirm(false)}
                 disabled={deletePending}
                 data-testid="cancel-delete"
                 autoFocus
               >
                 Cancel
-              </button>
-              <button
-                className={styles.confirmDeleteBtn}
+              </Button>
+              <Button
+                variant="destructive"
                 onClick={handleDelete}
                 disabled={deletePending}
                 aria-busy={deletePending}
                 data-testid="confirm-delete"
               >
                 {deletePending ? 'Deleting…' : 'Delete'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

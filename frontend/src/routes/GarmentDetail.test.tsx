@@ -4,6 +4,7 @@ import { describe, it, expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from '../test/server'
 import { renderRoute } from '../test/test-utils'
+import { expectNoAxeViolations } from '../test/a11y'
 
 import GarmentDetail from './GarmentDetail'
 import {
@@ -286,5 +287,24 @@ describe('GarmentDetail — not found', () => {
       expect(screen.getByTestId('not-found')).toBeInTheDocument(),
     )
     expect(screen.getByRole('link', { name: /Wardrobe/i })).toBeInTheDocument()
+  })
+})
+
+// ── Accessibility (NFR-11) ────────────────────────────────────────────────────
+
+describe('GarmentDetail — accessibility (NFR-11)', () => {
+  it('loaded detail state has no axe violations', async () => {
+    const { container } = renderScreen()
+    await screen.findByRole('heading', { name: 'Jumper' })
+    await expectNoAxeViolations(container)
+  })
+
+  it('delete confirmation dialog has no axe violations', async () => {
+    const { container } = renderScreen()
+    const user = userEvent.setup()
+    await screen.findByRole('heading', { name: 'Jumper' })
+    await user.click(screen.getByTestId('delete-button'))
+    expect(screen.getByTestId('delete-dialog')).toBeInTheDocument()
+    await expectNoAxeViolations(container)
   })
 })

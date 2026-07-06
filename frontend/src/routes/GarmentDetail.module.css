@@ -1,20 +1,21 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding: 1.5rem;
+  gap: var(--space-5);
   max-width: 900px;
 }
 
 .backLink {
-  color: #555;
-  font-size: 0.875rem;
+  color: var(--color-ink-secondary);
+  font-size: var(--text-sm);
   text-decoration: none;
+  transition: color 0.1s;
 }
 
 .backLink:hover {
-  color: #111;
+  color: var(--color-ink);
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 /* ── Two-column layout ──────────────────────────────────────────────────────── */
@@ -22,24 +23,16 @@
 .layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: var(--space-6);
   align-items: start;
-}
-
-@media (max-width: 640px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
-}
-
-.imageCol {
-  /* photograph column */
 }
 
 .photo {
   width: 100%;
-  border-radius: 6px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
   display: block;
+  background: var(--color-surface);
 }
 
 /* ── Right detail column ────────────────────────────────────────────────────── */
@@ -47,40 +40,43 @@
 .detailCol {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: var(--space-4);
 }
 
 /* ── Category heading + inline edit affordance ──────────────────────────────── */
 
-.categoryRow {
-  /* wrapper for heading row or inline picker */
-}
-
 .headingRow {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-3);
 }
 
 .typeHeading {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  color: var(--color-ink);
   margin: 0;
 }
 
 .editCatBtn {
-  padding: 0.2rem 0.6rem;
-  font-size: 0.8rem;
-  border: 1px solid #888;
-  border-radius: 4px;
-  background: #fff;
+  padding: var(--space-0-5) var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-raised);
+  color: var(--color-ink-secondary);
   cursor: pointer;
-  color: #555;
+  transition: background 0.1s, border-color 0.1s, color 0.1s;
 }
 
 .editCatBtn:hover {
-  background: #f5f5f5;
-  color: #111;
+  background: var(--color-surface);
+  border-color: var(--color-border-strong);
+  color: var(--color-ink);
 }
 
 /* ── Inline category picker ─────────────────────────────────────────────────── */
@@ -88,96 +84,40 @@
 .categoryPicker {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 1rem;
-  background: #fafafa;
+  gap: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  background: var(--color-surface);
 }
 
 .pickerRegion {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: var(--space-2);
 }
 
 .pickerRegionLabel {
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #888;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-muted);
   margin: 0;
 }
 
 .pickerSlots {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.pickerCat {
-  padding: 0.25rem 0.6rem;
-  font-size: 0.825rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
-  cursor: pointer;
-  color: #333;
-}
-
-.pickerCat:hover {
-  background: #f0f0f0;
-}
-
-.pickerCatSelected {
-  padding: 0.25rem 0.6rem;
-  font-size: 0.825rem;
-  border: 1px solid #333;
-  border-radius: 4px;
-  background: #333;
-  color: #fff;
-  cursor: pointer;
+  gap: var(--space-2);
 }
 
 .pickerActions {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-2);
   justify-content: flex-end;
-  padding-top: 0.5rem;
-  border-top: 1px solid #e5e5e5;
-}
-
-.cancelCatBtn {
-  padding: 0.4rem 0.9rem;
-  font-size: 0.875rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
-  cursor: pointer;
-}
-
-.cancelCatBtn:hover {
-  background: #f5f5f5;
-}
-
-.saveCatBtn {
-  padding: 0.4rem 0.9rem;
-  font-size: 0.875rem;
-  border: 1px solid #333;
-  border-radius: 4px;
-  background: #333;
-  color: #fff;
-  cursor: pointer;
-}
-
-.saveCatBtn:hover:not(:disabled) {
-  background: #111;
-}
-
-.saveCatBtn:disabled {
-  opacity: 0.6;
-  cursor: default;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 /* ── Palette list ───────────────────────────────────────────────────────────── */
@@ -188,7 +128,7 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .paletteRow {
@@ -199,11 +139,11 @@
 /* ── Dates ──────────────────────────────────────────────────────────────────── */
 
 .dates {
-  font-size: 0.875rem;
-  color: #666;
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: var(--space-1);
 }
 
 .dates p {
@@ -215,52 +155,14 @@
 .actions {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-3);
 }
 
 .actionHint {
-  font-size: 0.8rem;
-  color: #777;
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
   margin: 0;
-}
-
-.regenBtn {
-  padding: 0.5rem 1rem;
-  border: 1px solid #333;
-  border-radius: 4px;
-  background: #fff;
-  cursor: pointer;
-  font-size: 0.9rem;
-  align-self: flex-start;
-}
-
-.regenBtn:hover:not(:disabled) {
-  background: #f5f5f5;
-}
-
-.regenBtn:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
-
-.deleteBtn {
-  padding: 0.5rem 1rem;
-  border: 1px solid #c00;
-  border-radius: 4px;
-  background: #fff;
-  color: #c00;
-  cursor: pointer;
-  font-size: 0.9rem;
-  align-self: flex-start;
-}
-
-.deleteBtn:hover:not(:disabled) {
-  background: #fff5f5;
-}
-
-.deleteBtn:disabled {
-  opacity: 0.6;
-  cursor: default;
+  line-height: var(--leading-normal);
 }
 
 /* ── Delete confirmation dialogue ───────────────────────────────────────────── */
@@ -268,7 +170,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(58, 49, 40, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -276,20 +178,23 @@
 }
 
 .dialog {
-  background: #fff;
-  border-radius: 8px;
-  padding: 2rem;
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: var(--space-6);
   max-width: 360px;
   width: 90%;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  gap: var(--space-4);
+  box-shadow: var(--shadow-lg);
 }
 
 .dialogQuestion {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink);
   margin: 0;
 }
 
@@ -297,50 +202,47 @@
   width: 80px;
   height: 80px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   align-self: center;
+  border: 1px solid var(--color-border);
 }
 
 .dialogWarning {
-  font-size: 0.85rem;
-  color: #666;
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
   margin: 0;
 }
 
 .dialogActions {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-3);
   justify-content: flex-end;
 }
 
-.cancelBtn {
-  padding: 0.45rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
 
-.cancelBtn:hover:not(:disabled) {
-  background: #f5f5f5;
-}
+@media (max-width: 639px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
 
-.confirmDeleteBtn {
-  padding: 0.45rem 1rem;
-  border: 1px solid #c00;
-  border-radius: 4px;
-  background: #c00;
-  color: #fff;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
+  .actions {
+    position: fixed;
+    bottom: 56px;
+    left: 0;
+    right: 0;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface-raised);
+    border-top: 1px solid var(--color-border);
+    flex-direction: row;
+    z-index: 10;
+  }
 
-.confirmDeleteBtn:hover:not(:disabled) {
-  background: #a00;
-}
+  .actionHint {
+    display: none;
+  }
 
-.confirmDeleteBtn:disabled {
-  opacity: 0.6;
-  cursor: default;
+  .page {
+    padding-bottom: calc(56px + var(--space-7) + var(--space-4));
+  }
 }
