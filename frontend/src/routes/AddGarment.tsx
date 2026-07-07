@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDetect } from '../api/queries'
 import Banner from '../components/Banner'
@@ -11,6 +11,18 @@ export default function AddGarment() {
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragOver, setDragOver] = useState(false)
   const [multiNotice, setMultiNotice] = useState(false)
+
+  // Prevent the browser from navigating to a dropped file when the cursor
+  // lands outside the zone element. Active only while this screen is mounted.
+  useEffect(() => {
+    function prevent(e: DragEvent) { e.preventDefault() }
+    document.addEventListener('dragover', prevent)
+    document.addEventListener('drop', prevent)
+    return () => {
+      document.removeEventListener('dragover', prevent)
+      document.removeEventListener('drop', prevent)
+    }
+  }, [])
 
   function submit(file: File) {
     reset()
