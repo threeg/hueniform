@@ -11,7 +11,10 @@ export default function Banner({ message, variant }: Props) {
       className={`${styles.banner} ${styles[variant]}`}
       role={variant === 'error' ? 'alert' : 'status'}
     >
-      {message}
+      {variant === 'error' && (
+        <span className={styles.icon} aria-hidden="true">!</span>
+      )}
+      <span className={styles.text}>{message}</span>
     </div>
   )
 }

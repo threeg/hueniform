@@ -1,15 +1,46 @@
 .banner {
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: 14px;
   font-size: var(--text-base);
   line-height: var(--leading-normal);
   border: 1px solid;
+  max-width: 600px;
+  margin-bottom: 22px;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 20px;
+  text-align: center;
+}
+
+.text {
+  flex: 1;
+  font-size: 13.5px;
+  line-height: 1.5;
 }
 
 .error {
-  background: var(--color-primary-tint);
-  border-color: var(--color-primary-soft);
-  color: var(--color-primary-deep);
+  background: #fbe9e3;
+  border-color: #e0a08c;
+  color: #8a3a28;
+}
+
+.error .icon {
+  background: #c24b38;
+  color: #fff;
 }
 
 .warning {

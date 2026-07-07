@@ -3,12 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { useDetect } from '../api/queries'
 import Banner from '../components/Banner'
 import Button from '../components/Button'
-import LoadingState from '../components/LoadingState'
 import styles from './AddGarment.module.css'
 
 export default function AddGarment() {
   const navigate = useNavigate()
-  const { mutate: detect, isPending, error, reset } = useDetect()
+  const { mutate: detect, isPending, error, reset, variables: pendingFile } = useDetect()
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragOver, setDragOver] = useState(false)
   const [multiNotice, setMultiNotice] = useState(false)
@@ -41,7 +40,6 @@ export default function AddGarment() {
   }
 
   function handleDragLeave(e: React.DragEvent) {
-    // Only clear when leaving the zone itself, not a child element
     if (!e.currentTarget.contains(e.relatedTarget as Node)) {
       setDragOver(false)
     }
@@ -55,7 +53,7 @@ export default function AddGarment() {
   const zoneClass = [
     styles.zone,
     dragOver ? styles.dragOver : '',
-    isPending ? styles.inert : '',
+    isPending ? styles.detecting : '',
   ]
     .filter(Boolean)
     .join(' ')
@@ -81,23 +79,49 @@ export default function AddGarment() {
         aria-busy={isPending}
       >
         {isPending ? (
-          <LoadingState label="Detecting colours…" />
+          <>
+            <div className={styles.detectingDots} aria-hidden="true">
+              <span className={styles.dot} />
+              <span className={styles.dot} />
+              <span className={styles.dot} />
+            </div>
+            <p className={styles.detectingHeadline}>
+              Detecting colours{pendingFile ? <> in <em>{pendingFile.name}</em></> : ''}
+            </p>
+            <p className={styles.detectingSubtitle}>
+              Isolating the garment and reading its palette — a few seconds at most.
+            </p>
+          </>
         ) : (
           <>
-            <p className={styles.headline}>Drag a garment photograph here</p>
-            <p className={styles.or}>or</p>
-            <Button
-              variant="secondary"
-              type="button"
-              onClick={() => inputRef.current?.click()}
+            <div
+              className={[styles.uploadIcon, dragOver ? styles.uploadIconActive : ''].filter(Boolean).join(' ')}
+              aria-hidden="true"
             >
-              Choose a file…
-            </Button>
-            <p className={styles.hint}>JPEG, PNG or WebP, up to 20 MB</p>
-            <p className={styles.tip}>
-              Tip: a plain, contrasting background helps the colour detector
-              isolate the garment.
+              {dragOver ? '↓' : '↑'}
+            </div>
+            <p className={styles.headline}>
+              {dragOver ? 'Drop to upload' : 'Drag a garment photograph here'}
             </p>
+            {!dragOver && (
+              <>
+                <p className={styles.or}>— or —</p>
+                <Button
+                  variant="primary"
+                  type="button"
+                  onClick={() => inputRef.current?.click()}
+                >
+                  Choose a file…
+                </Button>
+              </>
+            )}
+            <p className={styles.hint}>JPEG · PNG · WEBP — UP TO 20 MB</p>
+            {!dragOver && (
+              <p className={styles.tip}>
+                Tip: a plain, contrasting background helps the colour detector
+                isolate the garment.
+              </p>
+            )}
           </>
         )}
       </div>

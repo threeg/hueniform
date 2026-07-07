@@ -2,7 +2,7 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "Hueniform dev",
+      "name": "Hueniform Dev",
       "runtimeExecutable": "make",
       "runtimeArgs": ["dev"],
       "port": 5173

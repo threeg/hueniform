@@ -52,7 +52,7 @@ describe('AddGarment — default state', () => {
 
   it('renders the format hint (FR-23)', () => {
     renderScreen()
-    expect(screen.getByText(/JPEG, PNG or WebP/)).toBeInTheDocument()
+    expect(screen.getByText(/JPEG.*PNG.*WEBP/i)).toBeInTheDocument()
   })
 
   it('renders the photography tip', () => {
@@ -85,7 +85,7 @@ describe('AddGarment — detecting state', () => {
     renderScreen()
     const input = screen.getByTestId('file-input')
     await user.upload(input, garmentFile())
-    expect(screen.getByText('Detecting colours…')).toBeInTheDocument()
+    expect(screen.getByText(/Detecting colours/i)).toBeInTheDocument()
     expect(
       screen.queryByRole('button', { name: 'Choose a file…' }),
     ).not.toBeInTheDocument()

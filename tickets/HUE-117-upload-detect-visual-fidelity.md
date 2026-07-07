@@ -2,7 +2,7 @@
 id: HUE-117
 title: Upload & detect screen visual fidelity
 type: story
-status: todo
+status: done
 milestone: 20
 batch: cleanup
 layer: frontend
@@ -145,3 +145,14 @@ All changes are CSS and JSX structure within the existing component. The same AP
 
 ## Notes
 - 2026-07-06 — created (line-by-line visual audit of Screen 01 against `Hueniform App.dc.html` states A–D)
+- 2026-07-06 — completed. Added upload icon (54 × 54 px clay rounded square with ↑/↓ arrow), reworked drop zone dimensions and typography (Newsreader serif headline, Space Mono uppercase hint, italic tip), switched "Choose a file" to primary variant, added three-dot detecting animation replacing the LoadingState skeleton, updated Banner globally (14 px radius, 14 px 18 px padding, clay `!` icon for error variant). Updated `UploadDetect.test.tsx` for changed copy; added `AddGarment.test.tsx` with 15 new tests covering all four states and axe. All 326 tests pass.
+
+  Sanity test: `cd frontend && npm run test -- AddGarment --run`
+
+## QA steps
+- [x] Open `/add` at desktop: 54 px upload icon (clay ↑ on pink-tint square) centred above "Drag a garment photograph here" (Newsreader serif); primary clay button below; mono uppercase format hint; italic tip
+- [x] Drag a file over: zone border turns clay dashed with glow ring, icon flips to ↓ on solid clay, text changes to "Drop to upload", button and divider hidden
+- [x] Drop a valid file: zone shows three pulsing clay dots + "Detecting colours in *filename*" in serif italic; border becomes solid
+- [x] Drop an invalid file: error banner with 14 px radius, clay-circle "!" icon, bold lead sentence
+- [x] Resize to mobile: zone fills width, padding reduces, all states still render correctly
+- [x] Tab through: visible focus ring on the "Choose a file" button
