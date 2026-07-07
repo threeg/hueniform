@@ -2,7 +2,7 @@
 id: HUE-120
 title: Garment detail screen visual fidelity
 type: story
-status: todo
+status: done
 milestone: 20
 batch: cleanup
 layer: frontend
@@ -64,11 +64,11 @@ so that viewing, editing and deleting a garment feels polished.
 - Update `GarmentDetail.test.tsx` for DOM changes; `jest-axe` clean
 
 ## QA steps
-- [ ] Default: clay underlined "← Wardrobe" and "Edit category" links; "Palette" mono label; 24px swatches; 16px strip
-- [ ] Category edit: panel with header "Change category", scrollable body, Save/Cancel footer, shadow
-- [ ] Delete dialog: 440px wide, 18px radius, 22px serif heading, compact preview row with palette bar
-- [ ] Regenerate pending: inert buttons with "Re-detecting colours ···" text
-- [ ] Not found: centred, serif heading, primary CTA
+- [x] Default: clay underlined "← Wardrobe" back link; "Edit category" as clay underlined inline text button; "PALETTE" mono uppercase label above strip; 24px swatches with 13px gap; Space Mono 12px date in `#a89b86`
+- [x] Category edit: heading stays visible with "Editing…" italic grey label replacing button; panel shows "Change category" header, scrollable chip body, Save/Cancel footer — `border: 1px solid #ecdcc7; border-radius: 16px; box-shadow`
+- [x] Delete dialog: cream `#fbf6ee` background, `border-radius: 18px`, 22px Newsreader weight-400 heading, compact preview row (64×52 thumb + 60×44 palette bar + type/colours/date text), clay-border Cancel
+- [x] Regenerate pending: regen button text changes to "Re-detecting colours ···" and is disabled
+- [x] Not found: dashed cream card, 24px Newsreader heading, clay "← Back to the wardrobe" CTA
 
 ## Definition of done
 - [x] Acceptance criteria met
@@ -79,3 +79,6 @@ so that viewing, editing and deleting a garment feels polished.
 
 ## Notes
 - 2026-07-06 — created (line-by-line audit of Screen 04 against prototype)
+- 2026-07-07 — completed. Back link → 13px clay + underline. Edit button → clay underlined text link. Category picker → header/body/footer card with `#ecdcc7` border, 16px radius, box-shadow, `#fdf8f0` header+footer; heading row always visible, "Editing…" italic label when active. Palette label → 11px Space Mono uppercase `#a89b86`. PaletteStrip gains `className` prop; `.paletteStrip` overrides border→inset shadow, radius 6px, max-width 360px. Swatch size=24. Palette rows gap 13px / padding 9px / `#efe4d2` dividers. Date → 12px Space Mono `#a89b86`. Action hint → 12.5px `#a89b86`. Regen pending text → "Re-detecting colours ···". Dialog → `#fbf6ee` bg, 18px radius, 26×28 padding, 440px, stronger shadow; heading 22px Newsreader weight 400; thumb 64×52 + palette 60×44 preview row; clay Cancel border. Not-found → dashed card (matches empty-wardrobe style), 24px serif heading, clay CTA. 334 tests passing.
+
+  Sanity test: `cd frontend && npm run test -- GarmentDetail --run`

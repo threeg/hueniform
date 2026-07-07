@@ -1,16 +1,18 @@
 import { memo } from 'react'
 import type { ColourOut } from '../api/types'
+import { classNames } from '../utils/classNames'
 import styles from './PaletteStrip.module.css'
 
 interface Props {
   colours: ColourOut[]
   height?: number
+  className?: string
 }
 
-function PaletteStrip({ colours, height = 12 }: Props) {
+function PaletteStrip({ colours, height = 12, className }: Props) {
   return (
     <div
-      className={styles.strip}
+      className={classNames(styles.strip, className)}
       style={{ height }}
       aria-label="Colour palette"
     >

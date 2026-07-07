@@ -68,7 +68,7 @@ Reactive tickets from `/verify` post-batch reviews of the Milestone 20 work (CON
 | 117 | HUE-117 | Upload & detect screen visual fidelity | story | frontend | screen | done | HUE-099 |
 | 118 | HUE-118 | Confirm colours screen visual fidelity | story | frontend | screen | done | HUE-100, HUE-112 |
 | 119 | HUE-119 | Wardrobe screen visual fidelity (audit pass 2) | story | frontend | screen | done | HUE-101, HUE-113, HUE-114 |
-| 120 | HUE-120 | Garment detail screen visual fidelity | story | frontend | screen | todo | HUE-102, HUE-115 |
+| 120 | HUE-120 | Garment detail screen visual fidelity | story | frontend | screen | done | HUE-102, HUE-115 |
 | 121 | HUE-121 | Suggest outfit & results visual fidelity | story | frontend | screen | todo | HUE-103, HUE-104, HUE-115 |
 
 ## v0.2.0 — execution order (Milestone 14)

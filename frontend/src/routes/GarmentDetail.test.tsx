@@ -132,7 +132,7 @@ describe('GarmentDetail — regenerate (FR-33)', () => {
     )
     renderScreen()
     await user().click(await screen.findByTestId('regen-button'))
-    expect(screen.getByText('Detecting…')).toBeInTheDocument()
+    expect(screen.getByText(/Re-detecting colours/)).toBeInTheDocument()
     await waitFor(() =>
       expect(screen.getByTestId('confirm-screen')).toBeInTheDocument(),
     )

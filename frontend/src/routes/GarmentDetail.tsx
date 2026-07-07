@@ -77,8 +77,11 @@ export default function GarmentDetail() {
     if (err?.code === 'garment_not_found') {
       return (
         <main className={styles.page} data-testid="not-found">
-          <p>Garment not found.</p>
-          <Link to="/">← Wardrobe</Link>
+          <div className={styles.notFoundCard}>
+            <h1 className={styles.notFoundHeading}>Garment not found</h1>
+            <p className={styles.notFoundSubtext}>This garment may have been deleted.</p>
+            <Link to="/" className={styles.notFoundCta}>← Back to the wardrobe</Link>
+          </div>
         </main>
       )
     }
@@ -111,14 +114,31 @@ export default function GarmentDetail() {
 
         {/* Right column — detail and actions */}
         <div className={styles.detailCol}>
-          {/* Category heading with inline edit affordance (FR-46) */}
-          <div className={styles.categoryRow}>
+          {/* Category heading — always visible; "Editing…" label replaces Edit button in edit mode */}
+          <div className={styles.headingRow}>
+            <h1 className={styles.typeHeading}>{typeLabel(garment.category)}</h1>
             {editingCategory ? (
-              <div
-                role="group"
-                aria-label="Edit category"
-                className={styles.categoryPicker}
+              <span className={styles.editingLabel}>Editing…</span>
+            ) : (
+              <button
+                className={styles.editCatBtn}
+                onClick={handleEditOpen}
+                data-testid="edit-category-button"
               >
+                Edit category
+              </button>
+            )}
+          </div>
+
+          {/* Inline category picker panel (FR-46) */}
+          {editingCategory && (
+            <div
+              role="group"
+              aria-label="Edit category"
+              className={styles.categoryPicker}
+            >
+              <div className={styles.pickerHeader}>Change category</div>
+              <div className={styles.pickerBody}>
                 {taxonomy?.regions?.map(region => (
                   <div key={region.region} className={styles.pickerRegion}>
                     <p className={styles.pickerRegionLabel}>
@@ -143,45 +163,35 @@ export default function GarmentDetail() {
                 {patchError && (
                   <Banner variant="error" message={(patchError as Error).message} />
                 )}
-                <div className={styles.pickerActions}>
-                  <Button
-                    variant="secondary"
-                    onClick={handleCategoryCancel}
-                    data-testid="category-cancel"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="primary"
-                    onClick={handleCategorySave}
-                    disabled={patchPending}
-                    aria-busy={patchPending}
-                    data-testid="category-save"
-                  >
-                    {patchPending ? 'Saving…' : 'Save'}
-                  </Button>
-                </div>
               </div>
-            ) : (
-              <div className={styles.headingRow}>
-                <h1 className={styles.typeHeading}>{typeLabel(garment.category)}</h1>
-                <button
-                  className={styles.editCatBtn}
-                  onClick={handleEditOpen}
-                  data-testid="edit-category-button"
+              <div className={styles.pickerFooter}>
+                <Button
+                  variant="secondary"
+                  onClick={handleCategoryCancel}
+                  data-testid="category-cancel"
                 >
-                  Edit
-                </button>
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={handleCategorySave}
+                  disabled={patchPending}
+                  aria-busy={patchPending}
+                  data-testid="category-save"
+                >
+                  {patchPending ? 'Saving…' : 'Save'}
+                </Button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
-          <PaletteStrip colours={garment.colours} height={16} />
+          <p className={styles.paletteLabel}>Palette</p>
+          <PaletteStrip colours={garment.colours} height={16} className={styles.paletteStrip} />
 
           <ul className={styles.paletteList} aria-label="Colour palette">
             {garment.colours.map((c, i) => (
               <li key={i} className={styles.paletteRow} data-testid="palette-row">
-                <Swatch hex={c.hex} family={c.family} proportion={c.proportion} />
+                <Swatch hex={c.hex} family={c.family} proportion={c.proportion} size={24} />
               </li>
             ))}
           </ul>
@@ -209,7 +219,7 @@ export default function GarmentDetail() {
               aria-busy={regenPending}
               data-testid="regen-button"
             >
-              {regenPending ? 'Detecting…' : 'Regenerate colours'}
+              {regenPending ? 'Re-detecting colours ···' : 'Regenerate colours'}
             </Button>
 
             <Button
@@ -237,11 +247,27 @@ export default function GarmentDetail() {
             <p className={styles.dialogQuestion}>
               Delete this {typeLabel(garment.category).toLowerCase()}?
             </p>
-            <img
-              src={garment.thumbnail_url}
-              alt="Garment thumbnail"
-              className={styles.dialogThumb}
-            />
+            <div className={styles.dialogPreviewCard}>
+              <img
+                src={garment.thumbnail_url}
+                alt="Garment thumbnail"
+                className={styles.dialogThumb}
+              />
+              <PaletteStrip
+                colours={garment.colours}
+                height={44}
+                className={styles.dialogPaletteStrip}
+              />
+              <div className={styles.dialogPreviewText}>
+                <span className={styles.dialogPreviewType}>{typeLabel(garment.category)}</span>
+                <span className={styles.dialogPreviewColours}>
+                  {garment.colours.map(c => c.family).join(' / ')}
+                </span>
+                <span className={styles.dialogPreviewDate}>
+                  Added {new Date(garment.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                </span>
+              </div>
+            </div>
             <p className={styles.dialogWarning}>
               This removes the photograph and all colour data. This cannot be undone.
             </p>
@@ -249,6 +275,7 @@ export default function GarmentDetail() {
               {/* Cancel is first in DOM — receives default focus (FR-34) */}
               <Button
                 variant="secondary"
+                className={styles.cancelBtn}
                 onClick={() => setShowConfirm(false)}
                 disabled={deletePending}
                 data-testid="cancel-delete"
