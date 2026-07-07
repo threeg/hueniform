@@ -96,6 +96,7 @@
 .count {
   font-size: var(--text-sm);
   color: var(--color-ink-muted);
+  margin-left: auto;
 }
 
 /* ── Order toggle ───────────────────────────────────────────────────────────── */
