@@ -65,6 +65,7 @@ Reactive tickets from `/verify` post-batch reviews of the Milestone 20 work (CON
 | 114 | HUE-114 | Custom pill-select filter dropdowns | story | frontend | screen | done | HUE-101 |
 | 115 | HUE-115 | Screens 4–6 visual audit and fixes | story | frontend | screen | done | HUE-102, HUE-103, HUE-104, HUE-110 |
 | 116 | HUE-116 | Nav and secondary-button hover interaction fidelity | task | frontend | visual-fidelity | done | HUE-110, HUE-096 |
+| 117 | HUE-117 | Upload & detect screen visual fidelity | story | frontend | screen | todo | HUE-099 |
 
 ## v0.2.0 — execution order (Milestone 14)
 
