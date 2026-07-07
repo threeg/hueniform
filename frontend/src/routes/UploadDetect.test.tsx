@@ -240,6 +240,20 @@ describe('AddGarment — drag-over', () => {
     fireEvent.dragLeave(zone, { relatedTarget: document.body })
     expect(zone).toBeInTheDocument()
   })
+
+  it('prevents default on document dragover so the browser does not navigate', () => {
+    renderScreen()
+    const event = new Event('dragover', { bubbles: true, cancelable: true })
+    document.dispatchEvent(event)
+    expect(event.defaultPrevented).toBe(true)
+  })
+
+  it('prevents default on document drop so the browser does not open the file', () => {
+    renderScreen()
+    const event = new Event('drop', { bubbles: true, cancelable: true })
+    document.dispatchEvent(event)
+    expect(event.defaultPrevented).toBe(true)
+  })
 })
 
 // ── Accessibility (NFR-11) ────────────────────────────────────────────────────
