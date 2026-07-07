@@ -216,7 +216,7 @@ describe('Wardrobe — empty wardrobe (FR-35)', () => {
 // ── Loading state ─────────────────────────────────────────────────────────────
 
 describe('Wardrobe — loading state', () => {
-  it('shows the loading indicator while the inventory is fetching', async () => {
+  it('shows skeleton cards while the inventory is fetching', async () => {
     server.use(
       http.get('http://127.0.0.1:8000/api/garments', async () => {
         await new Promise(resolve => setTimeout(resolve, 80))
@@ -224,9 +224,23 @@ describe('Wardrobe — loading state', () => {
       }),
     )
     renderScreen()
-    expect(screen.getByText('Loading wardrobe…')).toBeInTheDocument()
+    expect(screen.getByTestId('loading-skeleton')).toBeInTheDocument()
     await waitFor(() =>
-      expect(screen.queryByText('Loading wardrobe…')).not.toBeInTheDocument(),
+      expect(screen.queryByTestId('loading-skeleton')).not.toBeInTheDocument(),
+    )
+  })
+
+  it('shows "…" in the count while loading', async () => {
+    server.use(
+      http.get('http://127.0.0.1:8000/api/garments', async () => {
+        await new Promise(resolve => setTimeout(resolve, 80))
+        return HttpResponse.json(INVENTORY_RESPONSE)
+      }),
+    )
+    renderScreen()
+    expect(screen.getByTestId('result-count')).toHaveTextContent('…')
+    await waitFor(() =>
+      expect(screen.queryByTestId('result-count')).not.toHaveTextContent('…'),
     )
   })
 })
@@ -234,7 +248,7 @@ describe('Wardrobe — loading state', () => {
 // ── Error state ───────────────────────────────────────────────────────────────
 
 describe('Wardrobe — error state', () => {
-  it('shows an error banner and retry button on load failure', async () => {
+  it('shows an error banner with inline Retry on load failure', async () => {
     server.use(
       http.get('http://127.0.0.1:8000/api/garments', () =>
         HttpResponse.json(ERR_INVALID_FILTER, { status: 422 }),
@@ -244,7 +258,8 @@ describe('Wardrobe — error state', () => {
     await waitFor(() =>
       expect(screen.getByRole('alert')).toBeInTheDocument(),
     )
-    expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument()
+    const alert = screen.getByRole('alert')
+    expect(alert).toContainElement(screen.getByRole('button', { name: 'Retry' }))
   })
 })
 
@@ -403,6 +418,80 @@ describe('Wardrobe — visual structure (HUE-113)', () => {
     const badge = container.querySelector('[class*="groupBadge"]')
     expect(badge?.querySelector('[class*="groupCount"]')).toBeInTheDocument()
     expect(badge?.querySelector('[class*="groupCount"]')?.textContent).toBe('2')
+  })
+})
+
+// ── Visual structure — HUE-119 ────────────────────────────────────────────────
+
+describe('Wardrobe — empty state visual structure (HUE-119)', () => {
+  it('empty wardrobe shows diamond icon', async () => {
+    server.use(
+      http.get('http://127.0.0.1:8000/api/garments', () =>
+        HttpResponse.json({ garments: [], total: 0 }),
+      ),
+    )
+    const { container } = renderScreen()
+    await waitFor(() =>
+      expect(screen.getByTestId('empty-wardrobe')).toBeInTheDocument(),
+    )
+    expect(container.querySelector('[class*="emptyIcon"]')).toBeInTheDocument()
+  })
+
+  it('empty wardrobe shows serif heading', async () => {
+    server.use(
+      http.get('http://127.0.0.1:8000/api/garments', () =>
+        HttpResponse.json({ garments: [], total: 0 }),
+      ),
+    )
+    renderScreen()
+    await waitFor(() =>
+      expect(screen.getByRole('heading', { name: 'Your wardrobe is empty' })).toBeInTheDocument(),
+    )
+  })
+
+  it('filter-empty state shows dashed card and inline clear link', async () => {
+    server.use(
+      http.get('http://127.0.0.1:8000/api/garments', () =>
+        HttpResponse.json({ garments: [], total: 0 }),
+      ),
+    )
+    const { container } = renderScreen({ initialSearch: 'category=jumper' })
+    await waitFor(() =>
+      expect(screen.getByTestId('empty-filter')).toBeInTheDocument(),
+    )
+    expect(container.querySelector('[class*="emptyCard"]')).toBeInTheDocument()
+    expect(screen.getByText(/No garments match/i)).toBeInTheDocument()
+    expect(screen.getByText(/Clear the filters/i)).toBeInTheDocument()
+  })
+
+  it('date-order: first card gets "newest" label, last card gets "oldest" label', async () => {
+    server.use(
+      http.get('http://127.0.0.1:8000/api/garments', () =>
+        HttpResponse.json({
+          garments: [
+            { ...GARMENT_SUMMARY, id: 'aaa', category: 'jumper' },
+            { ...GARMENT_SUMMARY, id: 'bbb', category: 'jumper' },
+            { ...GARMENT_SUMMARY, id: 'ccc', category: 't_shirt' },
+          ],
+          total: 3,
+        }),
+      ),
+    )
+    renderScreen({ initialSearch: 'order=date' })
+    await waitFor(() =>
+      expect(screen.queryByTestId('loading-skeleton')).not.toBeInTheDocument(),
+    )
+    expect(screen.getByText('newest')).toBeInTheDocument()
+    expect(screen.getByText('oldest')).toBeInTheDocument()
+  })
+
+  it('hue-order: no "newest"/"oldest" labels shown', async () => {
+    renderScreen()
+    await waitFor(() =>
+      expect(screen.queryByTestId('loading-skeleton')).not.toBeInTheDocument(),
+    )
+    expect(screen.queryByText('newest')).not.toBeInTheDocument()
+    expect(screen.queryByText('oldest')).not.toBeInTheDocument()
   })
 })
 

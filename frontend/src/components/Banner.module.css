@@ -53,3 +53,23 @@
   background: #c69a3a;
   color: #fff;
 }
+
+.action {
+  flex-shrink: 0;
+  align-self: center;
+  margin-left: auto;
+  padding: 8px 18px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #e0a08c;
+  color: #8a3a28;
+  font-weight: 600;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.action:hover {
+  background: #fdf3ef;
+}

@@ -2,7 +2,7 @@
 id: HUE-119
 title: Wardrobe screen visual fidelity (audit pass 2)
 type: story
-status: todo
+status: done
 milestone: 20
 batch: cleanup
 layer: frontend
@@ -66,12 +66,12 @@ so that empty, loading, filtered and error states are all polished.
 - Update `Inventory.test.tsx` for DOM changes; `jest-axe` clean
 
 ## QA steps
-- [ ] Empty wardrobe: dashed-border card, diamond icon, serif heading, primary CTA with shadow
-- [ ] Empty filter result: dashed card, "No garments match", inline "Clear the filters" link
-- [ ] Loading: skeleton card shapes in 4-column grid, skeleton group badge, "…" count
-- [ ] Error: banner with inline Retry button (not separate)
-- [ ] Filtered pills: colour swatch is rounded square (not circle)
-- [ ] Date-added order: "newest"/"oldest" mono label in card captions
+- [x] Empty wardrobe: dashed-border card (`border: 2px dashed #d8c3a6; border-radius: 20px; background: #fdf8f0`), diamond icon (56×56px `#f7e6de` tile, `◇` in clay), Newsreader 500 20px heading "Your wardrobe is empty", clay CTA with `box-shadow: 0 10px 20px -10px`
+- [x] Empty filter result: dashed card, "No garments match" Newsreader 500 19px, inline clay-underlined "Clear the filters" link
+- [x] Loading: 4 skeleton card shells in grid, skeleton group badge (110×32px `#efe3d0` pill), "…" mono count in title row
+- [x] Error: banner has inline Retry button inside the alert element (not a separate button below)
+- [x] Filtered pills: colour swatch `border-radius: 4px` (rounded square, not circle) — verified in devtools
+- [x] Date-added order: "newest" on first card, "oldest" on last card, 10px Space Mono `#b3a892`
 
 ## Definition of done
 - [x] Acceptance criteria met
@@ -82,3 +82,6 @@ so that empty, loading, filtered and error states are all polished.
 
 ## Notes
 - 2026-07-06 — created (second-pass audit of Screen 03 against prototype)
+- 2026-07-06 — completed. Empty wardrobe → dashed card with 56×56 clay diamond icon, Newsreader 500 20px heading, 14px subtext, CTA with drop shadow. Filter-empty → dashed card, Newsreader 500 19px "No garments match", inline clay clear link. Loading → replaced LoadingState with 4 skeleton card shells + skeleton group badge (no listitem roles to avoid count collisions); title row shows "…" in Space Mono during fetch. Error → Banner gains optional `action` prop; Retry moved inside the banner element. Colour swatch → border-radius 4px (was 50%). Date label → GarmentCard gets `dateLabel` prop; Wardrobe passes "newest"/"oldest" to first/last garments when `order=date`. Banner.module.css adds `.action` button style. GarmentCard.module.css adds `.metaRow` + `.dateLabel`. 334 tests passing.
+
+  Sanity test: `cd frontend && npm run test -- Inventory --run`

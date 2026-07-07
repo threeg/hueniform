@@ -2,9 +2,7 @@ import { useMemo } from 'react'
 import { Link, useSearchParams, useLocation } from 'react-router-dom'
 import { useGarments, useTaxonomy } from '../api/queries'
 import Banner from '../components/Banner'
-import Button from '../components/Button'
 import GarmentCard from '../components/GarmentCard'
-import LoadingState from '../components/LoadingState'
 import PillSelect from '../components/PillSelect'
 import type { PillSelectGroup, PillSelectOption } from '../components/PillSelect'
 import { classNames } from '../utils/classNames'
@@ -30,6 +28,8 @@ const ORDER_OPTIONS = [
   { value: 'hue',  label: 'Hue' },
   { value: 'date', label: 'Date added' },
 ] as const
+
+const SKELETON_COUNT = 4
 
 export default function Wardrobe() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -106,15 +106,20 @@ export default function Wardrobe() {
     return result
   }, [garments])
 
+  // First and last garment IDs for "newest"/"oldest" date labels.
+  const firstGarmentId = garments[0]?.id
+  const lastGarmentId  = garments[garments.length - 1]?.id
+
   return (
     <main className={styles.page}>
       <div className={styles.titleRow}>
         <h1 className={styles.title}>Wardrobe</h1>
-        {data && (
-          <span className={styles.count} data-testid="result-count">
-            {total} {total === 1 ? 'garment' : 'garments'}
-          </span>
-        )}
+        <span
+          className={classNames(styles.count, isLoading && styles.countLoading)}
+          data-testid="result-count"
+        >
+          {isLoading ? '…' : `${total} ${total === 1 ? 'garment' : 'garments'}`}
+        </span>
       </div>
 
       <div className={styles.filterBar} role="search" aria-label="Filter garments">
@@ -174,26 +179,51 @@ export default function Wardrobe() {
         )}
       </div>
 
-      {isLoading && <LoadingState label="Loading wardrobe…" />}
-
-      {isError && (
-        <div className={styles.errorBlock}>
-          <Banner variant="error" message={(error as Error).message} />
-          <Button variant="secondary" onClick={() => refetch()}>Retry</Button>
+      {isLoading && (
+        <div className={styles.skeletonSection} aria-busy="true" data-testid="loading-skeleton">
+          <div className={styles.skeletonBadge} />
+          <div className={styles.skeletonGrid} aria-hidden="true">
+            {Array.from({ length: SKELETON_COUNT }, (_, i) => (
+              <div key={i} className={styles.skeletonCard}>
+                <div className={styles.skeletonPhoto} />
+                <div className={styles.skeletonMeta}>
+                  <div className={styles.skeletonLabel} />
+                  <div className={styles.skeletonStrip} />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
+      {isError && (
+        <Banner
+          variant="error"
+          message={(error as Error).message}
+          action={{ label: 'Retry', onClick: () => refetch() }}
+        />
+      )}
+
       {!isLoading && !isError && total === 0 && !hasFilters && (
-        <div className={styles.emptyState} data-testid="empty-wardrobe">
-          <p>Your wardrobe is empty.</p>
-          <Link to="/add" className={styles.addLink}>Add your first garment</Link>
+        <div className={styles.emptyCard} data-testid="empty-wardrobe">
+          <div className={styles.emptyIcon} aria-hidden="true">◇</div>
+          <h2 className={styles.emptyHeading}>Your wardrobe is empty</h2>
+          <p className={styles.emptySubtext}>
+            Photograph a garment and Hueniform will detect its colours.
+          </p>
+          <Link to="/add" className={styles.emptyCta}>Add your first garment</Link>
         </div>
       )}
 
       {!isLoading && !isError && total === 0 && hasFilters && (
-        <div className={styles.emptyState} data-testid="empty-filter">
-          <p>No garments match these filters.</p>
-          <button className={styles.clearBtn} onClick={clearFilters}>Clear filters</button>
+        <div className={styles.emptyCard} data-testid="empty-filter">
+          <p className={styles.emptyHeadingFilter}>No garments match</p>
+          <p className={styles.emptySubtext}>
+            <button className={styles.clearLink} onClick={clearFilters} data-testid="clear-filters">
+              Clear the filters
+            </button>
+            {' '}to see everything.
+          </p>
         </div>
       )}
 
@@ -207,18 +237,23 @@ export default function Wardrobe() {
             <span className={styles.groupCount}>{group.items.length}</span>
           </h2>
           <ul className={styles.grid} aria-label={`${typeLabel(group.category)} garments`}>
-            {group.items.map(g => (
-              <li key={g.id} className={styles.gridItem}>
-                <Link
-                  to={`/garments/${g.id}`}
-                  state={{ from: location.search.replace(/^\?/, '') }}
-                  className={styles.cardLink}
-                  aria-label={`${typeLabel(g.category)} garment detail`}
-                >
-                  <GarmentCard garment={g} />
-                </Link>
-              </li>
-            ))}
+            {group.items.map(g => {
+              const dateLabel = orderFilter === 'date'
+                ? (g.id === firstGarmentId ? 'newest' : g.id === lastGarmentId ? 'oldest' : undefined)
+                : undefined
+              return (
+                <li key={g.id} className={styles.gridItem}>
+                  <Link
+                    to={`/garments/${g.id}`}
+                    state={{ from: location.search.replace(/^\?/, '') }}
+                    className={styles.cardLink}
+                    aria-label={`${typeLabel(g.category)} garment detail`}
+                  >
+                    <GarmentCard garment={g} dateLabel={dateLabel} />
+                  </Link>
+                </li>
+              )
+            })}
           </ul>
         </section>
       ))}

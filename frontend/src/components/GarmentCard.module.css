@@ -42,10 +42,26 @@
   gap: 6px;
 }
 
+.metaRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px;
+}
+
 .typeLabel {
   font-size: 13px;
   font-weight: var(--weight-medium);
   color: #3a352d;
+}
+
+.dateLabel {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  color: #b3a892;
+  text-align: right;
+  flex-shrink: 0;
 }
 
 @media (max-width: 639px) {
