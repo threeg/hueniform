@@ -5,7 +5,7 @@
 | **Document** | Actionable improvements to the AI-assisted development method |
 | **Repository location** | `docs/meta/method-improvements.md` |
 | **Context** | Identified during a review of alignment with spec-driven AI development (the "Karpathy Method") |
-| **Last updated** | 18 June 2026 |
+| **Last updated** | 6 July 2026 |
 
 This document tracks specific improvements to the development method, from identified
 gap through to resolution. Items move from "proposed" to "done" as they are addressed.
@@ -145,6 +145,56 @@ inconsistency between the ticket file and BOARD.md is only caught by human revie
 
 ---
 
+### 6. Design-to-code handoff and visual audit process
+
+**Gap:** Restyle tickets that reference only a design system document (tokens, component
+vocabulary) will match the abstract vocabulary while missing per-screen visual details —
+icons, active-state styling, control shapes, section backgrounds, exact paddings and
+border-radii. A design prototype exported as standalone HTML requires a browser to
+render, making it opaque to the AI. PDF exports may render blank. The result: the
+implementation passes all tests and looks generically correct, but doesn't match the
+design.
+
+**Fix — three parts:**
+
+**Part A: Design export format.** When exporting from Claude Design, use the **project
+archive (zip)**, not standalone HTML or PDF. The archive contains `.dc.html` files
+(plain HTML/CSS with exact inline styles — readable as source code) and pre-rendered
+screenshots at multiple breakpoints. Commit this bundle to the repo (e.g.
+`docs/designs/<project>/`) as part of the design milestone.
+
+| Export format | Usable by the AI? | Why |
+|---|---|---|
+| **Project archive (zip)** | **Yes** | `.dc.html` is readable source; screenshots included |
+| Standalone HTML | No | Requires browser + JS to unpack base64 blobs |
+| PDF | No | May render blank (design tool export issue) |
+| PowerPoint | Maybe | Untested |
+| Video | No | Cannot process video |
+
+**Part B: Ticket references.** Every restyle or visual-fidelity ticket must include a
+Design references line pointing to the `.dc.html` file with specific section/line
+pointers, not just the design system doc. The design system doc captures the *vocabulary*
+(tokens, component types); the `.dc.html` is the *pixel-level spec* — both are needed,
+neither replaces the other.
+
+**Part C: Post-implementation visual audit.** After per-ticket restyle work completes,
+run a holistic visual audit before signing off the milestone:
+
+1. Read all prototype screenshots for a fast visual inventory of every screen and state.
+2. Extract the full design system from `.dc.html` via an agent (prompt: "extract ALL
+   visual CSS — colours, typography, spacing, radii, shadows, per-component specs").
+3. Compare by category (titles, cards, controls, empty states), not screen-by-screen —
+   most gaps are cross-cutting.
+4. Create one ticket per screen for any remaining gaps, with exact CSS values from the
+   prototype source.
+
+This audit is distinct from `/verify` (which catches code quality and spec compliance,
+not visual fidelity) and from the test gates (which verify behaviour, not appearance).
+
+**Status:** Done.
+
+---
+
 ## Done
 
 | Improvement | Date | Notes |
@@ -153,3 +203,4 @@ inconsistency between the ticket file and BOARD.md is only caught by human revie
 | Cleanup backlog process | 2026-06-16 | CONVENTIONS.md §6, BOARD.md backlog table. See commit `b701f1b`. |
 | Post-batch /verify skill | 2026-06-16 | Spec audit + code quality review + ticket proposals. See `.claude/skills/verify/SKILL.md`. |
 | Ticket completion report | 2026-06-18 | Summary + sanity test + (for UI tickets) manual QA steps, given in chat and appended to the ticket. See CLAUDE.md definition of done, TICKET-TEMPLATE story `## QA steps`, CONVENTIONS §5.6. Extends improvement #3 (agentic handoff); QA steps build living per-screen docs. |
+| Design-to-code handoff and visual audit | 2026-07-06 | Project archive export from Claude Design; `.dc.html` as pixel-level spec; per-screen visual audit tickets. See `lessons-learned.md` §10. |

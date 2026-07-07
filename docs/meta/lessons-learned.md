@@ -5,7 +5,7 @@
 | **Document** | Process observations from building Hueniform with Claude Code |
 | **Repository location** | `docs/meta/lessons-learned.md` |
 | **Scope** | Project-neutral; intended to transfer to any new AI-assisted project |
-| **Last updated** | 16 June 2026 |
+| **Last updated** | 6 July 2026 |
 
 These observations come from building a non-trivial full-stack application (wardrobe
 manager with colour-theory matching) using Claude Code as the primary implementation
@@ -156,3 +156,41 @@ fresh session and review the output, not supervise every keystroke.
   `~/.claude/skills/` directory instead of the project-level `.claude/skills/`. The
   project already had a verify skill; the global one shadowed it. Lesson: always check
   for existing files before creating new ones. Prefer project-level over global.
+
+---
+
+## 10. Design fidelity requires a direct visual reference, not just tokens
+
+A design system document captures tokens — colours, fonts, spacing, radii — and a
+component vocabulary. But tokens are *abstractions*. When restyle tickets reference only
+the design system doc, the implementation can match the token vocabulary perfectly while
+missing every per-screen visual detail: icons, active-state styling, control shapes,
+section backgrounds, exact paddings and border-radii. The result passes all tests and
+looks generically correct, but doesn't match the design.
+
+The root cause is a spec-extraction gap: the design prototype contains concrete,
+pixel-level details that an abstract design system document doesn't capture. If the
+prototype is in a format the AI can't read (e.g. a standalone HTML file requiring a
+browser to render), those details are invisible to the implementer.
+
+**What fixes it:** Exporting the design as a **project archive** from the design tool.
+This bundle contains `.dc.html` files (plain HTML/CSS readable as source code — exact
+dimensions, colours, layout rules are in the inline styles) and pre-rendered screenshots
+at multiple breakpoints. The AI reads the HTML source directly for exact values and
+cross-checks against the screenshots.
+
+**Transferable rules:**
+
+1. **Export the design as a project archive** (not standalone HTML, not PDF) and commit
+   it to the repo. The `.dc.html` source is the pixel-level spec; the screenshots are
+   the visual cross-check.
+2. **Every restyle ticket must reference the `.dc.html` file directly** — not just the
+   design system doc. The design system doc captures the vocabulary; the `.dc.html` is
+   the specification of record for visual details.
+3. **Run a holistic visual audit after per-ticket work completes.** Per-ticket fixes
+   address their narrow scope but miss cross-cutting gaps (every title is wrong, every
+   card uses the wrong aspect ratio). Extract the full design system from the `.dc.html`
+   via an agent, then compare by category (titles, cards, controls, empty states) not
+   screen-by-screen.
+4. **Fix by category, not by screen.** Most visual gaps are cross-cutting. A component-
+   level fix (card radius, title typography, button padding) hits all screens at once.
