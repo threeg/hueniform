@@ -195,8 +195,9 @@ describe('AddConfirm — add a colour (FR-29)', () => {
     await waitFor(() => screen.getByRole('button', { name: '+ Add a colour' }))
     await user().click(screen.getByRole('button', { name: '+ Add a colour' }))
 
-    const select = await screen.findByRole('combobox', { name: 'Colour family' })
-    await user().selectOptions(select, 'Red')
+    // Pick "Red" from the vertical family list
+    const panel = await screen.findByTestId('add-panel')
+    await user().click(within(panel).getByRole('button', { name: /^Red$/ }))
 
     // Set proportion
     await user().clear(screen.getByRole('spinbutton', { name: 'New colour proportion' }))

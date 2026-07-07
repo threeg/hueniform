@@ -44,7 +44,12 @@
 }
 
 .warning {
-  background: var(--color-surface);
-  border-color: var(--color-orange);
+  background: #fbf1dc;
+  border-color: #d9b46a;
   color: var(--color-ink-secondary);
+}
+
+.warning .icon {
+  background: #c69a3a;
+  color: #fff;
 }

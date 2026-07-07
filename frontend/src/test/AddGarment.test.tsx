@@ -154,11 +154,11 @@ describe('Banner error variant', () => {
     expect(screen.getByText('Something went wrong.')).toBeInTheDocument()
   })
 
-  it('warning variant has no icon', () => {
+  it('warning variant shows an icon', () => {
     const { container } = render(
       <Banner variant="warning" message="Detection fell back to defaults." />,
     )
-    expect(container.querySelector('[class*="icon"]')).toBeNull()
+    expect(container.querySelector('[class*="icon"]')).not.toBeNull()
   })
 
   it('error banner has no axe violations', async () => {

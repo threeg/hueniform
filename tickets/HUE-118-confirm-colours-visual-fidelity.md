@@ -2,7 +2,7 @@
 id: HUE-118
 title: Confirm colours screen visual fidelity
 type: story
-status: todo
+status: done
 milestone: 20
 batch: cleanup
 layer: frontend
@@ -97,3 +97,16 @@ so that palette editing feels precise and intentional.
 
 ## Notes
 - 2026-07-06 — created (line-by-line audit of Screen 02 against prototype)
+- 2026-07-06 — completed. Title → 30px weight 400. Image → max-height 300px. Added "Detected palette" mono uppercase label. Colour rows: integrated pill stepper (−/value/+ in `#f6ebdc` segments, `#e2d3bf` border, 10px radius), separate `%` label, remove styled as underlined clay text link, row separator `#efe4d2`, gap 14px / padding 12px. Preview bar → 22px tall, 8px radius, inset shadow, `margin:18px 0 8px`. Total line → sans 13px `#6f6455` with bold value. Add button → clay text link. Add panel → dashed `#d8c3a6` card with vertical family button list (swatch dot + name rows). Chip padding → 6px 13px globally. Disabled primary → muted clay `#dcc9b5`. Button padding → 11px 22px. Actions margin-top → 22px. Warning banner → amber `#fbf1dc`/`#d9b46a` with amber icon. Updated ConfirmCorrect.test.tsx for family list change. 328 tests passing.
+
+  Sanity test: `cd frontend && npm run test -- ConfirmCorrect --run`
+
+## QA steps
+- [x] "Confirm garment" at 30px serif weight 400; "Detected palette" mono uppercase label above colour rows
+- [x] Colour rows: 28px swatch, integrated pill stepper (−/80/+), %, underlined Remove
+- [x] Preview bar: 22px tall, 8px radius, inset shadow
+- [x] "+ Add a colour" as clay text link; panel in dashed card with vertical family list
+- [x] Category section: chip padding 6px 13px
+- [x] Disabled Save: muted clay background (#dcc9b5), not grey
+- [x] Buttons: 11px 22px padding, 22px margin-top above
+- [x] Warning banner (fallback): amber background, amber icon

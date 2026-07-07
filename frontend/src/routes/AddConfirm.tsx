@@ -36,7 +36,6 @@ export default function AddConfirm() {
     ?.garment_id
   const isRegeneration = Boolean(garmentId)
 
-  // All hooks must run before any conditional return
   const [colours, setColours] = useState<EditableColour[]>(() =>
     detection?.colours.map(c => ({
       h: c.h, s: c.s, l: c.l, hex: c.hex, family: c.family,
@@ -49,11 +48,6 @@ export default function AddConfirm() {
   const [newProportion, setNewProportion] = useState(20)
 
   const { data: taxonomy } = useTaxonomy()
-  const newFamilyHex = useMemo(() => {
-    if (!newFamily || !taxonomy) return null
-    const f = taxonomy.families.find(fam => fam.name === newFamily)
-    return f ? hslToHex(f.canonical.h, f.canonical.s, f.canonical.l) : null
-  }, [taxonomy, newFamily])
 
   const {
     mutate: createGarment, isPending: creating, error: createError,
@@ -143,33 +137,26 @@ export default function AddConfirm() {
 
           {/* Colour rows (FR-28, FR-29) */}
           <section aria-label="Palette colours">
+            <p className={styles.paletteLabel}>Detected palette</p>
             {colours.map((c, idx) => (
               <div key={idx} className={styles.colourRow} data-testid="colour-row">
-                <Swatch hex={c.hex} family={c.family} proportion={c.proportion} size={28} />
-                <div className={styles.stepper}>
+                <Swatch hex={c.hex} family={c.family} size={28} />
+                <div className={styles.stepperPill}>
                   <button
                     type="button"
+                    className={styles.stepperBtn}
                     aria-label={`Decrease ${c.family} proportion`}
                     onClick={() => setProportion(idx, c.proportion - 1)}
                     disabled={isPending}
                   >
                     −
                   </button>
-                  <input
-                    type="number"
-                    aria-label={`${c.family} proportion`}
-                    min={1}
-                    max={100}
-                    value={c.proportion}
-                    onChange={e => {
-                      const v = parseInt(e.target.value, 10)
-                      if (!isNaN(v)) setProportion(idx, v)
-                    }}
-                    disabled={isPending}
-                    className={styles.proportionInput}
-                  />
+                  <span className={styles.stepperValue} aria-hidden="true">
+                    {c.proportion}
+                  </span>
                   <button
                     type="button"
+                    className={styles.stepperBtn}
                     aria-label={`Increase ${c.family} proportion`}
                     onClick={() => setProportion(idx, c.proportion + 1)}
                     disabled={isPending}
@@ -177,10 +164,11 @@ export default function AddConfirm() {
                     +
                   </button>
                 </div>
+                <span className={styles.percentLabel}>%</span>
                 <button
                   type="button"
                   aria-label={`Remove ${c.family}`}
-                  className={styles.removeButton}
+                  className={styles.removeLink}
                   onClick={() => removeColour(idx)}
                   disabled={colours.length <= 1 || isPending}
                 >
@@ -190,7 +178,7 @@ export default function AddConfirm() {
             ))}
           </section>
 
-          {/* Stacked preview bar */}
+          {/* Proportion preview bar */}
           {total > 0 && (
             <div className={styles.bar} aria-hidden="true">
               {colours.map((c, idx) => (
@@ -208,7 +196,7 @@ export default function AddConfirm() {
 
           {/* Live total (FR-29) */}
           <p className={styles.totalLine} aria-live="polite" data-testid="total-line">
-            Total: {total}%
+            Total: <strong>{total}%</strong>
             {total !== 100 && ' — will be normalised to 100% on save'}
           </p>
 
@@ -226,44 +214,64 @@ export default function AddConfirm() {
                 </button>
               ) : (
                 <div className={styles.addPanel} data-testid="add-panel">
-                  <select
-                    aria-label="Colour family"
-                    value={newFamily}
-                    onChange={e => setNewFamily(e.target.value)}
-                  >
-                    <option value="">Select a family…</option>
-                    {taxonomy?.families.map(f => (
-                      <option key={f.name} value={f.name}>{f.name}</option>
-                    ))}
-                  </select>
-                  {newFamilyHex && (
-                    <Swatch hex={newFamilyHex} family={newFamily} />
-                  )}
-                  <input
-                    type="number"
-                    aria-label="New colour proportion"
-                    min={1}
-                    max={100}
-                    value={newProportion}
-                    onChange={e => {
-                      const v = parseInt(e.target.value, 10)
-                      if (!isNaN(v)) setNewProportion(v)
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddColour}
-                    disabled={!newFamily}
-                    data-testid="add-confirm"
-                  >
-                    Add
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setAddOpen(false); setNewFamily('') }}
-                  >
-                    Cancel
-                  </button>
+                  <p className={styles.addPanelHeader}>Add a colour</p>
+                  <div className={styles.familyList}>
+                    {taxonomy?.families.map(f => {
+                      const hex = hslToHex(f.canonical.h, f.canonical.s, f.canonical.l)
+                      return (
+                        <button
+                          key={f.name}
+                          type="button"
+                          className={[
+                            styles.familyRow,
+                            newFamily === f.name ? styles.familyRowSelected : '',
+                          ].filter(Boolean).join(' ')}
+                          onClick={() => setNewFamily(f.name)}
+                        >
+                          <span
+                            className={styles.familyDot}
+                            style={{ backgroundColor: hex }}
+                            aria-hidden="true"
+                          />
+                          {f.name}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <div className={styles.addPanelFooter}>
+                    <label className={styles.addProportionLabel}>
+                      Proportion
+                      <input
+                        type="number"
+                        aria-label="New colour proportion"
+                        min={1}
+                        max={100}
+                        value={newProportion}
+                        onChange={e => {
+                          const v = parseInt(e.target.value, 10)
+                          if (!isNaN(v)) setNewProportion(v)
+                        }}
+                        className={styles.addProportionInput}
+                      />
+                      <span>%</span>
+                    </label>
+                    <Button
+                      variant="primary"
+                      type="button"
+                      onClick={handleAddColour}
+                      disabled={!newFamily}
+                      data-testid="add-confirm"
+                    >
+                      Add
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      type="button"
+                      onClick={() => { setAddOpen(false); setNewFamily('') }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
@@ -312,6 +320,9 @@ export default function AddConfirm() {
             >
               Cancel
             </Button>
+            {!canSave && !isPending && (
+              <p className={styles.saveHint}>Save enables once a category is chosen</p>
+            )}
           </div>
         </div>
       </div>
